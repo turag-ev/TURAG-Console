@@ -1,0 +1,13 @@
+*~
+*.bak
+*build*
+tmp
+
+# C/C++
+*.o
+
+# QtCreator
+*.pro.user
+
+# NXT
+*.sym
