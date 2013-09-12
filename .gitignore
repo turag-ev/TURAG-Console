@@ -5,6 +5,7 @@ tmp
 
 # C/C++
 *.o
+*.o.d
 
 # QtCreator
 *.pro.user
