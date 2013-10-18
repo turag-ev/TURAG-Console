@@ -1,0 +1,305 @@
+#include "controller.h"
+
+#include "backend/filebackend.h"
+#include "backend/serialbackend.h"
+
+#include "frontend/plaintextfrontend.h"
+#include "frontend/scfrontend.h"
+#include "frontend/oscilloscope.h"
+
+#include "connectionwidgets/connectionwidgetfile.h"
+#include "connectionwidgets/connectionwidgetserial.h"
+
+#include <QVBoxLayout>
+#include <QFrame>
+#include <QPushButton>
+#include <QTimer>
+
+
+Controller::Controller(QWidget *parent) :
+    QStackedWidget(parent), currentBackend(nullptr), currentFrontendIndex(0),
+    autoReconnect(false), connectionShouldBeOpen(false)
+{
+    // add all available Backends to list with parent this
+    availableBackends.append(new FileBackend(this));
+    availableBackends.append(new SerialBackend(this));
+
+    // add all available Frontends to list without a parent
+    availableFrontends.append(new PlainTextFrontend);
+    availableFrontends.append(new SCFrontend);
+    availableFrontends.append(new Oscilloscope);
+
+    // add all available connectionWidgets to list without a parent
+    availableConnectionWidgets.append(new ConnectionWidgetSerial);
+    availableConnectionWidgets.append(new ConnectionWidgetFile);
+
+
+    // ---------------------------------------------------------------
+    // ---------------------------------------------------------------
+    // ---------------------------------------------------------------
+    // ---------------------------------------------------------------
+
+
+    // receive all error and infomessages and connection signals from all available backends
+    for (BaseBackend* iter : availableBackends) {
+        connect(iter, SIGNAL(errorOccured(QString)), this, SLOT(onErrorOccured(QString)));
+        connect(iter, SIGNAL(infoMessage(QString)), this, SLOT(onInfoMessage(QString)));
+        connect(iter,SIGNAL(connected(bool,bool)),this,SLOT(onConnected(bool,bool)), Qt::QueuedConnection);
+        connect(iter,SIGNAL(disconnected()),this,SLOT(onDisconnected()), Qt::QueuedConnection);
+    }
+
+
+    // build welcome screen
+    QVBoxLayout* layout = new QVBoxLayout();
+    QWidget* welcome_screen = new QWidget();
+
+    for (auto iter : availableConnectionWidgets) {
+        layout->addWidget(iter);
+        connect(iter,SIGNAL(connectionChanged(QString, bool*)),this,SLOT(openConnection(QString, bool*)));
+
+        QFrame* line = new QFrame();
+        line->setFrameShape(static_cast<QFrame::Shape>(QFrame::HLine));
+        line->setFrameShadow(QFrame::Sunken);
+        layout->addWidget(line);
+    }
+
+    cancelButton = new QPushButton("Abbrechen");
+    layout->addSpacing(15);
+    layout->addWidget(cancelButton, 0, Qt::AlignLeft);
+    connect(cancelButton, SIGNAL(clicked()), this, SLOT(onCancelNewConnection()));
+    cancelButton->hide();
+
+    layout->addStretch(100);
+    welcome_screen->setLayout(layout);
+
+
+    // fill stackedWidget base class with frontends and connectionWidgets (which are contained in the welcomeScreen)
+    for (auto iter : availableFrontends) {
+        addWidget(iter);
+    }
+    addWidget(welcome_screen);
+
+    // set up reconnection timer
+    reconnectTimer = new QTimer(this);
+    reconnectTimer->setInterval(500);
+    connect(reconnectTimer, SIGNAL(timeout()), this, SLOT(onReconnectTimeout()));
+
+    openNewConnection();
+}
+
+
+QList<QString> Controller::getAvailableFrontends(void) const {
+    QList<QString> list;
+
+    for (auto iter : availableFrontends) {
+        list.append(iter->objectName());
+    }
+
+    return list;
+}
+
+
+
+void Controller::setFrontend(int newFrontendIndex) {
+    if (newFrontendIndex >= availableFrontends.size() ||
+            (newFrontendIndex == currentFrontendIndex && currentFrontendIndex == currentIndex())) {
+        return;
+    }
+
+    if (currentBackend != nullptr) {
+        BaseFrontend* currentFrontend = availableFrontends.at(currentFrontendIndex);
+        BaseFrontend* newFrontend = availableFrontends.at(newFrontendIndex);
+
+        currentBackend->disconnect(currentFrontend);
+        currentFrontend->disconnect(currentBackend);
+        this->disconnect(currentFrontend);
+        newFrontend->clear();
+
+        if (currentBackend->isOpen()) {
+            connect(currentBackend, SIGNAL(dataReady(QByteArray)), newFrontend, SLOT(writeData(QByteArray)));
+            connect(newFrontend, SIGNAL(dataReady(QByteArray)), currentBackend, SLOT(writeData(QByteArray)));
+            connect(newFrontend, SIGNAL(requestData()), currentBackend, SLOT(checkData()), Qt::QueuedConnection);
+            connect(this,SIGNAL(connected(bool,bool)),newFrontend,SLOT(onConnected(bool,bool)));
+            connect(this,SIGNAL(disconnected(bool)),newFrontend,SLOT(onDisconnected(bool)));
+
+            // ensure that new frontends receive all data if the backend is
+            // a random-access-device
+            if (!currentBackend->isSequential()) {
+                currentBackend->checkData();
+            }
+        }
+
+        currentFrontendIndex = newFrontendIndex;
+    } else {
+        currentFrontendIndex = newFrontendIndex;
+    }
+
+    setCurrentIndex(currentFrontendIndex);
+}
+
+
+bool Controller::isConnected(void) const {
+    if (currentBackend == nullptr) {
+        return false;
+    } else {
+        return currentBackend->isOpen();
+    }
+}
+
+QString Controller::getConnectionInfo() {
+    if (currentBackend == nullptr) {
+        return "no Backend";
+    } else {
+        return currentBackend->getConnectionInfo();
+    }
+}
+
+
+void Controller::openConnection(void) {
+    if (currentBackend != nullptr && !currentBackend->isOpen()) {
+        availableFrontends.at(currentFrontendIndex)->clear();
+
+        // build signal-slot connection before opening stream
+        BaseFrontend* currentFrontend = availableFrontends.at(currentFrontendIndex);
+        connect(currentBackend, SIGNAL(dataReady(QByteArray)), currentFrontend, SLOT(writeData(QByteArray)));
+        connect(currentFrontend, SIGNAL(dataReady(QByteArray)), currentBackend, SLOT(writeData(QByteArray)));
+        connect(currentFrontend, SIGNAL(requestData()), currentBackend, SLOT(checkData()), Qt::QueuedConnection);
+
+        if (currentBackend->openConnection()) {
+            cancelButton->show();
+            connectionShouldBeOpen = true;
+        } else {
+            // destroy signal-slot connection in case of failure
+            currentBackend->disconnect(currentFrontend);
+            currentFrontend->disconnect(currentBackend);
+        }
+    }
+}
+
+
+void Controller::openConnection(QString connectionString, bool *success) {
+
+    closeConnection();
+
+    BaseFrontend* currentFrontend = availableFrontends.at(currentFrontendIndex);
+    currentFrontend->clear();
+
+    for (auto iter : availableBackends) {
+        // build signal-slot connection before opening stream
+        connect(iter, SIGNAL(dataReady(QByteArray)), currentFrontend, SLOT(writeData(QByteArray)));
+        connect(currentFrontend, SIGNAL(dataReady(QByteArray)), iter, SLOT(writeData(QByteArray)));
+        connect(currentFrontend, SIGNAL(requestData()), iter, SLOT(checkData()), Qt::QueuedConnection);
+
+        if (iter->openConnection(connectionString)) {
+            currentBackend = iter;
+            cancelButton->show();
+            setFrontend(currentFrontendIndex);
+            *success = true;
+            connectionShouldBeOpen = true;
+            return;
+        }
+
+        // destroy signal-slot connection if it was not the right backend
+        iter->disconnect(currentFrontend);
+        currentFrontend->disconnect(iter);
+    }
+
+    *success = false;
+}
+
+
+void Controller::closeConnection(void) {
+    if (currentBackend == nullptr) {
+        return;
+    } else {
+        currentBackend->closeConnection();
+        connectionShouldBeOpen = false;
+        if (autoReconnect && connectionShouldBeOpen && reconnectTimer->isActive()) {
+            reconnectTimer->stop();
+            emit disconnected(false);
+        }
+
+        BaseFrontend* currentFrontend = availableFrontends.at(currentFrontendIndex);
+        currentBackend->disconnect(currentFrontend);
+        currentFrontend->disconnect(currentBackend);
+    }
+}
+
+
+void Controller::saveOutput(void) {
+    if (availableFrontends.at(currentFrontendIndex)->saveOutput()) {
+        emit infoMessage("Ausgabe erfolgreich geschrieben");
+    } else {
+        emit errorOccured("Ausgabe schreiben fehlgeschlagen");
+    }
+}
+
+
+void Controller::openNewConnection(void) {
+    setCurrentIndex(availableFrontends.size());
+}
+
+void Controller::onCancelNewConnection() {
+    setCurrentIndex(currentFrontendIndex);
+}
+
+
+void Controller::setExternalContextActions(QList<QAction*> actions) {
+    for (auto iter : availableFrontends) {
+        iter->setExternalContextActions(actions);
+    }
+}
+
+
+void Controller::setAutoReconnect(bool on) {
+    autoReconnect = on;
+    if (autoReconnect && connectionShouldBeOpen && currentBackend && !currentBackend->isOpen()) {
+        reconnectTimer->start();
+    } else if (!autoReconnect && reconnectTimer->isActive()) {
+        connectionShouldBeOpen = false;
+        reconnectTimer->stop();
+        emit disconnected(false);
+    }
+}
+
+
+void Controller::onConnected(bool readOnly, bool isSequential) {
+    if (autoReconnect && connectionShouldBeOpen && reconnectTimer->isActive()) {
+        reconnectTimer->stop();
+        emit infoMessage("Verbindung erfolgreich wiederaufgebaut");
+    }
+    emit connected(readOnly, isSequential);
+}
+
+void Controller::onDisconnected() {
+    if (autoReconnect && connectionShouldBeOpen) {
+        reconnectTimer->start();
+        emit disconnected(true);
+    } else {
+        emit disconnected(false);
+    }
+}
+
+void Controller::onErrorOccured(QString msg) {
+    // only forward error messages if we are not reconnecting
+    if (!(autoReconnect && connectionShouldBeOpen && currentBackend && !currentBackend->isOpen())) {
+        emit errorOccured(msg);
+    }
+}
+
+void Controller::onInfoMessage(QString msg) {
+    // only forward info messages if we are not reconnecting
+    if (!(autoReconnect && connectionShouldBeOpen && currentBackend && !currentBackend->isOpen())) {
+        emit infoMessage(msg);
+    }
+}
+
+
+void Controller::onReconnectTimeout() {
+    if (autoReconnect && connectionShouldBeOpen && currentBackend && !currentBackend->isOpen()) {
+        emit infoMessage("Versuche wiederzuverbinden...");
+        openConnection();
+    } else {
+        reconnectTimer->stop();
+    }
+}

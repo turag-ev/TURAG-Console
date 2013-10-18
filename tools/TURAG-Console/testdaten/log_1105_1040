@@ -1,0 +1,4235 @@
+Terminal ready
+vo Menu 
+6 - enter Cherry Shoot Menu 
+7 - enter System Control Menu 
+8 - enter LegoBot Menu 
+C - enter CAN Testmenu 
+S - get stack usage 
+> - print log sources for TURAG Console 
+-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+E-Event: Rbt1 0x0
+p-PrepareAction --- Wait for start jumper
+D-MC ID 1: -40 mm 0.00000 deg
+D-RPC received: collision rear: ID 1
+E-Event: MC 1 0x8015641
+E-Event: MC 1 0x0
+p-PrepareAction --- Prepare
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+E-Event: #Pp0 0x0
+D-MC ID 2: 100 mm 0.00000 deg
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 2
+E-Event: MC 0 0x0
+_-Sending doGifts
+D-MC ID 3: (1240/1350) mm -178.01797deg (-3107 mrad) speed: 0
+_-Sending doGifts
+D-RPC received: angle reached: ID 3
+E-Event: MC 2 0x0
+D-RPC received: point reached: ID 0
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+_-Sending doGifts
+_-Sending doGifts
+D-RPC received: angle reached: ID 3
+E-Event: MC 2 0x0
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 3
+_-Sending doGifts
+E-Event: MC 0 0x0
+D-MC ID 4: (1369/1353) mm -176.98664deg (-3089 mrad) speed: 2
+D-RPC received: angle reached: ID 4
+E-Event: MC 2 0x0
+D-RPC received: point reached: ID 0
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending Stop
+_-Sending Stop
+_-Sending Stop
+D-RPC received: point reached: ID 0
+_-Sending Stop
+D-RPC received: angle reached: ID 4
+E-Event: MC 2 0x0
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 4
+E-Event: MC 0 0x0
+p-PrepareAction --- Wait to start
+_-Sending Stop
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+_-Sending doGifts
+E-Event: Rbt0 0x0
+A-#####-##### EXIT PrepareAction #####-#####
+S-MainAction::game
+A-#####-##### START GameAction #####-#####
+n->>>>>> THINK <<<<<<
+g-===== GlassAction cost: 0 =====
+n-letzte Aktion: 0 / nächste Aktion: 8024181 / Zähler: 1
+A-#####-##### START GlassesAction #####-#####
+g-====== glasses action init =======
+J-GlassLeft: added to activation queue
+J-MoveManipulator: added to activation queue
+E-Event: #Ma0 0x80162E1
+F-Gegner 1 war aus der Teamzone
+F?Gegner 2 ist abgestürzt!
+S-Spielzeit:  0,  2
+J-MoveManipulator activated
+J-MoveManipulator:  --> Entry
+J-GlassLeft activated
+J-GlassLeft:  --> Prepare_for_glasses
+J-GlassLeft: Prepare_for_glasses --> Start_pump
+J-MoveManipulator: Entry --> CheckForRequest
+J-GlassLeft: Start_pump --> Wait_for_glass
+E-Event: IM 10 0x0
+J-GlassRight: added to activation queue
+J-MoveManipulator: added to activation queue
+J?MoveManipulator is already active -> could not be activated!
+J-GlassRight activated
+J-GlassRight:  --> Prepare_for_glasses
+_-Sending doGifts
+_-Sending Blackboard
+J-GlassRight: Prepare_for_glasses --> Start_pump
+J-GlassRight: Start_pump --> Wait_for_glass
+E-Event: IM 13 0x0
+g-====== glasses action attack_spline =======
+D-path point 1: (750/1296) mm 180.02333 deg
+D-path point 2: (600/1296) mm 180.02333 deg
+D-path point 3: (450/1296) mm 180.02333 deg
+D-path point 4: (300/1296) mm 180.02333 deg
+D-path point 5: (150/1296) mm 180.02333 deg
+D-path point 6: (-150/1296) mm 180.02333 deg
+D-path point 7: (-300/1296) mm 180.02333 deg
+D-path point 8: (-450/1296) mm 180.02333 deg
+D-path point 9: (-600/1296) mm 180.02333 deg
+D-path point 10: (-750/1296) mm 180.02333 deg
+D-MC ID 15: Spline
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  0,402
+_-Sending doGifts
+_-Sending Blackboard
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  0,802
+_-Sending doGifts
+_-Sending Blackboard
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  1,202
+_-Sending doGifts
+D-RPC received: point reached: ID 1
+J-MoveManipulator: CheckForRequest --> DelayState
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  1,602
+D-RPC received: point reached: ID 2
+J-GlassStack_rechts: collected one glass -> send to SC
+J-Lift_sucker: pos=1 angle=10460
+J-GlassRight: Wait_for_glass --> Lift_sucker
+J-GlassStack_links: collected one glass -> send to SC
+J-Lift_sucker: pos=1 angle=10460
+J-GlassLeft: Wait_for_glass --> Lift_sucker
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  2,  2
+D-RPC received: point reached: ID 3
+J-GlassRight: Lift_sucker --> Start_pump
+J-MoveManipulator: DelayState --> push_left
+J-GlassRight: Start_pump --> Wait_for_glass
+J-REQUEST_RELEASED
+J-MoveManipulator: push_left --> StartOver
+E-Event: IM 13 0x0
+J-GlassLeft: Lift_sucker --> Start_pump
+J-MoveManipulator: StartOver --> DelayState
+J-GlassLeft: Start_pump --> Wait_for_glass
+E-Event: IM 10 0x0
+J-MoveManipulator: DelayState --> push_right
+_-Sending doGifts
+D-RPC received: point reached: ID 4
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  2,402
+J-ANGLE_REACHED
+J-MoveManipulator: push_right --> StartOver
+J-MoveManipulator: StartOver --> DelayState
+J-MoveManipulator: DelayState --> push_left
+D-RPC received: point reached: ID 5
+_-Sending doGifts
+J-GlassStack_links: collected one glass -> send to SC
+J-Lift_sucker: pos=2 angle=20100
+J-GlassLeft: Wait_for_glass --> Lift_sucker
+J-REQUEST_RELEASED
+J-MoveManipulator: push_left --> StartOver
+J-MoveManipulator: StartOver --> DelayState
+J-MoveManipulator: DelayState --> push_right
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  2,802
+_-Sending doGifts
+J-GlassLeft: Lift_sucker --> Start_pump
+J-GlassLeft: Start_pump --> Wait_for_glass
+E-Event: IM 10 0x0
+D-RPC received: point reached: ID 6
+J-GlassStack_rechts: collected one glass -> send to SC
+J-Lift_sucker: pos=2 angle=19710
+J-GlassRight: Wait_for_glass --> Lift_sucker
+J-REQUEST_RELEASED
+J-MoveManipulator: push_right --> StartOver
+J-MoveManipulator: StartOver --> DelayState
+J-MoveManipulator: DelayState --> push_left
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  3,202
+_-Sending doGifts
+D-RPC received: point reached: ID 7
+J-GlassRight: Lift_sucker --> Start_pump
+J-GlassRight: Start_pump --> Wait_for_glass
+E-Event: IM 13 0x0
+J-ANGLE_REACHED
+J-MoveManipulator: push_left --> StartOver
+J-GlassStack_links: collected one glass -> send to SC
+J-Lift_sucker: pos=3 angle=29400
+J-GlassLeft: Wait_for_glass --> Lift_sucker
+D-RPC received: point reached: ID 8
+J-MoveManipulator: StartOver --> DelayState
+_-Sending doGifts
+J-MoveManipulator: DelayState --> push_right
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  3,602
+J-REQUEST_RELEASED
+J-MoveManipulator: push_right --> StartOver
+J-MoveManipulator: StartOver --> CheckForRequest
+J-MoveManipulator: CheckForRequest --> DelayState
+J-GlassLeft: Lift_sucker --> Start_pump
+J-GlassLeft: Start_pump --> Wait_for_glass
+E-Event: IM 10 0x0
+D-RPC received: point reached: ID 9
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  4,  2
+J-MoveManipulator: DelayState --> push_right
+J-GlassStack_rechts: collected one glass -> send to SC
+J-Lift_sucker: pos=3 angle=28900
+J-GlassRight: Wait_for_glass --> Lift_sucker
+J-REQUEST_RELEASED
+J-MoveManipulator: push_right --> StartOver
+J-MoveManipulator: StartOver --> DelayState
+J-MoveManipulator: DelayState --> push_left
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  4,402
+D-RPC received: target reached: ID 15
+E-Event: MC 0 0x0
+g-===== glasses arrived =======
+g-Glasses: (3, 3)
+J-GlassRight: Lift_sucker --> Start_pump
+J-GlassRight: Start_pump --> Wait_for_glass
+E-Event: IM 13 0x0
+J-ANGLE_REACHED
+J-MoveManipulator: push_left --> StartOver
+_-Sending doGifts
+E-Event: *Gl2 0x0
+A-#####-##### EXIT GlassesAction #####-#####
+n-Routineprüfung
+A-#####-##### START Troubleshooter #####-#####
+E-Event: TS 1 0x0
+J-CloseManipulator: added to activation queue
+A-#####-##### EXIT Troubleshooter #####-#####
+n->>>>>> THINK <<<<<<
+c-<===== CherryAction get Cost =====>
+c-Plate 0:4294967295
+c-Plate 1:4294967295
+c-pose (950, 1000): 439  0
+c-Plate 2:439
+c-pose (950, 600): 471  0
+c-Plate 3:471
+c-pose (950, 275): 495  0
+c-Plate 4:495
+c-pose (-950, 1725): 167  0
+c-Plate 5:167
+c-pose (-950, 1400): 102  0
+c-Plate 6:102
+c-pose (-950, 1000): 137  0
+c-Plate 7:137
+c-pose (-950, 600): 217  0
+c-Plate 8:217
+c-pose (-950, 275): 277  0
+c-Plate 9:277
+c-=====> CherryAction choosing Bucket 6: 102 <=====
+h-=====> Updating CakeVariant Costs <======
+h-We got 0 cherries
+h-updateStates: enemBlownCandles: 0
+h-updateStates: ownBlownCandles: 0
+h-updateStates: burningCandles: 12
+h-Variant 0 got: 215
+h-Variant 0 now got: 215
+h-Variant 1 got: 215
+h-Variant 1 now got: 4294967295
+h-Variant 2 got: 217
+h-Variant 2 now got: 217
+h-Variant 3 got: 217
+h-Variant 3 now got: 4294967295
+h-Variant 4 got: 343
+h-Variant 4 now got: 343
+h-Variant 5 got: 343
+h-Variant 5 now got: 4294967295
+h-Variant 6 got: 463
+h-Variant 6 now got: 463
+h-Variant 7 got: 463
+h-Variant 7 now got: 4294967295
+h-Quarter 0 has 3 lit candles
+h-Quarter 1 has 3 lit candles
+h-Quarter 2 has 3 lit candles
+h-Quarter 3 has 2 lit candles
+h-Final Costs
+h-Variant 0 got: 215
+h-Variant 1 got: 4294967295
+h-Variant 2 got: 217
+h-Variant 3 got: 4294967295
+h-Variant 4 got: 343
+h-Variant 5 got: 4294967295
+h-Variant 6 got: 463
+h-Variant 7 got: 4294967295
+h-<===== getCost choosing Variant: 0(4) with 215 =====>
+g-=====> Updating Gift Costs <======
+P?PathPlanningCache overflow!
+g-Geschenkkosten:
+g- -Geschenk 0: 443
+g- -Geschenk 1: 323
+g- -Geschenk 2: 203
+g- -Geschenk 3: 139
+g-gewähltes Startgeschenk: 3
+g-Kosten für das gewählte Geschenk: 139
+g-<================================>
+e-=====> Updating CollectGlasses Costs <======
+e-Glass 8 existiert
+e-Glass 9 existiert
+e-Glass 10 existiert
+e-Glass 11 existiert
+e-Rankings:
+e-variant 0: 0 is blackListed: false
+e-variant 1: 4 is blackListed: false
+e-variant 2: 2 is blackListed: false
+e-variant 3: 0 is blackListed: false
+e-variant 4: 2 is blackListed: false
+e-variant 5: 0 is blackListed: false
+e-Choosing Plan 1
+e-<===== full line found!! returning 50 ====>
+d-======> Updating DumpGlasses Costs <======
+d-###### createStackCand ######
+d-calculating Variant for Side 0
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 0
+d-starting search from bottom: true
+d-Field 0 has no bucket
+d-You shall no build in edges
+d-Field 1 has no bucket
+d-=> can drive from -760:1291 to 900:1400 for 413
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-cDS returni ng: 1360:1496
+d-Site 0 done.
+d-calculating Variant for Side 1
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 1
+d-starting search from bottom: true
+d-Field 0 has no bucket
+d-You shall no build in edges
+d-Field 1 has no bucket
+d-=> can drive from -760:1291 to 900:1400 for 413
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-cDS returning: 1360:1304
+d-Site 1 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 10
+d-##### created candidate c:413 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 0/3  (900:1400:0)
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 3
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 1
+d-starting search from bottom: false
+d-Field 1 has no bucket
+d-=> can drive from 900:1400 to 900:1400 for 50
+d-Towerheights: 3 0
+d-Towerheights: 3 0
+d-Towerheights: 3 0
+d-Towerheights: 3 0
+d-Towerheights: 3 0
+d-cDS returning: 1360:1304
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 0
+d-##### created candidate c:50 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 0/0  (900:1400:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-###### createStackCand ######
+d-calculating Variant for Side 0
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 0
+d-starting search from bottom: false
+d-Field 1 has no bucket
+d-=> can drive from -760:1291 to 900:1400 for 413
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-cDS returni ng: 1360:1496
+d-Site 0 done.
+d-calculating Variant for Side 1
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 1
+d-starting search from bottom: false
+d-Field 1 has no bucket
+d-=> can drive from -760:1291 to 900:1400 for 413
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-cDS returning: 1360:1304
+d-Site 1 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 10
+d-##### created candidate c:413 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 0/3  (900:1400:0)
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 3
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 1
+d-starting search from bottom: true
+d-Field 0 has no bucket
+d-You shall no build in edges
+d-Field 1 has no bucket
+d-=> can drive from 900:1400 to 900:1400 for 50
+d-Towerheights: 3 0
+d-Towerheights: 3 0
+d-Towerheights: 3 0
+d-Towerheights: 3 0
+d-Towerheights: 3 0
+d-cDS returning: 1360:1304
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 0
+d-##### created candidate c:50 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 0/0  (900:1400:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-###### createStackCand ######
+d-calculating Variant for Side 0
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 0
+d-starting search from bottom: false
+d-Field 1 has no bucket
+d-=> can drive from -760:1291 to 900:1400 for 413
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-cDS returni ng: 1360:1496
+d-Site 0 done.
+d-calculating Variant for Side 1
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 1
+d-starting search from bottom: false
+d-Field 1 has no bucket
+d-=> can drive from -760:1291 to 900:1400 for 413
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-cDS returning: 1360:1304
+d-Site 1 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 10
+d-##### created candidate c:413 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 0/3  (900:1400:0)
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 3
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 1
+d-starting search from bottom: true
+d-Field 0 has no bucket
+d-You shall no build in edges
+d-Field 1 has no bucket
+d-=> can drive from 900:1400 to 900:1400 for 50
+d-Towerheights: 3 0
+d-Towerheights: 3 0
+d-Towerheights: 3 0
+d-Towerheights: 3 0
+d-Towerheights: 3 0
+d-cDS returning: 1360:1304
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 0
+d-##### created candidate c:50 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 0/0  (900:1400:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-combining plans
+d-######## created a clever plan :P ########
+d-##   Target 0: 1360:1496 with height 0 on plate: false
+d-##   Glass 0: 3
+d----------
+d-##   Target 1: 1360:1304 with height 0 on plate: false
+d-##   Glass 1: 3
+d----------
+d-##   Side: 2
+d-######## --------------------------------- ########
+d-updateTarget: 1360 : 1360
+d-new x koord: 1225
+d-needed 49 ticks
+d-resultierende kosten: 413
+d-<==========================>
+n-letzte Aktion: 8024181 / nächste Aktion: 8021541 / Zähler: 1
+A-#####-##### START CollectGlassesAction #####-#####
+J-CloseManipulator activated
+J-CloseManipulator:  --> Abort
+J-GlassLeft: added to activation queue
+J-MoveManipulator: added to activation queue
+J-GlassRight: added to activation queue
+J-MoveManipulator: not added: already in activation queue
+e-=====> CollectGlasses drive to (2) <======
+P-Nehme Route aus Cache
+P-Fahre Pfad:
+P-	0: (-850; 1075) 0
+P-Set target: -850/1075
+J-CloseManipulator finished
+J-CloseManipulator stopped
+J-MoveManipulator: StartOver --> CheckForRequest
+D-MC ID 16: (-850/1075) mm 0.00000deg (0 mrad) speed: 1
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  4,855
+E-Event: IM 42 0x0
+J?GlassRight is already active -> could not be activated!
+J?MoveManipulator is already active -> could not be activated!
+J?GlassLeft is already active -> could not be activated!
+J-MoveManipulator: CheckForRequest --> DelayState
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 109)
+P-	0: (-850; 1075) 0
+P-ignoriere nächsten Pfadpunkt
+E-Event: IM 13 0x0
+E-Event: IM 10 0x0
+_-Sending doGifts
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  5,256
+J-MoveManipulator: DelayState --> push_left
+_-Sending doGifts
+D-RPC received: angle reached: ID 16
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  5,656
+J-ANGLE_REACHED
+J-MoveManipulator: push_left --> StartOver
+J-MoveManipulator: StartOver --> DelayState
+J-MoveManipulator: DelayState --> push_right
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  6, 56
+J-ANGLE_REACHED
+J-MoveManipulator: push_right --> StartOver
+_-Sending doGifts
+J-MoveManipulator: StartOver --> CheckForRequest
+J-MoveManipulator: CheckForRequest --> DelayState
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  6,456
+D-RPC received: point reached: ID 0
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  6,856
+_-Sending doGifts
+J-MoveManipulator: DelayState --> push_right
+J-ANGLE_REACHED
+J-MoveManipulator: push_right --> StartOver
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+F?Gegner 1 ist abgestürzt!
+S-Spielzeit:  7,256
+J-MoveManipulator: StartOver --> CheckForRequest
+D-RPC received: angle reached: ID 16
+E-Event: MC 2 0x8014C61
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 16
+E-Event: MC 0 0x8014C61
+P-alle Punkte abgefahren
+E-Event: MC 0 0x0
+e-=====> CollectGlasses drive through <======
+D-MC ID 17: 1800 mm 0.00000 deg
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  7,664
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  8, 64
+_-Sending doGifts
+J-MoveManipulator: CheckForRequest --> DelayState
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  8,464
+_-Sending doGifts
+J-GlassStack_rechts: collected one glass -> send to SC
+J-Lift_sucker: pos=3 angle=28900
+J-GlassRight: Wait_for_glass --> Lift_sucker
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  8,864
+J-MoveManipulator: DelayState --> push_right
+J-REQUEST_RELEASED
+J-MoveManipulator: push_right --> StartOver
+_-Sending doGifts
+J-MoveManipulator: StartOver --> CheckForRequest
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  9,264
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit:  9,664
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 10, 64
+J-GlassRight: Lift_sucker --> Abort
+J-GlassRight finished
+J-GlassRight stopped
+E-Event: IM 14 0x0
+D-StopRobot
+A-#####-##### EXIT CollectGlassesAction #####-#####
+n-Routineprüfung
+A-#####-##### START Troubleshooter #####-#####
+E-Event: MC 3 0x0
+T!Troubleshooter::main: id != event_start
+E-Event: TS 1 0x0
+J-CloseManipulator: added to activation queue
+A-#####-##### EXIT Troubleshooter #####-#####
+n->>>>>> THINK <<<<<<
+c-<===== CherryAction get Cost =====>
+c-Plate 0:4294967295
+c-Plate 1:4294967295
+P?PathPlanningCache clear requird!
+c-pose (950, 1000): 173  0
+c-Plate 2:173
+c-pose (950, 600): 4294967295  0
+c-Plate 3:4294967295
+c-pose (950, 275): 4294967295  0
+c-Plate 4:4294967295
+c-pose (-950, 1725): 397  0
+c-Plate 5:397
+c-pose (-950, 1400): 369  0
+c-Plate 6:369
+c-pose (-950, 1000): 353  0
+c-Plate 7:353
+c-pose (-950, 600): 385  0
+c-Plate 8:385
+c-pose (-950, 275): 459  0
+c-Plate 9:459
+c-=====> CherryAction choosing Bucket 2: 173 <=====
+h-=====> Updating CakeVariant Costs <======
+h-We got 0 cherries
+h-updateStates: enemBlownCandles: 0
+h-updateStates: ownBlownCandles: 0
+h-updateStates: burningCandles: 12
+h-Variant 0 got: 301
+h-Variant 0 now got: 301
+h-Variant 1 got: 301
+h-Variant 1 now got: 4294967295
+h-Variant 2 got: 267
+h-Variant 2 now got: 267
+h-Variant 3 got: 267
+h-Variant 3 now got: 4294967295
+h-Variant 4 got: 153
+h-Variant 4 now got: 153
+h-Variant 5 got: 153
+h-Variant 5 now got: 4294967295
+h-Variant 6 got: 4294967295
+h-Variant 6 now got: 4294967295
+h-Variant 7 got: 4294967295
+h-Variant 7 now got: 4294967295
+h-Quarter 0 has 3 lit candles
+h-Quarter 1 has 3 lit candles
+h-Quarter 2 has 3 lit candles
+h-Quarter 3 has 2 lit candles
+h-Ab durch die Mitte!
+h-Variante 0: 24
+h-Variante 1: 0
+h-Variante 2: 24
+h-Variante 3: 0
+h-Final Costs
+h-Variant 0 got: 301
+h-Variant 1 got: 4294967295
+h-Variant 2 got: 267
+h-Variant 3 got: 4294967295
+h-Variant 4 got: 153
+h-Variant 5 got: 4294967295
+h-Variant 6 got: 4294967295
+h-Variant 7 got: 4294967295
+h-<===== getCost choosing Variant: 4(0) with 153 =====>
+g-=====> Updating Gift Costs <======
+g-Geschenkkosten:
+g- -Geschenk 0: 4294967295
+g- -Geschenk 1: 183
+g- -Geschenk 2: 249
+g- -Geschenk 3: 369
+g-gewähltes Startgeschenk: 3
+g-Kosten für das gewählte Geschenk: 369
+g-<================================>
+e-=====> Updating CollectGlasses Costs <======
+e-Rankings:
+e-variant 0: 0 is blackListed: false
+e-variant 1: 0 is blackListed: false
+e-variant 2: 0 is blackListed: false
+e-variant 3: 0 is blackListed: false
+e-variant 4: 0 is blackListed: false
+e-variant 5: 0 is blackListed: false
+e-No possibility found
+d-======> Updating DumpGlasses Costs <======
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-4 Glasses: searching place to build new pyramid
+d-searching headstone for: 1
+d-starting search from bottom: false
+d-Field 1 has no bucket
+P?PathPlanningCache overflow!
+d-=> can drive from 499:1052 to 900:1400 for 179
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-cDS returning: 1360:1304
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 0
+d-starting search from bottom: true
+d-Field 0 has no bucket
+d-You shall no build in edges
+d-Field 1 has no bucket
+d-=> can drive from 499:1052 to 900:1400 for 179
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-cDS returni ng: 1360:1496
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 10
+d-##### created candidate c:179 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 3/0  (900:1400:0)
+d-###### createStackCand ######
+d-calculating Variant for Side 0
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 4
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 0
+d-starting search from bottom: false
+d-Field 1 has no bucket
+d-=> can drive from 900:1400 to 900:1400 for 50
+d-Towerheights: 0 4
+d-Towerheights: 0 4
+d-Towerheights: 0 4
+d-cDS returning: 1210:1496
+d-Site 0 done.
+d-calculating Variant for Side 1
+d-Site 1 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 0
+d-##### created candidate c:50 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 0/0  (900:1400:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-4 Glasses: searching place to build new pyramid
+d-searching headstone for: 1
+d-starting search from bottom: false
+d-Field 1 has no bucket
+d-=> can drive from 499:1052 to 900:1400 for 179
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-cDS returning: 1360:1304
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 0
+d-starting search from bottom: true
+d-Field 0 has no bucket
+d-You shall no build in edges
+d-Field 1 has no bucket
+d-=> can drive from 499:1052 to 900:1400 for 179
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-cDS returni ng: 1360:1496
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 10
+d-##### created candidate c:179 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 3/0  (900:1400:0)
+d-###### createStackCand ######
+d-calculating Variant for Side 0
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 4
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 0
+d-starting search from bottom: false
+d-Field 1 has no bucket
+d-=> can drive from 900:1400 to 900:1400 for 50
+d-Towerheights: 0 4
+d-Towerheights: 0 4
+d-Towerheights: 0 4
+d-cDS returning: 1210:1496
+d-Site 0 done.
+d-calculating Variant for Side 1
+d-Site 1 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 0
+d-##### created candidate c:50 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 0/0  (900:1400:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-4 Glasses: searching place to build new pyramid
+d-searching headstone for: 1
+d-starting search from bottom: true
+d-Field 0 has no bucket
+d-You shall no build in edges
+d-Field 1 has no bucket
+d-=> can drive from 499:1052 to 900:1400 for 179
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-cDS returning: 1360:1304
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 0
+d-starting search from bottom: true
+d-Field 0 has no bucket
+d-You shall no build in edges
+d-Field 1 has no bucket
+d-=> can drive from 499:1052 to 900:1400 for 179
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-cDS returni ng: 1360:1496
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 10
+d-##### created candidate c:179 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 3/0  (900:1400:0)
+d-###### createStackCand ######
+d-calculating Variant for Side 0
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 4
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 0
+d-starting search from bottom: true
+d-Field 0 has no bucket
+d-You shall no build in edges
+d-Field 1 has no bucket
+d-=> can drive from 900:1400 to 900:1400 for 50
+d-Towerheights: 0 4
+d-Towerheights: 0 4
+d-Towerheights: 0 4
+d-cDS returning: 1210:1496
+d-Site 0 done.
+d-calculating Variant for Side 1
+d-Site 1 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 0
+d-##### created candidate c:50 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 0/0  (900:1400:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-######## created a clever plan :P ########
+d-##   Target 0: 0:0 with height 0 on plate: false
+d-##   Glass 0: 0
+d----------
+d-##   Target 1: 1360:1304 with height 0 on plate: false
+d-##   Glass 1: 4
+d----------
+d-##   Side: 1
+d-######## --------------------------------- ########
+d-updateTarget: 0 : 1360
+d-new x koord: 1225
+d-needed 40 ticks
+d-resultierende kosten: 179
+d-<==========================>
+n-letzte Aktion: 8021541 / nächste Aktion: 801FAD1 / Zähler: 1
+A-#####-##### START DumpGlassesAction #####-#####
+J-CloseManipulator activated
+_-Sending doGifts
+J-CloseManipulator: Abort --> Abort
+J-GlassLeft: added to activation queue
+J-MoveManipulator: added to activation queue
+J-GlassRight: added to activation queue
+J-MoveManipulator: not added: already in activation queue
+d-===== DumpGlasses drive_to (1225, 1400)=====
+P-Nehme Route aus Cache
+P-Fahre Pfad:
+P-	0: (900; 1400) 0
+P-Set target: 900/1400
+J-CloseManipulator finished
+J-CloseManipulator stopped
+D-MC ID 19: (900/1400) mm 0.00000deg (0 mrad) speed: 1
+E-Event: IM 42 0x0
+J-GlassRight activated
+J-GlassRight: Abort --> Prepare_for_glasses
+J?MoveManipulator is already active -> could not be activated!
+J?GlassLeft is already active -> could not be activated!
+J-GlassRight finished
+J-GlassRight stopped
+E-Event: IM 10 0x0
+E-Event: IM 14 0x0
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 134)
+P-	0: (900; 1400) 0
+P-ignoriere nächsten Pfadpunkt
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 10,472
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 10,872
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 11,272
+_-Sending doGifts
+D-RPC received: angle reached: ID 19
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 11,672
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 12, 72
+_-Sending doGifts
+J-MoveManipulator: CheckForRequest --> DelayState
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 12,472
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+J-MoveManipulator: DelayState --> push_left
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 12,872
+J-ANGLE_REACHED
+J-MoveManipulator: push_left --> StartOver
+_-Sending doGifts
+J-MoveManipulator: StartOver --> CheckForRequest
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 13,272
+_-Sending doGifts
+D-RPC received: angle reached: ID 19
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 19
+E-Event: MC 0 0x8014C61
+P-alle Punkte abgefahren
+E-Event: MC 0 0x0
+d-===== DumpGlasses prepare dump =====
+J-GlassStack_rechts: setReleaseParams amount=4
+J-ReleaseGlassesRight: added to activation queue
+d-preparing right side for level 0 on plate false
+J-ReleaseGlassesRight activated
+J-ReleaseGlassesRight:  --> Entry
+J-MoveManipulator: CheckForRequest --> Abort
+J-position=0 pressure=3021
+J-position=1 pressure=3000
+J-position=2 pressure=2864
+J-position=3 pressure=2160
+J-GlassStack_rechts: prepareForRelease: detected lowest attached glass at level 3
+J-ReleaseGlassesRight: Entry --> Check
+J-MoveManipulator finished
+J-MoveManipulator stopped
+E-Event: IM 14 0x0
+J-ReleaseGlassesRight: Check --> MoveInitial
+J-ReleaseGlassesRight: MoveInitial --> WaitForClearance
+E-Event: IM 19 0x0
+d-===== DumpGlasses drive_in (1225:1400)=====
+D-MC ID 20: 319 mm 0.00000 deg
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 13,681
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 14, 81
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 14,481
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 20
+E-Event: MC 0 0x0
+d-===== DumpGlasses dump =====
+d-Dumping right side
+J-ReleaseGlassesRight: WaitForClearance --> ReleaseEntry
+J-MoveDownwards2: move to: 29100
+J-ReleaseGlassesRight: ReleaseEntry --> MoveDownwards2
+J-ReleaseGlassesRight: MoveDownwards2 --> DelayState
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 14,881
+J-Release: about to release 1 attached glasses
+J-ReleaseGlassesRight: DelayState --> Release
+J-ReleaseGlassesRight: Release --> DelayState
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 15,281
+_-Sending doGifts
+J-ReleaseGlassesRight: DelayState --> ReleaseEntry
+J-MoveDownwards2: move to: 27910
+J-ReleaseGlassesRight: ReleaseEntry --> MoveDownwards2
+J-ReleaseGlassesRight: MoveDownwards2 --> DelayState
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 15,681
+J-Release: about to release 1 attached glasses
+J-ReleaseGlassesRight: DelayState --> Release
+J-ReleaseGlassesRight: Release --> DelayState
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 16, 81
+J-ReleaseGlassesRight: DelayState --> ReleaseEntry
+J-MoveDownwards2: move to: 26660
+J-ReleaseGlassesRight: ReleaseEntry --> MoveDownwards2
+_-Sending doGifts
+J-ReleaseGlassesRight: MoveDownwards2 --> DelayState
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 16,481
+J-Release: about to release 1 attached glasses
+J-ReleaseGlassesRight: DelayState --> Release
+J-ReleaseGlassesRight: Release --> DelayState
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 16,881
+_-Sending doGifts
+J-ReleaseGlassesRight: DelayState --> ReleaseEntry
+J-MoveDownwards2: move to: 25500
+J-ReleaseGlassesRight: ReleaseEntry --> MoveDownwards2
+J-ReleaseGlassesRight: MoveDownwards2 --> DelayState
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 17,281
+_-Sending doGifts
+J-Release: about to release 1 attached glasses
+J-ReleaseGlassesRight: DelayState --> Release
+J-ReleaseGlassesRight: Release --> DelayState
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 17,681
+J-ReleaseGlassesRight: DelayState --> ReleaseEntry
+J-nothing to release->exit
+J-FinishState: amount sent to SC: 4
+J-ReleaseGlassesRight: ReleaseEntry --> FinishState
+E-Event: IM 20 0x0
+F-Pitch dumping right
+F-$$$$ StackWatcher $$$$
+F-curr: 0/-15000  target: 1361,1308
+F-curr: 0/-15000  target: 1361,1308
+F-curr: 0/-15000  target: 1361,1308
+F-curr: 0/-15000  target: 1361,1308
+F-curr: 0/-15000  target: 1361,1308
+F-curr: 0/-15000  target: 1361,1308
+F-curr: 0/-15000  target: 1361,1308
+F-curr: 0/-15000  target: 1361,1308
+F-curr: 0/-15000  target: 1361,1308
+F-curr: 0/-15000  target: 1361,1308
+F-new pyramid with 4 rows
+F-locking cherry plate 1
+d-===== DumpGlasses drive_out =====
+D-MC ID 21: -326 mm 0.00000 deg
+J-ReleaseGlassesRight finished
+J-ReleaseGlassesRight stopped
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 18, 81
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 18,481
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 18,881
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 19,281
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 21
+E-Event: MC 0 0x0
+J-CloseManipulator: added to activation queue
+A-#####-##### EXIT DumpGlassesAction #####-#####
+n-Routineprüfung
+A-#####-##### START Troubleshooter #####-#####
+E-Event: TS 1 0x0
+J-CloseManipulator: not added: already in activation queue
+A-#####-##### EXIT Troubleshooter #####-#####
+n->>>>>> THINK <<<<<<
+c-<===== CherryAction get Cost =====>
+c-Plate 0:4294967295
+c-Plate 1:4294967295
+P?PathPlanningCache clear requird!
+c-pose (950, 1000): 159  0
+c-Plate 2:159
+c-pose (950, 600): 4294967295  0
+c-Plate 3:4294967295
+c-Plate 4:4294967295
+c-pose (-950, 1725): 648  0
+c-Plate 5:648
+c-pose (-950, 1400): 658  0
+c-Plate 6:658
+c-pose (-950, 1000): 658  0
+c-Plate 7:658
+c-pose (-950, 600): 658  0
+c-Plate 8:658
+c-pose (-950, 275): 608  0
+c-Plate 9:608
+c-=====> CherryAction choosing Bucket 2: 159 <=====
+h-=====> Updating CakeVariant Costs <======
+h-We got 0 cherries
+h-updateStates: enemBlownCandles: 0
+h-updateStates: ownBlownCandles: 0
+h-updateStates: burningCandles: 12
+h-Variant 0 got: 506
+h-Variant 0 now got: 506
+h-Variant 1 got: 506
+h-Variant 1 now got: 4294967295
+h-Variant 2 got: 464
+h-Variant 2 now got: 464
+h-Variant 3 got: 464
+h-Variant 3 now got: 4294967295
+h-Variant 4 got: 259
+h-Variant 4 now got: 259
+h-Variant 5 got: 259
+h-Variant 5 now got: 4294967295
+h-Variant 6 got: 4294967295
+h-Variant 6 now got: 4294967295
+h-Variant 7 got: 4294967295
+h-Variant 7 now got: 4294967295
+h-Quarter 0 has 3 lit candles
+h-Quarter 1 has 3 lit candles
+h-Quarter 2 has 3 lit candles
+h-Quarter 3 has 2 lit candles
+h-Ab durch die Mitte!
+h-Variante 0: 24
+h-Variante 1: 0
+h-Variante 2: 24
+h-Variante 3: 0
+h-Final Costs
+h-Variant 0 got: 506
+h-Variant 1 got: 4294967295
+h-Variant 2 got: 464
+h-Variant 3 got: 4294967295
+h-Variant 4 got: 259
+h-Variant 5 got: 4294967295
+h-Variant 6 got: 4294967295
+h-Variant 7 got: 4294967295
+h-<===== getCost choosing Variant: 4(0) with 259 =====>
+g-=====> Updating Gift Costs <======
+g-Geschenkkosten:
+g- -Geschenk 0: 4294967295
+g- -Geschenk 1: 4294967295
+g- -Geschenk 2: 452
+g- -Geschenk 3: 620
+g-gewähltes Startgeschenk: 3
+g-Kosten für das gewählte Geschenk: 620
+g-<================================>
+e-=====> Updating CollectGlasses Costs <======
+e-Rankings:
+e-variant 0: 0 is blackListed: false
+e-variant 1: 0 is blackListed: false
+e-variant 2: 0 is blackListed: false
+e-variant 3: 0 is blackListed: false
+e-variant 4: 0 is blackListed: false
+e-variant 5: 0 is blackListed: false
+e-No possibility found
+d-======> Updating DumpGlasses Costs <======
+d-###### createStackCand ######
+d-calculating Variant for Side 0
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 4
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 0
+d-starting search from bottom: false
+d-Field 1 has no bucket
+d-=> can drive from 902:1401 to 900:1400 for 60
+d-Towerheights: 0 4
+d-Towerheights: 0 4
+d-Towerheights: 0 4
+d-cDS returning: 1210:1496
+d-Site 0 done.
+d-calculating Variant for Side 1
+d-Site 1 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 0
+d-##### created candidate c:60 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 0/0  (900:1400:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-###### createStackCand ######
+d-calculating Variant for Side 0
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 4
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 0
+d-starting search from bottom: true
+d-Field 0 has no bucket
+d-You shall no build in edges
+d-Field 1 has no bucket
+d-=> can drive from 902:1401 to 900:1400 for 60
+d-Towerheights: 0 4
+d-Towerheights: 0 4
+d-Towerheights: 0 4
+d-cDS returning: 1210:1496
+d-Site 0 done.
+d-calculating Variant for Side 1
+d-Site 1 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 0
+d-##### created candidate c:60 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 0/0  (900:1400:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-###### createStackCand ######
+d-calculating Variant for Side 0
+d-3 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 4
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-3 Glasses: searching place to build new pyramid
+d-searching headstone for: 0
+d-starting search from bottom: false
+d-Field 1 has no bucket
+d-=> can drive from 902:1401 to 900:1400 for 60
+d-Towerheights: 0 4
+d-Towerheights: 0 4
+d-Towerheights: 0 4
+d-cDS returning: 1210:1496
+d-Site 0 done.
+d-calculating Variant for Side 1
+d-Site 1 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 0
+d-##### created candidate c:60 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 0/0  (900:1400:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-######## created a clever plan :P ########
+d-##   Target 0: 1210:1496 with height 0 on plate: false
+d-##   Glass 0: 3
+d----------
+d-##   Target 1: 0:0 with height 0 on plate: false
+d-##   Glass 1: 0
+d----------
+d-##   Side: 0
+d-######## --------------------------------- ########
+d-updateTarget: 1210 : 0
+d-new x koord: 1075
+d-needed 6 ticks
+d-resultierende kosten: 60
+d-<==========================>
+n-letzte Aktion: 801FAD1 / nächste Aktion: 801FAD1 / Zähler: 2
+A-#####-##### START DumpGlassesAction #####-#####
+J-CloseManipulator activated
+_-Sending doGifts
+J-CloseManipulator: Abort --> Abort
+J-GlassLeft: added to activation queue
+J-MoveManipulator: added to activation queue
+J-GlassRight: added to activation queue
+J-MoveManipulator: not added: already in activation queue
+d-===== DumpGlasses drive_to (1075, 1400)=====
+P-Nehme Route aus Cache
+P-Fahre Pfad:
+P-	0: (900; 1400) 0
+P-Set target: 900/1400
+J-CloseManipulator finished
+J-CloseManipulator stopped
+D-MC ID 22: (900/1400) mm 0.00000deg (0 mrad) speed: 1
+E-Event: IM 42 0x0
+J-GlassRight activated
+J-GlassRight: Prepare_for_glasses --> Prepare_for_glasses
+J-MoveManipulator activated
+J-MoveManipulator: Abort --> Entry
+J?GlassLeft is already active -> could not be activated!
+E-Event: IM 10 0x0
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 19,683
+J-MoveManipulator: Entry --> CheckForRequest
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 60)
+P-	0: (900; 1400) 0
+P-ignoriere nächsten Pfadpunkt
+_-Sending doGifts
+D-RPC received: angle reached: ID 22
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 20, 83
+D-RPC received: point reached: ID 0
+J-GlassRight: Prepare_for_glasses --> Start_pump
+J-GlassRight: Start_pump --> Wait_for_glass
+E-Event: IM 13 0x0
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 20,483
+D-RPC received: angle reached: ID 22
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 22
+E-Event: MC 0 0x8014C61
+P-alle Punkte abgefahren
+E-Event: MC 0 0x0
+d-===== DumpGlasses prepare dump =====
+J-GlassStack_links: setReleaseParams amount=3
+J-ReleaseGlassesLeft: added to activation queue
+d-preparing left side for level 0 on plate false
+J-ReleaseGlassesLeft activated
+J-ReleaseGlassesLeft:  --> Entry
+J-MoveManipulator: CheckForRequest --> Abort
+J-GlassLeft: Wait_for_glass --> Abort
+J-position=0 pressure=3186
+J-position=1 pressure=2475
+J-position=2 pressure=3044
+J-position=3 pressure=509
+J-GlassStack_links: prepareForRelease: detected lowest attached glass at level 2
+J-ReleaseGlassesLeft: Entry --> Check
+J-MoveManipulator finished
+J-MoveManipulator stopped
+J-GlassLeft finished
+J-GlassLeft stopped
+E-Event: IM 11 0x0
+J-MoveInitial: MoveInitial to 19800 (level 2)
+J-ReleaseGlassesLeft: Check --> MoveInitial
+_-Sending doGifts
+J-ReleaseGlassesLeft: MoveInitial --> WaitForClearance
+E-Event: IM 16 0x0
+d-===== DumpGlasses drive_in (1075:1400)=====
+D-MC ID 23: 171 mm 0.00000 deg
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 20,891
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 21,291
+_-Sending doGifts
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 21,691
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 23
+E-Event: MC 0 0x0
+d-===== DumpGlasses dump =====
+d-Dumping left side
+J-ReleaseGlassesLeft: WaitForClearance --> ReleaseEntry
+J-MoveDownwards2: move to: 20300
+J-ReleaseGlassesLeft: ReleaseEntry --> MoveDownwards2
+J-ReleaseGlassesLeft: MoveDownwards2 --> DelayState
+_-Sending doGifts
+J-Release: about to release 1 attached glasses
+J-ReleaseGlassesLeft: DelayState --> Release
+J-ReleaseGlassesLeft: Release --> DelayState
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 22, 91
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 22,491
+J-ReleaseGlassesLeft: DelayState --> ReleaseEntry
+J-MoveDownwards2: move to: 18660
+J-ReleaseGlassesLeft: ReleaseEntry --> MoveDownwards2
+J-ReleaseGlassesLeft: MoveDownwards2 --> DelayState
+_-Sending doGifts
+J-Release: about to release 1 attached glasses
+J-ReleaseGlassesLeft: DelayState --> Release
+J-ReleaseGlassesLeft: Release --> DelayState
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 22,891
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 23,291
+_-Sending doGifts
+J-ReleaseGlassesLeft: DelayState --> ReleaseEntry
+J-MoveDownwards2: move to: 17500
+J-ReleaseGlassesLeft: ReleaseEntry --> MoveDownwards2
+J-ReleaseGlassesLeft: MoveDownwards2 --> DelayState
+J-Release: about to release 1 attached glasses
+J-ReleaseGlassesLeft: DelayState --> Release
+_-Sending doGifts
+J-ReleaseGlassesLeft: Release --> DelayState
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 23,691
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 24, 91
+J-ReleaseGlassesLeft: DelayState --> ReleaseEntry
+J-nothing to release->exit
+J-FinishState: amount sent to SC: 3
+J-ReleaseGlassesLeft: ReleaseEntry --> FinishState
+E-Event: IM 17 0x0
+F-Pitch dumping left
+F-$$$$ StackWatcher $$$$
+F-curr: 1361/1308  target: 1208,1500
+F-curr: 0/-15000  target: 1208,1500
+F-curr: 0/-15000  target: 1208,1500
+F-curr: 0/-15000  target: 1208,1500
+F-curr: 0/-15000  target: 1208,1500
+F-curr: 0/-15000  target: 1208,1500
+F-curr: 0/-15000  target: 1208,1500
+F-curr: 0/-15000  target: 1208,1500
+F-curr: 0/-15000  target: 1208,1500
+F-curr: 0/-15000  target: 1208,1500
+F-new pyramid with 3 rows
+F-locking cherry plate 1
+d-===== DumpGlasses drive_out =====
+J-ReleaseGlassesLeft finished
+J-ReleaseGlassesLeft stopped
+D-MC ID 24: -175 mm 0.00000 deg
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 24,492
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+F?Gegner 2 ist abgestürzt!
+S-Spielzeit: 24,892
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 24
+E-Event: MC 0 0x0
+J-CloseManipulator: added to activation queue
+A-#####-##### EXIT DumpGlassesAction #####-#####
+n-Routineprüfung
+A-#####-##### START Troubleshooter #####-#####
+J-CloseManipulator activated
+E-Event: TS 1 0x0
+J-CloseManipulator: Abort --> Abort
+J-CloseManipulator: added to activation queue
+A-#####-##### EXIT Troubleshooter #####-#####
+n->>>>>> THINK <<<<<<
+c-<===== CherryAction get Cost =====>
+c-Plate 0:4294967295
+c-Plate 1:4294967295
+P?PathPlanningCache clear requird!
+c-pose (950, 1000): 149  0
+c-Plate 2:149
+c-pose (950, 600): 4294967295  0
+c-Plate 3:4294967295
+c-Plate 4:4294967295
+c-pose (-950, 1725): 463  0
+c-Plate 5:463
+c-pose (-950, 1400): 420  0
+c-Plate 6:420
+c-pose (-950, 1000): 467  0
+c-Plate 7:467
+c-pose (-950, 600): 499  0
+c-Plate 8:499
+c-pose (-950, 275): 523  0
+c-Plate 9:523
+c-=====> CherryAction choosing Bucket 2: 149 <=====
+h-=====> Updating CakeVariant Costs <======
+h-We got 0 cherries
+h-updateStates: enemBlownCandles: 0
+h-updateStates: ownBlownCandles: 0
+h-updateStates: burningCandles: 12
+h-Variant 0 got: 415
+h-Variant 0 now got: 415
+h-Variant 1 got: 415
+h-Variant 1 now got: 4294967295
+h-Variant 2 got: 381
+h-Variant 2 now got: 381
+h-Variant 3 got: 381
+h-Variant 3 now got: 4294967295
+h-Variant 4 got: 249
+h-Variant 4 now got: 249
+h-Variant 5 got: 249
+h-Variant 5 now got: 4294967295
+h-Variant 6 got: 4294967295
+h-Variant 6 now got: 4294967295
+h-Variant 7 got: 4294967295
+h-Variant 7 now got: 4294967295
+h-Quarter 0 has 3 lit candles
+h-Quarter 1 has 3 lit candles
+h-Quarter 2 has 3 lit candles
+h-Quarter 3 has 2 lit candles
+h-Ab durch die Mitte!
+h-Variante 0: 24
+h-Variante 1: 0
+h-Variante 2: 24
+h-Variante 3: 0
+h-Final Costs
+h-Variant 0 got: 415
+h-Variant 1 got: 4294967295
+h-Variant 2 got: 381
+h-Variant 3 got: 4294967295
+h-Variant 4 got: 249
+h-Variant 5 got: 4294967295
+h-Variant 6 got: 4294967295
+h-Variant 7 got: 4294967295
+h-<===== getCost choosing Variant: 4(0) with 249 =====>
+g-=====> Updating Gift Costs <======
+g-Geschenkkosten:
+g- -Geschenk 0: 4294967295
+g- -Geschenk 1: 4294967295
+g- -Geschenk 2: 315
+g- -Geschenk 3: 435
+g-gewähltes Startgeschenk: 3
+g-Kosten für das gewählte Geschenk: 435
+g-<================================>
+e-=====> Updating CollectGlasses Costs <======
+e-Rankings:
+e-variant 0: 0 is blackListed: false
+e-variant 1: 0 is blackListed: false
+e-variant 2: 0 is blackListed: false
+e-variant 3: 0 is blackListed: false
+e-variant 4: 0 is blackListed: false
+e-variant 5: 0 is blackListed: false
+e-No possibility found
+d-======> Updating DumpGlasses Costs <======
+d--> Keine Gläser im Roboter!
+n-letzte Aktion: 801FAD1 / nächste Aktion: 801A7A1 / Zähler: 1
+A-#####-##### START CakeAction #####-#####
+J-GlassLeft: added to activation queue
+J-MoveManipulator: added to activation queue
+J-GlassRight: added to activation queue
+J-MoveManipulator: not added: already in activation queue
+h-=====> Updating CakeVariant Costs <======
+h-We got 0 cherries
+h-updateStates: enemBlownCandles: 0
+h-updateStates: ownBlownCandles: 0
+h-updateStates: burningCandles: 12
+h-Variant 0 got: 415
+h-Variant 0 now got: 415
+h-Variant 1 got: 415
+h-Variant 1 now got: 4294967295
+h-Variant 2 got: 381
+h-Variant 2 now got: 381
+h-Variant 3 got: 381
+h-Variant 3 now got: 4294967295
+h-Variant 4 got: 249
+h-Variant 4 now got: 249
+h-Variant 5 got: 249
+h-Variant 5 now got: 4294967295
+h-Variant 6 got: 4294967295
+h-Variant 6 now got: 4294967295
+h-Variant 7 got: 4294967295
+h-Variant 7 now got: 4294967295
+h-Quarter 0 has 3 lit candles
+h-Quarter 1 has 3 lit candles
+h-Quarter 2 has 3 lit candles
+h-Quarter 3 has 2 lit candles
+h-Ab durch die Mitte!
+h-Variante 0: 24
+h-Variante 1: 0
+h-Variante 2: 24
+h-Variante 3: 0
+h-Final Costs
+h-Variant 0 got: 415
+h-Variant 1 got: 4294967295
+h-Variant 2 got: 381
+h-Variant 3 got: 4294967295
+h-Variant 4 got: 249
+h-Variant 5 got: 4294967295
+h-Variant 6 got: 4294967295
+h-Variant 7 got: 4294967295
+h-<===== getCost choosing Variant: 4(0) with 249 =====>
+h-====== Cake - driving to 4 =====
+P-Nehme Route aus Cache
+P-Fahre Pfad:
+P-	0: (350; 700) 0
+P-Set target: 350/700
+J-CloseManipulator finished
+J-CloseManipulator stopped
+_-Sending doGifts
+D-MC ID 25: (350/700) mm 0.00000deg (0 mrad) speed: 1
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 25,372
+E-Event: IM 42 0x0
+J?GlassRight is already active -> could not be activated!
+J-MoveManipulator activated
+J-MoveManipulator: Abort --> Entry
+J-GlassLeft activated
+J-GlassLeft: Abort --> Prepare_for_glasses
+J-CloseManipulator activated
+E-Event: IM 13 0x0
+J-CloseManipulator: Abort --> Abort
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 249)
+P-	0: (350; 700) 0
+P-ignoriere nächsten Pfadpunkt
+J-CloseManipulator finished
+J-CloseManipulator stopped
+E-Event: IM 42 0x0
+J-MoveManipulator: Entry --> CheckForRequest
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 25,773
+J-GlassLeft: Prepare_for_glasses --> Start_pump
+J-GlassLeft: Start_pump --> Wait_for_glass
+E-Event: IM 10 0x0
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 26,173
+_-Sending doGifts
+D-RPC received: angle reached: ID 25
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 26,573
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 26,973
+_-Sending doGifts
+J-MoveManipulator: CheckForRequest --> DelayState
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 27,373
+J-MoveManipulator: DelayState --> push_left
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 27,773
+J-ANGLE_REACHED
+J-MoveManipulator: push_left --> StartOver
+_-Sending doGifts
+J-position=0 pressure=710
+J-position=0 pressure=792
+J-MoveManipulator: StartOver --> CheckForRequest
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 28,173
+J-MoveManipulator: CheckForRequest --> DelayState
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 28,573
+_-Sending doGifts
+J-MoveManipulator: DelayState --> push_left
+J-ANGLE_REACHED
+J-MoveManipulator: push_left --> StartOver
+J-MoveManipulator: StartOver --> DelayState
+J-MoveManipulator: DelayState --> push_right
+J-ANGLE_REACHED
+J-MoveManipulator: push_right --> StartOver
+J-MoveManipulator: StartOver --> CheckForRequest
+J-MoveManipulator: CheckForRequest --> DelayState
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 28,973
+_-Sending doGifts
+_-SJ-MoveManipulator: DelayState --> push_right
+ending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 29,373
+J-ANGLE_REACHED
+J-MoveManipulator: push_right --> StartOver
+J-MoveManipulator: StartOver --> DelayState
+J-MoveManipulator: DelayState --> push_left
+J-ANGLE_REACHED
+J-MoveManipulator: push_left --> StartOver
+J-MoveManipulator: StartOver --> CheckForRequest
+D-RPC received: angle reached: ID 25
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 25
+E-Event: MC 0 0x8014C61
+P-alle Punkte abgefahren
+E-Event: MC 0 0x0
+h-===== Cake - aligning to 4 =====
+D-MC ID 26: -350 mm 0.00000 deg
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 29,781
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 30,181
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 30,581
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 30,981
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 26
+E-Event: MC 0 0x0
+h-====== Cake - driving mnf1 =====
+J-CandlesRight: added to activation queue
+J-CandlesRight activated
+J-CandlesRight:  --> Fold_out
+J-CandlesRight: Fold_out --> Wait_for_candle
+E-Event: IM 4 0x0
+h-====== Cake - drive_plan_mid_down_near_fwd_2 =====
+D-path point 1: (248/641) mm -21.19943 deg
+D-path point 2: (453/517) mm -41.19566 deg
+D-path point 3: (602/331) mm -61.19189 deg
+J-Wait_for_candle: raw candleIndex=5
+J-able to extinguish 5.92228
+J-Found white candle
+J-CandlesRight: Wait_for_candle --> Push_candle
+D-path point 4: (664/178) mm -75.00017 deg
+J-CandlesRight: Push_candle --> Lift_candle_arm
+D-MC ID 31: Spline
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 31,383
+J-CandlesRight: Lift_candle_arm --> Wait_for_candle
+E-Event: IM 4 0x0
+J-Wait_for_candle: raw candleIndex=5
+J-able to extinguish 5.91673
+J-Found white candle
+J-CandlesRight: Wait_for_candle --> Push_candle
+J-CandlesRight: Push_candle --> Lift_candle_arm
+J-CandlesRight: Lift_candle_arm --> Wait_for_candle
+E-Event: IM 4 0x0
+J-Wait_for_candle: raw candleIndex=5
+J-able to extinguish 5.82775
+J-Found white candle
+J-CandlesRight: Wait_for_candle --> Push_candle
+J-CandlesRight: Push_candle --> Lift_candle_arm
+_-Sending doGifts
+J-CandlesRight: Lift_candle_arm --> Wait_for_candle
+E-Event: IM 4 0x0
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 31,783
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-no candle
+J-Wait_for_candle: raw candleIndex=5
+J-able to extinguish 5.17435
+J-Found white candle
+J-CandlesRight: Wait_for_candle --> Push_candle
+_-Sending doGifts
+J-CandlesRight: Push_candle --> Lift_candle_arm
+J-CandlesRight: Lift_candle_arm --> Wait_for_candle
+E-Event: IM 4 0x0
+J-Wait_for_candle: raw candleIndex=4
+J-able to extinguish 4.89202
+J-Found white candle
+J-CandlesRight: Wait_for_candle --> Push_candle
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 32,183
+J-CandlesRight: Push_candle --> Lift_candle_arm
+J-CandlesRight: Lift_candle_arm --> Wait_for_candle
+E-Event: IM 4 0x0
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+D-RPC received: point reached: ID 1
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+_-Sending doGifts
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-MoveManipulator: CheckForRequest --> DelayState
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+J-Wait_for_candle: raw candleIndex=4
+J-no candle
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 32,583
+J-Wait_for_candle: raw candleIndex=4
+J-able to extinguish 4.18686
+J-Found white candle
+J-CandlesRight: Wait_for_candle --> Push_candle
+J-CandlesRight: Push_candle --> Lift_candle_arm
+_-Sending doGifts
+D-StopRobot
+J-CandlesRight: Lift_candle_arm --> Wait_for_candle
+E-Event: CC 0 0x0
+h-!!! Cake - drive_plan_far_fwd1 collision !!!
+A-#####-##### EXIT CakeAction #####-#####
+n-Routineprüfung
+A-#####-##### START Troubleshooter #####-#####
+E-Event: IM 4 0x0
+T!Troubleshooter::main: id != event_start
+E-Event: TS 1 0x0
+J-CandlesRight: Wait_for_candle --> Abort
+J-CandlesRight finished
+J-CandlesRight stopped
+E-Event: IM 5 0x0
+J-CloseManipulator: added to activation queue
+A-#####-##### EXIT Troubleshooter #####-#####
+n->>>>>> THINK <<<<<<
+c-<===== CherryAction get Cost =====>
+c-Plate 0:4294967295
+c-Plate 1:4294967295
+P?PathPlanningCache clear requird!
+c-pose (950, 1000): 338  0
+c-Plate 2:338
+c-pose (950, 600): 4294967295  0
+c-Plate 3:4294967295
+c-Plate 4:4294967295
+c-pose (-950, 1725): 481  0
+c-Plate 5:481
+c-pose (-950, 1400): 484  0
+c-Plate 6:484
+c-pose (-950, 1000): 534  0
+c-Plate 7:534
+c-pose (-950, 600): 534  0
+c-Plate 8:534
+c-pose (-950, 275): 534  0
+c-Plate 9:534
+c-=====> CherryAction choosing Bucket 2: 338 <=====
+h-=====> Updating CakeVariant Costs <======
+h-We got 0 cherries
+h-updateStates: enemBlownCandles: 0
+h-updateStates: ownBlownCandles: 1
+h-updateStates: burningCandles: 11
+h-Variant 0 got: 432
+h-Variant 0 now got: 432
+h-Variant 1 got: 432
+h-Variant 1 now got: 4294967295
+h-Variant 2 got: 390
+h-Variant 2 now got: 390
+h-Variant 3 got: 390
+h-Variant 3 now got: 4294967295
+h-Variant 4 got: 120
+h-Variant 4 now got: 120
+h-Variant 5 got: 120
+h-Variant 5 now got: 4294967295
+h-Variant 6 got: 4294967295
+h-Variant 6 now got: 4294967295
+h-Variant 7 got: 4294967295
+h-Variant 7 now got: 4294967295
+h-Quarter 0 has 2 lit candles
+h-Quarter 1 has 3 lit candles
+h-Quarter 2 has 3 lit candles
+h-Quarter 3 has 2 lit candles
+g-=====> Updating Gift Costs <======
+g-Geschenkkosten:
+g- -Geschenk 0: 4294967295
+g- -Geschenk 1: 4294967295
+g- -Geschenk 2: 4294967295
+g- -Geschenk 3: 466
+g-gewähltes Startgeschenk: 3
+g-Kosten für das gewählte Geschenk: 466
+g-<================================>
+e-=====> Updating CollectGlasses Costs <======
+e-Rankings:
+e-variant 0: 0 is blackListed: false
+e-variant 1: 0 is blackListed: false
+e-variant 2: 0 is blackListed: false
+e-variant 3: 0 is blackListed: false
+e-variant 4: 0 is blackListed: false
+e-variant 5: 0 is blackListed: false
+e-No possibility found
+d-======> Updating DumpGlasses Costs <======
+d--> Keine Gläser im Roboter!
+n-letzte Aktion: 801A7A1 / nächste Aktion: 8020C81 / Zähler: 1
+A-#####-##### START CherryAction #####-#####
+J-CloseManipulator activated
+_-Sending doGifts
+J-CloseManipulator: Abort --> Abort
+J-GlassLeft: added to activation queue
+J-MoveManipulator: added to activation queue
+J-GlassRight: added to activation queue
+J-MoveManipulator: not added: already in activation queue
+c-Cherrys - driveTo Bucket 2
+P-Nehme Route aus Cache
+P-Fahre Pfad:
+P-	0: (425; 625) 0
+P-	1: (925; 1025) 0
+P-	2: (950; 1000) 0
+P-Set target: 950/1000
+J-CloseManipulator finished
+J-CloseManipulator stopped
+J-MoveManipulator: DelayState --> push_left
+D-MC ID 33: (425/625) mm 229.18310deg (4000 mrad) speed: 1
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 33, 42
+E-Event: IM 42 0x0
+J?GlassRight is already active -> could not be activated!
+J?MoveManipulator is already active -> could not be activated!
+J?GlassLeft is already active -> could not be activated!
+J-ANGLE_REACHED
+J-MoveManipulator: push_left --> StartOver
+E-Event: IM 13 0x0
+E-Event: IM 10 0x0
+J-MoveManipulator: StartOver --> CheckForRequest
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 338)
+P-	0: (425; 625) 0
+P-	1: (925; 1025) 0
+P-	2: (950; 1000) 0
+P-ignoriere nächsten Pfadpunkt
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 424)
+P-	0: (475; 575) 0
+P-	1: (525; 675) 0
+P-	2: (925; 1025) 0
+P-	3: (950; 1000) 0
+D-MC ID 34: (475/575) mm 229.18310deg (4000 mrad) speed: 1
+_-Sending doGifts
+D-RPC received: collision rear: ID 34
+E-Event: MC 1 0x8015641
+D-Kollision: noch 2 Versuche
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 33,443
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 250)
+P-	0: (925; 975) 0
+P-	1: (950; 1000) 0
+D-MC ID 35: (925/975) mm 229.18310deg (4000 mrad) speed: 1
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 33,849
+J-MoveManipulator: CheckForRequest --> DelayState
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 34,249
+_-Sending doGifts
+D-RPC received: angle reached: ID 35
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+J-MoveManipulator: DelayState --> push_left
+J-ANGLE_REACHED
+J-MoveManipulator: push_left --> StartOver
+J-MoveManipulator: StartOver --> CheckForRequest
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 34,649
+_-Sending doGifts
+E-Event: TS 2 0x0
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 162)
+P-	0: (950; 1000) 0
+D-MC ID 36: (950/1000) mm 180.02333deg (3142 mrad) speed: 1
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 35, 55
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 35,455
+D-RPC received: angle reached: ID 36
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 35,855
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 170)
+P-	0: (775; 775) 0
+P-	1: (950; 1000) 0
+D-MC ID 37: (775/775) mm 229.18310deg (4000 mrad) speed: 1
+_-Sending doGifts
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 106)
+P-	0: (950; 1000) 0
+D-MC ID 38: (950/1000) mm 180.02333deg (3142 mrad) speed: 1
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 36,262
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 166)
+P-	0: (825; 875) 0
+P-	1: (950; 1000) 0
+D-MC ID 39: (825/875) mm 229.18310deg (4000 mrad) speed: 1
+_-Sending doGifts
+J-MoveManipulator: CheckForRequest --> DelayState
+D-RPC received: angle reached: ID 39
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 36,662
+_-Sending doGifts
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 102)
+P-	0: (950; 1000) 0
+D-MC ID 40: (950/1000) mm 180.02333deg (3142 mrad) speed: 1
+J-MoveManipulator: DelayState --> push_right
+J-ANGLE_REACHED
+J-MoveManipulator: push_right --> StartOver
+J-MoveManipulator: StartOver --> CheckForRequest
+J-MoveManipulator: CheckForRequest --> DelayState
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 37, 62
+_-Sending doGifts
+D-RPC received: angle reached: ID 40
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 37,462
+J-MoveManipulator: DelayState --> push_right
+J-ANGLE_REACHED
+J-MoveManipulator: push_right --> StartOver
+J-MoveManipulator: StartOver --> CheckForRequest
+J-MoveManipulator: CheckForRequest --> DelayState
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 37,862
+_-Sending doGifts
+J-MoveManipulator: DelayState --> push_right
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 38,262
+D-RPC received: point reached: ID 0
+_-Sending doGifts
+J-ANGLE_REACHED
+J-MoveManipulator: push_right --> StartOver
+J-MoveManipulator: StartOver --> DelayState
+J-MoveManipulator: DelayState --> push_left
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 38,662
+_-Sending doGifts
+J-ANGLE_REACHED
+J-MoveManipulator: push_left --> StartOver
+_-Sending doGifts
+J-MoveManipulator: StartOver --> CheckForRequest
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 39, 62
+D-RPC received: angle reached: ID 40
+E-Event: MC 2 0x8014C61
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 40
+E-Event: MC 0 0x8014C61
+P-alle Punkte abgefahren
+E-Event: MC 0 0x0
+c-Cherrys - searchBucket 2
+J-CherrySearch: added to activation queue
+J-CherrySearch activated
+J-CherrySearch:  --> WaitForSignal
+D-MC ID 41: -245 mm 0.00000 deg
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 39,462
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 39,862
+_-Sending doGifts
+J-position=0 pressure=764
+J-position=0 pressure=808
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 40,262
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 40,662
+D-RPC received: target reached: ID 41
+_-Sending doGifts
+E-Event: MC 0 0x0
+c-### removing cherry plate ###
+c-Cherrys - ending action
+D-MC ID 42: 250 mm 0.00000 deg
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 41, 62
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 41,462
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 42
+E-Event: MC 0 0x0
+J-GlassLeft: added to activation queue
+J-MoveManipulator: added to activation queue
+J-GlassRight: added to activation queue
+J-MoveManipulator: not added: already in activation queue
+J?GlassRight is already active -> could not be activated!
+J?MoveManipulator is already active -> could not be activated!
+J?GlassLeft is already active -> could not be activated!
+E-Event: IM 13 0x0
+A-#####-##### EXIT CherryAction #####-#####
+n-Routineprüfung
+A-#####-##### START Troubleshooter #####-#####
+E-Event: IM 10 0x0
+T!Troubleshooter::main: id != event_start
+E-Event: TS 1 0x0
+J-CloseManipulator: added to activation queue
+A-#####-##### EXIT Troubleshooter #####-#####
+n->>>>>> THINK <<<<<<
+c-<===== CherryAction get Cost =====>
+c-Plate 0:4294967295
+c-Plate 1:4294967295
+c-Plate 2:4294967295
+P?PathPlanningCache clear requird!
+c-pose (950, 600): 4294967295  0
+c-Plate 3:4294967295
+c-Plate 4:4294967295
+c-Plate 5:4294967295
+c-pose (-950, 1400): 467  0
+c-Plate 6:467
+c-pose (-950, 1000): 420  0
+c-Plate 7:420
+c-pose (-950, 600): 467  0
+c-Plate 8:467
+c-pose (-950, 275): 541  0
+c-Plate 9:541
+c-=====> CherryAction choosing Bucket 7: 420 <=====
+h-=====> Updating CakeVariant Costs <======
+h-We got 0 cherries
+h-updateStates: enemBlownCandles: 0
+h-updateStates: ownBlownCandles: 1
+h-updateStates: burningCandles: 11
+h-Variant 0 got: 383
+h-Variant 0 now got: 383
+h-Variant 1 got: 383
+h-Variant 1 now got: 4294967295
+h-Variant 2 got: 349
+h-Variant 2 now got: 349
+h-Variant 3 got: 349
+h-Variant 3 now got: 4294967295
+h-Variant 4 got: 199
+h-Variant 4 now got: 199
+h-Variant 5 got: 199
+h-Variant 5 now got: 4294967295
+h-Variant 6 got: 4294967295
+h-Variant 6 now got: 4294967295
+h-Variant 7 got: 4294967295
+h-Variant 7 now got: 4294967295
+h-Quarter 0 has 2 lit candles
+h-Quarter 1 has 3 lit candles
+h-Quarter 2 has 3 lit candles
+h-Quarter 3 has 2 lit candles
+g-=====> Updating Gift Costs <======
+g-Geschenkkosten:
+g- -Geschenk 0: 4294967295
+g- -Geschenk 1: 4294967295
+g- -Geschenk 2: 4294967295
+g- -Geschenk 3: 4294967295
+e-=====> Updating CollectGlasses Costs <======
+e-Rankings:
+e-variant 0: 0 is blackListed: false
+e-variant 1: 0 is blackListed: false
+e-variant 2: 0 is blackListed: false
+e-variant 3: 0 is blackListed: false
+e-variant 4: 0 is blackListed: false
+e-variant 5: 1 is blackListed: false
+e-Choosing Plan 5
+e-<===== Choosing Entrypoint: 11 for 471 =====>
+d-======> Updating DumpGlasses Costs <======
+d--> Keine Gläser im Roboter!
+n-letzte Aktion: 8020C81 / nächste Aktion: 8021541 / Zähler: 1
+A-#####-##### START CollectGlassesAction #####-#####
+J-CloseManipulator activated
+J-CloseManipulator: Abort --> Abort
+J-CherrySearch: WaitForSignal --> Finished
+J-GlassLeft: added to activation queue
+J-MoveManipulator: added to activation queue
+J-GlassRight: added to activation queue
+J-MoveManipulator: not added: already in activation queue
+e-=====> CollectGlasses drive to (11) <======
+P-Nehme Route aus Cache
+P-Fahre Pfad:
+P-	0: (-1050; 800) 0
+P-Set target: -1050/800
+J-CloseManipulator finished
+J-CloseManipulator stopped
+J-CherrySearch finished
+J-CherrySearch stopped
+D-MC ID 43: (-1050/800) mm 90.01166deg (1571 mrad) speed: 1
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 41,944
+E-Event: IM 42 0x0
+E-Event: IM 30 0x0
+J?GlassRight is already active -> could not be activated!
+J?MoveManipulator is already active -> could not be activated!
+J?GlassLeft is already active -> could not be activated!
+E-Event: IM 13 0x0
+E-Event: IM 10 0x0
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 471)
+P-	0: (-1050; 800) 0
+P-ignoriere nächsten Pfadpunkt
+_-Sending doGifts
+D-RPC received: angle reached: ID 43
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 42,345
+_-Sending doGifts
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 42,745
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 43,145
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 43,545
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 43,945
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 44,345
+_-Sending doGifts
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 44,745
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 45,145
+J-MoveManipulator: CheckForRequest --> DelayState
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 45,545
+_-Sending doGifts
+J-MoveManipulator: DelayState --> push_left
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 45,945
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+J-GlassStack_links: collected one glass -> send to SC
+J-Lift_sucker: pos=1 angle=10460
+J-GlassLeft: Wait_for_glass --> Lift_sucker
+J-REQUEST_RELEASED
+J-MoveManipulator: push_left --> StartOver
+J-GlassLeft: Lift_sucker --> Start_pump
+J-GlassLeft: Start_pump --> Wait_for_glass
+E-Event: IM 10 0x0
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 46,345
+_-Sending doGifts
+J-MoveManipulator: StartOver --> CheckForRequest
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 46,745
+D-RPC received: angle reached: ID 43
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 43
+E-Event: MC 0 0x8014C61
+P-alle Punkte abgefahren
+E-Event: MC 0 0x0
+e-=====> CollectGlasses drive through <======
+D-MC ID 44: 700 mm 0.00000 deg
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 47,153
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 47,553
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 47,953
+_-Sending doGifts
+D-StopRobot
+E-Event: CC 0 0x0
+e-drive_through: Oppo Collison
+A-#####-##### EXIT CollectGlassesAction #####-#####
+n-Routineprüfung
+A-#####-##### START Troubleshooter #####-#####
+E-Event: TS 1 0x0
+A-#####-##### EXIT Troubleshooter #####-#####
+n->>>>>> THINK <<<<<<
+c-<===== CherryAction get Cost =====>
+c-Plate 0:4294967295
+c-Plate 1:4294967295
+c-Plate 2:4294967295
+P?PathPlanningCache clear requird!
+c-pose (950, 600): 4294967295  0
+c-Plate 3:4294967295
+c-Plate 4:4294967295
+c-Plate 5:4294967295
+c-pose (-950, 1400): 80  0
+c-Plate 6:80
+c-pose (-950, 1000): 157  0
+c-Plate 7:157
+c-pose (-950, 600): 237  0
+c-Plate 8:237
+c-pose (-950, 275): 297  0
+c-Plate 9:297
+c-=====> CherryAction choosing Bucket 6: 80 <=====
+h-=====> Updating CakeVariant Costs <======
+h-We got 0 cherries
+h-updateStates: enemBlownCandles: 0
+h-updateStates: ownBlownCandles: 1
+h-updateStates: burningCandles: 11
+h-Variant 0 got: 259
+h-Variant 0 now got: 259
+h-Variant 1 got: 259
+h-Variant 1 now got: 4294967295
+h-Variant 2 got: 246
+h-Variant 2 now got: 246
+h-Variant 3 got: 246
+h-Variant 3 now got: 4294967295
+h-Variant 4 got: 411
+h-Variant 4 now got: 411
+h-Variant 5 got: 411
+h-Variant 5 now got: 4294967295
+h-Variant 6 got: 4294967295
+h-Variant 6 now got: 4294967295
+h-Variant 7 got: 4294967295
+h-Variant 7 now got: 4294967295
+h-Quarter 0 has 2 lit candles
+h-Quarter 1 has 3 lit candles
+h-Quarter 2 has 3 lit candles
+h-Quarter 3 has 2 lit candles
+g-=====> Updating Gift Costs <======
+g-Geschenkkosten:
+g- -Geschenk 0: 4294967295
+g- -Geschenk 1: 4294967295
+g- -Geschenk 2: 4294967295
+g- -Geschenk 3: 4294967295
+e-=====> Updating CollectGlasses Costs <======
+e-Rankings:
+e-variant 0: 0 is blackListed: false
+e-variant 1: 0 is blackListed: false
+e-variant 2: 0 is blackListed: false
+e-variant 3: 0 is blackListed: false
+e-variant 4: 0 is blackListed: false
+e-variant 5: 1 is blackListed: true
+e-No possibility found
+d-======> Updating DumpGlasses Costs <======
+d-###### createStackCand ######
+d-calculating Variant for Side 0
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from -1053:1389 to 900:1404 will cost us: 469
+d-Site 0 done.
+d-calculating Variant for Side 1
+d-Site 1 done.
+d-Sorting PlanState candidates
+d-cand 0: 4
+d-cand 1: 0
+d-##### created candidate c:469 p: 4) #####
+d-We wanted to Stack something onto a Pyramid
+d-new states: 0/0  (900:1404:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-###### createStackCand ######
+d-calculating Variant for Side 0
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from -1053:1389 to 900:1404 will cost us: 469
+d-Site 0 done.
+d-calculating Variant for Side 1
+d-Site 1 done.
+d-Sorting PlanState candidates
+d-cand 0: 4
+d-cand 1: 0
+d-##### created candidate c:469 p: 4) #####
+d-We wanted to Stack something onto a Pyramid
+d-new states: 0/0  (900:1404:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-###### createStackCand ######
+d-calculating Variant for Side 0
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from -1053:1389 to 900:1404 will cost us: 469
+d-Site 0 done.
+d-calculating Variant for Side 1
+d-Site 1 done.
+d-Sorting PlanState candidates
+d-cand 0: 4
+d-cand 1: 0
+d-##### created candidate c:469 p: 4) #####
+d-We wanted to Stack something onto a Pyramid
+d-new states: 0/0  (900:1404:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-######## created a clever plan :P ########
+d-##   Target 0: 1208:1500 with height 3 on plate: false
+d-##   Glass 0: 1
+d----------
+d-##   Target 1: 0:0 with height 0 on plate: false
+d-##   Glass 1: 0
+d----------
+d-##   Side: 0
+d-######## --------------------------------- ########
+d-updateTarget: 1208 : 0
+d-new x koord: 1073
+d-needed 7 ticks
+d-resultierende kosten: 469
+d-<==========================>
+n-letzte Aktion: 8021541 / nächste Aktion: 801FAD1 / Zähler: 1
+A-#####-##### START DumpGlassesAction #####-#####
+J-GlassLeft: added to activation queue
+J-MoveManipulator: added to activation queue
+J-GlassRight: added to activation queue
+J-MoveManipulator: not added: already in activation queue
+d-===== DumpGlasses drive_to (1073, 1404)=====
+d-tellng MC to drive accurate
+P-Nehme Route aus Cache
+P-Fahre Pfad:
+P-	0: (900; 1404) 0
+P-Set target: 900/1404
+_-Sending doGifts
+J?GlassRight is already active -> could not be activated!
+J?MoveManipulator is already active -> could not be activated!
+J?GlassLeft is already active -> could not be activated!
+D-MC ID 46: (900/1404) mm 0.00000deg (0 mrad) speed: 1
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 48,392
+E-Event: IM 13 0x0
+E-Event: IM 10 0x0
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 450)
+P-	0: (900; 1404) 0
+P-ignoriere nächsten Pfadpunkt
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 48,792
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+F?Gegner 2 ist abgestürzt!
+S-Spielzeit: 49,192
+_-Sending doGifts
+D-RPC received: angle reached: ID 46
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 49,592
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 49,992
+_-Sending doGifts
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 50,392
+J-MoveManipulator: CheckForRequest --> DelayState
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 50,792
+J-GlassStack_links: collected one glass -> send to SC
+J-Lift_sucker: pos=2 angle=20100
+J-GlassLeft: Wait_for_glass --> Lift_sucker
+J-MoveManipulator: DelayState --> push_left
+J-REQUEST_RELEASED
+J-MoveManipulator: push_left --> StartOver
+J-MoveManipulator: StartOver --> CheckForRequest
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 51,192
+J-GlassLeft: Lift_sucker --> Start_pump
+J-GlassLeft: Start_pump --> Wait_for_glass
+E-Event: IM 10 0x0
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 51,592
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 51,992
+_-Sending doGifts
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 52,392
+J-MoveManipulator: CheckForRequest --> DelayState
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 52,792
+J-GlassStack_rechts: collected one glass -> send to SC
+J-Lift_sucker: pos=1 angle=10460
+J-GlassRight: Wait_for_glass --> Lift_sucker
+_-Sending doGifts
+J-MoveManipulator: DelayState --> push_right
+J-REQUEST_RELEASED
+J-MoveManipulator: push_right --> StartOver
+J-MoveManipulator: StartOver --> DelayState
+J-MoveManipulator: DelayState --> push_left
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 53,192
+D-RPC received: point reached: ID 0
+J-GlassRight: Lift_sucker --> Start_pump
+J-GlassRight: Start_pump --> Wait_for_glass
+E-Event: IM 13 0x0
+D-RPC received: angle reached: ID 46
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 46
+_-Sending doGifts
+E-Event: MC 0 0x8014C61
+P-alle Punkte abgefahren
+E-Event: MC 0 0x0
+d-===== DumpGlasses prepare dump =====
+d-Glassammount changed since last check
+d-======> Updating DumpGlasses Costs <======
+d-###### createStackCand ######
+d-calculating Variant for Side 0
+d-2 Glasses: searching pyramid base of 2 or plate with 1
+d-current Pyramid should equal level 2 and has 4
+d-current Pyramid should equal level 2 and has 3
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-2 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 4
+d-current Pyramid should equal level 1 and has 3
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-2 Glasses: searching place to build new pyramid
+d-searching headstone for: 0
+d-starting search from bottom: false
+d-Field 2 has no bucket
+P?PathPlanningCache clear requird!
+d-=> can drive from 901:1418 to 900:1000 for 140
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-cDS returni ng: 1360:1096
+d-Site 0 done.
+d-calculating Variant for Side 1
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from 901:1418 to 900:1596 will cost us: 80
+d-Site 1 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 4
+d-##### created candidate c:140 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 0/1  (900:1000:0)
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from 900:1000 to 900:1596 will cost us: 170
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 4
+d-cand 1: 0
+d-##### created candidate c:170 p: 4) #####
+d-We wanted to Stack something onto a Pyramid
+d-new states: 0/0  (900:1596:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-###### createStackCand ######
+d-calculating Variant for Side 0
+d-2 Glasses: searching pyramid base of 2 or plate with 1
+d-current Pyramid should equal level 2 and has 4
+d-current Pyramid should equal level 2 and has 3
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-2 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 4
+d-current Pyramid should equal level 1 and has 3
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-2 Glasses: searching place to build new pyramid
+d-searching headstone for: 0
+d-starting search from bottom: true
+d-Field 0 has no bucket
+d-You shall no build in edges
+d-Field 1 has no bucket
+d-=> can drive from 901:1418 to 900:1400 for 60
+d-Towerheights: 3 4
+d-Towerheights: 3 4
+d-Towerheights: 3 4
+d-Towerheights: 3 4
+d-Towerheights: 3 4
+d-cannot dump glasses in this spot
+d-Field 2 has no bucket
+d-=> can drive from 901:1418 to 900:1000 for 140
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-cDS returni ng: 1360:1096
+d-Site 0 done.
+d-calculating Variant for Side 1
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from 901:1418 to 900:1596 will cost us: 80
+d-Site 1 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 4
+d-##### created candidate c:140 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 0/1  (900:1000:0)
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from 900:1000 to 900:1596 will cost us: 170
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 4
+d-cand 1: 0
+d-##### created candidate c:170 p: 4) #####
+d-We wanted to Stack something onto a Pyramid
+d-new states: 0/0  (900:1596:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-###### createStackCand ######
+d-calculating Variant for Side 0
+d-2 Glasses: searching pyramid base of 2 or plate with 1
+d-current Pyramid should equal level 2 and has 4
+d-current Pyramid should equal level 2 and has 3
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-current Pyramid should equal level 2 and has 0
+d-2 Glasses: searching pyramid base of 1 or plate with 0
+d-current Pyramid should equal level 1 and has 4
+d-current Pyramid should equal level 1 and has 3
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-current Pyramid should equal level 1 and has 0
+d-2 Glasses: searching place to build new pyramid
+d-searching headstone for: 0
+d-starting search from bottom: false
+d-Field 2 has no bucket
+d-=> can drive from 901:1418 to 900:1000 for 140
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-Towerheights: 0 0
+d-cDS returni ng: 1360:1096
+d-Site 0 done.
+d-calculating Variant for Side 1
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from 901:1418 to 900:1596 will cost us: 80
+d-Site 1 done.
+d-Sorting PlanState candidates
+d-cand 0: 10
+d-cand 1: 4
+d-##### created candidate c:140 p: 10) #####
+d-we want to build a new pyramid
+d-new states: 0/1  (900:1000:0)
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from 900:1000 to 900:1596 will cost us: 170
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 4
+d-cand 1: 0
+d-##### created candidate c:170 p: 4) #####
+d-We wanted to Stack something onto a Pyramid
+d-new states: 0/0  (900:1596:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-######## created a clever plan :P ########
+d-##   Target 0: 1360:1096 with height 0 on plate: false
+d-##   Glass 0: 2
+d----------
+d-##   Target 1: 0:0 with height 0 on plate: false
+d-##   Glass 1: 0
+d----------
+d-##   Side: 0
+d-######## --------------------------------- ########
+d-updateTarget: 1360 : 0
+d-new x koord: 1225
+d-needed 39 ticks
+d-resultierende kosten: 140
+d-<==========================>
+d-===== DumpGlasses drive_to (1225, 1000)=====
+P-Nehme Route aus Cache
+P-Fahre Pfad:
+P-	0: (900; 1000) 0
+P-Set target: 900/1000
+J-ANGLE_REACHED
+J-MoveManipulator: push_left --> StartOver
+D-MC ID 47: (900/1000) mm 0.00000deg (0 mrad) speed: 1
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 140)
+P-	0: (900; 1000) 0
+P-ignoriere nächsten Pfadpunkt
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 53,592
+_-Sending doGifts
+J-MoveManipulator: StartOver --> CheckForRequest
+J-MoveManipulator: CheckForRequest --> DelayState
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 53,992
+_-Sending doGifts
+J-MoveManipulator: DelayState --> push_left
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 54,392
+D-RPC received: angle reached: ID 47
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+J-ANGLE_REACHED
+J-MoveManipulator: push_left --> StartOver
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 54,792
+J-MoveManipulator: StartOver --> CheckForRequest
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 55,192
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 55,592
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 55,992
+_-Sending doGifts
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 56,392
+D-RPC received: angle reached: ID 47
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 47
+E-Event: MC 0 0x8014C61
+P-alle Punkte abgefahren
+E-Event: MC 0 0x0
+d-===== DumpGlasses prepare dump =====
+J-GlassStack_links: setReleaseParams amount=2
+J-ReleaseGlassesLeft: added to activation queue
+d-preparing left side for level 0 on plate false
+J-ReleaseGlassesLeft activated
+J-ReleaseGlassesLeft: FinishState --> Entry
+J-MoveManipulator: CheckForRequest --> Abort
+J-GlassLeft: Wait_for_glass --> Abort
+J-position=0 pressure=3188
+J-position=1 pressure=2480
+J-position=2 pressure=614
+J-position=3 pressure=178
+J-GlassStack_links: prepareForRelease: detected lowest attached glass at level 1
+J-ReleaseGlassesLeft: Entry --> Check
+J-GlassLeft finished
+J-GlassLeft stopped
+E-Event: IM 11 0x0
+J-MoveInitial: MoveInitial to 11800 (level 1)
+J-ReleaseGlassesLeft: Check --> MoveInitial
+J-MoveManipulator finished
+J-MoveManipulator stopped
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 56,792
+J-ReleaseGlassesLeft: MoveInitial --> WaitForClearance
+E-Event: IM 16 0x0
+d-===== DumpGlasses drive_in (1225:1000)=====
+D-MC ID 48: 307 mm 0.00000 deg
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 57,193
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 57,593
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 57,993
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 48
+E-Event: MC 0 0x0
+d-===== DumpGlasses dump =====
+d-Dumping left side
+J-ReleaseGlassesLeft: WaitForClearance --> ReleaseEntry
+J-MoveDownwards2: move to: 10660
+J-ReleaseGlassesLeft: ReleaseEntry --> MoveDownwards2
+J-ReleaseGlassesLeft: MoveDownwards2 --> DelayState
+_-Sending doGifts
+J-Release: about to release 1 attached glasses
+J-ReleaseGlassesLeft: DelayState --> Release
+J-ReleaseGlassesLeft: Release --> DelayState
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 58,393
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 58,793
+J-ReleaseGlassesLeft: DelayState --> ReleaseEntry
+J-MoveDownwards2: move to: 9500
+J-ReleaseGlassesLeft: ReleaseEntry --> MoveDownwards2
+J-ReleaseGlassesLeft: MoveDownwards2 --> DelayState
+_-Sending doGifts
+J-Release: about to release 1 attached glasses
+J-ReleaseGlassesLeft: DelayState --> Release
+J-ReleaseGlassesLeft: Release --> DelayState
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 59,193
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 59,593
+J-ReleaseGlassesLeft: DelayState --> ReleaseEntry
+J-nothing to release->exit
+J-FinishState: amount sent to SC: 2
+J-ReleaseGlassesLeft: ReleaseEntry --> FinishState
+E-Event: IM 17 0x0
+F-Pitch dumping left
+F-$$$$ StackWatcher $$$$
+F-curr: 1361/1308  target: 1361,1110
+F-curr: 1208/1500  target: 1361,1110
+F-curr: 0/-15000  target: 1361,1110
+F-curr: 0/-15000  target: 1361,1110
+F-curr: 0/-15000  target: 1361,1110
+F-curr: 0/-15000  target: 1361,1110
+F-curr: 0/-15000  target: 1361,1110
+F-curr: 0/-15000  target: 1361,1110
+F-curr: 0/-15000  target: 1361,1110
+F-curr: 0/-15000  target: 1361,1110
+F-new pyramid with 2 rows
+F-locking cherry plate 2
+d-===== DumpGlasses drive_out =====
+_-Sending doGifts
+J-ReleaseGlassesLeft finished
+J-ReleaseGlassesLeft stopped
+D-MC ID 49: -327 mm 0.00000 deg
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 59,993
+_-Sending doGifts
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 60,393
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 60,793
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 61,193
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 49
+E-Event: MC 0 0x0
+J-CloseManipulator: added to activation queue
+A-#####-##### EXIT DumpGlassesAction #####-#####
+n-Routineprüfung
+A-#####-##### START Troubleshooter #####-#####
+E-Event: TS 1 0x0
+J-CloseManipulator: not added: already in activation queue
+A-#####-##### EXIT Troubleshooter #####-#####
+n->>>>>> THINK <<<<<<
+c-<===== CherryAction get Cost =====>
+c-Plate 0:4294967295
+c-Plate 1:4294967295
+c-Plate 2:4294967295
+P?PathPlanningCache clear requird!
+c-pose (950, 600): 4294967295  0
+c-Plate 3:4294967295
+c-Plate 4:4294967295
+c-Plate 5:4294967295
+c-pose (-950, 1400): 463  0
+c-Plate 6:463
+c-pose (-950, 1000): 439  0
+c-Plate 7:439
+c-pose (-950, 600): 471  0
+c-Plate 8:471
+c-pose (-950, 275): 545  0
+c-Plate 9:545
+c-=====> CherryAction choosing Bucket 7: 439 <=====
+h-=====> Updating CakeVariant Costs <======
+h-We got 0 cherries
+h-updateStates: enemBlownCandles: 0
+h-updateStates: ownBlownCandles: 1
+h-updateStates: burningCandles: 11
+h-Variant 0 got: 387
+h-Variant 0 now got: 387
+h-Variant 1 got: 387
+h-Variant 1 now got: 4294967295
+h-Variant 2 got: 353
+h-Variant 2 now got: 353
+h-Variant 3 got: 353
+h-Variant 3 now got: 4294967295
+h-Variant 4 got: 203
+h-Variant 4 now got: 203
+h-Variant 5 got: 203
+h-Variant 5 now got: 4294967295
+h-Variant 6 got: 4294967295
+h-Variant 6 now got: 4294967295
+h-Variant 7 got: 4294967295
+h-Variant 7 now got: 4294967295
+h-Quarter 0 has 2 lit candles
+h-Quarter 1 has 3 lit candles
+h-Quarter 2 has 3 lit candles
+h-Quarter 3 has 2 lit candles
+g-=====> Updating Gift Costs <======
+g-Geschenkkosten:
+g- -Geschenk 0: 4294967295
+g- -Geschenk 1: 4294967295
+g- -Geschenk 2: 4294967295
+g- -Geschenk 3: 4294967295
+e-=====> Updating CollectGlasses Costs <======
+e-Rankings:
+e-variant 0: 12 is blackListed: false
+e-variant 1: 24 is blackListed: false
+e-variant 2: 30 is blackListed: false
+e-variant 3: 18 is blackListed: false
+e-variant 4: 6 is blackListed: false
+e-variant 5: 5 is blackListed: false
+e-Choosing Plan 2
+e-<===== Choosing Entrypoint: 5 for 365 =====>
+d-======> Updating DumpGlasses Costs <======
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from 902:1009 to 900:1596 will cost us: 160
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 4
+d-cand 1: 0
+d-##### created candidate c:160 p: 4) #####
+d-We wanted to Stack something onto a Pyramid
+d-new states: 0/0  (900:1596:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from 902:1009 to 900:1596 will cost us: 160
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 4
+d-cand 1: 0
+d-##### created candidate c:160 p: 4) #####
+d-We wanted to Stack something onto a Pyramid
+d-new states: 0/0  (900:1596:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from 902:1009 to 900:1596 will cost us: 160
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 4
+d-cand 1: 0
+d-##### created candidate c:160 p: 4) #####
+d-We wanted to Stack something onto a Pyramid
+d-new states: 0/0  (900:1596:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-######## created a clever plan :P ########
+d-##   Target 0: 0:0 with height 0 on plate: false
+d-##   Glass 0: 0
+d----------
+d-##   Target 1: 1208:1500 with height 3 on plate: false
+d-##   Glass 1: 1
+d----------
+d-##   Side: 1
+d-######## --------------------------------- ########
+d-updateTarget: 0 : 1208
+d-new x koord: 1073
+d-needed 4 ticks
+d-resultierende kosten: 160
+d-<==========================>
+n-letzte Aktion: 801FAD1 / nächste Aktion: 8021541 / Zähler: 1
+A-#####-##### START CollectGlassesAction #####-#####
+J-CloseManipulator activated
+_-Sending doGifts
+J-CloseManipulator: Abort --> Abort
+J-GlassLeft: added to activation queue
+J-MoveManipulator: added to activation queue
+J-GlassRight: added to activation queue
+J-MoveManipulator: not added: already in activation queue
+e-=====> CollectGlasses drive to (5) <======
+P-Nehme Route aus Cache
+P-Fahre Pfad:
+P-	0: (-480; 800) 0
+P-Set target: -480/800
+J-CloseManipulator finished
+J-CloseManipulator stopped
+D-MC ID 50: (-480/800) mm 90.01166deg (1571 mrad) speed: 1
+E-Event: IM 42 0x0
+J?GlassRight is already active -> could not be activated!
+J-MoveManipulator activated
+J-MoveManipulator: Abort --> Entry
+J-GlassLeft activated
+J-GlassLeft: Abort --> Prepare_for_glasses
+E-Event: IM 13 0x0
+J-MoveManipulator: Entry --> CheckForRequest
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 365)
+P-	0: (-480; 800) 0
+P-ignoriere nächsten Pfadpunkt
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 61,594
+J-GlassLeft: Prepare_for_glasses --> Start_pump
+J-GlassLeft: Start_pump --> Wait_for_glass
+E-Event: IM 10 0x0
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 61,994
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 62,394
+_-Sending doGifts
+D-RPC received: angle reached: ID 50
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 62,794
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 63,194
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 63,594
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 63,994
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 64,394
+_-Sending doGifts
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 64,794
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 65,194
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 65,594
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 65,994
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 66,394
+_-Sending doGifts
+D-RPC received: angle reached: ID 50
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 50
+E-Event: MC 0 0x8014C61
+P-alle Punkte abgefahren
+E-Event: MC 0 0x0
+e-=====> CollectGlasses drive through <======
+D-MC ID 51: 700 mm 0.00000 deg
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 66,803
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 67,203
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 67,603
+_-Sending doGifts
+D-StopRobot
+E-Event: CC 0 0x0
+e-drive_through: Oppo Collison
+A-#####-##### EXIT CollectGlassesAction #####-#####
+n-Routineprüfung
+A-#####-##### START Troubleshooter #####-#####
+E-Event: TS 1 0x0
+J-CloseManipulator: added to activation queue
+A-#####-##### EXIT Troubleshooter #####-#####
+n->>>>>> THINK <<<<<<
+c-<===== CherryAction get Cost =====>
+c-Plate 0:4294967295
+c-Plate 1:4294967295
+c-Plate 2:4294967295
+P?PathPlanningCache clear requird!
+c-pose (950, 600): 4294967295  0
+c-Plate 3:4294967295
+c-Plate 4:4294967295
+c-Plate 5:4294967295
+c-pose (-950, 1400): 159  0
+c-Plate 6:159
+c-pose (-950, 1000): 183  0
+c-Plate 7:183
+c-pose (-950, 600): 251  0
+c-Plate 8:251
+c-pose (-950, 275): 311  0
+c-Plate 9:311
+c-=====> CherryAction choosing Bucket 6: 159 <=====
+h-=====> Updating CakeVariant Costs <======
+h-We got 0 cherries
+h-updateStates: enemBlownCandles: 0
+h-updateStates: ownBlownCandles: 1
+h-updateStates: burningCandles: 11
+h-Variant 0 got: 209
+h-Variant 0 now got: 209
+h-Variant 1 got: 209
+h-Variant 1 now got: 4294967295
+h-Variant 2 got: 203
+h-Variant 2 now got: 203
+h-Variant 3 got: 203
+h-Variant 3 now got: 4294967295
+h-Variant 4 got: 287
+h-Variant 4 now got: 287
+h-Variant 5 got: 287
+h-Variant 5 now got: 4294967295
+h-Variant 6 got: 4294967295
+h-Variant 6 now got: 4294967295
+h-Variant 7 got: 4294967295
+h-Variant 7 now got: 4294967295
+h-Quarter 0 has 2 lit candles
+h-Quarter 1 has 3 lit candles
+h-Quarter 2 has 3 lit candles
+h-Quarter 3 has 2 lit candles
+g-=====> Updating Gift Costs <======
+g-Geschenkkosten:
+g- -Geschenk 0: 4294967295
+g- -Geschenk 1: 4294967295
+g- -Geschenk 2: 4294967295
+g- -Geschenk 3: 4294967295
+e-=====> Updating CollectGlasses Costs <======
+e-Rankings:
+e-variant 0: 0 is blackListed: false
+e-variant 1: 0 is blackListed: false
+e-variant 2: 0 is blackListed: true
+e-variant 3: 0 is blackListed: false
+e-variant 4: 0 is blackListed: false
+e-variant 5: 1 is blackListed: false
+e-Choosing Plan 5
+e-<===== Choosing Entrypoint: 10 for 187 =====>
+d-======> Updating DumpGlasses Costs <======
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from -483:1347 to 900:1596 will cost us: 365
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 4
+d-cand 1: 0
+d-##### created candidate c:365 p: 4) #####
+d-We wanted to Stack something onto a Pyramid
+d-new states: 0/0  (900:1596:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from -483:1347 to 900:1596 will cost us: 365
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 4
+d-cand 1: 0
+d-##### created candidate c:365 p: 4) #####
+d-We wanted to Stack something onto a Pyramid
+d-new states: 0/0  (900:1596:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from -483:1347 to 900:1596 will cost us: 365
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 4
+d-cand 1: 0
+d-##### created candidate c:365 p: 4) #####
+d-We wanted to Stack something onto a Pyramid
+d-new states: 0/0  (900:1596:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-######## created a clever plan :P ########
+d-##   Target 0: 0:0 with height 0 on plate: false
+d-##   Glass 0: 0
+d----------
+d-##   Target 1: 1208:1500 with height 3 on plate: false
+d-##   Glass 1: 1
+d----------
+d-##   Side: 1
+d-######## --------------------------------- ########
+d-updateTarget: 0 : 1208
+d-new x koord: 1073
+d-needed 9 ticks
+d-resultierende kosten: 365
+d-<==========================>
+n-letzte Aktion: 8021541 / nächste Aktion: 8021541 / Zähler: 2
+A-#####-##### START CollectGlassesAction #####-#####
+J-CloseManipulator activated
+J-CloseManipulator: Abort --> Abort
+J-GlassLeft: added to activation queue
+J-MoveManipulator: added to activation queue
+J-GlassRight: added to activation queue
+J-MoveManipulator: not added: already in activation queue
+e-=====> CollectGlasses drive to (10) <======
+P-Nehme Route aus Cache
+P-Fahre Pfad:
+P-	0: (-1050; 1500) 0
+P-Set target: -1050/1500
+J-CloseManipulator finished
+J-CloseManipulator stopped
+D-MC ID 53: (-1050/1500) mm -90.01166deg (-1571 mrad) speed: 1
+E-Event: IM 42 0x0
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 179)
+P-	0: (-1050; 1500) 0
+P-ignoriere nächsten Pfadpunkt
+J?GlassRight is already active -> could not be activated!
+J?MoveManipulator is already active -> could not be activated!
+J?GlassLeft is already active -> could not be activated!
+E-Event: IM 13 0x0
+E-Event: IM 10 0x0
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 68,  8
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 68,408
+_-Sending doGifts
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 68,808
+_-Sending doGifts
+D-RPC received: angle reached: ID 53
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+E-Event: #Ma0 0x80162E1
+F?Gegner 2 ist abgestürzt!
+S-Spielzeit: 69,208
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 69,608
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 70,  8
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 70,408
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 70,808
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 71,208
+_-Sending doGifts
+D-RPC received: angle reached: ID 53
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 53
+E-Event: MC 0 0x8014C61
+P-alle Punkte abgefahren
+E-Event: MC 0 0x0
+e-=====> CollectGlasses drive through <======
+D-MC ID 54: 700 mm 0.00000 deg
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 71,615
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 72, 15
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 72,415
+_-Sending doGifts
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 72,815
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 73,215
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 54
+E-Event: MC 0 0x0
+A-#####-##### EXIT CollectGlassesAction #####-#####
+n-Routineprüfung
+A-#####-##### START Troubleshooter #####-#####
+E-Event: TS 1 0x0
+A-#####-##### EXIT Troubleshooter #####-#####
+n->>>>>> THINK <<<<<<
+c-<===== CherryAction get Cost =====>
+c-Plate 0:4294967295
+c-Plate 1:4294967295
+c-Plate 2:4294967295
+P?PathPlanningCache clear requird!
+c-pose (950, 600): 4294967295  0
+c-Plate 3:4294967295
+c-Plate 4:4294967295
+c-Plate 5:4294967295
+c-pose (-950, 1400): 187  0
+c-Plate 6:187
+c-pose (-950, 1000): 92  0
+c-Plate 7:92
+c-pose (-950, 600): 127  0
+c-Plate 8:127
+c-pose (-950, 275): 187  0
+c-Plate 9:187
+c-=====> CherryAction choosing Bucket 7: 92 <=====
+h-=====> Updating CakeVariant Costs <======
+h-We got 0 cherries
+h-updateStates: enemBlownCandles: 0
+h-updateStates: ownBlownCandles: 1
+h-updateStates: burningCandles: 11
+h-Variant 0 got: 191
+h-Variant 0 now got: 191
+h-Variant 1 got: 191
+h-Variant 1 now got: 4294967295
+h-Variant 2 got: 217
+h-Variant 2 now got: 217
+h-Variant 3 got: 217
+h-Variant 3 now got: 4294967295
+h-Variant 4 got: 367
+h-Variant 4 now got: 367
+h-Variant 5 got: 367
+h-Variant 5 now got: 4294967295
+h-Variant 6 got: 4294967295
+h-Variant 6 now got: 4294967295
+h-Variant 7 got: 4294967295
+h-Variant 7 now got: 4294967295
+h-Quarter 0 has 2 lit candles
+h-Quarter 1 has 3 lit candles
+h-Quarter 2 has 3 lit candles
+h-Quarter 3 has 2 lit candles
+g-=====> Updating Gift Costs <======
+g-Geschenkkosten:
+g- -Geschenk 0: 4294967295
+g- -Geschenk 1: 4294967295
+g- -Geschenk 2: 4294967295
+g- -Geschenk 3: 4294967295
+e-=====> Updating CollectGlasses Costs <======
+e-Rankings:
+e-variant 0: 0 is blackListed: false
+e-variant 1: 0 is blackListed: false
+e-variant 2: 0 is blackListed: true
+e-variant 3: 0 is blackListed: false
+e-variant 4: 0 is blackListed: false
+e-variant 5: 1 is blackListed: true
+e-No possibility found
+d-======> Updating DumpGlasses Costs <======
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from -1054:801 to 900:1596 will cost us: 525
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 4
+d-cand 1: 0
+d-##### created candidate c:525 p: 4) #####
+d-We wanted to Stack something onto a Pyramid
+d-new states: 0/0  (900:1596:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from -1054:801 to 900:1596 will cost us: 525
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 4
+d-cand 1: 0
+d-##### created candidate c:525 p: 4) #####
+d-We wanted to Stack something onto a Pyramid
+d-new states: 0/0  (900:1596:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-###### createStackCand ######
+d-calculating Variant for Side 1
+d-1 Glasses: searching pyramid base of 3 or plate with 2
+d-current Pyramid should equal level 3 and has 4
+d-current Pyramid should equal level 3 and has 3
+d-gonna stack glasses there: 1208/1500 rows 3 on plate false
+d-driving from -1054:801 to 900:1596 will cost us: 525
+d-Site 1 done.
+d-calculating Variant for Side 0
+d-Site 0 done.
+d-Sorting PlanState candidates
+d-cand 0: 4
+d-cand 1: 0
+d-##### created candidate c:525 p: 4) #####
+d-We wanted to Stack something onto a Pyramid
+d-new states: 0/0  (900:1596:0)
+d-###### createStackCand ######
+d!No Glasses in Robot
+d-######## created a clever plan :P ########
+d-##   Target 0: 0:0 with height 0 on plate: false
+d-##   Glass 0: 0
+d----------
+d-##   Target 1: 1208:1500 with height 3 on plate: false
+d-##   Glass 1: 1
+d----------
+d-##   Side: 1
+d-######## --------------------------------- ########
+d-updateTarget: 0 : 1208
+d-new x koord: 1073
+d-needed 21 ticks
+d-resultierende kosten: 525
+d-<==========================>
+n-letzte Aktion: 8021541 / nächste Aktion: 801FAD1 / Zähler: 1
+A-#####-##### START DumpGlassesAction #####-#####
+J-GlassLeft: added to activation queue
+J-MoveManipulator: added to activation queue
+J-GlassRight: added to activation queue
+J-MoveManipulator: not added: already in activation queue
+d-===== DumpGlasses drive_to (1073, 1596)=====
+d-tellng MC to drive accurate
+P-Nehme Route aus Cache
+P-Fahre Pfad:
+P-	0: (900; 1596) 0
+P-Set target: 900/1596
+_-Sending doGifts
+J?GlassRight is already active -> could not be activated!
+J?MoveManipulator is already active -> could not be activated!
+J?GlassLeft is already active -> could not be activated!
+D-MC ID 55: (900/1596) mm 0.00000deg (0 mrad) speed: 1
+E-Event: IM 13 0x0
+E-Event: IM 10 0x0
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 525)
+P-	0: (900; 1596) 0
+P-ignoriere nächsten Pfadpunkt
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 73,623
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 74, 23
+_-Sending doGifts
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 74,423
+D-RPC received: angle reached: ID 55
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 74,823
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 75,223
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 75,623
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 76, 23
+_-Sending doGifts
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 76,423
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 76,823
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 77,223
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 77,623
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 78, 23
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 78,423
+_-Sending doGifts
+D-RPC received: angle reached: ID 55
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 78,823
+D-RPC received: target reached: ID 55
+E-Event: MC 0 0x8014C61
+P-alle Punkte abgefahren
+E-Event: MC 0 0x0
+d-===== DumpGlasses prepare dump =====
+J-GlassStack_rechts: setReleaseParams amount=1
+J-ReleaseGlassesRight: added to activation queue
+d-preparing right side for level 3 on plate false
+J-ReleaseGlassesRight activated
+J-ReleaseGlassesRight: FinishState --> Entry
+J-MoveManipulator: CheckForRequest --> Abort
+J-GlassRight: Wait_for_glass --> Abort
+J-position=0 pressure=2987
+J-position=1 pressure=545
+J-position=2 pressure=169
+J-position=3 pressure=175
+J-GlassStack_rechts: prepareForRelease: detected lowest attached glass at level 0
+J-ReleaseGlassesRight: Entry --> Check
+J-GlassRight finished
+J-GlassRight stopped
+E-Event: IM 14 0x0
+J-MoveInitial: MoveInitial to 27800 (level 3)
+J-ReleaseGlassesRight: Check --> MoveInitial
+J-MoveManipulator finished
+J-MoveManipulator stopped
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 79,223
+J-ReleaseGlassesRight: MoveInitial --> WaitForClearance
+E-Event: IM 19 0x0
+d-===== DumpGlasses drive_in (1073:1596)=====
+D-MC ID 56: 154 mm 0.00000 deg
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 79,628
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 80, 28
+_-Sending doGifts
+D-RPC received: point reached: ID 0
+D-RPC received: target reached: ID 56
+E-Event: MC 0 0x0
+d-===== DumpGlasses dump =====
+d-Dumping right side
+J-ReleaseGlassesRight: WaitForClearance --> ReleaseEntry
+J-MoveDownwards2: move to: 25500
+J-ReleaseGlassesRight: ReleaseEntry --> MoveDownwards2
+J-ReleaseGlassesRight: MoveDownwards2 --> DelayState
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 80,428
+J-Release: about to release 1 attached glasses
+J-ReleaseGlassesRight: DelayState --> Release
+J-ReleaseGlassesRight: Release --> DelayState
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 80,828
+J-ReleaseGlassesRight: DelayState --> ReleaseEntry
+J-nothing to release->exit
+J-FinishState: amount sent to SC: 1
+J-ReleaseGlassesRight: ReleaseEntry --> FinishState
+E-Event: IM 20 0x0
+F-Pitch dumping right
+F-$$$$ StackWatcher $$$$
+F-curr: 1361/1308  target: 1210,1466
+F-curr: 1208/1500  target: 1210,1466
+F-curr: 1361/1110  target: 1210,1466
+F-curr: 0/-15000  target: 1210,1466
+F-curr: 0/-15000  target: 1210,1466
+F-curr: 0/-15000  target: 1210,1466
+F-curr: 0/-15000  target: 1210,1466
+F-curr: 0/-15000  target: 1210,1466
+F-curr: 0/-15000  target: 1210,1466
+F-curr: 0/-15000  target: 1210,1466
+F-new pyramid with 1 rows
+F-locking cherry plate 1
+d-===== DumpGlasses drive_out =====
+J-ReleaseGlassesRight finished
+J-ReleaseGlassesRight stopped
+D-MC ID 57: -175 mm 0.00000 deg
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 81,236
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 81,636
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 82, 36
+_-Sending doGifts
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 82,436
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 82,836
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 83,236
+D-RPC received: collision rear: ID 57
+E-Event: MC 1 0x8015641
+D-Kollision: noch 3 Versuche
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 83,636
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 84, 36
+_-Sending doGifts
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 84,436
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 84,836
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 85,236
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 85,636
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 86, 36
+_-Sending doGifts
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 86,436
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 86,836
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 87,236
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 87,636
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 88, 36
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 88,436
+E-Event: Wdg0 0x0
+n-Routineprüfung
+A-#####-##### START Troubleshooter #####-#####
+E-Event: TS 1 0x0
+J-CloseManipulator: added to activation queue
+A-#####-##### EXIT Troubleshooter #####-#####
+n->>>>>> THINK <<<<<<
+c-<===== CherryAction get Cost =====>
+c-Plate 0:4294967295
+c-Plate 1:4294967295
+c-Plate 2:4294967295
+P?PathPlanningCache clear requird!
+c-pose (950, 600): 4294967295  0
+c-Plate 3:4294967295
+c-Plate 4:4294967295
+c-Plate 5:4294967295
+c-pose (-950, 1400): 493  0
+c-Plate 6:493
+c-pose (-950, 1000): 483  0
+c-Plate 7:483
+c-pose (-950, 600): 515  0
+c-Plate 8:515
+c-pose (-950, 275): 539  0
+c-Plate 9:539
+c-=====> CherryAction choosing Bucket 7: 483 <=====
+h-=====> Updating CakeVariant Costs <======
+h-We got 0 cherries
+h-updateStates: enemBlownCandles: 0
+h-updateStates: ownBlownCandles: 1
+h-updateStates: burningCandles: 11
+h-Variant 0 got: 431
+h-Variant 0 now got: 431
+h-Variant 1 got: 431
+h-Variant 1 now got: 4294967295
+h-Variant 2 got: 397
+h-Variant 2 now got: 397
+h-Variant 3 got: 397
+h-Variant 3 now got: 4294967295
+h-Variant 4 got: 289
+h-Variant 4 now got: 289
+h-Variant 5 got: 289
+h-Variant 5 now got: 4294967295
+h-Variant 6 got: 4294967295
+h-Variant 6 now got: 4294967295
+h-Variant 7 got: 4294967295
+h-Variant 7 now got: 4294967295
+h-Quarter 0 has 2 lit candles
+h-Quarter 1 has 3 lit candles
+h-Quarter 2 has 3 lit candles
+h-Quarter 3 has 2 lit candles
+g-=====> Updating Gift Costs <======
+g-Geschenkkosten:
+g- -Geschenk 0: 4294967295
+g- -Geschenk 1: 4294967295
+g- -Geschenk 2: 4294967295
+g- -Geschenk 3: 4294967295
+e-=====> Updating CollectGlasses Costs <======
+e-Rankings:
+e-variant 0: 0 is blackListed: false
+e-variant 1: 0 is blackListed: false
+e-variant 2: 0 is blackListed: true
+e-variant 3: 0 is blackListed: false
+e-variant 4: 0 is blackListed: false
+e-variant 5: 1 is blackListed: true
+e-No possibility found
+d-======> Updating DumpGlasses Costs <======
+d--> Keine Gläser im Roboter!
+n-letzte Aktion: 801FAD1 / nächste Aktion: 8020C81 / Zähler: 1
+A-#####-##### START CherryAction #####-#####
+J-CloseManipulator activated
+J-CloseManipulator: Abort --> Abort
+J-GlassLeft: added to activation queue
+J-MoveManipulator: added to activation queue
+J-GlassRight: added to activation queue
+J-MoveManipulator: not added: already in activation queue
+c-Cherrys - driveTo Bucket 7
+P-Nehme Route aus Cache
+P-Fahre Pfad:
+P-	0: (-950; 1000) 0
+P-Set target: -950/1000
+J-CloseManipulator finished
+J-CloseManipulator stopped
+D-MC ID 58: (-950/1000) mm 0.00000deg (0 mrad) speed: 1
+E-Event: IM 42 0x0
+J-GlassRight activated
+J-GlassRight: Abort --> Prepare_for_glasses
+J-MoveManipulator activated
+J-MoveManipulator: Abort --> Entry
+J?GlassLeft is already active -> could not be activated!
+E-Event: A* 0 0x8014CD1
+P-Pfadplannung: neuer Pfad gefunden (Kosten: 483)
+P-	0: (-950; 1000) 0
+P-ignoriere nächsten Pfadpunkt
+E-Event: IM 10 0x0
+J-MoveManipulator: Entry --> CheckForRequest
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 88,840
+J-MoveManipulator: CheckForRequest --> DelayState
+J-GlassRight: Prepare_for_glasses --> Start_pump
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 89,240
+J-GlassRight: Start_pump --> Wait_for_glass
+E-Event: IM 13 0x0
+J-MoveManipulator: DelayState --> push_left
+E-Event: #Ma0 0x80162E1
+S-Spielzeit: 89,640
+D-RPC received: angle reached: ID 58
+E-Event: MC 2 0x8014C61
+D-RPC received: point reached: ID 0
+J-ANGLE_REACHED
+J-MoveManipulator: push_left --> StartOver
+G-RPC received: Stop
+J-GlassRight: Wait_for_glass --> Abort
+J-MoveManipulator: StartOver --> Abort
+J-GlassLeft: Wait_for_glass --> Abort
+J-glass_stack_right: in area and not in release_glasses action -> drop glasses
+J-glass_stack_right: in area and not in release_glasses action -> drop glasses
+A?LEGO-Bot ist nicht initalisiert!
+E-Event: Gbl0 0x0
+A-#####-##### START BalloonAction #####-#####
+E-Event: IM 36 0x0
+E-Event: IM 36 0x0
+E-Event: IM 30 0x0
+E-Event: IM 25 0x0
+E-Event: IM 32 0x0
+E-Event: IM 5 0x0
+E-Event: IM 2 0x0
+J-MoveManipulator finished
+J-MoveManipulator stopped
+_!could not get into command mode
+B!25 failed transmission on the bus so far.
+E-Event: #Bl0 0x0
+b-blowing balloon
+J-BALLOON: added to activation queue
+J-BALLOON activated
+J-BALLOON:  --> Entry_balloon
+J-BALLOON: Entry_balloon --> DelayState
+J-BALLOON: DelayState --> Blow_balloon
+E-Event: IM 7 0x0
+B!50 failed transmission on the bus so far.
+B!75 failed transmission on the bus so far.
+
+FATAL: term closed
+picocom v1.7
+
+port is        : /dev/ttyACM0
+flowcontrol    : none
+baudrate is    : 9600
+parity is      : none
+databits are   : 8
+escape is      : C-a
+local echo is  : no
+noinit is      : no
+noreset is     : no
+nolock is      : no
+send_cmd is    : sz -vv
+receive_cmd is : rz -vv
+imap is        : 
+omap is        : 
+emap is        : crcrlf,delbs,
+
