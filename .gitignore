@@ -12,3 +12,7 @@ tmp
 
 # NXT
 *.sym
+
+#Eclipse
+.project
+.cproject
