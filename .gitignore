@@ -9,6 +9,7 @@ tmp
 
 # QtCreator
 *.pro.user
+*.pro.user.*
 
 # NXT
 *.sym
