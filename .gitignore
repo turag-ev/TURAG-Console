@@ -16,3 +16,6 @@ tmp
 #Eclipse
 .project
 .cproject
+
+# linux executables
+/tina/tests/tests
