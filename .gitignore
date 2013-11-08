@@ -1,0 +1,11 @@
+*~
+tags
+build/
+*.cmake
+CMakeFiles
+CMakeCache.txt
+.geanyprj
+Vision.geany
+lswms/build/
+tamatoberry-build*
+*.pro.user
