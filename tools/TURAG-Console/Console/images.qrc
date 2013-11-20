@@ -3,5 +3,6 @@
         <file>images/ok.png</file>
         <file>images/nok.png</file>
         <file>images/turag-55.png</file>
+        <file>images/lock.png</file>
     </qresource>
 </RCC>

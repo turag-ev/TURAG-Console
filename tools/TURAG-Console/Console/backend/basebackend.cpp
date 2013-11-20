@@ -83,3 +83,7 @@ void BaseBackend::checkData(void) {
 QString BaseBackend::getConnectionInfo() {
     return connectionString_;
 }
+
+QList<QAction*> BaseBackend::getMenuEntries() {
+    return QList<QAction*>();
+}

@@ -14,11 +14,12 @@
 #include <QFrame>
 #include <QPushButton>
 #include <QTimer>
+#include <QMenu>
 
 
 Controller::Controller(QWidget *parent) :
     QStackedWidget(parent), currentBackend(nullptr), currentFrontendIndex(0),
-    autoReconnect(false), connectionShouldBeOpen(false)
+    autoReconnect(false), connectionShouldBeOpen(false), connectionMenu(nullptr)
 {
     // add all available Backends to list with parent this
     availableBackends.append(new FileBackend(this));
@@ -268,6 +269,11 @@ void Controller::onConnected(bool readOnly, bool isSequential) {
         reconnectTimer->stop();
         emit infoMessage("Verbindung erfolgreich wiederaufgebaut");
     }
+
+    if (connectionMenu) {
+        connectionMenu->addActions(currentBackend->getMenuEntries());
+    }
+
     emit connected(readOnly, isSequential);
 }
 
@@ -277,6 +283,12 @@ void Controller::onDisconnected() {
         emit disconnected(true);
     } else {
         emit disconnected(false);
+    }
+
+    if (connectionMenu) {
+        for (QAction* action : currentBackend->getMenuEntries()) {
+            connectionMenu->removeAction(action);
+        }
     }
 }
 

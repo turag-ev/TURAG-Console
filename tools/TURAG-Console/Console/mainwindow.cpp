@@ -43,9 +43,12 @@ MainWindow::MainWindow(QWidget *parent) :
     status = new QLabel();
     permanentStatus = new QLabel();
     permanentStatusImage = new QLabel();
+    permanentReadOnlyImage = new QLabel();
+    permanentReadOnlyImage->setToolTip("Read-Only Zugriff");
 
 
     statusBar()->addWidget(status);
+    statusBar()->addPermanentWidget(permanentReadOnlyImage);
     statusBar()->addPermanentWidget(permanentStatusImage);
     statusBar()->addPermanentWidget(permanentStatus);
     statusBar()->setSizeGripEnabled(true);
@@ -57,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     imgTick = new QImage(":/images/ok.png");
     imgCross = new QImage(":/images/nok.png");
+    imgLock = new QImage(":/images/lock.png");
 
 
     // create menu structure
@@ -107,12 +111,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(new_connection_action, SIGNAL(triggered()), controller, SLOT(openNewConnection()));
 
     QMenu *connection_menu = menuBar()->addMenu("&Verbindung");
+    connection_menu->addAction(new_connection_action);
+    connection_menu->addSeparator();
     connection_menu->addAction(connect_action);
     connection_menu->addAction(disconnect_action);
     connection_menu->addSeparator();
     connection_menu->addAction(auto_reconnect_action);
     connection_menu->addSeparator();
-    connection_menu->addAction(new_connection_action);
 
     // Ansicht
     show_statusbar = new QAction("Statusleiste anzeigen", this);
@@ -171,11 +176,13 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     controller->setExternalContextActions(actions());
+    controller->setExternalConnectionMenu(connection_menu);
 
     setWindowTitle("TURAG-Console");
     setWindowIcon(QIcon(":/images/turag-55.png"));
 
     onDisconnected(false);
+    connect_action->setEnabled(false);
     setCentralWidget(controller);
     readSettings();
 
@@ -258,6 +265,7 @@ void MainWindow::onConnected(bool readOnly) {
 
     if (readOnly) {
         permanentStatus->setText("Verbunden (read-only)");
+        permanentReadOnlyImage->setPixmap(QPixmap::fromImage(*imgLock));
     } else {
         permanentStatus->setText("Verbunden");
     }
@@ -274,6 +282,7 @@ void MainWindow::onDisconnected(bool reconnecting) {
     permanentStatus->setText("Getrennt");
 
     permanentStatusImage->setPixmap(QPixmap::fromImage(*imgCross));
+    permanentReadOnlyImage->setPixmap(QPixmap());
 }
 
 

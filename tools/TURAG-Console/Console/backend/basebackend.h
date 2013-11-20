@@ -6,7 +6,8 @@
 #include <QString>
 #include <QIODevice>
 #include <QByteArray>
-
+#include <QList>
+#include <QAction>
 
 class BaseBackend : public QObject {
     Q_OBJECT
@@ -24,6 +25,7 @@ public:
     bool isReadOnly(void) const;
     bool isSequential(void) const;
     virtual QString getConnectionInfo();
+    virtual QList<QAction*> getMenuEntries();
 
 signals:
     // data was received from the backend

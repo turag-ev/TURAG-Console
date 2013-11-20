@@ -34,7 +34,8 @@ void SCFrontend::clear(void) {
 }
 
 bool SCFrontend::saveOutput(void) {
-    logview->saveOutput();
+    return logview->saveOutput();
+
 }
 
 void SCFrontend::onConnected(bool readOnly, bool isSequential) {

@@ -57,10 +57,12 @@ private:
   QLabel* status;
   QLabel* permanentStatus;
   QLabel* permanentStatusImage;
+  QLabel* permanentReadOnlyImage;
   QPalette default_palette;
   QTimer* status_bar_timer;
   QImage* imgTick;
   QImage* imgCross;
+  QImage* imgLock;
 
   void writeSettings();
   void readSettings();

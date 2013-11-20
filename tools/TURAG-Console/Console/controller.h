@@ -13,6 +13,7 @@ class ConnectionWidget;
 class QPushButton;
 class QAction;
 class QTimer;
+class QMenu;
 
 
 class Controller : public QStackedWidget
@@ -32,6 +33,7 @@ protected:
     bool autoReconnect;
     bool connectionShouldBeOpen;
     QTimer* reconnectTimer;
+    QMenu* connectionMenu;
 
 
 public:
@@ -42,6 +44,7 @@ public:
     QString getConnectionInfo();
 
     void setExternalContextActions(QList<QAction*> actions);
+    void setExternalConnectionMenu(QMenu* menu) {connectionMenu = menu; }
 
     
 public slots:
