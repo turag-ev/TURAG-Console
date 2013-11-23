@@ -2,6 +2,7 @@
 *.bak
 *build*
 tmp
+bin
 *.kate-swp
 
 # C/C++
