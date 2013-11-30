@@ -19,6 +19,7 @@ bin
 #Eclipse
 .project
 .cproject
+.settings
 
 # linux executables
 /tina/tests/tests
