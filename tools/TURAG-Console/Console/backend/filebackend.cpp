@@ -58,8 +58,10 @@ void FileBackend::closeConnection(void) {
 
 void FileBackend::checkData(void) {
     if (stream_.get() && stream_->isReadable()) {
-        emit infoMessage("Datei wird gelesen");
-        QApplication::processEvents();
+
+        // process events caused the application to crash.
+//        emit infoMessage("Datei wird gelesen");
+//        QApplication::processEvents();
 
         stream_->seek(0);
         emit dataReady(stream_->readAll());

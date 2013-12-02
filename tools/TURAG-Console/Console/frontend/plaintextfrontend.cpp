@@ -9,6 +9,7 @@
 #include <QSettings>
 #include <QActionGroup>
 #include <QMenu>
+#include <QDebug>
 
 PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
     BaseFrontend("Standard-Konsole", parent), scroll_on_output(true), hasSequentialConnection(false)
@@ -141,6 +142,7 @@ void PlainTextFrontend::writeData(QByteArray data) {
     // sequential devices do always output their contents completely, so clear contents beforehand
     if (!hasSequentialConnection) clear();
 
+
     QTextCursor end = textbox->textCursor();
     end.movePosition(QTextCursor::End);
 
@@ -206,8 +208,13 @@ bool PlainTextFrontend::saveOutput(void) {
     if (!savefile->open(QIODevice::WriteOnly) || !savefile->isWritable()) {
         return false;
     }
-
-    savefile->write(textbox->toPlainText().toUtf8());
+    if (savefile->write(textbox->toPlainText().toUtf8()) == -1) {
+        return false;
+    }
+    if (!savefile->flush()) {
+        return false;
+    }
+    savefile->close();
 
     return true;
 }
