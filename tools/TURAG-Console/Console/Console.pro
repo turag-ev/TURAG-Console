@@ -37,13 +37,14 @@ SOURCES +=\
     connectionwidgets/connectionwidgetserial.cpp \
     controller.cpp \
     frontend/plaintextfrontend.cpp \
-    frontend/commandview.cpp \
     frontend/logview.cpp \
     frontend/scfrontend.cpp \
     frontend/util/datagraph.cpp \
     frontend/util/lineinterface.cpp \
     frontend/oscilloscope.cpp \
-    frontend/util/colormap.cpp
+    frontend/util/colormap.cpp \
+    frontend/util/tinainterface.cpp \
+    frontend/cmenufrontend.cpp
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -56,13 +57,14 @@ HEADERS  += mainwindow.h \
     connectionwidgets/connectionwidgetserial.h \
     controller.h \
     frontend/plaintextfrontend.h \
-    frontend/commandview.h \
     frontend/logview.h \
     frontend/scfrontend.h \
     frontend/util/datagraph.h \
     frontend/util/lineinterface.h \
     frontend/oscilloscope.h \
-    frontend/util/colormap.h
+    frontend/util/colormap.h \
+    frontend/util/tinainterface.h \
+    frontend/cmenufrontend.h
 
 RESOURCES += \
     images.qrc

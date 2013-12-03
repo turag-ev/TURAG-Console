@@ -2,15 +2,15 @@
 #define SCFRONTEND_H
 
 #include "basefrontend.h"
-#include "logview.h"
-#include "commandview.h"
 
+class CmenuFrontend;
+class LogView;
 
 class SCFrontend : public BaseFrontend
 {
 protected:
     LogView* logview;
-    CommandView* commandview;
+    CmenuFrontend* cmenu;
 
 public:
     SCFrontend(QWidget *parent = 0);
@@ -20,10 +20,10 @@ public slots:
     virtual void clear(void);
     virtual bool saveOutput(void);
 
-    // frontend was connected to stream, does nothing if not overloaded
+    // frontend was connected to stream
     virtual void onConnected(bool readOnly, bool isSequential);
 
-    // frontend was disconnected from stream, does nothing if not overloaded
+    // frontend was disconnected from stream
     virtual void onDisconnected(bool reconnecting);
 };
 

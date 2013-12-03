@@ -102,6 +102,15 @@ QList<QString> Controller::getAvailableFrontends(void) const {
 
 
 void Controller::setFrontend(int newFrontendIndex) {
+    setFrontend(newFrontendIndex, true);
+}
+
+void Controller::setFrontend(int newFrontendIndex, bool calledManually) {
+    // only evaluate this function if :
+    // - the desired frontend index is valid and
+    // - either the chosen frontend stays the same
+    // but it is not shown just now or we want to set a new
+    // frontend
     if (newFrontendIndex >= availableFrontends.size() ||
             (newFrontendIndex == currentFrontendIndex && currentFrontendIndex == currentIndex())) {
         return;
@@ -114,6 +123,7 @@ void Controller::setFrontend(int newFrontendIndex) {
         currentBackend->disconnect(currentFrontend);
         currentFrontend->disconnect(currentBackend);
         this->disconnect(currentFrontend);
+        if (calledManually) currentFrontend->onDisconnected(false);
         newFrontend->clear();
 
         if (currentBackend->isOpen()) {
@@ -122,6 +132,7 @@ void Controller::setFrontend(int newFrontendIndex) {
             connect(newFrontend, SIGNAL(requestData()), currentBackend, SLOT(checkData()), Qt::QueuedConnection);
             connect(this,SIGNAL(connected(bool,bool)),newFrontend,SLOT(onConnected(bool,bool)));
             connect(this,SIGNAL(disconnected(bool)),newFrontend,SLOT(onDisconnected(bool)));
+            if (calledManually) newFrontend->onConnected(currentBackend->isReadOnly(), currentBackend->isSequential());
 
             // ensure that new frontends receive all data if the backend is
             // a random-access-device
@@ -194,7 +205,7 @@ void Controller::openConnection(QString connectionString, bool *success) {
         if (iter->openConnection(connectionString)) {
             currentBackend = iter;
             cancelButton->show();
-            setFrontend(currentFrontendIndex);
+            setFrontend(currentFrontendIndex, false);
             *success = true;
             connectionShouldBeOpen = true;
             return;

@@ -50,7 +50,7 @@ bool BaseBackend::openConnection(void) {
 
 
 void BaseBackend::closeConnection(void) {
-    if (stream_.get()) {
+    if (isOpen()) {
         stream_->close();
         stream_->disconnect(this);
         emit disconnected();

@@ -11,12 +11,12 @@
 #include <string>
 #include <vector>
 #include "basefrontend.h"
-#include "util/lineinterface.h"
 #include <QTableView>
 
 class QSettings;
 class QSortFilterProxyModel;
 class QSignalMapper;
+class TinaInterface;
 
 ////////////////////////////////////////////////////////////////////////////////
 // StreamModel
@@ -102,7 +102,7 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// LogStream
+// LogView
 
 class LogView : public BaseFrontend {
  Q_OBJECT
@@ -141,7 +141,7 @@ private slots:
   void onFilterSrc(int index);
 
 private:
-  LineInterface* lineInterface;
+  TinaInterface* dataInterface;
 
   QTableView* table_;
   StreamModel* model_;

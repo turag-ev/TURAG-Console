@@ -4,6 +4,10 @@
 #include <QObject>
 #include <QByteArray>
 
+/**
+ * @brief Parses raw data into lines
+ *
+ */
 class LineInterface : public QObject
 {
     Q_OBJECT

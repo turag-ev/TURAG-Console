@@ -52,6 +52,7 @@ public slots:
     void openConnection(void);
     void closeConnection(void);
     void setFrontend(int newFrontendIndex);
+    void setFrontend(int newFrontendIndex, bool calledManually);
     void saveOutput(void);
     void setAutoReconnect(bool on);
 

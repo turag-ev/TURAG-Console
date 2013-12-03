@@ -12,6 +12,7 @@
 #include <QTextStream>
 #include <algorithm>
 #include <QVBoxLayout>
+#include "util/tinainterface.h"
 
 #include "logview.h"
 
@@ -289,10 +290,10 @@ LogView::LogView(QWidget *parent) :
   connect(table_, SIGNAL(customContextMenuRequested(QPoint)),
           this, SLOT(contextMenu(QPoint)));
 
-  lineInterface = new LineInterface(this);
-  connect(lineInterface, SIGNAL(beginUpdate()), this, SLOT(beginUpdate()));
-  connect(lineInterface, SIGNAL(endUpdate()), this, SLOT(endUpdate()));
-  connect(lineInterface, SIGNAL(lineReady(QByteArray)), this, SLOT(writeLine(QByteArray)));
+  dataInterface = new TinaInterface(this);
+  connect(dataInterface, SIGNAL(beginUpdate()), this, SLOT(beginUpdate()));
+  connect(dataInterface, SIGNAL(endUpdate()), this, SLOT(endUpdate()));
+  connect(dataInterface, SIGNAL(tinaPackageReady(QByteArray)), this, SLOT(writeLine(QByteArray)));
 }
 
 static
@@ -305,7 +306,7 @@ const char* charToKey(char c) {
 
 
 void LogView::writeData(QByteArray data) {
-    lineInterface->writeData(data);
+    dataInterface->dataInput(data);
 }
 
 
@@ -315,7 +316,7 @@ void LogView::onConnected(bool readOnly, bool isSequential) {
     setScrollOnOutput(!readOnly);
 
   if (!readOnly) {
-    emit dataReady(QByteArray("\27>"));
+      emit dataReady(QByteArray(">"));
   }
 
 }
