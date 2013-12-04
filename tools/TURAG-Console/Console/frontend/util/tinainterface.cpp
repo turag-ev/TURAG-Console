@@ -1,88 +1,86 @@
 #include "tinainterface.h"
 
+#include <algorithm>
+
 TinaInterface::TinaInterface(QObject *parent) :
-    QObject(parent)
+    QObject(parent), content_(BufferContentType::CMENU)
 {
 }
 
 
-void TinaInterface::dataInput(QByteArray data) {
+void TinaInterface::dataInput(const QByteArray data) {
     emit beginUpdate();
 
-    int msg_begin = 0;
+    const char* msg_begin = data.constBegin(); // begin of message
+    const char* iter = 0; // Index in data buffer
 
     // try to fill incomplete tina package in buffer with incoming data
-    if (!packageBuffer_.isEmpty()) {
-        for (int i = 0; i != data.size(); i++) {
-            if (data.at(i) == '\n') {
-                packageBuffer_.append(data.left(i));
-                emit tinaPackageReady(trimCarriageReturn(packageBuffer_));
+    if (content_ == BufferContentType::TINA_DEBUG) {
+        for (; iter < data.end(); iter++) {
+            if (*iter == '\n') {
+                packageBuffer_.append(data.constBegin(), iter - data.constBegin());
+                emit tinaPackageReady(trimmedBuffer(packageBuffer_));
                 packageBuffer_.clear();
-                msg_begin = i + 1;
+                msg_begin = iter + 1;
                 break;
             }
         }
     }
 
-    char lastDelim = '\n';
-
     // search for tina packages with cmenu outputs in between
-    for (int i = msg_begin; i < data.size(); i++) {
-        switch (lastDelim) {
-        case '\n':
-            if (data.at(i) == '\x02') {
-                if (i - msg_begin > 0) {
-                    emit cmenuDataReady(trimCarriageReturn(data.mid(msg_begin, i - msg_begin)));
+    while (iter < data.constEnd()) {
+        switch (content_) {
+        case BufferContentType::CMENU: {
+            iter = std::find(iter, data.constEnd(), '\x02');
+            if (iter != data.constEnd()) {
+                if (iter - msg_begin > 0) {
+                    emit cmenuDataReady(trimmedBuffer(data, msg_begin, iter));
                 }
-                msg_begin = i + 1;
-                lastDelim = '\x02';
+                content_ = BufferContentType::TINA_DEBUG;
+                msg_begin = iter + 1;
             }
             break;
+        }
 
-        case '\x02':
-            if (data.at(i) == '\n') {
-                if (i - msg_begin > 0) {
-                    emit tinaPackageReady(trimCarriageReturn(data.mid(msg_begin, i - msg_begin)));
+        case BufferContentType::TINA_DEBUG:
+            iter = std::find(iter, data.constEnd(), '\n');
+            if (iter != data.constEnd()) {
+                if (iter - msg_begin > 0) {
+                    emit tinaPackageReady(trimmedBuffer(data, msg_begin, iter));
                 }
-                msg_begin = i + 1;
-                lastDelim = '\n';
+                content_ = BufferContentType::CMENU;
+                msg_begin = iter + 1;
             }
             break;
         }
     }
 
     // save incomplete tina packages in buffer; cmenu outputs are printed anyway
-    switch (lastDelim) {
-    case '\x02':
-        if (data.size() - msg_begin > 0) {
-            packageBuffer_.append(data.right(data.size() - msg_begin));
-        } else {
-            // here we cheat a little bit: if the \x02 char was the only one
-            // we would not add anything to the buffer and miss the package
-            // when the following data arrives. For that reason we add \r what
-            // will be removed before emitting the whole package.
-            packageBuffer_.append('\r');
-        }
+    switch (content_) {
+    case BufferContentType::TINA_DEBUG:
+        packageBuffer_.append(msg_begin, data.end() - msg_begin);
         break;
 
-    case '\n':
-        if (data.size() - msg_begin > 0) {
-            emit cmenuDataReady(trimCarriageReturn(data.right(data.size() - msg_begin)));
+    case BufferContentType::CMENU:
+        if (data.end() - msg_begin > 0) {
+            emit cmenuDataReady(trimmedBuffer(data, msg_begin, data.end()));
         }
         break;
     }
-
 
     emit endUpdate();
 }
 
+/**
+ * @brief TinaInterface::trimmedBuffer trim part of buffer and return a copy of it
+ * @param data buffer
+ * @param begin pointer to begin of part of buffer to process
+ * @param end pointer to end of part of buffer to process (to one byte after last byte to process)
+ * @return new trimmed buffer
+ */
+QByteArray TinaInterface::trimmedBuffer(const QByteArray& data, const char* begin, const char* end) {
+    for (; *begin == '\r' && begin < data.end(); begin++) { }
+    for (; *(end-1) == '\r' && end > begin; end--) { }
 
-QByteArray TinaInterface::trimCarriageReturn(QByteArray data) {
-    while (data.endsWith('\r')) {
-        data.remove(data.size()-1, 1);
-    }
-    while (data.startsWith('\r')) {
-        data.remove(0, 1);
-    }
-    return data;
+    return QByteArray(begin, end - begin);
 }

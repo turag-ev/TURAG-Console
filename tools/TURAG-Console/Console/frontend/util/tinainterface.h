@@ -7,13 +7,9 @@ class TinaInterface : public QObject
 {
     Q_OBJECT
 
-protected:
-    QByteArray packageBuffer_;
-    QByteArray trimCarriageReturn(QByteArray data);
-
 public:
     explicit TinaInterface(QObject *parent = 0);
-    
+
 signals:
     void beginUpdate(void);
     void tinaPackageReady(QByteArray line);
@@ -23,6 +19,15 @@ signals:
 public slots:
     virtual void dataInput(QByteArray data);
 
+protected:
+    enum class BufferContentType {
+        TINA_DEBUG,
+        CMENU
+    };
+
+    BufferContentType content_;
+    QByteArray packageBuffer_;
+    static QByteArray trimmedBuffer(const QByteArray& data, const char *begin = data.begin(), const char *end = data.end());
 };
 
 #endif // TINAINTERFACE_H

@@ -66,6 +66,9 @@ HEADERS  += mainwindow.h \
     frontend/util/tinainterface.h \
     frontend/cmenufrontend.h
 
+INCLUDEPATH += \
+    ../../../../../tina \
+
 RESOURCES += \
     images.qrc
 
