@@ -108,7 +108,7 @@ class LogView : public BaseFrontend {
  Q_OBJECT
 public:
   explicit
-  LogView(QWidget *parent = 0);
+  LogView(TinaInterface* interface, QWidget *parent = 0);
 
   template<class... Args>
   void insertRow(Args&&... args) {
@@ -123,7 +123,6 @@ public:
   void setLogSource(char source, const QString&& name);
 
 public slots:
-  void writeData(QByteArray data);
   virtual void onConnected(bool readOnly, bool isSequential);
   virtual void onDisconnected(bool reconnecting);
   virtual void clear(void);
@@ -141,8 +140,6 @@ private slots:
   void onFilterSrc(int index);
 
 private:
-  TinaInterface* dataInterface;
-
   QTableView* table_;
   StreamModel* model_;
   LogFilter* filter_;

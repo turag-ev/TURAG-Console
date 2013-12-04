@@ -237,8 +237,9 @@ bool LogFilter::filterAcceptsRow(int sourceRow,
 ////////////////////////////////////////////////////////////////////////////////
 // LogStream
 
-LogView::LogView(QWidget *parent) :
-    BaseFrontend("Meldungen", parent), scroll_on_output_(false)
+LogView::LogView(TinaInterface *interface, QWidget *parent) :
+    BaseFrontend("Meldungen", parent), dataInterface(interface),
+    scroll_on_output_(false)
 {
   icons[StreamModel::ICON_WARNING]  = QIcon(":/images/warning-orange-16.png");
   icons[StreamModel::ICON_CRITICAL] = QIcon(":/images/error-orange-16.png");
@@ -290,7 +291,6 @@ LogView::LogView(QWidget *parent) :
   connect(table_, SIGNAL(customContextMenuRequested(QPoint)),
           this, SLOT(contextMenu(QPoint)));
 
-  dataInterface = new TinaInterface(this);
   connect(dataInterface, SIGNAL(beginUpdate()), this, SLOT(beginUpdate()));
   connect(dataInterface, SIGNAL(endUpdate()), this, SLOT(endUpdate()));
   connect(dataInterface, SIGNAL(tinaPackageReady(QByteArray)), this, SLOT(writeLine(QByteArray)));
@@ -304,12 +304,6 @@ const char* charToKey(char c) {
   return key;
 }
 
-
-void LogView::writeData(QByteArray data) {
-    dataInterface->dataInput(data);
-}
-
-
 void LogView::onConnected(bool readOnly, bool isSequential) {
     (void)isSequential;
 
@@ -318,7 +312,6 @@ void LogView::onConnected(bool readOnly, bool isSequential) {
   if (!readOnly) {
       emit dataReady(QByteArray(">"));
   }
-
 }
 
 void LogView::onDisconnected(bool reconnecting) {
@@ -335,8 +328,6 @@ void LogView::onDisconnected(bool reconnecting) {
     }
 
 }
-
-
 
 void LogView::beginUpdate() {
   model_->beginUpdate();

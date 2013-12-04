@@ -9,8 +9,9 @@
 SCFrontend::SCFrontend(QWidget *parent) :
     BaseFrontend("System Control", parent)
 {
-    logview = new LogView;
-    cmenu = new CmenuFrontend;
+    interface = TinaInterface(this);
+    logview = new LogView(interface);
+    cmenu = new PlainTextFrontend();
 
     QHBoxLayout* layout = new QHBoxLayout;
     QSplitter* splitter = new QSplitter;
@@ -21,6 +22,8 @@ SCFrontend::SCFrontend(QWidget *parent) :
 
     setLayout(layout);
 
+    connect(interface, SIGNAL(cmenuDataReady(QByteArray)), cmenu, SLOT(writeData(QByteArray)));
+
     // connect outputs of logview and cmenu to own dataReadySignal
     connect(logview, SIGNAL(dataReady(QByteArray)), this, SIGNAL(dataReady(QByteArray)));
     connect(cmenu, SIGNAL(dataReady(QByteArray)), this, SIGNAL(dataReady(QByteArray)));
@@ -28,8 +31,7 @@ SCFrontend::SCFrontend(QWidget *parent) :
 
 
 void SCFrontend::writeData(QByteArray data) {
-    logview->writeData(data);
-    cmenu->writeData(data);
+    interface->dataInput(data);
 }
 
 void SCFrontend::clear(void) {

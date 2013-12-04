@@ -3,14 +3,16 @@
 
 #include "basefrontend.h"
 
-class CmenuFrontend;
+class TinaInterface;
+class PlainTextFrontend;
 class LogView;
 
 class SCFrontend : public BaseFrontend
 {
 protected:
+    TinaInterface* interface;
     LogView* logview;
-    CmenuFrontend* cmenu;
+    PlainTextFrontend* cmenu;
 
 public:
     SCFrontend(QWidget *parent = 0);
