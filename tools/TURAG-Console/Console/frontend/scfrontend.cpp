@@ -1,15 +1,17 @@
 #include "scfrontend.h"
-#include "logview.h"
-#include "cmenufrontend.h"
+
 #include <QHBoxLayout>
 #include <QSplitter>
 #include <QDebug>
 
+#include "logview.h"
+#include "plaintextfrontend.h"
+#include "util/tinainterface.h"
 
 SCFrontend::SCFrontend(QWidget *parent) :
     BaseFrontend("System Control", parent)
 {
-    interface = TinaInterface(this);
+    interface = new TinaInterface(this);
     logview = new LogView(interface);
     cmenu = new PlainTextFrontend();
 

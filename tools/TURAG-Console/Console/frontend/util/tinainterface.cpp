@@ -1,6 +1,7 @@
 #include "tinainterface.h"
 
 #include <algorithm>
+#include <QDebug>
 
 TinaInterface::TinaInterface(QObject *parent) :
     QObject(parent), content_(BufferContentType::CMENU)
@@ -12,7 +13,7 @@ void TinaInterface::dataInput(const QByteArray data) {
     emit beginUpdate();
 
     const char* msg_begin = data.constBegin(); // begin of message
-    const char* iter = 0; // Index in data buffer
+    const char* iter = msg_begin; // Index in data buffer
 
     // try to fill incomplete tina package in buffer with incoming data
     if (content_ == BufferContentType::TINA_DEBUG) {

@@ -17,7 +17,7 @@ signals:
     void endUpdate(void);
 
 public slots:
-    virtual void dataInput(QByteArray data);
+    virtual void dataInput(const QByteArray data);
 
 protected:
     enum class BufferContentType {
@@ -27,7 +27,12 @@ protected:
 
     BufferContentType content_;
     QByteArray packageBuffer_;
-    static QByteArray trimmedBuffer(const QByteArray& data, const char *begin = data.begin(), const char *end = data.end());
+    static QByteArray trimmedBuffer(const QByteArray& data, const char *begin,
+                                    const char *end);
+
+    static QByteArray trimmedBuffer(const QByteArray& data) {
+        return trimmedBuffer(data, data.begin(), data.end());
+    }
 };
 
 #endif // TINAINTERFACE_H

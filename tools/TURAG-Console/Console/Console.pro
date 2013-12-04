@@ -15,7 +15,7 @@ TARGET = Console
 TEMPLATE = app
 
 # Schneller als die Standardimplementierung wenn Strings mit + verbunden werden
-DEFINES *= QT_USE_QSTRINGBUILDER
+DEFINES *= QT_USE_QSTRINGBUILDER TURAG_STD_CONFIG
 
 QMAKE_CXXFLAGS         += -std=gnu++0x
 QMAKE_LFLAGS           += -std=gnu++0x
@@ -67,7 +67,7 @@ HEADERS  += mainwindow.h \
     frontend/cmenufrontend.h
 
 INCLUDEPATH += \
-    ../../../../../tina \
+    ../../../tina \
 
 RESOURCES += \
     images.qrc

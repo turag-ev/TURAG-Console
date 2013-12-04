@@ -1,23 +1,23 @@
-p-PrepareAction --- Wait for start jumper
+p-PrepareAction --- Wait for start jumper
 
 -index 2 seems ok
 
 Legobot
 
-J!index 3 pipe system defect (pump=0 valve=0 sensor=3) (pressure is: 2124, should be above: 2500)
+J!index 3 pipe system defect (pump=0 valve=0 sensor=3) (pressure is: 2124, should be above: 2500)
 
-J-PWM Servo Initialization:
+J-PWM Servo Initialization:
 
-J-	ServoGlassLeft initialized
+J-	ServoGlassLeft initialized
 
-J-	ServoGlassRight initialized
+J-	ServoGlassRight initialized
 
-J-	ServoPaddle initialized
+J-	ServoPaddle initialized
 
-J-	ServoTrigger initialized
+J-	ServoTrigger initialized
 
-J-RS485Servo Initialization:
+J-RS485Servo Initialization:
 
-D-MC ID 1: -40 mm 0.00000 deg
+D-MC ID 1: -40 mm 0.00000 deg
 
-E-Event: #Pp2 0x0
+E-Event: #Pp2 0x0

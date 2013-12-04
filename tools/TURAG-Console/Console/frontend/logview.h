@@ -12,6 +12,7 @@
 #include <vector>
 #include "basefrontend.h"
 #include <QTableView>
+#include <tina++/tina.h>
 
 class QSettings;
 class QSortFilterProxyModel;
@@ -127,6 +128,7 @@ public slots:
   virtual void onDisconnected(bool reconnecting);
   virtual void clear(void);
   virtual bool saveOutput(void);
+  void writeData(QByteArray data) override;
 
 private slots:
   void beginUpdate();
