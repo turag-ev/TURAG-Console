@@ -4,11 +4,15 @@
 #
 #-------------------------------------------------
 
-CONFIG += serialport qwt
-QT       += core gui widgets serialport
+CONFIG +=  qwt
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += printsupport
+    QT += serialport
+    QT += widgets
+} else {
+    CONFIG += serialport
 }
 
 TARGET = Console
@@ -44,7 +48,9 @@ SOURCES +=\
     frontend/oscilloscope.cpp \
     frontend/util/colormap.cpp \
     frontend/util/tinainterface.cpp \
-    frontend/cmenufrontend.cpp
+    frontend/cmenufrontend.cpp \
+    ../../../tina/plattform/desktop-qt/thread.cpp \
+    tina-platform/rs485.c
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -64,10 +70,13 @@ HEADERS  += mainwindow.h \
     frontend/oscilloscope.h \
     frontend/util/colormap.h \
     frontend/util/tinainterface.h \
-    frontend/cmenufrontend.h
+    frontend/cmenufrontend.h \
+    tina-platform/public/tina/rs485.h
 
 INCLUDEPATH += \
     ../../../tina \
+    ../../../tina/plattform/desktop-qt/public \
+    tina-platform/public
 
 RESOURCES += \
     images.qrc

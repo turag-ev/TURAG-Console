@@ -145,6 +145,9 @@ MainWindow::MainWindow(QWidget *parent) :
         connect(frontendAction, SIGNAL(triggered()), frontendMapper, SLOT(map()));
         frontendMapper->setMapping(frontendAction, i);
         ++i;
+        if (i<=9) {
+            frontendAction->setShortcut(QKeySequence(QString("Ctrl+%1").arg(i)));
+        }
     }
     connect(frontendMapper, SIGNAL(mapped(int)), controller, SLOT(setFrontend(int)));
 
