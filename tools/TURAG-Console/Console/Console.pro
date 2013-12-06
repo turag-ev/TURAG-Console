@@ -49,7 +49,7 @@ SOURCES +=\
     frontend/util/colormap.cpp \
     frontend/util/tinainterface.cpp \
     frontend/cmenufrontend.cpp \
-    ../../../tina/plattform/desktop-qt/thread.cpp \
+    ../../../tina/platform/desktop-qt/thread.cpp \
     tina-platform/rs485.c
 
 HEADERS  += mainwindow.h \
@@ -75,7 +75,7 @@ HEADERS  += mainwindow.h \
 
 INCLUDEPATH += \
     ../../../tina \
-    ../../../tina/plattform/desktop-qt/public \
+    ../../../tina/platform/desktop-qt/public \
     tina-platform/public
 
 RESOURCES += \
