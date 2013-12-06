@@ -325,7 +325,6 @@ void LogView::onDisconnected(bool reconnecting) {
         settings.remove(charToKey(key));
       }
     }
-
 }
 
 void LogView::beginUpdate() {
@@ -449,31 +448,31 @@ void LogView::setLogSource(char source, const QString&& name) {
 }
 
 void LogView::writeLine(QByteArray line) {
-    if (line.size() > 2) {
-        char level = line.at(1);
-        unsigned source = line.at(0);
-        line.remove(0, 2);
+	if (line.size() > 2) {
+		char level = line.at(1);
+		unsigned source = line.at(0);
+		line.remove(0, 2);
 
-        switch (level) {
-        case '-':
-        case '!':
-        case '?':
-            insertRow(level, line.data(), line.size(), source);
-            break;
+		switch (level) {
+		case '-':
+		case '!':
+		case '?':
+			insertRow(level, line.data(), line.size(), source);
+			break;
 
-        case '>':
-            if (std::isprint(source)) {
-                setLogSource(source, QString::fromUtf8(line));
-            }
-            break;
+		case '>':
+			if (std::isprint(source)) {
+				setLogSource(source, QString::fromUtf8(line));
+			}
+			break;
 
-        case ';':
-            if (source == ';') {
-                insertRow(level, line.data(), line.size(), source);
-            }
-            break;
-        }
-    }
+		case ';':
+			if (source == ';') {
+				insertRow(level, line.data(), line.size(), source);
+			}
+			break;
+		}
+	}
 }
 
 

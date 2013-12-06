@@ -182,7 +182,7 @@ MainWindow::MainWindow(QWidget *parent) :
     controller->setExternalConnectionMenu(connection_menu);
 
     setWindowTitle("TURAG-Console");
-    setWindowIcon(QIcon(":/images/turag-55.png"));
+	setWindowIcon(QIcon(":/images/turag-55.png"));
 
     onDisconnected(false);
     connect_action->setEnabled(false);
@@ -317,7 +317,6 @@ void MainWindow::writeSettings() {
   if (currentFrontend != -1) {
       settings.setValue("currentFrontend", currentFrontend);
   }
-
 }
 
 MainWindow::~MainWindow() { }

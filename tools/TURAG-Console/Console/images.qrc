@@ -1,8 +1,11 @@
 <RCC>
-    <qresource prefix="/">
+    <qresource lang="de" prefix="/">
         <file>images/ok.png</file>
         <file>images/nok.png</file>
         <file>images/turag-55.png</file>
         <file>images/lock.png</file>
+        <file>images/warning-orange-16.png</file>
+        <file>images/error-orange-16.png</file>
+        <file>images/error-red-16.png</file>
     </qresource>
 </RCC>
