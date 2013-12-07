@@ -5,18 +5,18 @@
 
 extern "C"
 void debug_printf(const char* fmt, ...) {
-    char buffer[4096];
+//    char buffer[4096];
 
-    va_list args;
-    va_start(args, fmt);
-    vsnprintf(buffer, sizeof(buffer), fmt, args);
-    va_end(args);
+//    va_list args;
+//    va_start(args, fmt);
+//    vsnprintf(buffer, sizeof(buffer), fmt, args);
+//    va_end(args);
 
-    qDebug() << buffer;
+//    qDebug() << buffer;
 }
 
 extern "C"
 void debug_puts(const char* s) {
-    qDebug() << s;
+//    qDebug() << s;
 }
 

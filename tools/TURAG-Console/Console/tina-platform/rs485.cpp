@@ -39,7 +39,8 @@ extern "C" bool turag_rs485_transceive(uint8_t *input, int input_length, uint8_t
         }
     }
 
-    for (int i = 0; i < turag_rs485_data_buffer.size(); ++i) {
+
+    for (int i = 0; i < output_length; ++i) {
         output[i] = turag_rs485_data_buffer.at(i);
     }
     turag_rs485_data_buffer.clear();

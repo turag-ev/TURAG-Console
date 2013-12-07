@@ -7,6 +7,7 @@
 #include <QListWidget>
 #include <QTextEdit>
 #include <QDebug>
+#include <QCoreApplication>
 
 
 FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
@@ -32,7 +33,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     connect(startInquiry_, SIGNAL(clicked()), this, SLOT(onStartInquiry()));
     setEnabled(false);
 
-    turag_rs485_init(0, turag_ms_to_ticks(10));
+    turag_rs485_init(0, turag_ms_to_ticks(2000));
 }
 
 
@@ -65,7 +66,11 @@ bool FeldbusFrontend::saveOutput(void) {
 
 
 void FeldbusFrontend::onStartInquiry(void) {
+    startInquiry_->setEnabled(false);
+
     for (int i = 1; i < 128; i++) {
+//        qDebug() << "Gerät: " << i;
+        startInquiry_->setText(QString("Geräte suchen: %1 %").arg(i*100/128));
         for (int j = 0; j < 2; j++) {
             Feldbus::Device::ChecksumType chksum_type = Feldbus::Device::ChecksumType::xor_based;
 
@@ -78,7 +83,7 @@ void FeldbusFrontend::onStartInquiry(void) {
                 break;
             }
 
-            Feldbus::Device* dev = new TURAG::Feldbus::Device("", i, chksum_type);
+            Feldbus::Device* dev = new TURAG::Feldbus::Device("", i, chksum_type, 1,1);
             if (dev->isAvailable()) {
                 Feldbus::DeviceInfo dev_info;
                 if (dev->getDeviceInfo(&dev_info)) {
@@ -92,5 +97,9 @@ void FeldbusFrontend::onStartInquiry(void) {
             }
             delete dev;
         }
+//        QCoreApplication::processEvents();
     }
+
+    startInquiry_->setEnabled(true);
+    startInquiry_->setText("Geräte suchen");
 }

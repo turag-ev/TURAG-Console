@@ -88,18 +88,25 @@ void SerialBackend::onError(QSerialPort::SerialPortError error) {
     case QSerialPort::BreakConditionError:
         errormsg = "Break condition detected by the hardware on the input line."; break;
     case QSerialPort::WriteError:
-        errormsg = "An I/O error occurred while writing the data."; break;
+        errormsg = "An I/O error occurred while writing the data.";
+        emit errorOccured("Fehler: " + errormsg);
+        break;
     case QSerialPort::ReadError:
-        errormsg = "An I/O error occurred while reading the data."; break;
+        errormsg = "An I/O error occurred while reading the data.";
+        emit errorOccured("Fehler: " + errormsg);
+        break;
     case QSerialPort::ResourceError:
-        errormsg = "An I/O error occurred when a resource becomes unavailable, e.g. when the device is unexpectedly removed from the system."; break;
+        errormsg = "An I/O error occurred when a resource becomes unavailable, e.g. when the device is unexpectedly removed from the system.";
+        emit errorOccured("Fehler: " + errormsg);
+//        closeConnection();
+        break;
     case QSerialPort::UnsupportedOperationError:
-        errormsg = "The requested device operation is not supported or prohibited by the running operating system."; break;
+        errormsg = "The requested device operation is not supported or prohibited by the running operating system.";
+        emit errorOccured("Fehler: " + errormsg);
+        break;
     case QSerialPort::UnknownError:
         errormsg = "An unidentified error occurred."; break;
     }
 
-    emit errorOccured("Fehler: " + errormsg);
-    closeConnection();
 }
 
