@@ -46,9 +46,11 @@ bool SCFrontend::saveOutput(void) {
 
 }
 
-void SCFrontend::onConnected(bool readOnly, bool isSequential) {
-    logview->onConnected(readOnly, isSequential);
-    cmenu->onConnected(readOnly, isSequential);
+void SCFrontend::onConnected(bool readOnly, bool isSequential, QIODevice* dev) {
+    (void)dev;
+
+    logview->onConnected(readOnly, isSequential, dev);
+    cmenu->onConnected(readOnly, isSequential, dev);
     qDebug() << objectName() << " connected";
 }
 

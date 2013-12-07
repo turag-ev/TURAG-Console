@@ -52,7 +52,7 @@ public slots:
 
 
     // frontend was connected to stream, does nothing if not overloaded
-    virtual void onConnected(bool readOnly, bool isSequential);
+    virtual void onConnected(bool readOnly, bool isSequential, QIODevice*);
 
     // frontend was disconnected from stream, does nothing if not overloaded
     virtual void onDisconnected(bool reconnecting);

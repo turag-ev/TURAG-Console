@@ -2,6 +2,12 @@
 #define TINA_CHIBIOS_RS485_H
 
 #include <tina/time.h>
+class QIODevice;
+class QByteArray;
+
+
+extern QIODevice* turag_rs485_io_device;
+extern QByteArray turag_rs485_data_buffer;
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,5 +19,6 @@ bool turag_rs485_transceive(uint8_t* input, int input_length, uint8_t* output, i
 #ifdef __cplusplus
 } // extern "C"
 #endif
+
 
 #endif // TINA_CHIBIOS_RS485_H

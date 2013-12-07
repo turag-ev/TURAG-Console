@@ -26,6 +26,7 @@ public:
     bool isSequential(void) const;
     virtual QString getConnectionInfo();
     virtual QList<QAction*> getMenuEntries();
+    QIODevice* getDevice() { return stream_.get(); }
 
 signals:
     // data was received from the backend

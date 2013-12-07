@@ -48,9 +48,12 @@ SOURCES +=\
     frontend/oscilloscope.cpp \
     frontend/util/colormap.cpp \
     frontend/util/tinainterface.cpp \
-    frontend/cmenufrontend.cpp \
     ../../../tina/platform/desktop-qt/thread.cpp \
-    tina-platform/rs485.c
+    tina-platform/rs485.cpp \
+    frontend/feldbusfrontend.cpp \
+    ../../../tina/tina++/feldbus/host/device_tina.cpp \
+    ../../../tina/tina/crc/crc8_icode/crc8_icode.c \
+    tina-platform/debug_printf.cpp
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -70,8 +73,8 @@ HEADERS  += mainwindow.h \
     frontend/oscilloscope.h \
     frontend/util/colormap.h \
     frontend/util/tinainterface.h \
-    frontend/cmenufrontend.h \
-    tina-platform/public/tina/rs485.h
+    tina-platform/public/tina/rs485.h \
+    frontend/feldbusfrontend.h
 
 INCLUDEPATH += \
     ../../../tina \

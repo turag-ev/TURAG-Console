@@ -16,9 +16,10 @@ BaseFrontend::BaseFrontend(QString name, QWidget *parent) :
 }
 
 
-void BaseFrontend::onConnected(bool readOnly, bool isSequential) {
+void BaseFrontend::onConnected(bool readOnly, bool isSequential, QIODevice * dev) {
     (void)readOnly;
     (void)isSequential;
+    (void)dev;
 }
 
 void BaseFrontend::onDisconnected(bool reconnecting) {

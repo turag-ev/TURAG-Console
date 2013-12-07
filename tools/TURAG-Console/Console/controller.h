@@ -66,7 +66,7 @@ protected slots:
     void onReconnectTimeout();
 
 signals:
-    void connected(bool readOnly, bool isSequential);
+    void connected(bool readOnly, bool isSequential, QIODevice*);
     void disconnected(bool reconnecting);
     void errorOccured(QString msg);
     void infoMessage(QString msg);

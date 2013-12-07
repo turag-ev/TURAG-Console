@@ -6,6 +6,7 @@
 #include "frontend/plaintextfrontend.h"
 #include "frontend/scfrontend.h"
 #include "frontend/oscilloscope.h"
+#include "frontend/feldbusfrontend.h"
 
 #include "connectionwidgets/connectionwidgetfile.h"
 #include "connectionwidgets/connectionwidgetserial.h"
@@ -29,6 +30,7 @@ Controller::Controller(QWidget *parent) :
     availableFrontends.append(new PlainTextFrontend);
     availableFrontends.append(new SCFrontend);
     availableFrontends.append(new Oscilloscope);
+    availableFrontends.append(new FeldbusFrontend);
 
     // add all available connectionWidgets to list without a parent
     availableConnectionWidgets.append(new ConnectionWidgetSerial);
@@ -130,9 +132,9 @@ void Controller::setFrontend(int newFrontendIndex, bool calledManually) {
             connect(currentBackend, SIGNAL(dataReady(QByteArray)), newFrontend, SLOT(writeData(QByteArray)));
             connect(newFrontend, SIGNAL(dataReady(QByteArray)), currentBackend, SLOT(writeData(QByteArray)));
             connect(newFrontend, SIGNAL(requestData()), currentBackend, SLOT(checkData()), Qt::QueuedConnection);
-            connect(this,SIGNAL(connected(bool,bool)),newFrontend,SLOT(onConnected(bool,bool)));
+            connect(this,SIGNAL(connected(bool,bool,QIODevice*)),newFrontend,SLOT(onConnected(bool,bool,QIODevice*)));
             connect(this,SIGNAL(disconnected(bool)),newFrontend,SLOT(onDisconnected(bool)));
-            if (calledManually) newFrontend->onConnected(currentBackend->isReadOnly(), currentBackend->isSequential());
+            if (calledManually) newFrontend->onConnected(currentBackend->isReadOnly(), currentBackend->isSequential(), currentBackend->getDevice());
 
             // ensure that new frontends receive all data if the backend is
             // a random-access-device
@@ -285,7 +287,7 @@ void Controller::onConnected(bool readOnly, bool isSequential) {
         connectionMenu->addActions(currentBackend->getMenuEntries());
     }
 
-    emit connected(readOnly, isSequential);
+    emit connected(readOnly, isSequential, currentBackend->getDevice());
 }
 
 void Controller::onDisconnected() {

@@ -219,7 +219,9 @@ bool PlainTextFrontend::saveOutput(void) {
     return true;
 }
 
-void PlainTextFrontend::onConnected(bool readOnly, bool isSequential) {
+void PlainTextFrontend::onConnected(bool readOnly, bool isSequential, QIODevice* dev) {
+    (void)dev;
+
     if (readOnly) {
         paste_action->setEnabled(false);
     } else {

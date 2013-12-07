@@ -51,7 +51,7 @@ public slots:
     virtual void clear(void);
 
     // frontend was connected to stream
-    virtual void onConnected(bool readOnly, bool isSequential);
+    virtual void onConnected(bool readOnly, bool isSequential, QIODevice*);
 
     // frontend was disconnected from stream
     virtual void onDisconnected(bool reconnecting);

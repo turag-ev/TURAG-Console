@@ -82,8 +82,9 @@ Oscilloscope::~Oscilloscope() {
     writeSettings();
 }
 
-void Oscilloscope::onConnected(bool readOnly, bool isSequential) {
+void Oscilloscope::onConnected(bool readOnly, bool isSequential, QIODevice* dev) {
     (void)readOnly;
+    (void)dev;
     hasSequentialConnection = isSequential;
 }
 

@@ -53,7 +53,7 @@ public slots:
     virtual void writeData(QByteArray data);
     virtual void clear(void);
     virtual bool saveOutput(void);
-    virtual void onConnected(bool readOnly, bool isSequential);
+    virtual void onConnected(bool readOnly, bool isSequential, QIODevice*);
 };
 
 

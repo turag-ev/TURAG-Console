@@ -303,8 +303,9 @@ const char* charToKey(char c) {
   return key;
 }
 
-void LogView::onConnected(bool readOnly, bool isSequential) {
+void LogView::onConnected(bool readOnly, bool isSequential, QIODevice* dev) {
     (void)isSequential;
+    (void)dev;
 
     setScrollOnOutput(!readOnly);
 
@@ -486,4 +487,5 @@ bool LogView::saveOutput(void) {
 
 void LogView::writeData(QByteArray data)
 {
+    (void)data;
 }

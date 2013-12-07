@@ -124,7 +124,7 @@ public:
   void setLogSource(char source, const QString&& name);
 
 public slots:
-  virtual void onConnected(bool readOnly, bool isSequential);
+  virtual void onConnected(bool readOnly, bool isSequential, QIODevice*);
   virtual void onDisconnected(bool reconnecting);
   virtual void clear(void);
   virtual bool saveOutput(void);
