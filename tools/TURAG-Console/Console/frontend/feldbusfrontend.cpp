@@ -59,8 +59,12 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     connect(startInquiry_, SIGNAL(clicked()), this, SLOT(onStartInquiry()));
     setEnabled(false);
 
-    turag_rs485_init(0, turag_ms_to_ticks(10));
-
+#ifdef Q_OS_WIN32
+    // windows is a bit slower :D
+    turag_rs485_init(0, turag_ms_to_ticks(25));
+#else
+     turag_rs485_init(0, turag_ms_to_ticks(10));
+#endif
 
     QSettings settings;
     settings.beginGroup(objectName());
