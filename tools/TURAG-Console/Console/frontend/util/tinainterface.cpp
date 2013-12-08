@@ -35,7 +35,7 @@ void TinaInterface::dataInput(const QByteArray data) {
             iter = std::find(iter, data.constEnd(), '\x02');
             if (iter != data.constEnd()) {
                 if (iter - msg_begin > 0) {
-                    emit cmenuDataReady(trimmedBuffer(data, msg_begin, iter));
+                    emit cmenuDataReady(trimmedBuffer(msg_begin, iter));
                 }
                 content_ = BufferContentType::TINA_DEBUG;
                 msg_begin = iter + 1;
@@ -47,7 +47,7 @@ void TinaInterface::dataInput(const QByteArray data) {
             iter = std::find(iter, data.constEnd(), '\n');
             if (iter != data.constEnd()) {
                 if (iter - msg_begin > 0) {
-                    emit tinaPackageReady(trimmedBuffer(data, msg_begin, iter));
+                    emit tinaPackageReady(trimmedBuffer(msg_begin, iter));
                 }
                 content_ = BufferContentType::CMENU;
                 msg_begin = iter + 1;
@@ -64,7 +64,7 @@ void TinaInterface::dataInput(const QByteArray data) {
 
     case BufferContentType::CMENU:
         if (data.end() - msg_begin > 0) {
-            emit cmenuDataReady(trimmedBuffer(data, msg_begin, data.end()));
+            emit cmenuDataReady(trimmedBuffer(msg_begin, data.end()));
         }
         break;
     }
@@ -79,8 +79,8 @@ void TinaInterface::dataInput(const QByteArray data) {
  * @param end pointer to end of part of buffer to process (to one byte after last byte to process)
  * @return new trimmed buffer
  */
-QByteArray TinaInterface::trimmedBuffer(const QByteArray& data, const char* begin, const char* end) {
-    for (; *begin == '\r' && begin < data.end(); begin++) { }
+QByteArray TinaInterface::trimmedBuffer(const char* begin, const char* end) {
+    for (; *begin == '\r' && begin < end; begin++) { }
     for (; *(end-1) == '\r' && end > begin; end--) { }
 
     return QByteArray(begin, end - begin);

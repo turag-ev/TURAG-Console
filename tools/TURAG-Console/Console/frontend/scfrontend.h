@@ -1,14 +1,17 @@
 #ifndef SCFRONTEND_H
 #define SCFRONTEND_H
 
+#include <QAbstractTableModel>
+
 #include "basefrontend.h"
 
 class TinaInterface;
 class PlainTextFrontend;
 class LogView;
 
-class SCFrontend : public BaseFrontend
-{
+class SCFrontend : public BaseFrontend {
+	Q_OBJECT
+
 protected:
     TinaInterface* interface;
     LogView* logview;

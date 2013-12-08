@@ -8,6 +8,9 @@
 #include "plaintextfrontend.h"
 #include "util/tinainterface.h"
 
+////////////////////////////////////////////////////////////////////////////////
+// SCFrontend
+
 SCFrontend::SCFrontend(QWidget *parent) :
     BaseFrontend("System Control", parent)
 {
@@ -19,9 +22,10 @@ SCFrontend::SCFrontend(QWidget *parent) :
     QSplitter* splitter = new QSplitter;
 
     layout->addWidget(splitter);
+	layout->setMargin(0);
     splitter->addWidget(logview);
-    splitter->addWidget(cmenu);
-
+	splitter->addWidget(cmenu);
+	splitter->setContentsMargins(0,0,0,0);
     setLayout(layout);
 
     connect(interface, SIGNAL(cmenuDataReady(QByteArray)), cmenu, SLOT(writeData(QByteArray)));
@@ -42,12 +46,11 @@ void SCFrontend::clear(void) {
 }
 
 bool SCFrontend::saveOutput(void) {
-    return logview->saveOutput();
-
+	return logview->saveOutput();
 }
 
 void SCFrontend::onConnected(bool readOnly, bool isSequential, QIODevice* dev) {
-    (void)dev;
+	Q_UNUSED(dev);
 
     logview->onConnected(readOnly, isSequential, dev);
     cmenu->onConnected(readOnly, isSequential, dev);

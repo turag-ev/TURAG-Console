@@ -7,9 +7,13 @@
 CONFIG +=  qwt
 QT     += core gui
 
-QT += printsupport
-QT += serialport
-QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT += printsupport
+    QT += serialport
+    QT += widgets
+} else {
+    CONFIG += serialport
+}
 
 TARGET = Console
 TEMPLATE = app
@@ -21,9 +25,9 @@ QMAKE_CXXFLAGS         += -std=gnu++0x
 QMAKE_LFLAGS           += -std=gnu++0x
 
 # Release
-QMAKE_CXXFLAGS_RELEASE += -Ofast -flto -march=native -funroll-loops -mfpmath=sse
-QMAKE_CFLAGS_RELEASE   += -Ofast -flto -march=native -funroll-loops -mfpmath=sse
-QMAKE_LFLAGS_RELEASE   += -Ofast -flto -march=native -funroll-loops -mfpmath=sse
+QMAKE_CXXFLAGS_RELEASE += -O3 -flto -march=native -funroll-loops -mfpmath=sse
+QMAKE_CFLAGS_RELEASE   += -O3 -flto -march=native -funroll-loops -mfpmath=sse
+QMAKE_LFLAGS_RELEASE   += -O3 -flto -march=native -funroll-loops -mfpmath=sse
 
 SOURCES +=\
         mainwindow.cpp \

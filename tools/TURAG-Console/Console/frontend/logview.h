@@ -71,6 +71,8 @@ public:
   void beginUpdate();
   void endUpdate();
 
+  const Rows& rows() const { return rows_; }
+
   void clear();
 
   void setLogSource(char source, const QString&& name);
@@ -113,7 +115,7 @@ public:
 
   template<class... Args>
   void insertRow(Args&&... args) {
-    model_->insertRow(std::forward<Args>(args)...);
+	log_model_->insertRow(std::forward<Args>(args)...);
   }
 
   void setScrollOnOutput(bool on);
@@ -142,8 +144,8 @@ private slots:
   void onFilterSrc(int index);
 
 private:
-  QTableView* table_;
-  StreamModel* model_;
+  QTableView* log_;
+  StreamModel* log_model_;
   LogFilter* filter_;
   QSignalMapper* filter_mapper_;
 

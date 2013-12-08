@@ -27,11 +27,10 @@ protected:
 
     BufferContentType content_;
     QByteArray packageBuffer_;
-    static QByteArray trimmedBuffer(const QByteArray& data, const char *begin,
-                                    const char *end);
 
+	static QByteArray trimmedBuffer(const char *begin, const char *end);
     static QByteArray trimmedBuffer(const QByteArray& data) {
-        return trimmedBuffer(data, data.begin(), data.end());
+		return trimmedBuffer(data.constBegin(), data.constEnd());
     }
 };
 

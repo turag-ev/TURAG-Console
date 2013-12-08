@@ -25,6 +25,7 @@ PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
     textbox->setFont(QFont("Monospace", 9));
 
     layout->addWidget(textbox);
+	layout->setMargin(0);
     setLayout(layout);
 
     setFocusPolicy(Qt::WheelFocus);
@@ -203,24 +204,25 @@ bool PlainTextFrontend::saveOutput(void) {
         return false;
     }
 
-    QFile* savefile = new QFile(filename);
+	QFile savefile(std::move(filename));
 
-    if (!savefile->open(QIODevice::WriteOnly) || !savefile->isWritable()) {
+	if (!savefile.open(QIODevice::WriteOnly)) {
+		return false;
+	}
+
+	if (!savefile.isWritable()) {
         return false;
     }
-    if (savefile->write(textbox->toPlainText().toUtf8()) == -1) {
+
+	if (savefile.write(textbox->toPlainText().toUtf8()) == -1) {
         return false;
     }
-    if (!savefile->flush()) {
-        return false;
-    }
-    savefile->close();
 
     return true;
 }
 
 void PlainTextFrontend::onConnected(bool readOnly, bool isSequential, QIODevice* dev) {
-    (void)dev;
+	Q_UNUSED(dev);
 
     if (readOnly) {
         paste_action->setEnabled(false);
