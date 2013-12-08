@@ -98,7 +98,7 @@ void SerialBackend::onError(QSerialPort::SerialPortError error) {
     case QSerialPort::ResourceError:
         errormsg = "An I/O error occurred when a resource becomes unavailable, e.g. when the device is unexpectedly removed from the system.";
         emit errorOccured("Fehler: " + errormsg);
-//        closeConnection();
+        closeConnection();
         break;
     case QSerialPort::UnsupportedOperationError:
         errormsg = "The requested device operation is not supported or prohibited by the running operating system.";

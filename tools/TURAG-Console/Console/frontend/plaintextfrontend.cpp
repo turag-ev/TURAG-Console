@@ -42,7 +42,7 @@ PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
     black_on_white_action->setCheckable(true);
     connect(black_on_white_action, SIGNAL(triggered()), this, SLOT(onStyleBlackOnWhite()));
 
-    white_on_black_action = new QAction("Weiß auf schwarz", this);
+    white_on_black_action = new QAction("Grau auf schwarz", this);
     white_on_black_action->setActionGroup(styleOptions);
     white_on_black_action->setCheckable(true);
     white_on_black_action->setChecked(true);

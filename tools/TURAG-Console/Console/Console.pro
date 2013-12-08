@@ -5,15 +5,11 @@
 #-------------------------------------------------
 
 CONFIG +=  qwt
-QT       += core gui
+QT     += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += printsupport
-    QT += serialport
-    QT += widgets
-} else {
-    CONFIG += serialport
-}
+QT += printsupport
+QT += serialport
+QT += widgets
 
 TARGET = Console
 TEMPLATE = app
@@ -53,7 +49,10 @@ SOURCES +=\
     frontend/feldbusfrontend.cpp \
     ../../../tina/tina++/feldbus/host/device_tina.cpp \
     ../../../tina/tina/crc/crc8_icode/crc8_icode.c \
-    tina-platform/debug_printf.cpp
+    tina-platform/debug_printf.cpp \
+    frontend/util/feldbusdevicefactory.cpp \
+    ../../../tina/tina++/feldbus/host/farbsensor_tina.cpp \
+    ../../../tina/tina++/feldbus/host/aktor_tina.cpp
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -74,7 +73,8 @@ HEADERS  += mainwindow.h \
     frontend/util/colormap.h \
     frontend/util/tinainterface.h \
     tina-platform/public/tina/rs485.h \
-    frontend/feldbusfrontend.h
+    frontend/feldbusfrontend.h \
+    frontend/util/feldbusdevicefactory.h
 
 INCLUDEPATH += \
     ../../../tina \
