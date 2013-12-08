@@ -68,6 +68,11 @@ QString SerialBackend::getConnectionInfo() {
     }
 }
 
+bool SerialBackend::canHandleUrl(const QString& url) const
+{
+    return url.startsWith(SerialBackend::connectionPrefix);
+}
+
 
 void SerialBackend::onError(QSerialPort::SerialPortError error) {
     QString errormsg;

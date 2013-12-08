@@ -18,6 +18,8 @@
 #include <QFileDialog>
 #include <tina++/algorithm.h>
 
+#include <QDebug>
+
 #include "util/tinainterface.h"
 
 static QIcon icons[StreamModel::ICON_MAX];
@@ -30,7 +32,7 @@ StreamModel::StreamModel(QObject* parent) :
     rows_(),
     last_size(),
     log_sources_(),
-    logtime_()
+    logtime_(0)
 {
     log_sources_[';'] = "System";
 }
@@ -146,7 +148,9 @@ bool StreamModel::insertRow(char level, const char *data, std::size_t len, unsig
     default:  icon = ICON_INFO;     break;
     }
 
-    if (source == ';' && strncmp(data, "SPIELZEIT:", std::min(len, (std::size_t)10))==0) {
+    if (source == ';' && len > 10 &&
+        strncmp(data, "SPIELZEIT:", 10) == 0)
+    {
         QTextStream stream(QByteArray(data, len));
         stream.seek(10); // "SPIELZEIT:"
 
@@ -190,12 +194,14 @@ void StreamModel::endUpdate() {
 
 void StreamModel::clear() {
     int size = rows_.size();
+    if (size) {
+        beginRemoveRows(QModelIndex(), 0, size);
 
-    beginRemoveRows(QModelIndex(), 0, size);
+        rows_.clear();
 
-    rows_.clear();
-
-    endRemoveRows();
+        endRemoveRows();
+    }
+    logtime_ = 0;
 }
 
 void StreamModel::setLogSource(char source, const QString&& name) {

@@ -42,6 +42,10 @@ public slots:
     // `openConnection(QString connectionString)'
     virtual bool openConnection(void);
 
+    // checks if backend is capable for this connection
+    // normally only checks url prefix
+    virtual bool canHandleUrl(const QString& url) const = 0;
+
     // this function needs to open a stream, if possible, with the provided connectionString
     // and has to build the signal-slot connection between stream and backend.
     // Further it has to emit the appropriate `connected'-signal.

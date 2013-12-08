@@ -182,6 +182,11 @@ void Controller::openConnection(void) {
         if (currentBackend->openConnection()) {
             cancelButton->show();
             connectionShouldBeOpen = true;
+
+            if (!currentBackend->isSequential()) {
+                currentBackend->checkData();
+            }
+
         } else {
             // destroy signal-slot connection in case of failure
             currentBackend->disconnect(currentFrontend);
@@ -192,30 +197,37 @@ void Controller::openConnection(void) {
 
 
 void Controller::openConnection(QString connectionString, bool *success) {
-
     closeConnection();
 
     BaseFrontend* currentFrontend = availableFrontends.at(currentFrontendIndex);
     currentFrontend->clear();
 
-    for (auto iter : availableBackends) {
-        // build signal-slot connection before opening stream
-        connect(iter, SIGNAL(dataReady(QByteArray)), currentFrontend, SLOT(writeData(QByteArray)));
-        connect(currentFrontend, SIGNAL(dataReady(QByteArray)), iter, SLOT(writeData(QByteArray)));
-        connect(currentFrontend, SIGNAL(requestData()), iter, SLOT(checkData()), Qt::QueuedConnection);
+    auto iter = std::find_if(availableBackends.begin(),
+                             availableBackends.end(),
+                             [&](const BaseBackend* b) -> bool { return b->canHandleUrl(connectionString); });
 
-        if (iter->openConnection(connectionString)) {
-            currentBackend = iter;
+    if (iter != availableBackends.end()) {
+        // we got a backend
+        BaseBackend* backend = *iter;
+
+        // build signal-slot connection before opening stream
+        connect(backend, SIGNAL(dataReady(QByteArray)), currentFrontend, SLOT(writeData(QByteArray)));
+        connect(currentFrontend, SIGNAL(dataReady(QByteArray)), backend, SLOT(writeData(QByteArray)));
+        connect(currentFrontend, SIGNAL(requestData()), backend, SLOT(checkData()), Qt::QueuedConnection);
+
+        if (backend->openConnection(connectionString)) {
+            currentBackend = backend;
             cancelButton->show();
             setFrontend(currentFrontendIndex, false);
+            cancelButton->hide();
             *success = true;
             connectionShouldBeOpen = true;
             return;
         }
 
         // destroy signal-slot connection if it was not the right backend
-        iter->disconnect(currentFrontend);
-        currentFrontend->disconnect(iter);
+        backend->disconnect(currentFrontend);
+        currentFrontend->disconnect(backend);
     }
 
     *success = false;

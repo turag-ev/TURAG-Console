@@ -34,8 +34,6 @@ bool FileBackend::openConnection(QString connectionString) {
       return false;
     }
 
-    checkData();
-
     watcher->addPath(newConnectionString);
     connect(watcher,SIGNAL(fileChanged(QString)),this,SLOT(onFileChanged()));
 
@@ -88,4 +86,9 @@ QString FileBackend::getConnectionInfo() {
         QString newConnectionString = connectionString_.right(connectionString_.length() - FileBackend::connectionPrefix.length());
         return QFileInfo(newConnectionString).fileName();
     }
+}
+
+bool FileBackend::canHandleUrl(const QString& url) const
+{
+    return url.startsWith(FileBackend::connectionPrefix);
 }

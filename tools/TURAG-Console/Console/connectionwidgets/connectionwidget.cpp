@@ -1,14 +1,19 @@
 #include "connectionwidget.h"
-#include "libs/elidedbutton.h"
+
 #include <QSettings>
 #include <QSignalMapper>
 #include <QStringList>
 #include <QLabel>
 #include <QGroupBox>
 
+#include "libs/elidedbutton.h"
+
+
 ConnectionWidget::ConnectionWidget(QString recentConnectionSpecifier, QWidget *parent) :
     QWidget(parent), recentConnectionsContainer(nullptr), recentConnectionSpecifier_(recentConnectionSpecifier)
 {
+    recent_files_map_ = new QSignalMapper(this);
+    connect(recent_files_map_,SIGNAL(mapped(int)),this,SLOT(onOpenRecentConnection(int)));
 }
 
 void ConnectionWidget::addRecentConnections() {
@@ -22,9 +27,7 @@ void ConnectionWidget::addRecentConnections() {
     settings.beginGroup("RecentConnections");
     recent_connections = settings.value(recentConnectionSpecifier_).toStringList();
 
-
     if (!recent_connections.empty()) {
-        QSignalMapper* recent_files_map = new QSignalMapper(this);
         recentConnectionsContainer = new QGroupBox(recentConnectionSpecifier_ + ":");
         QVBoxLayout* innerLayout = new QVBoxLayout;
 
@@ -37,13 +40,12 @@ void ConnectionWidget::addRecentConnections() {
             link->setToolTip(recent_connections[i]);
             link->setStyleSheet(QString::fromUtf8("text-align:left;"));
 
-            connect(link, SIGNAL(clicked()), recent_files_map, SLOT(map()));
-            recent_files_map->setMapping(link, i);
+            connect(link, SIGNAL(clicked()), recent_files_map_, SLOT(map()));
+            recent_files_map_->setMapping(link, i);
             innerLayout->addWidget(link, 0, Qt::AlignLeft);
         }
         recentConnectionsContainer->setLayout(innerLayout);
         layout->addWidget(recentConnectionsContainer);
-        connect(recent_files_map,SIGNAL(mapped(int)),this,SLOT(onOpenRecentConnection(int)));
     }
 }
 

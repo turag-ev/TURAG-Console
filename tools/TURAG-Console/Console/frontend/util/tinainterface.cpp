@@ -29,9 +29,8 @@ void TinaInterface::dataInput(const QByteArray data) {
     }
 
     // search for tina packages with cmenu outputs in between
-    while (iter < data.constEnd()) {
-        switch (content_) {
-        case BufferContentType::CMENU: {
+    while (iter < data.end()) {
+        if (content_ == BufferContentType::CMENU) {
             iter = std::find(iter, data.constEnd(), '\x02');
             if (iter != data.constEnd()) {
                 if (iter - msg_begin > 0) {
@@ -39,11 +38,16 @@ void TinaInterface::dataInput(const QByteArray data) {
                 }
                 content_ = BufferContentType::TINA_DEBUG;
                 msg_begin = iter + 1;
-            }
-            break;
-        }
 
-        case BufferContentType::TINA_DEBUG:
+            } else {
+                // we are at the end, print the rest
+                if (data.end() - msg_begin > 0) {
+                    emit cmenuDataReady(trimmedBuffer(msg_begin, data.end()));
+                }
+                break;
+            }
+
+        } else { // if (content_ == BufferContentType::TINA_DEBUG)
             iter = std::find(iter, data.constEnd(), '\n');
             if (iter != data.constEnd()) {
                 if (iter - msg_begin > 0) {
@@ -51,22 +55,15 @@ void TinaInterface::dataInput(const QByteArray data) {
                 }
                 content_ = BufferContentType::CMENU;
                 msg_begin = iter + 1;
+
+            } else {
+                // we are at the end, save incomplete tina packages in buffer
+                packageBuffer_.append(msg_begin, data.end() - msg_begin);
+                break;
             }
-            break;
         }
-    }
 
-    // save incomplete tina packages in buffer; cmenu outputs are printed anyway
-    switch (content_) {
-    case BufferContentType::TINA_DEBUG:
-        packageBuffer_.append(msg_begin, data.end() - msg_begin);
-        break;
-
-    case BufferContentType::CMENU:
-        if (data.end() - msg_begin > 0) {
-            emit cmenuDataReady(trimmedBuffer(msg_begin, data.end()));
-        }
-        break;
+        iter++;
     }
 
     emit endUpdate();

@@ -140,10 +140,6 @@ void PlainTextFrontend::writeData(QByteArray data) {
     int value = scrollbar->value();
     bool scroll_to_max = scroll_on_output && value == scrollbar->maximum();
 
-    // sequential devices do always output their contents completely, so clear contents beforehand
-    if (!hasSequentialConnection) clear();
-
-
     QTextCursor end = textbox->textCursor();
     end.movePosition(QTextCursor::End);
 
