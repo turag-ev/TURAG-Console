@@ -7,6 +7,7 @@
 #include <QHBoxLayout>
 #include <QCompleter>
 #include <QStringList>
+#include <QShowEvent>
 
 
 ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
@@ -16,7 +17,7 @@ ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
     port_name_edit = new QLineEdit();
     port_name_edit->setPlaceholderText("Gerätename");
     port_name_edit->setMaximumWidth(350);
-    QCompleter* completer = new QCompleter(ConnectionWidgetSerial::listDevices(), this);
+    completer = new QCompleter(ConnectionWidgetSerial::listDevices(), this);
     completer->setCaseSensitivity(Qt::CaseInsensitive);
     port_name_edit->setCompleter(completer);
 
@@ -78,3 +79,12 @@ void ConnectionWidgetSerial::connectionChangedInternal() {
 
 }
 
+
+void ConnectionWidgetSerial::showEvent ( QShowEvent * event ) {
+    completer->deleteLater();
+    completer = new QCompleter(ConnectionWidgetSerial::listDevices(), this);
+    completer->setCaseSensitivity(Qt::CaseInsensitive);
+    port_name_edit->setCompleter(completer);
+
+    ConnectionWidget::showEvent(event);
+}

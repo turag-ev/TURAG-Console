@@ -8,14 +8,14 @@ const QString FileBackend::connectionPrefix = "file://";
 
 
 FileBackend::FileBackend(QObject *parent) :
-    BaseBackend(parent)
+    BaseBackend(FileBackend::connectionPrefix, parent)
 {
     watcher = new QFileSystemWatcher(this);
 }
 
 
 bool FileBackend::openConnection(QString connectionString) {
-    if (!connectionString.startsWith(FileBackend::connectionPrefix)) {
+    if (!canHandleUrl(connectionString)) {
         return false;
     }
 
@@ -23,7 +23,7 @@ bool FileBackend::openConnection(QString connectionString) {
     closeConnection();
 
     // extract filename
-    QString newConnectionString = connectionString.right(connectionString.length() - FileBackend::connectionPrefix.length());
+    QString newConnectionString = connectionString.right(connectionString.length() - connectionPrefix.length());
 
     // open new file
     stream_.reset(new QFile(newConnectionString));
@@ -49,7 +49,7 @@ void FileBackend::closeConnection(void) {
     BaseBackend::closeConnection();
     watcher->disconnect(this);
     if (!connectionString_.isEmpty()) {
-        watcher->removePath(connectionString_.right(connectionString_.length() - FileBackend::connectionPrefix.length()));
+        watcher->removePath(connectionString_.right(connectionString_.length() - connectionPrefix_.length()));
     }
 }
 
@@ -83,12 +83,7 @@ QString FileBackend::getConnectionInfo() {
     if (connectionString_.isEmpty()) {
         return "";
     } else {
-        QString newConnectionString = connectionString_.right(connectionString_.length() - FileBackend::connectionPrefix.length());
+        QString newConnectionString = connectionString_.right(connectionString_.length() - connectionPrefix_.length());
         return QFileInfo(newConnectionString).fileName();
     }
-}
-
-bool FileBackend::canHandleUrl(const QString& url) const
-{
-    return url.startsWith(FileBackend::connectionPrefix);
 }

@@ -23,8 +23,6 @@ public:
     static const QString connectionPrefix;
     virtual QString getConnectionInfo();
 
-    bool canHandleUrl(const QString& url) const override;
-
 public slots:
     virtual bool openConnection(QString connectionString);
     virtual void checkData(void);

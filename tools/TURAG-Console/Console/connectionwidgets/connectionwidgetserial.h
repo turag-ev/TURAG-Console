@@ -6,6 +6,8 @@
 #include <QLineEdit>
 #include <QPushButton>
 
+class QShowEvent;
+class QCompleter;
 
 class ConnectionWidgetSerial : public ConnectionWidget {
     Q_OBJECT
@@ -14,8 +16,10 @@ protected:
     QLineEdit* port_name_edit;
     QLineEdit* bd_edit;
     QPushButton* serial_button;
+    QCompleter* completer;
 
     static QStringList listDevices(void);
+    void showEvent ( QShowEvent * event );
 
 protected slots:
     void connectionChangedInternal(void);

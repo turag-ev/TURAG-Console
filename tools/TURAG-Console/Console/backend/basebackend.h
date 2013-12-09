@@ -15,10 +15,10 @@ class BaseBackend : public QObject {
 protected:
     std::unique_ptr<QIODevice> stream_;
     QString connectionString_;
-
+    const QString connectionPrefix_;
 
 public:
-    explicit BaseBackend(QObject *parent = 0);
+    explicit BaseBackend(QString connectionPrefix, QObject *parent = 0);
     ~BaseBackend(void);
 
     bool isOpen(void) const;
@@ -27,6 +27,10 @@ public:
     virtual QString getConnectionInfo();
     virtual QList<QAction*> getMenuEntries();
     QIODevice* getDevice() { return stream_.get(); }
+
+    // checks if backend is capable for this connection
+    // normally only checks url prefix
+    virtual bool canHandleUrl(const QString& url) const;
 
 signals:
     // data was received from the backend
@@ -41,10 +45,6 @@ public slots:
     // reopens a previously closed connection by passing the saved connectionString to
     // `openConnection(QString connectionString)'
     virtual bool openConnection(void);
-
-    // checks if backend is capable for this connection
-    // normally only checks url prefix
-    virtual bool canHandleUrl(const QString& url) const = 0;
 
     // this function needs to open a stream, if possible, with the provided connectionString
     // and has to build the signal-slot connection between stream and backend.

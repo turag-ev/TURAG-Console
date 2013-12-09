@@ -2,8 +2,8 @@
 #include <QByteArray>
 
 
-BaseBackend::BaseBackend(QObject *parent) :
-    QObject(parent)
+BaseBackend::BaseBackend(QString connectionPrefix, QObject *parent) :
+    QObject(parent), connectionPrefix_(connectionPrefix)
 {
 }
 
@@ -87,3 +87,8 @@ QString BaseBackend::getConnectionInfo() {
 QList<QAction*> BaseBackend::getMenuEntries() {
     return QList<QAction*>();
 }
+
+bool BaseBackend::canHandleUrl(const QString& url) const {
+    return url.startsWith(connectionPrefix_);
+}
+

@@ -5,13 +5,13 @@
 const QString SerialBackend::connectionPrefix = "serial://";
 
 SerialBackend::SerialBackend(QObject *parent) :
-    BaseBackend(parent)
+    BaseBackend(SerialBackend::connectionPrefix, parent)
 {
 }
 
 
 bool SerialBackend::openConnection(QString connectionString) {
-    if (!connectionString.startsWith(SerialBackend::connectionPrefix)) {
+    if (!canHandleUrl(connectionString)) {
         return false;
     }
 
@@ -24,8 +24,8 @@ bool SerialBackend::openConnection(QString connectionString) {
     closeConnection();
 
     // extract arguments
-    QString device = connectionString.mid(SerialBackend::connectionPrefix.length(),
-                                  colonIndex - SerialBackend::connectionPrefix.length());
+    QString device = connectionString.mid(connectionPrefix_.length(),
+                                  colonIndex - connectionPrefix_.length());
     QString baudrate = connectionString.right(connectionString.size() - colonIndex - 1);
 
     // open stream
@@ -60,17 +60,12 @@ QString SerialBackend::getConnectionInfo() {
         return "";
     } else {
         int colonIndex = connectionString_.lastIndexOf(":");
-        QString device = connectionString_.mid(SerialBackend::connectionPrefix.length(),
-                                      colonIndex - SerialBackend::connectionPrefix.length());
+        QString device = connectionString_.mid(connectionPrefix_.length(),
+                                      colonIndex - connectionPrefix_.length());
         QString baudrate = connectionString_.right(connectionString_.size() - colonIndex - 1);
 
         return QFileInfo(device).fileName() + ":" + baudrate;
     }
-}
-
-bool SerialBackend::canHandleUrl(const QString& url) const
-{
-    return url.startsWith(SerialBackend::connectionPrefix);
 }
 
 

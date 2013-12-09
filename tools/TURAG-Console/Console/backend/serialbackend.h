@@ -15,8 +15,6 @@ public:
     static const QString connectionPrefix;
     virtual QString getConnectionInfo();
 
-    bool canHandleUrl(const QString& url) const override;
-
 protected slots:
     void onError(QSerialPort::SerialPortError error);
 
