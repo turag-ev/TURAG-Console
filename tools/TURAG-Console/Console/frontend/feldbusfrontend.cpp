@@ -11,8 +11,10 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QSettings>
+#include <tina++/feldbus/host/farbsensor.h>
+#include "feldbusviews/feldbusfarbsensorview.h"
 
-
+using namespace TURAG;
 
 FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     BaseFrontend("TURAG Feldbus", parent)
@@ -21,7 +23,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     toValidator_ = new QIntValidator(2, 127, this);
 
     QHBoxLayout* layout = new QHBoxLayout;
-    QSplitter* splitter = new QSplitter;
+    splitter = new QSplitter;
 
     QWidget* left_layout_widget = new QWidget;
     QVBoxLayout* left_layout = new QVBoxLayout;
@@ -52,8 +54,10 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     left_layout->addWidget(deviceInfo_);
     left_layout_widget->setLayout(left_layout);
 
+    feldbusWidget = new QWidget;
     layout->addWidget(splitter);
     splitter->addWidget(left_layout_widget);
+    splitter->addWidget(feldbusWidget);
     setLayout(layout);
 
     connect(startInquiry_, SIGNAL(clicked()), this, SLOT(onStartInquiry()));
@@ -189,13 +193,30 @@ void FeldbusFrontend::onStartInquiry(void) {
 
 
 void FeldbusFrontend::onDeviceSelected( int row) {
+    feldbusWidget->hide();
+    feldbusWidget->deleteLater();
+
     if (row < devices_.size() && row != -1) {
         FeldbusDeviceInfoExt device_info = devices_.at(row);
 
         deviceFactory->createFeldbusDevice(device_info);
-
         deviceInfo_->setText(deviceFactory->getDeviceInfoText());
+
+
+        // create Farbsensor view
+        Feldbus::Farbsensor* farbsensor = dynamic_cast<Feldbus::Farbsensor*>(deviceFactory->getDevice());
+        if (farbsensor) {
+            feldbusWidget = new FeldbusFarbsensorView(farbsensor);
+            splitter->addWidget(feldbusWidget);
+            return;
+        }
+
+        // TODO: create more views
     }
+
+    // create default QWidget if there is no suitable option
+    feldbusWidget = new QWidget;
+    splitter->addWidget(feldbusWidget);
 }
 
 

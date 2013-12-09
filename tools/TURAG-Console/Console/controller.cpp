@@ -16,6 +16,9 @@
 #include <QPushButton>
 #include <QTimer>
 #include <QMenu>
+#include <QToolBox>
+#include <QLabel>
+#include <QSettings>
 
 
 Controller::Controller(QWidget *parent) :
@@ -56,14 +59,21 @@ Controller::Controller(QWidget *parent) :
     QVBoxLayout* layout = new QVBoxLayout();
     QWidget* welcome_screen = new QWidget();
 
-    for (auto iter : availableConnectionWidgets) {
-        layout->addWidget(iter);
-        connect(iter,SIGNAL(connectionChanged(QString, bool*)),this,SLOT(openConnection(QString, bool*)));
+    QLabel* title = new QLabel("<b>Datenquelle wählen:</b>");
+    layout->addWidget(title);
 
-        QFrame* line = new QFrame();
-        line->setFrameShape(static_cast<QFrame::Shape>(QFrame::HLine));
-        line->setFrameShadow(QFrame::Sunken);
-        layout->addWidget(line);
+    toolbox = new QToolBox();
+
+    for (ConnectionWidget* iter : availableConnectionWidgets) {
+        toolbox->addItem(iter, iter->objectName());
+        connect(iter,SIGNAL(connectionChanged(QString, bool*)),this,SLOT(openConnection(QString, bool*)));
+    }
+    layout->addWidget(toolbox);
+
+    if (toolbox->count() > 0) {
+        QSettings settings;
+        settings.beginGroup("Controller");
+        toolbox->setCurrentIndex(settings.value("currentIndex", 0).toInt());
     }
 
     cancelButton = new QPushButton("Abbrechen");
@@ -90,6 +100,14 @@ Controller::Controller(QWidget *parent) :
     openNewConnection();
 }
 
+
+Controller::~Controller() {
+    if (toolbox->count() > 0) {
+        QSettings settings;
+        settings.beginGroup("Controller");
+        settings.setValue("currentIndex", toolbox->currentIndex());
+    }
+}
 
 QList<QString> Controller::getAvailableFrontends(void) const {
     QList<QString> list;

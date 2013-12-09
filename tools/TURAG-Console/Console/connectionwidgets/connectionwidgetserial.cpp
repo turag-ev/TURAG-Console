@@ -37,7 +37,6 @@ ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
 
     // vertical layout including the button and a label
     layout = new QVBoxLayout();
-    layout->addWidget(new QLabel("<b>Verbindung über serielle Schnittstelle:</b>"));
     layout->addLayout(port_layout);
 
     layout->addSpacing(10);
@@ -48,6 +47,8 @@ ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
     // connect signals directly to base signal
     connect(bd_edit, SIGNAL(returnPressed()), this, SLOT(connectionChangedInternal()));
     connect(serial_button, SIGNAL(clicked()), this, SLOT(connectionChangedInternal()));
+
+    setObjectName("Serielle Schnittstelle");
 }
 
 

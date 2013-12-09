@@ -12,6 +12,8 @@ class QListWidget;
 class QTextEdit;
 class QLineEdit;
 class QIntValidator;
+class QWidget;
+class QSplitter;
 
 
 using namespace TURAG;
@@ -22,7 +24,7 @@ class FeldbusFrontend : public BaseFrontend
     Q_OBJECT
 
 protected:
-
+    QWidget* feldbusWidget;
     QPushButton* startInquiry_;
     QListWidget* deviceList_;
     QTextEdit* deviceInfo_;
@@ -32,6 +34,7 @@ protected:
     QIntValidator* fromValidator_;
     QIntValidator* toValidator_;
     FeldbusDeviceFactory* deviceFactory;
+    QSplitter* splitter;
 
 protected slots:
     void onStartInquiry(void);

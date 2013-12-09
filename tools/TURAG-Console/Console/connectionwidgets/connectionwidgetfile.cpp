@@ -15,7 +15,6 @@ ConnectionWidgetFile::ConnectionWidgetFile(QWidget *parent) :
 
     // vertical layout including the button and a label
     layout = new QVBoxLayout();
-    layout->addWidget(new QLabel("<b>Logdatei öffnen:</b>"));
     layout->addWidget(file_button, 0, Qt::AlignLeft);
 
     layout->addSpacing(10);
@@ -24,6 +23,8 @@ ConnectionWidgetFile::ConnectionWidgetFile(QWidget *parent) :
     setLayout(layout);
 
     connect(file_button, SIGNAL(clicked()), this, SLOT(onOpenFile()));
+
+    setObjectName("Datei");
 }
 
 

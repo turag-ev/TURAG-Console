@@ -3,7 +3,6 @@
 #include <qwt_plot_curve.h>
 #include <qwt_legend.h>
 #include <qwt_plot_canvas.h>
-#include <qwt_series_data.h>
 #include <qwt_plot_zoomer.h>
 #include <qwt_interval.h>
 #include <QPen>
@@ -17,6 +16,10 @@
 #include <qwt_plot_picker.h>
 #include <qwt_picker_machine.h>
 #include <qwt_plot_renderer.h>
+#include <qwt_plot_panner.h>
+#include <qwt_plot_magnifier.h>
+#include <QDebug>
+#include <QVector>
 
 #if QWT_VERSION < 0x060100
 # include <qwt_legend_item.h>
@@ -24,36 +27,8 @@
 # include <qwt_legend_label.h>
 #endif
 
-class CurveData: public QwtArraySeriesData<QPointF>
-{
-public:
-    CurveData() { }
-
-    virtual QRectF boundingRect() const {
-        if (!d_boundingRect.isValid()) {
-            d_boundingRect = qwtBoundingRect( *this );
-        }
-        return d_boundingRect;
-    }
-
-    inline void append( const QPointF &point ) {
-        d_samples += point;
-
-        if (d_boundingRect.isValid() && !d_boundingRect.contains(point)) {
-            if (point.x() > d_boundingRect.right()) {
-                d_boundingRect.setRight(point.x());
-            } else if (point.x() < d_boundingRect.left()) {
-                d_boundingRect.setLeft(point.x());
-            }
-            if (point.y() > d_boundingRect.top()) {
-                d_boundingRect.setTop(point.y());
-            } else if (point.y() < d_boundingRect.bottom()) {
-                d_boundingRect.setBottom(point.y());
-            }
-        }
-    }
-};
-
+class CurveDataBase;
+class CurveData;
 
 
 // ------------------------------------------------------------------------------
@@ -68,10 +43,11 @@ DataGraph::DataGraph(QWidget *parent) :
     QwtPlot(parent)
 {
     // panning with the left mouse button
-//    (void) new QwtPlotPanner( canvas() );
+    (void) new QwtPlotPanner( canvas() );
 
     // zoom in/out with the wheel
-//    (void) new QwtPlotMagnifier( canvas() );
+    QwtPlotMagnifier* magnifier = new QwtPlotMagnifier( canvas() );
+    magnifier->setWheelFactor(1.2);
 
 //    zoomer = new QwtPlotZoomer(canvas());
 
@@ -88,7 +64,7 @@ DataGraph::DataGraph(QWidget *parent) :
 #endif
 
     QwtPlotPicker* d_picker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOn, canvas());
-    d_picker->setStateMachine(new QwtPickerDragPointMachine());
+//    d_picker->setStateMachine(new QwtPickerDragPointMachine());
     d_picker->setRubberBandPen(QColor(Qt::lightGray));
     d_picker->setRubberBand(QwtPicker::CrossRubberBand);
     d_picker->setTrackerPen(QColor(Qt::black));
@@ -124,13 +100,12 @@ QString DataGraph::getChannelTitle(int index) const {
     }
 }
 
-
-void DataGraph::addChannel(QString title) {
+void DataGraph::addChannelGeneric(QString title, CurveDataBase* curveData) {
     QwtPlotCurve *curve = new QwtPlotCurve(title);
     curve->setRenderHint(QwtPlotItem::RenderAntialiased);
     curve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
     curve->attach(this);
-    curve->setData(new CurveData);
+    curve->setData(curveData);
 
     channels.append(curve);
     updateCurveColors();
@@ -138,6 +113,31 @@ void DataGraph::addChannel(QString title) {
 
     //    curve->setPen(QPen(Qt::red));
 }
+
+void DataGraph::addChannel(QString title) {
+    addChannelGeneric(title, new CurveData);
+}
+
+void DataGraph::addChannel(QString title, qreal timespan, bool keepHiddenPoints) {
+    addChannelGeneric(title, new CurveDataTime(timespan, keepHiddenPoints));
+}
+
+void DataGraph::addChannel(QString title, bool xAxisFixed, qreal start, qreal length, bool keepHiddenPoints) {
+    if (xAxisFixed) {
+        addChannelGeneric(title, new CurveDataFixedX(start, length, keepHiddenPoints));
+    } else {
+        addChannelGeneric(title, new CurveDataFixedY(start, length, keepHiddenPoints));
+    }
+}
+
+void DataGraph::addChannel(QString title, qreal timespan, qreal y, qreal height, bool keepHiddenPoints) {
+    addChannelGeneric(title, new CurveDataTimeFixedY(timespan, y, height, keepHiddenPoints));
+}
+
+void DataGraph::addChannel(QString title, qreal x, qreal width, qreal y, qreal height, bool keepHiddenPoints) {
+    addChannelGeneric(title, new CurveDataFixedXFixedY(x, width, y, height, keepHiddenPoints));
+}
+
 
 void DataGraph::removeChannel(int index) {
     if (index < channels.size()) {
@@ -161,7 +161,7 @@ void DataGraph::clear() {
 
 void DataGraph::addData(int channel, QPointF data) {
     if (channel < channels.size()) {
-        CurveData *curvedata = static_cast<CurveData *>( channels.at(channel)->data() );
+        CurveDataBase *curvedata = static_cast<CurveData *>( channels.at(channel)->data() );
         curvedata->append(data);
     } else {
         (void) data;
@@ -246,5 +246,222 @@ bool DataGraph::saveOutput() {
         return true;
     } else {
         return false;
+    }
+}
+
+
+
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// CurveData
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+QRectF CurveData::boundingRect() const {
+    if (!d_boundingRect.isValid()) {
+        d_boundingRect = qwtBoundingRect( *this );
+    }
+    return d_boundingRect;
+}
+
+
+void CurveData::append( const QPointF &point ) {
+    d_samples += point;
+
+    if (d_boundingRect.isValid()) {
+        if (point.x() > d_boundingRect.right()) {
+            d_boundingRect.setRight(point.x());
+        } else if (point.x() < d_boundingRect.left()) {
+            d_boundingRect.setLeft(point.x());
+        }
+        if (point.y() > d_boundingRect.bottom()) {
+            d_boundingRect.setBottom(point.y());
+        } else if (point.y() < d_boundingRect.top()) {
+            d_boundingRect.setTop(point.y());
+        }
+    }
+}
+
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// CurveDataFixedX
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+QRectF CurveDataFixedX::boundingRect() const {
+    if (!d_boundingRect.isValid()) {
+        d_boundingRect = qwtBoundingRect( *this );
+        d_boundingRect.setLeft(left);
+        d_boundingRect.setRight(right);
+    }
+    return d_boundingRect;
+}
+
+void CurveDataFixedX::append( const QPointF &point ) {
+    if (keepHiddenPoints_|| !d_boundingRect.isValid() || (point.x() >= left && point.x() <= right)) {
+        d_samples += point;
+
+        if (d_boundingRect.isValid()) {
+            if (point.y() > d_boundingRect.bottom()) {
+                d_boundingRect.setBottom(point.y());
+            } else if (point.y() < d_boundingRect.top()) {
+                d_boundingRect.setTop(point.y());
+            }
+        }
+    }
+}
+
+
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// CurveDataFixedY
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+QRectF CurveDataFixedY::boundingRect() const {
+    if (!d_boundingRect.isValid()) {
+        d_boundingRect = qwtBoundingRect( *this );
+        d_boundingRect.setBottom(top);
+        d_boundingRect.setTop(bottom);
+    }
+    return d_boundingRect;
+}
+
+void CurveDataFixedY::append( const QPointF &point ) {
+    if (keepHiddenPoints_|| !d_boundingRect.isValid() || (point.y() >= bottom && point.y() <= top)) {
+        d_samples += point;
+
+        if (d_boundingRect.isValid()) {
+            if (point.x() > d_boundingRect.right()) {
+                d_boundingRect.setRight(point.x());
+            } else if (point.x() < d_boundingRect.left()) {
+                d_boundingRect.setLeft(point.x());
+            }
+        }
+    }
+}
+
+
+
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// CurveDataTime
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+QRectF CurveDataTime::boundingRect() const {
+    if (!d_boundingRect.isValid()) {
+        d_boundingRect = qwtBoundingRect( *this );
+        if (d_boundingRect.isValid()) {
+            d_boundingRect.setLeft(d_boundingRect.right() - timespan_);
+        }
+    }
+    return d_boundingRect;
+}
+
+void CurveDataTime::append( const QPointF &point ) {
+    if (keepHiddenPoints_|| !d_boundingRect.isValid() || point.x() >= d_boundingRect.left()) {
+        d_samples += point;
+
+        if (d_boundingRect.isValid()) {
+            if (point.x() > d_boundingRect.right()) {
+                d_boundingRect.setRight(point.x());
+                d_boundingRect.setLeft(d_boundingRect.right() - timespan_);
+
+                if (!keepHiddenPoints_) {
+                    // delete old points which are not inside bounding rectangle anymore
+                    // We assume points to be chronologically ordered.
+                    QVector<QPointF>::Iterator iter = d_samples.begin();
+                    while(iter != d_samples.end()) {
+                        if (d_boundingRect.contains(*iter)) break;
+                        iter++;
+                    }
+                    d_samples.erase(d_samples.begin(), iter);
+                }
+            }
+
+            if (point.y() > d_boundingRect.bottom()) {
+                d_boundingRect.setBottom(point.y());
+            } else if (point.y() < d_boundingRect.top()) {
+                d_boundingRect.setTop(point.y());
+            }
+        }
+    }
+}
+
+
+
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// CurveDataTimeFixedY
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+QRectF CurveDataTimeFixedY::boundingRect() const {
+    if (!d_boundingRect.isValid()) {
+        d_boundingRect = qwtBoundingRect( *this );
+        if (d_boundingRect.isValid()) {
+            d_boundingRect.setLeft(d_boundingRect.right() - timespan_);
+            d_boundingRect.setBottom(top);
+            d_boundingRect.setTop(bottom);
+        }
+    }
+    return d_boundingRect;
+}
+
+void CurveDataTimeFixedY::append( const QPointF &point ) {
+    if (keepHiddenPoints_|| !d_boundingRect.isValid() || (point.x() >= d_boundingRect.left() && point.y() >= bottom && point.y() <= top)) {
+        d_samples += point;
+
+        if (d_boundingRect.isValid()) {
+            if (point.x() > d_boundingRect.right()) {
+                d_boundingRect.setRight(point.x());
+                d_boundingRect.setLeft(d_boundingRect.right() - timespan_);
+
+                if (!keepHiddenPoints_) {
+                    // delete old points which are not inside bounding rectangle anymore
+                    // We assume points to be chronologically ordered.
+                    QVector<QPointF>::Iterator iter = d_samples.begin();
+                    while(iter != d_samples.end()) {
+                        if (d_boundingRect.contains(*iter)) break;
+                        iter++;
+                    }
+                    d_samples.erase(d_samples.begin(), iter);
+                }
+            }
+        }
+    }
+}
+
+
+
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// CurveDataFixedXFixedY
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+CurveDataFixedXFixedY::CurveDataFixedXFixedY(qreal x, qreal width, qreal y, qreal height, bool keepHiddenPoints) :
+    CurveDataBase(keepHiddenPoints)
+{
+    d_boundingRect = QRectF(QPointF(x, y), QSizeF(width, height));
+}
+
+QRectF CurveDataFixedXFixedY::boundingRect() const {
+    return d_boundingRect;
+}
+void CurveDataFixedXFixedY::append( const QPointF &point ) {
+    if (keepHiddenPoints_|| (
+                point.y() >= d_boundingRect.top() &&
+                point.y() <= d_boundingRect.bottom() &&
+                point.x() >= d_boundingRect.left() &&
+                point.x() <= d_boundingRect.right())) {
+        d_samples += point;
     }
 }

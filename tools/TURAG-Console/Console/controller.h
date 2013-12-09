@@ -14,6 +14,7 @@ class QPushButton;
 class QAction;
 class QTimer;
 class QMenu;
+class QToolBox;
 
 
 class Controller : public QStackedWidget
@@ -34,10 +35,11 @@ protected:
     bool connectionShouldBeOpen;
     QTimer* reconnectTimer;
     QMenu* connectionMenu;
-
+    QToolBox* toolbox;
 
 public:
     explicit Controller(QWidget *parent = 0);
+    ~Controller();
 
     QList<QString> getAvailableFrontends(void) const;
     bool isConnected(void) const;

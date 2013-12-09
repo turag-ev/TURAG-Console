@@ -56,7 +56,9 @@ SOURCES +=\
     tina-platform/debug_printf.cpp \
     frontend/util/feldbusdevicefactory.cpp \
     ../../../tina/tina++/feldbus/host/farbsensor_tina.cpp \
-    ../../../tina/tina++/feldbus/host/aktor_tina.cpp
+    ../../../tina/tina++/feldbus/host/aktor_tina.cpp \
+    frontend/feldbusviews/feldbusfarbsensorview.cpp \
+    frontend/util/datapointinterface.cpp
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -78,7 +80,9 @@ HEADERS  += mainwindow.h \
     frontend/util/tinainterface.h \
     tina-platform/public/tina/rs485.h \
     frontend/feldbusfrontend.h \
-    frontend/util/feldbusdevicefactory.h
+    frontend/util/feldbusdevicefactory.h \
+    frontend/feldbusviews/feldbusfarbsensorview.h \
+    frontend/util/datapointinterface.h
 
 INCLUDEPATH += \
     ../../../tina \

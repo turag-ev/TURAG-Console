@@ -8,7 +8,6 @@
 #include <QWidget>
 #include <QFrame>
 #include <QSettings>
-#include <qwt_system_clock.h>
 
 
 Oscilloscope::Oscilloscope(QWidget *parent) :
@@ -30,28 +29,28 @@ Oscilloscope::Oscilloscope(QWidget *parent) :
     textlayout->addWidget(comma_textbox, 0 , 1, Qt::AlignTop);
     connect(comma_textbox, SIGNAL(editingFinished()), this, SLOT(onTextSettingsChanged()));
 
-    label = new QLabel("Trenner");
-    textlayout->addWidget(label, 1, 0, Qt::AlignTop);
-    delim_textbox = new QLineEdit;
-    textlayout->addWidget(delim_textbox, 1, 1, Qt::AlignTop);
-    connect(delim_textbox, SIGNAL(editingFinished()), this, SLOT(onTextSettingsChanged()));
-
-    delim_newline = new QCheckBox("Newline");
-    textlayout->addWidget(delim_newline, 2, 1);
-    connect(delim_newline, SIGNAL(toggled(bool)), this, SLOT(onTextSettingsDelimNewLineChanged(bool)));
-    delim_emptyline = new QCheckBox("Leere Zeile");
-    textlayout->addWidget(delim_emptyline, 3, 1);
-    connect(delim_emptyline, SIGNAL(toggled(bool)), this, SLOT(onTextSettingsDelimEmptyLineChanged(bool)));
-
     label = new QLabel("Kanaltrenner");
-    textlayout->addWidget(label, 4, 0, Qt::AlignTop);
+    textlayout->addWidget(label, 1, 0, Qt::AlignTop);
     subdelim_textbox = new QLineEdit;
-    textlayout->addWidget(subdelim_textbox, 4, 1, Qt::AlignTop);
+    textlayout->addWidget(subdelim_textbox, 1, 1, Qt::AlignTop);
     connect(subdelim_textbox, SIGNAL(editingFinished()), this, SLOT(onTextSettingsChanged()));
 
     subdelim_newline = new QCheckBox("Newline");
-    textlayout->addWidget(subdelim_newline, 5, 1);
+    textlayout->addWidget(subdelim_newline, 2, 1);
     connect(subdelim_newline, SIGNAL(toggled(bool)), this, SLOT(onTextSettingsChanged()));
+
+    label = new QLabel("Datensatz-Trenner");
+    textlayout->addWidget(label, 3, 0, Qt::AlignTop);
+    delim_textbox = new QLineEdit;
+    textlayout->addWidget(delim_textbox, 3, 1, Qt::AlignTop);
+    connect(delim_textbox, SIGNAL(editingFinished()), this, SLOT(onTextSettingsChanged()));
+
+    delim_newline = new QCheckBox("Newline");
+    textlayout->addWidget(delim_newline, 4, 1);
+    connect(delim_newline, SIGNAL(toggled(bool)), this, SLOT(onTextSettingsDelimNewLineChanged(bool)));
+    delim_emptyline = new QCheckBox("Leere Zeile");
+    textlayout->addWidget(delim_emptyline, 5, 1);
+    connect(delim_emptyline, SIGNAL(toggled(bool)), this, SLOT(onTextSettingsDelimEmptyLineChanged(bool)));
 
     timechannel_checkbox = new QCheckBox("1. Kanal enthält Zeit");
     textlayout->addWidget(timechannel_checkbox, 6, 0, 1, 2, Qt::AlignTop);
@@ -181,24 +180,24 @@ void Oscilloscope::onTextSettingsChanged() {
 
     if (delim_newline->isChecked()) {
         delim_textbox->setDisabled(true);
-        textinterface->setDelimNewline();
+        textinterface->setDelim("\n");
     } else if (delim_emptyline->isChecked()) {
         delim_textbox->setDisabled(true);
-        textinterface->setDelimEmptyLine();
+        textinterface->setDelim("\n\n");
     } else {
         delim_textbox->setEnabled(true);
         if (delim_textbox->text().size() > 0) {
-            textinterface->setDelim(delim_textbox->text().at(0).toLatin1());
+            textinterface->setDelim(delim_textbox->text().toLatin1());
         }
     }
 
     if (subdelim_newline->isChecked()) {
         subdelim_textbox->setDisabled(true);
-        textinterface->setChannelDelimNewline();
+        textinterface->setChannelDelim("\n");
     } else {
         subdelim_textbox->setEnabled(true);
         if (subdelim_textbox->text().size() > 0) {
-            textinterface->setChannelDelim(subdelim_textbox->text().at(0).toLatin1());
+            textinterface->setChannelDelim(subdelim_textbox->text().toLatin1());
         }
     }
 
@@ -232,146 +231,3 @@ void Oscilloscope::onTextSettingsDelimEmptyLineChanged(bool checked) {
 
 
 
-// ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
-// class TextDataPointInterface
-// ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
-
-TextDataPointInterface::TextDataPointInterface() :
-    delim_(' '), delimIsNewline_(false), delimIsEmptyLine_(false),
-    channelDelim_(','), ChannelDelimIsNewline_(false), decimalPoint_('.'),
-    firstChannelIsTime_(false), detectChannels(true)
-{
-}
-
-
-void TextDataPointInterface::setDecimalPoint(char decimalPoint) {
-    decimalPoint_ = decimalPoint;
-    buffer.clear();
-    detectChannels = true;
-}
-
-void TextDataPointInterface::setDelim(char delim) {
-    delim_ = delim;
-    delimIsEmptyLine_ = false;
-    delimIsNewline_ = false;
-    buffer.clear();
-    detectChannels = true;
-}
-
-void TextDataPointInterface::setDelimNewline() {
-    delimIsEmptyLine_ = false;
-    delimIsNewline_ = true;
-    buffer.clear();
-    detectChannels = true;
-}
-
-void TextDataPointInterface::setDelimEmptyLine() {
-    delimIsEmptyLine_ = true;
-    delimIsNewline_ = false;
-    buffer.clear();
-    detectChannels = true;
-}
-
-void TextDataPointInterface::setChannelDelim(char delim) {
-    channelDelim_ = delim;
-    ChannelDelimIsNewline_ = false;
-    buffer.clear();
-    detectChannels = true;
-}
-
-void TextDataPointInterface::setChannelDelimNewline() {
-    ChannelDelimIsNewline_ = true;
-    buffer.clear();
-    detectChannels = true;
-}
-
-void TextDataPointInterface::setFirstChannelIsTime(bool isTime) {
-    firstChannelIsTime_ = isTime;
-    buffer.clear();
-    detectChannels = true;
-}
-
-void TextDataPointInterface::writeData(QByteArray data) {
-    // append new data to already buffered data, removing all line feeds
-    buffer.append(data.replace("\r", ""));
-
-    // start time if that is a fresh package
-    if (detectChannels && !firstChannelIsTime_) {
-        clock.start();
-    }
-
-    // search for packet delim
-    while ((delimIsEmptyLine_ && buffer.contains("\n\n")) || (delimIsNewline_ && buffer.contains('\n')) || buffer.contains(delim_)) {
-        QByteArray packet;
-
-        if (delimIsEmptyLine_) {
-            int index = buffer.indexOf("\n\n");
-            packet = buffer.left(index);
-            buffer.remove(0, index + 2);
-        } else if (delimIsNewline_) {
-            int index = buffer.indexOf('\n');
-            packet = buffer.left(index);
-            buffer.remove(0, index + 1);
-        } else {
-            int index = buffer.indexOf(delim_);
-            packet = buffer.left(index);
-            buffer.remove(0, index + 1);
-        }
-
-        char delim;
-        if (ChannelDelimIsNewline_) {
-            delim = '\n';
-        } else {
-            delim = channelDelim_;
-        }
-        QList<QByteArray> parts = packet.split(delim);
-
-        // data invalid if we only have the time channel
-        if (firstChannelIsTime_ && parts.size() <= 1) {
-            break;
-        }
-
-        QList<DataEntry> list;
-
-        float time = 0;
-        int start_i = 0;
-
-        if (firstChannelIsTime_) {
-            start_i = 1;
-
-            QByteArray part = parts.at(0).trimmed().replace("\n", "");
-            bool success = false;
-            time = part.toFloat(&success);
-
-            if (!success) {
-                break;
-            }
-        } else {
-            time = clock.elapsed();
-        }
-
-        for (int i = start_i; i < parts.size(); ++i) {
-            QByteArray part = parts.at(i).trimmed().replace("\n", "");
-            bool success = false;
-            float value = part.toFloat(&success);
-
-            if (success) {
-                list.append(DataEntry(i - start_i, time, value));
-            }
-        }
-        if (detectChannels) {
-            emit channelsDetected(parts.size() - start_i);
-            detectChannels = false;
-        }
-        emit dataPointsReady(list);
-    }
-}
-
-void TextDataPointInterface::clear() {
-    buffer.clear();
-    detectChannels = true;
-}

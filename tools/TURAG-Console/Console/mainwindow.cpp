@@ -341,6 +341,11 @@ int main(int argc, char *argv[]) {
   QFont::insertSubstitution("Consolas", "Monospace");
   QFont::insertSubstitution("Consolas", "Courier New");
 
+//  QFont font;
+//  font.setFamily(font.defaultFamily());
+//  font.setPointSize(8);
+//  a.setFont(font);
+
   QCoreApplication::setOrganizationName("TURAG");
   QCoreApplication::setOrganizationDomain("turag.de");
   QCoreApplication::setApplicationName("Console");
