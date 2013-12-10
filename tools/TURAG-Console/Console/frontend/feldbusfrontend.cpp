@@ -58,6 +58,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     layout->addWidget(splitter);
     splitter->addWidget(left_layout_widget);
     splitter->addWidget(feldbusWidget);
+    splitter->setStretchFactor(1,2);
     setLayout(layout);
 
     connect(startInquiry_, SIGNAL(clicked()), this, SLOT(onStartInquiry()));
@@ -161,7 +162,7 @@ void FeldbusFrontend::onStartInquiry(void) {
                 break;
             }
 
-            Feldbus::Device* dev = new TURAG::Feldbus::Device("", i, chksum_type, 1, 1);
+            Feldbus::Device* dev = new TURAG::Feldbus::Device("", i, chksum_type, 2, 1);
             if (dev->isAvailable()) {
                 if (dev->getDeviceInfo(&dev_info.device_info)) {
                     if (dev_info.device_info.crcType == (uint8_t)chksum_type) {
@@ -194,7 +195,7 @@ void FeldbusFrontend::onStartInquiry(void) {
 
 void FeldbusFrontend::onDeviceSelected( int row) {
     feldbusWidget->hide();
-    feldbusWidget->deleteLater();
+    delete feldbusWidget;
 
     if (row < devices_.size() && row != -1) {
         FeldbusDeviceInfoExt device_info = devices_.at(row);
@@ -208,6 +209,7 @@ void FeldbusFrontend::onDeviceSelected( int row) {
         if (farbsensor) {
             feldbusWidget = new FeldbusFarbsensorView(farbsensor);
             splitter->addWidget(feldbusWidget);
+            splitter->setStretchFactor(1,2);
             return;
         }
 
@@ -217,6 +219,7 @@ void FeldbusFrontend::onDeviceSelected( int row) {
     // create default QWidget if there is no suitable option
     feldbusWidget = new QWidget;
     splitter->addWidget(feldbusWidget);
+    splitter->setStretchFactor(1,2);
 }
 
 

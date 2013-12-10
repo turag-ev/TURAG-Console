@@ -78,6 +78,7 @@ bool FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfoExt &device_info
 
     default:
         protocolIdString = "unbekannt";
+        deviceTypeString = "unbekannt";
         break;
     }
 
