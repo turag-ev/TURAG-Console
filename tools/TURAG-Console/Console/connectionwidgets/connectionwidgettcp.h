@@ -13,11 +13,19 @@
 #include <QLabel>
 #include <QtNetwork/QHostAddress>
 
+class QMenu;
+class QAction;
+
 class ConnectionWidgetTcp: public ConnectionWidget {
     Q_OBJECT
 
 protected:
+    QMenu* tcpMenu;
+    QAction* emergencyStopAction;
+    QAction* readWriteAccessAction;
+    QAction* startBootloaderAction;
 
+    virtual QMenu* getMenu();
 
 protected slots:
 

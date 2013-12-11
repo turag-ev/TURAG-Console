@@ -5,6 +5,7 @@
 #include <QStringList>
 #include <QLabel>
 #include <QGroupBox>
+#include <QMenu>
 
 #include "libs/elidedbutton.h"
 
@@ -71,4 +72,9 @@ void ConnectionWidget::saveConnection(QString connectionString) {
     }
 
     settings.setValue(recentConnectionSpecifier_, connections);
+}
+
+
+QMenu* ConnectionWidget::getMenu() {
+    return nullptr;
 }

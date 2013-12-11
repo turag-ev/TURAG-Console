@@ -8,6 +8,7 @@
 class QGroupBox;
 class QVBoxLayout;
 class QSignalMapper;
+class QMenu;
 
 class ConnectionWidget : public QWidget {
     Q_OBJECT
@@ -16,6 +17,7 @@ public:
     static const int MAX_RECENT_CONNECTIONS = 5;
 
     explicit ConnectionWidget(QString recentConnectionSpecifier, QWidget *parent = 0);
+    virtual QMenu* getMenu();
     
 signals:
     // the details of the connection were changed

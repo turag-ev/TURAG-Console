@@ -20,11 +20,12 @@
 #include <QToolBox>
 #include <QLabel>
 #include <QSettings>
+#include <QMenuBar>
 
 
 Controller::Controller(QWidget *parent) :
     QStackedWidget(parent), currentBackend(nullptr), currentFrontendIndex(0),
-    autoReconnect(false), connectionShouldBeOpen(false), connectionMenu(nullptr)
+    autoReconnect(false), connectionShouldBeOpen(false), menuBar_(nullptr), widgetMenu_(nullptr)
 {
     // add all available Backends to list with parent this
     availableBackends.append(new FileBackend(this));
@@ -217,6 +218,18 @@ void Controller::openConnection(void) {
 
 
 void Controller::openConnection(QString connectionString, bool *success) {
+    // show widgets menu
+    if (menuBar_) {
+        if (widgetMenu_ && menuBar_->actions().contains(widgetMenu_->menuAction())) {
+            menuBar_->removeAction(widgetMenu_->menuAction());
+        }
+        widgetMenu_ = static_cast<ConnectionWidget * >(sender())->getMenu();
+        if (widgetMenu_) {
+            menuBar_->addMenu(widgetMenu_);
+        }
+    }
+
+
     closeConnection();
 
     BaseFrontend* currentFrontend = availableFrontends.at(currentFrontendIndex);

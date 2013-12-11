@@ -13,6 +13,7 @@ class ConnectionWidget;
 class QPushButton;
 class QAction;
 class QTimer;
+class QMenuBar;
 class QMenu;
 class QToolBox;
 
@@ -34,6 +35,8 @@ protected:
     bool autoReconnect;
     bool connectionShouldBeOpen;
     QTimer* reconnectTimer;
+    QMenuBar* menuBar_;
+    QMenu* widgetMenu_;
     QMenu* connectionMenu;
     QToolBox* toolbox;
 
@@ -46,6 +49,7 @@ public:
     QString getConnectionInfo();
 
     void setExternalContextActions(QList<QAction*> actions);
+    void setExternalMenuBar(QMenuBar* menubar) {menuBar_ = menubar; }
     void setExternalConnectionMenu(QMenu* menu) {connectionMenu = menu; }
 
     

@@ -1,4 +1,7 @@
 #include "connectionwidgettcp.h"
+#include <QMenu>
+#include <QAction>
+
 
 ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     ConnectionWidget("Letzte Verbindungen", parent) {
@@ -43,9 +46,24 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     connect(connect_button, SIGNAL(clicked()), this, SLOT(connectToServer()));
 
     setObjectName("Debug Server");
+
+
+    tcpMenu = new QMenu("Debug-Server", this);
+    emergencyStopAction = new QAction("Notaus", this);
+    readWriteAccessAction = new QAction("Schreibrechte annfordern", this);
+    startBootloaderAction = new QAction("Bootloader starten", this);
+    tcpMenu->addAction(readWriteAccessAction);
+    tcpMenu->addAction(emergencyStopAction);
+    tcpMenu->addAction(startBootloaderAction);
+
 }
 
 void ConnectionWidgetTcp::connectToServer() {
     //QString host = hostEdit->text();
 
+}
+
+
+QMenu* ConnectionWidgetTcp::getMenu() {
+    return tcpMenu;
 }

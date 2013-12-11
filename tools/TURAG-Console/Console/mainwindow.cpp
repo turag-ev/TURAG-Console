@@ -179,6 +179,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     controller->setExternalContextActions(actions());
+    controller->setExternalMenuBar(menuBar());
     controller->setExternalConnectionMenu(connection_menu);
 
     setWindowTitle("TURAG-Console");
