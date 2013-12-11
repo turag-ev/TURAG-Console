@@ -10,6 +10,7 @@
 
 #include "connectionwidgets/connectionwidgetfile.h"
 #include "connectionwidgets/connectionwidgetserial.h"
+#include "connectionwidgets/connectionwidgettcp.h"
 
 #include <QVBoxLayout>
 #include <QFrame>
@@ -38,6 +39,7 @@ Controller::Controller(QWidget *parent) :
     // add all available connectionWidgets to list without a parent
     availableConnectionWidgets.append(new ConnectionWidgetSerial);
     availableConnectionWidgets.append(new ConnectionWidgetFile);
+    availableConnectionWidgets.append(new ConnectionWidgetTcp);
 
 
     // ---------------------------------------------------------------
