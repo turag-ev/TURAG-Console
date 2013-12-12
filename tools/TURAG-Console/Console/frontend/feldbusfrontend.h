@@ -7,6 +7,7 @@
 #include "util/feldbusdevicefactory.h"
 
 
+
 class QPushButton;
 class QListWidget;
 class QTextEdit;
@@ -14,6 +15,7 @@ class QLineEdit;
 class QIntValidator;
 class QWidget;
 class QSplitter;
+class PlainTextFrontend;
 
 
 using namespace TURAG;
@@ -35,10 +37,12 @@ protected:
     QIntValidator* toValidator_;
     FeldbusDeviceFactory* deviceFactory;
     QSplitter* splitter;
+    PlainTextFrontend* busLog_;
 
 protected slots:
     void onStartInquiry(void);
     void onDeviceSelected(int row);
+    void onRs485DebugMsg(QString msg);
 
 public:
     FeldbusFrontend(QWidget *parent = 0);

@@ -59,7 +59,8 @@ SOURCES +=\
     ../../../tina/tina++/feldbus/host/aktor_tina.cpp \
     frontend/feldbusviews/feldbusfarbsensorview.cpp \
     frontend/util/datapointinterface.cpp \
-    connectionwidgets/connectionwidgettcp.cpp
+    connectionwidgets/connectionwidgettcp.cpp \
+    debugprintclass.cpp
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -84,7 +85,8 @@ HEADERS  += mainwindow.h \
     frontend/util/feldbusdevicefactory.h \
     frontend/feldbusviews/feldbusfarbsensorview.h \
     frontend/util/datapointinterface.h \
-    connectionwidgets/connectionwidgettcp.h
+    connectionwidgets/connectionwidgettcp.h \
+    debugprintclass.h
 
 INCLUDEPATH += \
     ../../../tina \

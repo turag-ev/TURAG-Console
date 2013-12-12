@@ -1,6 +1,6 @@
 #include <cstdio>
 #include <cstdarg>
-#include <QDebug>
+//#include <QDebug>
 
 
 extern "C"

@@ -11,8 +11,12 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QSettings>
+#include <QTabWidget>
 #include <tina++/feldbus/host/farbsensor.h>
 #include "feldbusviews/feldbusfarbsensorview.h"
+#include <debugprintclass.h>
+#include "plaintextfrontend.h"
+
 
 using namespace TURAG;
 
@@ -42,16 +46,25 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     startInquiry_ = new QPushButton("Geräte suchen");
     layoutTop->addWidget(startInquiry_);
 
-    QWidget* topWidget = new QWidget;
-    topWidget->setLayout(layoutTop);
-
-    left_layout->addWidget(topWidget);
+    QVBoxLayout* deviceLayout = new QVBoxLayout;
     deviceList_ = new QListWidget;
     connect(deviceList_, SIGNAL(currentRowChanged(int)), this, SLOT(onDeviceSelected(int)));
-    left_layout->addWidget(deviceList_);
+    deviceLayout->addWidget(deviceList_);
     deviceInfo_ = new QTextEdit;
     deviceInfo_->setReadOnly(true);
-    left_layout->addWidget(deviceInfo_);
+    deviceLayout->addWidget(deviceInfo_);
+    QWidget* leftDeviceWidget = new QWidget;
+    leftDeviceWidget->setLayout(deviceLayout);
+    busLog_ = new PlainTextFrontend;
+
+    QTabWidget* tabwidget = new QTabWidget;
+    tabwidget->addTab(leftDeviceWidget, "Geräte");
+    tabwidget->addTab(busLog_, "Log");
+    connect(&rs485Debug, SIGNAL(debugMsg(QString)), this, SLOT(onRs485DebugMsg(QString)));
+
+
+    left_layout->addLayout(layoutTop);
+    left_layout->addWidget(tabwidget);
     left_layout_widget->setLayout(left_layout);
 
     feldbusWidget = new QWidget;
@@ -111,6 +124,7 @@ void FeldbusFrontend::writeData(QByteArray data) {
 void FeldbusFrontend::clear(void) {
     deviceInfo_->clear();
     deviceList_->clear();
+    busLog_->clear();
 }
 
 bool FeldbusFrontend::saveOutput(void) {
@@ -223,4 +237,6 @@ void FeldbusFrontend::onDeviceSelected( int row) {
 }
 
 
-
+void FeldbusFrontend::onRs485DebugMsg(QString msg) {
+    busLog_->writeData(msg.toLatin1());
+}
