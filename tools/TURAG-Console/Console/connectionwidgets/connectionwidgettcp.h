@@ -15,6 +15,7 @@
 
 class QMenu;
 class QAction;
+class ConnectionWidget;
 
 class ConnectionWidgetTcp: public ConnectionWidget {
     Q_OBJECT
@@ -33,6 +34,7 @@ protected slots:
 
 public:
     ConnectionWidgetTcp(QWidget *parent = 0);
+    using ConnectionWidget::getMenue;
 
 private:
     QString recentHost;
