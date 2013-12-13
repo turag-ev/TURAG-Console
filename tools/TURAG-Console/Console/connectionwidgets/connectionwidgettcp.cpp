@@ -47,11 +47,15 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
 
     setObjectName("Debug Server");
 
-
+    //tcp menu erstellen
     tcpMenu = new QMenu("Debug-Server", this);
     emergencyStopAction = new QAction("Notaus", this);
+    emergencyStopAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
+    emergencyStopAction->setToolTip("Nur drücken, wenn Skynet geladen hat");
     readWriteAccessAction = new QAction("Schreibrechte annfordern", this);
+    readWriteAccessAction->setShortcut(Qt::CTRL + Qt::Key_W);
     startBootloaderAction = new QAction("Bootloader starten", this);
+    startBootloaderAction->setShortcut(Qt::CTRL + Qt::Key_B);
     tcpMenu->addAction(readWriteAccessAction);
     tcpMenu->addAction(emergencyStopAction);
     tcpMenu->addAction(startBootloaderAction);

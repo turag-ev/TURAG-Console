@@ -34,7 +34,6 @@ protected slots:
 
 public:
     ConnectionWidgetTcp(QWidget *parent = 0);
-    using ConnectionWidget::getMenue;
 
 private:
     QString recentHost;
