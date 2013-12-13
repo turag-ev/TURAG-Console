@@ -18,6 +18,7 @@
 #include <QByteArray>
 #include <QMenu>
 #include <QAction>
+#include <QListWidget>
 
 typedef struct device{
     QByteArray path;
@@ -59,12 +60,18 @@ private:
     QPushButton * connect_button;
     QTcpSocket * client;
 
+    QListWidget * allDevicesWidget;
+
     QList<QByteArray> puffer;
     QList<device * > allDevices;
 
 
     void handleData();
     void receiveData(QByteArray * data);
+
+    //sendet einfach in den ControlChannel
+    void send(QByteArray &data);
+    void send(QString &string);
 
 public slots:
     void connectToServer();

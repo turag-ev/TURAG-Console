@@ -1,5 +1,14 @@
 #include "connectionwidgettcp.h"
 
+/*TODO List
+ *[angefangen]    Oberfäche für das Wählen des device fertig machen
+ *[]    festestellen, welches device gerade ausgewählt ist
+ *[]    beim reset den mount path des ausgewählten device senden
+ *
+ *
+ *
+ */
+
 
 ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     ConnectionWidget("Letzte Verbindungen", parent) {
@@ -67,6 +76,9 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     tcpMenu->addAction(emergencyStopAction);
     tcpMenu->addAction(startBootloaderAction);
 
+    //das QListWidget anlegen
+    allDevicesWidget = new QListWidget(this);
+
     //jetzt um den Socket kümmern
     //listen leeren
     puffer.clear();
@@ -85,12 +97,15 @@ void ConnectionWidgetTcp::handleData() {
     if (puffer.at(0) == WADENIED) {
         //hier machen, was passieren soll, wenn man Schreibrechte erhalten hat
         writeAccess = false;
+        readWriteAccessAction->setText("Schreibrechte anfordern");
 
         //anschließend puffer leeren
         puffer.clear();
     }
     else if (puffer.at(0) == WAGRANTED) {
         writeAccess = true;
+        readWriteAccessAction->setText("Schreibrechte aufgeben");
+
         puffer.clear();
     }
     else if (puffer.at(0) == DEVICE) {
@@ -118,7 +133,25 @@ void ConnectionWidgetTcp::handleData() {
             newDevice->baudRate = puffer.at(6 + i * 5);
             allDevices.append(newDevice);
         }
+        for (i = 0; i < amount; i++) {
+            //amount liegt auf puffer.at(1), dann kommen die devices, 5 * amount, + 1 in den ersten onlinestatus und je nach i inkrementieren
+            allDevices.at(i)->onlineStatus = puffer.at( 1 + amount * 5 + 1 + i).toInt();
+        }
         puffer.clear();
+
+        //und jetzt für jedes das QListWidget füllen:
+        for (i = 0; i < allDevices.size(); i++) {
+            device * currentDevice = allDevices.at(i);
+            QString descr(currentDevice->description);
+            if (currentDevice->onlineStatus) {
+                descr.append(" <online>");
+            }
+            else {
+                descr.append(" <offline>");
+            }
+            allDevicesWidget->addItem(descr);
+        }
+
     }
     else {
         //dont know what to do
@@ -134,6 +167,16 @@ void ConnectionWidgetTcp::handleData() {
 void ConnectionWidgetTcp::receiveData(QByteArray * data) {
     *data = client->readLine(150);
     data->chop(1);
+}
+
+void ConnectionWidgetTcp::send(QByteArray &data) {
+    data.append("\n");
+    client->write(data);
+}
+
+void ConnectionWidgetTcp::send(QString &string) {
+    QByteArray data = string.toAscii();
+    send(data);
 }
 
 QMenu* ConnectionWidgetTcp::getMenu() {
@@ -171,13 +214,18 @@ void ConnectionWidgetTcp::emergencyStop() {
 }
 
 void ConnectionWidgetTcp::readWriteAccess() {
-
-
+    if (writeAccess == true) {
+        QString readonly(READONLY);
+        send(readonly);
+    }
+    else {
+        QString sWriteAccess(WRITEACCESS);
+        send(sWriteAccess);
+    }
 }
 
 void ConnectionWidgetTcp::reset() {
     //steht noch aus evtl doch über control cahnnel senden?
-
 }
 
 void ConnectionWidgetTcp::receive() {

@@ -8,8 +8,8 @@
 /*
  *
  *Hier ist das Datum und die Uhrzeit der letzten Änderung einzutragen!
- *6.12.13
- *1:13
+ *13.12.13
+ *22:54
  *
  */
 
@@ -38,6 +38,9 @@
 //Wirt gesendet, wenn Anfrage auf Schreibrechte abgelehnt wurde
 #define WADENIED QString("wirteAccessDenied")
 
+//kündigt das Senden der OnlineStati der devices an
+#define ONLINESTATUS QString("onlineStatus")
+
 //legt die maximale Wartezeit [ms] beim Schreiben von Daten (->Client) fest
 #define WRITEBYTETIMEOUT 500
 
@@ -47,6 +50,5 @@
 
 #define RETRYINTERVAL 1000 //setzt das intervall, nach dem das device(offline) neu angesprochen wird
 #define MAXREADLENGTH 100 //legt fest, bis zu welcher Länge(Bytes) lines vom Client eingelesen werden
-
 
 #endif // PROTOCOL_H
