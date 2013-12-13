@@ -5,6 +5,7 @@
 #include <tina++/feldbus/host/device.h>
 #include <QList>
 #include "util/feldbusdevicefactory.h"
+#include <tina++/feldbus/dynamixel/dynamixeldevice.h>
 
 
 
@@ -27,21 +28,31 @@ class FeldbusFrontend : public BaseFrontend
 
 protected:
     QWidget* feldbusWidget;
-    QPushButton* startInquiry_;
     QListWidget* deviceList_;
     QTextEdit* deviceInfo_;
     QList<FeldbusDeviceInfoExt> devices_;
+    QPushButton* startInquiry_;
     QLineEdit* fromEdit_;
-    QLineEdit*toEdit_;
+    QLineEdit* toEdit_;
     QIntValidator* fromValidator_;
     QIntValidator* toValidator_;
     FeldbusDeviceFactory* deviceFactory;
+
+    QPushButton* dynamixelStartInquiry_;
+    QLineEdit* dynamixelFromEdit_;
+    QLineEdit* dynamixelToEdit_;
+    QIntValidator* dynamixelFromValidator_;
+    QIntValidator* dynamixelToValidator_;
+    QList<TURAG::Feldbus::DynamixelDevice*> dynamixelDevices_;
+
     QSplitter* splitter;
     PlainTextFrontend* busLog_;
 
 protected slots:
     void onStartInquiry(void);
     void onDeviceSelected(int row);
+
+    void onStartDynamixelInquiry(void);
     void onRs485DebugMsg(QString msg);
 
 public:
@@ -57,6 +68,7 @@ public slots:
 
 private:
     void validateAdressFields();
+    void dynamixelValidateAdressFields();
 
 };
 

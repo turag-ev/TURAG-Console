@@ -60,7 +60,11 @@ SOURCES +=\
     frontend/feldbusviews/feldbusfarbsensorview.cpp \
     frontend/util/datapointinterface.cpp \
     connectionwidgets/connectionwidgettcp.cpp \
-    debugprintclass.cpp
+    debugprintclass.cpp \
+    ../../../tina/tina++/feldbus/dynamixel/dynamixeldevice.cpp \
+    ../../../tina/tina/feldbus/dynamixel/dynamixel.c \
+    ../../../tina/tina/feldbus/dynamixel/dxl_hal.c \
+    frontend/feldbusviews/dynamixelview.cpp
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -86,7 +90,9 @@ HEADERS  += mainwindow.h \
     frontend/feldbusviews/feldbusfarbsensorview.h \
     frontend/util/datapointinterface.h \
     connectionwidgets/connectionwidgettcp.h \
-    debugprintclass.h
+    debugprintclass.h \
+    ../../../tina/tina++/feldbus/dynamixel/dynamixeldevice.h \
+    frontend/feldbusviews/dynamixelview.h
 
 INCLUDEPATH += \
     ../../../tina \

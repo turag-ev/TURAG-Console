@@ -27,39 +27,43 @@ extern "C" bool turag_rs485_transceive(uint8_t *input, int input_length, uint8_t
         return false;
     }
 
-    QString inputmsg = QString("_Write: %1 {").arg(input_length);
-    for (int i = 0; i < input_length; ++i) {
-        inputmsg += QString("%1 ").arg((uint8_t)input[i]);
-    }
-    inputmsg += "}:";
+    if (input_length > 0 && input) {
+        QString inputmsg = QString("_Write: %1 {").arg(input_length);
+        for (int i = 0; i < input_length; ++i) {
+            inputmsg += QString("%1 ").arg((uint8_t)input[i]);
+        }
+        inputmsg += "}:";
 
-    if (input_length != turag_rs485_io_device->write((const char*)input, input_length)) {
-        rs485Debug.generateDebugMessage(inputmsg + " failed");
-        return false;
-    }
-    if (!turag_rs485_io_device->waitForBytesWritten(turag_ticks_to_ms(rs485_timeout))) {
-        rs485Debug.generateDebugMessage(inputmsg + " timeout");
-        return false;
-    }
-    rs485Debug.generateDebugMessage(inputmsg + " ok");
-
-    QString outmsg = QString("_Read required: %1").arg(output_length);
-
-    while (turag_rs485_data_buffer.size() < output_length) {
-        if (!turag_rs485_io_device->waitForReadyRead(turag_ticks_to_ms(rs485_timeout))) {
-            rs485Debug.generateDebugMessage(outmsg + " Timeout");
+        if (input_length != turag_rs485_io_device->write((const char*)input, input_length)) {
+            rs485Debug.generateDebugMessage(inputmsg + " failed");
             return false;
         }
+        if (!turag_rs485_io_device->waitForBytesWritten(turag_ticks_to_ms(rs485_timeout))) {
+            rs485Debug.generateDebugMessage(inputmsg + " timeout");
+            return false;
+        }
+        rs485Debug.generateDebugMessage(inputmsg + " ok");
     }
 
-    rs485Debug.generateDebugMessage(outmsg + QString(" available: %1").arg(turag_rs485_data_buffer.size()));
-    outmsg = "data: {";
-    for (int i = 0; i < output_length; ++i) {
-        output[i] = turag_rs485_data_buffer.at(i);
-        outmsg += QString("%1 ").arg((uint8_t)output[i]);
+    if (output_length > 0 && output) {
+        QString outmsg = QString("_Read required: %1").arg(output_length);
+
+        while (turag_rs485_data_buffer.size() < output_length) {
+            if (!turag_rs485_io_device->waitForReadyRead(turag_ticks_to_ms(rs485_timeout))) {
+                rs485Debug.generateDebugMessage(outmsg + " Timeout");
+                return false;
+            }
+        }
+
+        rs485Debug.generateDebugMessage(outmsg + QString(" available: %1").arg(turag_rs485_data_buffer.size()));
+        outmsg = "data: {";
+        for (int i = 0; i < output_length; ++i) {
+            output[i] = turag_rs485_data_buffer.at(i);
+            outmsg += QString("%1 ").arg((uint8_t)output[i]);
+        }
+        rs485Debug.generateDebugMessage(outmsg + "}");
+        turag_rs485_data_buffer.remove(0, output_length);
     }
-    rs485Debug.generateDebugMessage(outmsg + "}");
-    turag_rs485_data_buffer.clear();
 
     return true;
 }
