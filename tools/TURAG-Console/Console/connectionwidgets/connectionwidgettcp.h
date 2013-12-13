@@ -16,6 +16,8 @@
 #include <QtNetwork/QTcpSocket>
 #include <QList>
 #include <QByteArray>
+#include <QMenu>
+#include <QAction>
 
 typedef struct device{
     QByteArray path;
@@ -62,6 +64,7 @@ private:
 
 
     void handleData();
+    void receiveData(QByteArray * data);
 
 public slots:
     void connectToServer();

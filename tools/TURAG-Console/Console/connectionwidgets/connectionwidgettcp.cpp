@@ -1,6 +1,4 @@
 #include "connectionwidgettcp.h"
-#include <QMenu>
-#include <QAction>
 
 
 ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
@@ -133,6 +131,11 @@ void ConnectionWidgetTcp::handleData() {
     }
 }
 
+void ConnectionWidgetTcp::receiveData(QByteArray * data) {
+    *data = client->readLine(150);
+    data->chop(1);
+}
+
 QMenu* ConnectionWidgetTcp::getMenu() {
     return tcpMenu;
 }
@@ -155,6 +158,10 @@ void ConnectionWidgetTcp::connectToServer() {
         portString.append(hostAddress.at(i));
     }
     port = portString.toInt();
+
+    QHostAddress serverAddress(hostAddress);
+
+    client->connectToHost(serverAddress, port);
 
 }
 
