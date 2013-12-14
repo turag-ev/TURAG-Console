@@ -4,7 +4,7 @@
 #define DEFAULTHOST "robot.turag.et.tu-dresden.de:30000"
 
 #include "connectionwidget.h"
-#include "backend/protocol.h"
+#include "backend/tcpBackend_protocol.h"
 
 #include <QSettings>
 #include <QLineEdit>
@@ -54,11 +54,13 @@ public:
 private:
 
     //writeAccess steht auf false, falls readonly
+    device * selectedDevice;
     bool writeAccess;
     QString recentHost;
     QLineEdit * hostEdit;
     QPushButton * connect_button;
     QTcpSocket * client;
+    QVBoxLayout * generalLayout;
 
     QListWidget * allDevicesWidget;
 
@@ -73,12 +75,15 @@ private:
     void send(QByteArray &data);
     void send(QString &string);
 
+    device * findDeviceDescr(QString &descr);
+
 public slots:
     void connectToServer();
     void emergencyStop();
     void readWriteAccess();
     void reset();
     void receive();
+    void startDataChannel(QListWidgetItem * item);
 };
 
 #endif // CONNECTIONWIDGETTCP_H

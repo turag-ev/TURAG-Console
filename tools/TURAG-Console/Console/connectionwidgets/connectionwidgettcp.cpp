@@ -1,9 +1,10 @@
 #include "connectionwidgettcp.h"
 
 /*TODO List
- *[angefangen]    Oberfäche für das Wählen des device fertig machen
- *[]    festestellen, welches device gerade ausgewählt ist
- *[]    beim reset den mount path des ausgewählten device senden
+ *[x]    Oberfäche für das Wählen des device fertig machen
+ *[x]    festestellen, welches device gerade ausgewählt ist
+ *[x]    beim reset den mount path des ausgewählten device senden
+ *
  *
  *
  *
@@ -33,7 +34,7 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     connect(connect_button, SIGNAL(clicked()), this, SLOT(connectToServer()));
 
     //GesamtLayout ist ein QVBoxLayout
-    QVBoxLayout * generalLayout = new QVBoxLayout();
+    generalLayout = new QVBoxLayout();
 
     QHBoxLayout * editLayout = new QHBoxLayout();
     editLayout->addWidget(hostLabel, 0);
@@ -78,6 +79,10 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
 
     //das QListWidget anlegen
     allDevicesWidget = new QListWidget(this);
+    connect(allDevicesWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(startDataChannel(QListWidgetItem*)));
+
+
+    generalLayout->addWidget(allDevicesWidget);
 
     //jetzt um den Socket kümmern
     //listen leeren
@@ -143,15 +148,25 @@ void ConnectionWidgetTcp::handleData() {
         for (i = 0; i < allDevices.size(); i++) {
             device * currentDevice = allDevices.at(i);
             QString descr(currentDevice->description);
+            QListWidgetItem * item = new QListWidgetItem();
+
+            /*
+             *!!!Sollte der angehängte String geändert werden, muss uU die Anzahl der gechoppten
+             *Zeichen in ConnectionWigetTcp::startDatachannel geändert werden!!!!!!!
+             */
             if (currentDevice->onlineStatus) {
                 descr.append(" <online>");
+                item->setText(descr);
+                item->setTextColor(Qt::red);
             }
             else {
                 descr.append(" <offline>");
+                item->setText(descr);
             }
-            allDevicesWidget->addItem(descr);
-        }
 
+
+            allDevicesWidget->addItem(item);
+        }
     }
     else {
         //dont know what to do
@@ -179,6 +194,16 @@ void ConnectionWidgetTcp::send(QString &string) {
     send(data);
 }
 
+device * ConnectionWidgetTcp::findDeviceDescr(QString &descr) {
+    int i;
+    for (i = 0; i < allDevices.size(); i++) {
+        if (allDevices.at(i)->description == descr) {
+            return allDevices.at(i);
+        }
+    }
+    return NULL;
+}
+
 QMenu* ConnectionWidgetTcp::getMenu() {
     return tcpMenu;
 }
@@ -192,19 +217,28 @@ void ConnectionWidgetTcp::connectToServer() {
     QString portString;
     QString hostAddress;
     QString host = hostEdit->text();
-    int index = host.indexOf(":");
-    int i;
-    for(i = 0; i < index; i++) {
-        hostAddress.append(host.at(i));
+    if (host == LOCALHOST) {
+        client->connectToHost(QHostAddress(QHostAddress::LocalHost), 30123);
     }
-    for(i = index; i < hostAddress.size(); i++) {
-        portString.append(hostAddress.at(i));
+    else {
+        int index = host.indexOf(":");
+        int i;
+        for(i = 0; i < index; i++) {
+            hostAddress.append(host.at(i));
+        }
+
+        //QString::indexOf liefert -1, falls string nicht gefunden
+        if (index != -1) {
+            for(i = index; i < hostAddress.size(); i++) {
+                portString.append(hostAddress.at(i));
+            }
+            port = portString.toInt();
+        }
+
+        QHostAddress serverAddress(hostAddress);
+
+        client->connectToHost(serverAddress, port);
     }
-    port = portString.toInt();
-
-    QHostAddress serverAddress(hostAddress);
-
-    client->connectToHost(serverAddress, port);
 
 }
 
@@ -225,7 +259,7 @@ void ConnectionWidgetTcp::readWriteAccess() {
 }
 
 void ConnectionWidgetTcp::reset() {
-    //steht noch aus evtl doch über control cahnnel senden?
+    send(selectedDevice->path);
 }
 
 void ConnectionWidgetTcp::receive() {
@@ -241,6 +275,24 @@ void ConnectionWidgetTcp::receive() {
 
     }
 
+}
+
+void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
+    QString descr = item->text();
+    if (descr.endsWith("<offline>")) {
+        return;
+    }
+    else {
+        descr.chop(9);
+    }
+    selectedDevice = findDeviceDescr(descr);
+    QString connectionString("tcp://");
+    connectionString.append(client->peerAddress().toString());
+    connectionString.append("/");
+    connectionString.append(QString(client->peerPort()));
+    connectionString.append("/");
+    connectionString.append(QString(selectedDevice->path));
+    emit connectionChanged(connectionString, true);
 }
 
 

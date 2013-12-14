@@ -1,5 +1,5 @@
-#ifndef PROTOCOL_H
-#define PROTOCOL_H
+#ifndef TCPBACKEND_PROTOCOL_H
+#define TCPBACKEND_PROTOCOL_H
 
 /*
  *In dieser Datei werden die Konstanten, die für das Protokoll nötig sind, definiert
@@ -41,6 +41,9 @@
 //kündigt das Senden der OnlineStati der devices an
 #define ONLINESTATUS QString("onlineStatus")
 
+//localHost definieren
+#define LOCALHOST QString("Localhost")
+
 //legt die maximale Wartezeit [ms] beim Schreiben von Daten (->Client) fest
 #define WRITEBYTETIMEOUT 500
 
@@ -51,4 +54,4 @@
 #define RETRYINTERVAL 1000 //setzt das intervall, nach dem das device(offline) neu angesprochen wird
 #define MAXREADLENGTH 100 //legt fest, bis zu welcher Länge(Bytes) lines vom Client eingelesen werden
 
-#endif // PROTOCOL_H
+#endif // TCPBACKEND_PROTOCOL_H

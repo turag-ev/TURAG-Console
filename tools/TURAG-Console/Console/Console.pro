@@ -94,7 +94,7 @@ HEADERS  += mainwindow.h \
     debugprintclass.h \
     ../../../tina/tina++/feldbus/dynamixel/dynamixeldevice.h \
     frontend/feldbusviews/dynamixelview.h \
-    backend/protocol.h
+    backend/tcpBackend_protocol.h
 
 INCLUDEPATH += \
     ../../../tina \
