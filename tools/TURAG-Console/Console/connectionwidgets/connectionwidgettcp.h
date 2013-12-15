@@ -44,6 +44,10 @@ protected:
 
     virtual QMenu* getMenu();
 
+    //das mach ich, um ConnectionWidget::connectionChanged(..) einen Pointer
+    //auf ein bool übergeben zu können, ohne nullptr exceptions zu riskieren
+    bool saveConnectionString;
+
 protected slots:
 
 
@@ -51,11 +55,13 @@ protected slots:
 public:
     ConnectionWidgetTcp(QWidget *parent = 0);
 
+
 private:
 
     //writeAccess steht auf false, falls readonly
     device * selectedDevice;
     bool writeAccess;
+
     QString recentHost;
     QLineEdit * hostEdit;
     QPushButton * connect_button;
@@ -63,6 +69,9 @@ private:
     QVBoxLayout * generalLayout;
 
     QListWidget * allDevicesWidget;
+
+    //Infotext, der unter devices Box angezeigt wird
+    QLabel * bottomInfoText;
 
     QList<QByteArray> puffer;
     QList<device * > allDevices;

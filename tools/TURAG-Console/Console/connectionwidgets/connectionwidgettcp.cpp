@@ -1,18 +1,11 @@
 #include "connectionwidgettcp.h"
 
-/*TODO List
- *[x]    Oberfäche für das Wählen des device fertig machen
- *[x]    festestellen, welches device gerade ausgewählt ist
- *[x]    beim reset den mount path des ausgewählten device senden
- *
- *
- *
- *
- */
-
-
 ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     ConnectionWidget("Letzte Verbindungen", parent) {
+
+    //saveConnectionString bool erzeugen, um bei ConnectionWidget::connectionChanged(..) nullptr zu vermeiden
+    saveConnectionString = true;
+
     QSettings settings;
     settings.beginGroup("RecentTcpConnections");
 
@@ -84,6 +77,10 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
 
     generalLayout->addWidget(allDevicesWidget);
 
+    //für usability:
+    bottomInfoText = new QLabel("Doppelklick öffnet den Datachannel zum gewählten Gerät", this);
+    generalLayout->addWidget(bottomInfoText);
+
     //jetzt um den Socket kümmern
     //listen leeren
     puffer.clear();
@@ -152,16 +149,16 @@ void ConnectionWidgetTcp::handleData() {
 
             /*
              *!!!Sollte der angehängte String geändert werden, muss uU die Anzahl der gechoppten
-             *Zeichen in ConnectionWigetTcp::startDatachannel geändert werden!!!!!!!
+             *Zeichen in ConnectionWidgetTcp::startDatachannel geändert werden!!!!!!!
              */
             if (currentDevice->onlineStatus) {
                 descr.append(" <online>");
                 item->setText(descr);
-                item->setTextColor(Qt::red);
             }
             else {
                 descr.append(" <offline>");
                 item->setText(descr);
+                item->setTextColor(Qt::red);
             }
 
 
@@ -285,6 +282,7 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
     else {
         descr.chop(9);
     }
+    //den connection String zusammenbasteln
     selectedDevice = findDeviceDescr(descr);
     QString connectionString("tcp://");
     connectionString.append(client->peerAddress().toString());
@@ -292,7 +290,10 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
     connectionString.append(QString(client->peerPort()));
     connectionString.append("/");
     connectionString.append(QString(selectedDevice->path));
-    emit connectionChanged(connectionString, true);
+
+    //Signal emitten mit dem connectionstring;
+    //save connectionString hat hier keine Bedeutung
+    emit connectionChanged(connectionString, &saveConnectionString);
 }
 
 
