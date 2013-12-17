@@ -94,6 +94,10 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
 
 }
 
+ConnectionWidgetTcp::~ConnectionWidgetTcp() {
+
+}
+
 void ConnectionWidgetTcp::handleData() {
 
     if (puffer.at(0) == WADENIED) {
@@ -283,11 +287,14 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
         descr.chop(9);
     }
     //den connection String zusammenbasteln
+    //ich nehm ein Tilde (~) zum Trennen, da das einiges erleichtert beim zerlegen
     selectedDevice = findDeviceDescr(descr);
     QString connectionString("tcp://");
     connectionString.append(client->peerAddress().toString());
-    connectionString.append("/");
-    connectionString.append(QString(client->peerPort()));
+    connectionString.append(":");
+
+    //direkt den Port zu dem ausgewählten device mitliefern -> Port auf CoCha uninteressant
+    connectionString.append(QString(selectedDevice->port));
     connectionString.append("/");
     connectionString.append(QString(selectedDevice->path));
 

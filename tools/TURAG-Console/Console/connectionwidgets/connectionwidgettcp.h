@@ -54,6 +54,7 @@ protected slots:
 
 public:
     ConnectionWidgetTcp(QWidget *parent = 0);
+    ~ConnectionWidgetTcp();
 
 
 private:
