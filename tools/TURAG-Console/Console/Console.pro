@@ -66,7 +66,8 @@ SOURCES +=\
     ../../../tina/tina/feldbus/dynamixel/dynamixel.c \
     ../../../tina/tina/feldbus/dynamixel/dxl_hal.c \
     frontend/feldbusviews/dynamixelview.cpp \
-    backend/tcpbackend.cpp
+    backend/tcpbackend.cpp \
+    frontend/feldbusviews/feldbusaktorview.cpp
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -96,7 +97,8 @@ HEADERS  += mainwindow.h \
     ../../../tina/tina++/feldbus/dynamixel/dynamixeldevice.h \
     frontend/feldbusviews/dynamixelview.h \
     backend/tcpBackend_protocol.h \
-    backend/tcpbackend.h
+    backend/tcpbackend.h \
+    frontend/feldbusviews/feldbusaktorview.h
 
 INCLUDEPATH += \
     ../../../tina \
