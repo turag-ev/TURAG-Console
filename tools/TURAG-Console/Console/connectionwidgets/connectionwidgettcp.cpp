@@ -191,8 +191,8 @@ void ConnectionWidgetTcp::send(QByteArray &data) {
 }
 
 void ConnectionWidgetTcp::send(QString &string) {
-    QByteArray data = string.toAscii();
-    send(data);
+//    QByteArray data = string.toAscii();
+//    send(data);
 }
 
 device * ConnectionWidgetTcp::findDeviceDescr(QString &descr) {
