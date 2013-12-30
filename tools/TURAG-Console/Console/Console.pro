@@ -20,7 +20,7 @@ TARGET = Console
 TEMPLATE = app
 
 # Schneller als die Standardimplementierung wenn Strings mit + verbunden werden
-DEFINES *= QT_USE_QSTRINGBUILDER TURAG_STD_CONFIG
+DEFINES *= QT_USE_QSTRINGBUILDER
 
 QMAKE_CXXFLAGS         += -std=gnu++0x
 QMAKE_LFLAGS           += -std=gnu++0x
@@ -67,7 +67,9 @@ SOURCES +=\
     ../../../tina/tina/feldbus/dynamixel/dxl_hal.c \
     frontend/feldbusviews/dynamixelview.cpp \
     backend/tcpbackend.cpp \
-    frontend/feldbusviews/feldbusaktorview.cpp
+    frontend/feldbusviews/feldbusaktorview.cpp \
+    ../../../tina/tina++/feldbus/host/dcmotor_tina.cpp \
+    ../../../tina/tina++/feldbus/host/servo_tina.cpp
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -98,7 +100,13 @@ HEADERS  += mainwindow.h \
     frontend/feldbusviews/dynamixelview.h \
     backend/tcpBackend_protocol.h \
     backend/tcpbackend.h \
-    frontend/feldbusviews/feldbusaktorview.h
+    frontend/feldbusviews/feldbusaktorview.h \
+    tina-platform/public/tina/config.h \
+    ../../../tina/tina++/feldbus/host/device.h \
+    ../../../tina/tina++/feldbus/host/aktor.h \
+    ../../../tina/tina++/feldbus/host/servo.h \
+    ../../../tina/tina++/feldbus/host/dcmotor.h \
+    ../../../tina/tina++/feldbus/host/farbsensor.h
 
 INCLUDEPATH += \
     ../../../tina \
