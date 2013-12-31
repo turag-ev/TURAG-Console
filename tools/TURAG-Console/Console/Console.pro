@@ -101,7 +101,6 @@ HEADERS  += mainwindow.h \
     backend/tcpBackend_protocol.h \
     backend/tcpbackend.h \
     frontend/feldbusviews/feldbusaktorview.h \
-    tina-platform/public/tina/config.h \
     ../../../tina/tina++/feldbus/host/device.h \
     ../../../tina/tina++/feldbus/host/aktor.h \
     ../../../tina/tina++/feldbus/host/servo.h \
