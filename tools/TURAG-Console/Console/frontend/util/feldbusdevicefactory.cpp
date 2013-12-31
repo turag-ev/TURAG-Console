@@ -82,7 +82,11 @@ bool FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfoExt &device_info
         break;
     }
 
-    return false;
+    if (device) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 
