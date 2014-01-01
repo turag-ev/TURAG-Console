@@ -13,11 +13,11 @@
 FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     QWidget(parent), actor(aktor)
 {
-    QVBoxLayout* vlayout = new QVBoxLayout;
-    QHBoxLayout* left_layout = new QHBoxLayout;
-    QHBoxLayout* right_layout = new QHBoxLayout;
+    QHBoxLayout* vlayout = new QHBoxLayout;
+    QVBoxLayout* left_layout = new QVBoxLayout;
+    QVBoxLayout* right_layout = new QVBoxLayout;
     QGridLayout* value_grid = new QGridLayout;
-    QHBoxLayout* settings_layout = new QHBoxLayout;
+    QVBoxLayout* settings_layout = new QVBoxLayout;
     QHBoxLayout* button_layout = new QHBoxLayout;
 
     vlayout->addLayout(left_layout);
@@ -25,19 +25,34 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     setLayout(vlayout);
 
     left_layout->addLayout(value_grid);
-    left_layout->addLayout(button_layout);
+    QVBoxLayout* left_sub_layout = new QVBoxLayout;
+    left_layout->addLayout(left_sub_layout);
+    left_sub_layout->addLayout(button_layout);
+    QLabel* descr = new QLabel("Markierte Werte werden in der Diagrammanzeige berücksichtigt");
+    descr->setWordWrap(true);
+    left_sub_layout->addWidget(descr);
+    left_layout->setAlignment(left_sub_layout, Qt::AlignBottom);
+
 
     plot = new DataGraph;
     right_layout->addWidget(plot);
     right_layout->addLayout(settings_layout);
 
-    getCommandSet = new QPushButton("Commandset ermitteln");
+    getCommandSet = new QPushButton("Commandset\nermitteln");
     button_layout->addWidget(getCommandSet);
     connect(getCommandSet, SIGNAL(clicked()), this, SLOT(onGetCommandSet()));
 
-    updateDeviceValues = new QPushButton("Werte schreiben & aktualisieren");
+    updateDeviceValues = new QPushButton("Werte\naktualisieren");
     button_layout->addWidget(updateDeviceValues);
     connect(updateDeviceValues, SIGNAL(clicked()), this, SLOT(onUpdateDeviceValues()));
+
+    QHBoxLayout* startStopLayout = new QHBoxLayout;
+    settings_layout->addLayout(startStopLayout);
+    QLabel* startDescr = new QLabel("zyklisch: Daten werden ständig vom Gerät geholt und angezeigt; einmalig: die Änderung eines Wertes startet die Datenaufzeichnung für die angegebene Dauer");
+    startDescr->setWordWrap(true);
+    startStopLayout->addWidget(startDescr);
+    startStopDataUpdate = new QPushButton("Start");
+    startStopLayout->addWidget(startStopDataUpdate);
 
     QHBoxLayout* radio_layout = new QHBoxLayout;
     settings_layout->addLayout(radio_layout);

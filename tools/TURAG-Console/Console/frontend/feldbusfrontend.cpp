@@ -13,9 +13,13 @@
 #include <QSettings>
 #include <QTabWidget>
 #include <tina++/feldbus/host/farbsensor.h>
+#include <tina++/feldbus/host/aktor.h>
+#include <tina++/feldbus/host/dcmotor.h>
+#include <tina++/feldbus/host/servo.h>
 #include <tina++/feldbus/dynamixel/dynamixeldevice.h>
 #include "feldbusviews/feldbusfarbsensorview.h"
 #include "feldbusviews/dynamixelview.h"
+#include "feldbusviews/feldbusaktorview.h"
 #include <debugprintclass.h>
 #include "plaintextfrontend.h"
 
@@ -113,6 +117,10 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     dynamixelToEdit_->setText(settings.value("dynamixelToAddress", "253").toString());
 
     deviceFactory = new FeldbusDeviceFactory(this);
+
+#warning please remove me
+    feldbusWidget->hide();
+    splitter->addWidget(new FeldbusAktorView(new Feldbus::Servo("Neu", 1)));
 
 }
 
@@ -319,6 +327,24 @@ void FeldbusFrontend::onDeviceSelected( int row) {
         Feldbus::Farbsensor* farbsensor = dynamic_cast<Feldbus::Farbsensor*>(deviceFactory->getDevice());
         if (farbsensor) {
             feldbusWidget = new FeldbusFarbsensorView(farbsensor);
+            splitter->addWidget(feldbusWidget);
+            splitter->setStretchFactor(1,2);
+            return;
+        }
+
+        // create Aktor view for DC motor
+        Feldbus::DCMotor* dcmotor = dynamic_cast<Feldbus::DCMotor*>(deviceFactory->getDevice());
+        if (dcmotor) {
+            feldbusWidget = new FeldbusAktorView(dcmotor);
+            splitter->addWidget(feldbusWidget);
+            splitter->setStretchFactor(1,2);
+            return;
+        }
+
+        // create Aktor view for servo
+        Feldbus::Servo* servo = dynamic_cast<Feldbus::Servo*>(deviceFactory->getDevice());
+        if (servo) {
+            feldbusWidget = new FeldbusAktorView(servo);
             splitter->addWidget(feldbusWidget);
             splitter->setStretchFactor(1,2);
             return;
