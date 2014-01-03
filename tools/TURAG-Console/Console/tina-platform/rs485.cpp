@@ -50,7 +50,7 @@ extern "C" bool turag_rs485_transceive(uint8_t *input, int input_length, uint8_t
 
         while (turag_rs485_data_buffer.size() < output_length) {
             if (!turag_rs485_io_device->waitForReadyRead(turag_ticks_to_ms(rs485_timeout))) {
-                rs485Debug.generateDebugMessage(outmsg + " Timeout");
+                rs485Debug.generateDebugMessage(outmsg + QString(" Timeout (%1)").arg(turag_rs485_data_buffer.size()));
                 return false;
             }
         }

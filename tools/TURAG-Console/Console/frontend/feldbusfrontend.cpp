@@ -118,9 +118,9 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 
     deviceFactory = new FeldbusDeviceFactory(this);
 
-#warning please remove me
-    feldbusWidget->hide();
-    splitter->addWidget(new FeldbusAktorView(new Feldbus::Servo("Neu", 1)));
+//#warning please remove me
+//    feldbusWidget->hide();
+//    splitter->addWidget(new FeldbusAktorView(0));
 
 }
 
@@ -210,6 +210,7 @@ void FeldbusFrontend::onStartInquiry(void) {
     deviceList_->clear();
     devices_.clear();
     deviceInfo_->clear();
+    turag_rs485_data_buffer.clear();
 
     FeldbusDeviceInfoExt dev_info;
     dev_info.address = 0;
@@ -278,6 +279,7 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
 
     deviceList_->clearSelection();
     deviceList_->clear();
+    turag_rs485_data_buffer.clear();
 
     for (Feldbus::DynamixelDevice* dev : dynamixelDevices_) {
         delete dev;
