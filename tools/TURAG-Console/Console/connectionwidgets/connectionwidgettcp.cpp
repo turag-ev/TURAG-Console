@@ -191,7 +191,7 @@ void ConnectionWidgetTcp::send(QByteArray &data) {
 }
 
 void ConnectionWidgetTcp::send(QString &string) {
-    QByteArray data = string.toAscii();
+    QByteArray data = string.toLatin1();
     send(data);
 }
 
