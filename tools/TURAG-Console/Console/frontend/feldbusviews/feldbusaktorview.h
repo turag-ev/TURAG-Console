@@ -9,6 +9,7 @@
 #include <QPushButton>
 #include <QCheckBox>
 #include <QList>
+#include <QTime>
 
 
 class QRadioButton;
@@ -16,6 +17,7 @@ class QIntValidator;
 class QTimer;
 class QGridLayout;
 class QSignalMapper;
+
 
 using namespace TURAG::Feldbus;
 
@@ -55,9 +57,12 @@ protected:
     AktorCommand_t* commandset;
     QGridLayout* value_grid;
     QSignalMapper* setMapper;
+    QTime updateStartTime;
 
     void readSettings();
     void writeSettings();
+    void enableCheckboxes(void);
+    void disableCHeckboxes(void);
 
     unsigned updateCounter;
 
@@ -70,6 +75,7 @@ protected slots:
     void onInputEdited(void);
     void onTimeout(void);
     void onValueSet(int id);
+    void onCheckboxChanged(void);
 
 public:
     explicit FeldbusAktorView(Aktor* aktor, QWidget *parent = 0);

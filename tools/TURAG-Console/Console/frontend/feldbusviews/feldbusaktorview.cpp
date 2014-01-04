@@ -12,6 +12,7 @@
 #include <QSignalMapper>
 #include <QPalette>
 #include <QColor>
+#include <vector>
 
 
 FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
@@ -114,6 +115,7 @@ void FeldbusAktorView::onGetCommandSet(void) {
         for (CommandsetEntry& entry : commandsetGrid) {
             entry.button->disconnect();
             entry.button->deleteLater();
+            entry.checkbox->disconnect();
             entry.checkbox->deleteLater();
             entry.label->deleteLater();
             entry.value->deleteLater();
@@ -158,6 +160,7 @@ void FeldbusAktorView::onGetCommandSet(void) {
             setMapper->setMapping(entry.button, commandsetGrid.size());
 
             entry.checkbox = new QCheckBox;
+            connect(entry.checkbox, SIGNAL(stateChanged(int)), this, SLOT(onCheckboxChanged()));
 
             value_grid->addWidget(entry.label, i, 0);
             value_grid->addWidget(entry.value, i, 1);
@@ -203,17 +206,23 @@ void FeldbusAktorView::onOneShotDataUpdate(bool checked) {
 void FeldbusAktorView::onStartStopDataUpdate(void) {
     validateInput();
 
-    if (!updateTimer->isActive()) {
+    if (!updateTimer->isActive() && startStopDataUpdate->isEnabled()) {
         startStopDataUpdate->setText("Stop");
         updateTimer->setInterval(updateInterval->text().toUInt());
         updateCounter = 0;
         plot->clear();
 
-        if (oneShotDataUpdate->isChecked()) {
+        std::vector<uint8_t> outputTable;
 
-        } else {
-
+        for (CommandsetEntry& entry : commandsetGrid) {
+            if (entry.checkbox->isChecked()) {
+                outputTable.push_back(entry.key);
+                plot->addChannel(entry.label->text(), (qreal)updateLength->text().toFloat());
+            }
         }
+        actor->setStructuredOutputTable(outputTable);
+
+        updateStartTime = QTime::currentTime();
         updateTimer->start();
         onTimeout();
     } else {
@@ -287,7 +296,15 @@ void FeldbusAktorView::onTimeout(void) {
         }
     }
 
+    int msecs = QTime::currentTime().msec() - updateStartTime.msec();
 
+    std::vector<StructuredDataPair_t> output;
+    actor->getStructuredOutput(&output);
+
+    int channel = 0;
+    for (StructuredDataPair_t& data : output) {
+        plot->addData(channel, QPointF(msecs, data.value));
+    }
 
 }
 
@@ -304,3 +321,31 @@ void FeldbusAktorView::onValueSet(int id) {
         onStartStopDataUpdate();
     }
 }
+
+void FeldbusAktorView::onCheckboxChanged(void) {
+    unsigned int numberOfCheckedValues = 0;
+    for (CommandsetEntry& entry : commandsetGrid) {
+        if (entry.checkbox->isChecked()) {
+            ++numberOfCheckedValues;
+        }
+    }
+
+    if (numberOfCheckedValues > 0 && numberOfCheckedValues <= actor->getStructuredOutputTableLength()) {
+        startStopDataUpdate->setEnabled(true);
+    } else {
+        startStopDataUpdate->setDisabled(true);
+    }
+}
+
+void FeldbusAktorView::enableCheckboxes(void) {
+    for (CommandsetEntry& entry : commandsetGrid) {
+        entry.checkbox->setEnabled(true);
+    }
+}
+
+void FeldbusAktorView::disableCHeckboxes(void) {
+    for (CommandsetEntry& entry : commandsetGrid) {
+        entry.checkbox->setEnabled(false);
+    }
+}
+
