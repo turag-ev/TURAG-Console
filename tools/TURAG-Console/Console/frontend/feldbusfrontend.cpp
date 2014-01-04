@@ -173,7 +173,7 @@ void FeldbusFrontend::validateAdressFields() {
         fromEdit_->setText("0");
     }
     if (!toEdit_->hasAcceptableInput()) {
-        toEdit_->setText("127");
+        toEdit_->setText(QString("%1").arg(fromEdit_->text().toInt()+1));
     }
     int fromAddress = fromEdit_->text().toInt();
     int toAddress = toEdit_->text().toInt();

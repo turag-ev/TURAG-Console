@@ -74,10 +74,8 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     settings_layout->addLayout(radio_layout);
     cyclicDataUpdate = new QRadioButton("zyklische Datenaktualisierung");
     radio_layout->addWidget(cyclicDataUpdate);
-    connect(cyclicDataUpdate, SIGNAL(toggled(bool)), this, SLOT(onCyclicDataUpdate(bool)));
     oneShotDataUpdate = new QRadioButton("einmalige Datenaktualisierung");
     radio_layout->addWidget(oneShotDataUpdate);
-    connect(oneShotDataUpdate, SIGNAL(toggled(bool)), this, SLOT(onOneShotDataUpdate(bool)));
 
     QFormLayout* settings_form = new QFormLayout;
     settings_layout->addLayout(settings_form);
@@ -93,6 +91,7 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     settings_form->addRow(label2, updateLength);
 
     updateTimer = new QTimer(this);
+    connect(updateTimer, SIGNAL(timeout()), this, SLOT(onTimeout()));
 
     setMapper = new QSignalMapper(this);
     connect(setMapper, SIGNAL(mapped(int)), this, SLOT(onValueSet(int)));
@@ -113,8 +112,10 @@ void FeldbusAktorView::onGetCommandSet(void) {
         plot->clear();
 
         for (CommandsetEntry& entry : commandsetGrid) {
-            entry.button->disconnect();
-            entry.button->deleteLater();
+            if (entry.button) {
+                entry.button->disconnect();
+                entry.button->deleteLater();
+            }
             entry.checkbox->disconnect();
             entry.checkbox->deleteLater();
             entry.label->deleteLater();
@@ -154,17 +155,21 @@ void FeldbusAktorView::onGetCommandSet(void) {
                 pal.setColor(QPalette::Active, QPalette::Base, clr);
                 pal.setColor(QPalette::Inactive, QPalette::Base, clr);
                 entry.value->setPalette(pal);
+                entry.button = nullptr;
+            } else {
+                entry.button = new QPushButton("Set");
+                connect(entry.button, SIGNAL(clicked()), setMapper, SLOT(map()));
+                setMapper->setMapping(entry.button, commandsetGrid.size());
             }
-            entry.button = new QPushButton("Set");
-            connect(entry.button, SIGNAL(clicked()), setMapper, SLOT(map()));
-            setMapper->setMapping(entry.button, commandsetGrid.size());
 
             entry.checkbox = new QCheckBox;
             connect(entry.checkbox, SIGNAL(stateChanged(int)), this, SLOT(onCheckboxChanged()));
 
             value_grid->addWidget(entry.label, i, 0);
             value_grid->addWidget(entry.value, i, 1);
-            value_grid->addWidget(entry.button, i, 2);
+            if (entry.button) {
+                value_grid->addWidget(entry.button, i, 2);
+            }
             value_grid->addWidget(entry.checkbox, i, 3);
 
             commandsetGrid.append(entry);
@@ -195,13 +200,6 @@ void FeldbusAktorView::onUpdateDeviceValues(void) {
     }
 }
 
-void FeldbusAktorView::onCyclicDataUpdate(bool checked) {
-
-}
-
-void FeldbusAktorView::onOneShotDataUpdate(bool checked) {
-
-}
 
 void FeldbusAktorView::onStartStopDataUpdate(void) {
     validateInput();
@@ -211,23 +209,29 @@ void FeldbusAktorView::onStartStopDataUpdate(void) {
         updateTimer->setInterval(updateInterval->text().toUInt());
         updateCounter = 0;
         plot->clear();
+        disableCheckboxes();
+        cyclicDataUpdate->setDisabled(true);
+        oneShotDataUpdate->setDisabled(true);
 
         std::vector<uint8_t> outputTable;
 
         for (CommandsetEntry& entry : commandsetGrid) {
             if (entry.checkbox->isChecked()) {
                 outputTable.push_back(entry.key);
-                plot->addChannel(entry.label->text(), (qreal)updateLength->text().toFloat());
+                plot->addChannel(entry.label->text(), (qreal)(updateLength->text().toFloat() * updateInterval->text().toFloat()));
             }
         }
         actor->setStructuredOutputTable(outputTable);
 
-        updateStartTime = QTime::currentTime();
-        updateTimer->start();
+        updateStartTime.start();
+        updateTimer->start(updateInterval->text().toInt());
         onTimeout();
     } else {
         startStopDataUpdate->setText("Start");
         updateTimer->stop();
+        enableCheckboxes();
+        cyclicDataUpdate->setDisabled(false);
+        oneShotDataUpdate->setDisabled(false);
     }
 
 }
@@ -296,7 +300,7 @@ void FeldbusAktorView::onTimeout(void) {
         }
     }
 
-    int msecs = QTime::currentTime().msec() - updateStartTime.msec();
+    int msecs = updateStartTime.elapsed();
 
     std::vector<StructuredDataPair_t> output;
     actor->getStructuredOutput(&output);
@@ -304,6 +308,7 @@ void FeldbusAktorView::onTimeout(void) {
     int channel = 0;
     for (StructuredDataPair_t& data : output) {
         plot->addData(channel, QPointF(msecs, data.value));
+        ++channel;
     }
 
 }
@@ -311,10 +316,25 @@ void FeldbusAktorView::onTimeout(void) {
 
 void FeldbusAktorView::onValueSet(int id) {
     uint8_t key = commandsetGrid.at(id).key;
+
     if (commandset[key - 1].factor == TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE) {
         actor->setValue(key, static_cast<int32_t>(commandsetGrid.at(id).value->text().toInt()));
+
+        int32_t value;
+        if (!actor->getValue(key, &value)) {
+            commandsetGrid.at(id).value->setText("ERROR");
+        } else {
+            commandsetGrid.at(id).value->setText(QString("%1").arg(value));
+        }
     } else {
         actor->setValue(key, commandsetGrid.at(id).value->text().toFloat());
+
+        float value;
+        if (!actor->getValue(key, &value)) {
+            commandsetGrid.at(id).value->setText("ERROR");
+        } else {
+            commandsetGrid.at(id).value->setText(QString("%1").arg(value));
+        }
     }
 
     if (oneShotDataUpdate->isChecked() && !updateTimer->isActive()) {
@@ -343,7 +363,7 @@ void FeldbusAktorView::enableCheckboxes(void) {
     }
 }
 
-void FeldbusAktorView::disableCHeckboxes(void) {
+void FeldbusAktorView::disableCheckboxes(void) {
     for (CommandsetEntry& entry : commandsetGrid) {
         entry.checkbox->setEnabled(false);
     }

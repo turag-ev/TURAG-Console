@@ -62,15 +62,13 @@ protected:
     void readSettings();
     void writeSettings();
     void enableCheckboxes(void);
-    void disableCHeckboxes(void);
+    void disableCheckboxes(void);
 
     unsigned updateCounter;
 
 protected slots:
     void onGetCommandSet(void);
     void onUpdateDeviceValues(void);
-    void onCyclicDataUpdate(bool);
-    void onOneShotDataUpdate(bool);
     void onStartStopDataUpdate(void);
     void onInputEdited(void);
     void onTimeout(void);

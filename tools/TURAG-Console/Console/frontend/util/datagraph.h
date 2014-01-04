@@ -58,7 +58,7 @@ protected:
 public:
     CurveDataBase(bool keepHiddenPoints = true) : keepHiddenPoints_(keepHiddenPoints) { }
 
-    virtual QRectF boundingRect() const = 0;
+    virtual QRectF boundingRect() const;
     virtual void append( const QPointF &point ) = 0;
 };
 

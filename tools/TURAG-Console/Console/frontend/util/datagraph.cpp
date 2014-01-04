@@ -254,13 +254,45 @@ bool DataGraph::saveOutput() {
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
+// CurveDataBase
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+QRectF CurveDataBase::boundingRect() const {
+    QRectF rect;
+
+    for (const QPointF& point : d_samples) {
+        if (point.x() > rect.right()) {
+            rect.setRight(point.x());
+        } else if (point.x() < rect.left()) {
+            rect.setLeft(point.x());
+        }
+        if (point.y() > rect.bottom()) {
+            rect.setBottom(point.y());
+        } else if (point.y() < rect.top()) {
+            rect.setTop(point.y());
+        }
+    }
+    if (rect.height() == 0) {
+        rect.setHeight(1);
+    }
+    if (rect.width() == 0) {
+        rect.setWidth(1);
+    }
+    return rect;
+}
+
+
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // CurveData
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 QRectF CurveData::boundingRect() const {
     if (!d_boundingRect.isValid()) {
-        d_boundingRect = qwtBoundingRect( *this );
+        d_boundingRect = CurveDataBase::boundingRect();
     }
     return d_boundingRect;
 }
@@ -292,7 +324,7 @@ void CurveData::append( const QPointF &point ) {
 // ------------------------------------------------------------------------------
 QRectF CurveDataFixedX::boundingRect() const {
     if (!d_boundingRect.isValid()) {
-        d_boundingRect = qwtBoundingRect( *this );
+        d_boundingRect = CurveDataBase::boundingRect();
         d_boundingRect.setLeft(left);
         d_boundingRect.setRight(right);
     }
@@ -323,7 +355,7 @@ void CurveDataFixedX::append( const QPointF &point ) {
 // ------------------------------------------------------------------------------
 QRectF CurveDataFixedY::boundingRect() const {
     if (!d_boundingRect.isValid()) {
-        d_boundingRect = qwtBoundingRect( *this );
+        d_boundingRect = CurveDataBase::boundingRect();
         d_boundingRect.setBottom(top);
         d_boundingRect.setTop(bottom);
     }
@@ -355,7 +387,7 @@ void CurveDataFixedY::append( const QPointF &point ) {
 // ------------------------------------------------------------------------------
 QRectF CurveDataTime::boundingRect() const {
     if (!d_boundingRect.isValid()) {
-        d_boundingRect = qwtBoundingRect( *this );
+        d_boundingRect = CurveDataBase::boundingRect();
         if (d_boundingRect.isValid()) {
             d_boundingRect.setLeft(d_boundingRect.right() - timespan_);
         }
@@ -404,7 +436,7 @@ void CurveDataTime::append( const QPointF &point ) {
 // ------------------------------------------------------------------------------
 QRectF CurveDataTimeFixedY::boundingRect() const {
     if (!d_boundingRect.isValid()) {
-        d_boundingRect = qwtBoundingRect( *this );
+        d_boundingRect = CurveDataBase::boundingRect();
         if (d_boundingRect.isValid()) {
             d_boundingRect.setLeft(d_boundingRect.right() - timespan_);
             d_boundingRect.setBottom(top);
