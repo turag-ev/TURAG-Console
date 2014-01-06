@@ -272,6 +272,7 @@ void MainWindow::onConnected(bool readOnly) {
         permanentReadOnlyImage->setPixmap(QPixmap::fromImage(*imgLock));
     } else {
         permanentStatus->setText("Verbunden");
+        permanentReadOnlyImage->setPixmap(QPixmap());
     }
 }
 

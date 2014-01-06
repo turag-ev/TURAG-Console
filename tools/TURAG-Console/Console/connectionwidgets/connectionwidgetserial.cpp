@@ -71,7 +71,7 @@ void ConnectionWidgetSerial::connectionChangedInternal() {
     QString connectionString = SerialBackend::connectionPrefix + port_name_edit->text() + ":" + bd_edit->text();
 
     bool save = false;
-    emit connectionChanged(connectionString, &save);
+    emit connectionChanged(connectionString, &save, nullptr);
     if (save) {
         saveConnection(connectionString);
         addRecentConnections();

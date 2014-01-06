@@ -37,7 +37,7 @@ void ConnectionWidgetFile::onOpenFile() {
       QString connectionString = FileBackend::connectionPrefix + files[0];
 
       bool save = false;
-      emit connectionChanged(connectionString, &save);
+      emit connectionChanged(connectionString, &save, nullptr);
       if (save) {
           saveConnection(connectionString);
           addRecentConnections();

@@ -52,7 +52,7 @@ void ConnectionWidget::addRecentConnections() {
 
 void ConnectionWidget::onOpenRecentConnection(int index) {
     bool save;
-    emit connectionChanged(recent_connections.at(index), &save);
+    emit connectionChanged(recent_connections.at(index), &save, nullptr);
     if (save) {
         saveConnection(recent_connections.at(index));
         addRecentConnections();

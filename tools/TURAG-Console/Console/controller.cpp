@@ -2,6 +2,7 @@
 
 #include "backend/filebackend.h"
 #include "backend/serialbackend.h"
+#include "backend/tcpbackend.h"
 
 #include "frontend/plaintextfrontend.h"
 #include "frontend/scfrontend.h"
@@ -30,6 +31,7 @@ Controller::Controller(QWidget *parent) :
     // add all available Backends to list with parent this
     availableBackends.append(new FileBackend(this));
     availableBackends.append(new SerialBackend(this));
+    availableBackends.append(new TcpBackend(this));
 
     // add all available Frontends to list without a parent
     availableFrontends.append(new PlainTextFrontend);
@@ -69,7 +71,8 @@ Controller::Controller(QWidget *parent) :
 
     for (ConnectionWidget* iter : availableConnectionWidgets) {
         toolbox->addItem(iter, iter->objectName());
-        connect(iter,SIGNAL(connectionChanged(QString, bool*)),this,SLOT(openConnection(QString, bool*)));
+        connect(iter,SIGNAL(connectionChanged(QString, bool*,BaseBackend**)),this,SLOT(openConnection(QString, bool*,BaseBackend**)));
+        connect(iter, SIGNAL(errorOccured(QString)), this, SLOT(onErrorOccured(QString)));
     }
     layout->addWidget(toolbox);
 
@@ -217,7 +220,7 @@ void Controller::openConnection(void) {
 }
 
 
-void Controller::openConnection(QString connectionString, bool *success) {
+void Controller::openConnection(QString connectionString, bool *success, BaseBackend** openedBackend) {
     // show widgets menu
     if (menuBar_) {
         if (widgetMenu_ && menuBar_->actions().contains(widgetMenu_->menuAction())) {
@@ -252,8 +255,8 @@ void Controller::openConnection(QString connectionString, bool *success) {
             currentBackend = backend;
             cancelButton->show();
             setFrontend(currentFrontendIndex, false);
-            cancelButton->hide();
-            *success = true;
+            if (success) *success = true;
+            if (openedBackend) *openedBackend = currentBackend;
             connectionShouldBeOpen = true;
             return;
         }
@@ -263,7 +266,8 @@ void Controller::openConnection(QString connectionString, bool *success) {
         currentFrontend->disconnect(backend);
     }
 
-    *success = false;
+    if (success) *success = false;
+    if (openedBackend) *openedBackend = currentBackend;
 }
 
 

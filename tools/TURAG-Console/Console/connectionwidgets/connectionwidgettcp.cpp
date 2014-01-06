@@ -1,16 +1,16 @@
 #include "connectionwidgettcp.h"
+#include <QSettings>
 
 ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
-    ConnectionWidget("Letzte Verbindungen", parent) {
-
-    //saveConnectionString bool erzeugen, um bei ConnectionWidget::connectionChanged(..) nullptr zu vermeiden
-    saveConnectionString = true;
+    ConnectionWidget("Letzte Verbindungen", parent),
+    selectedDevice(nullptr),
+    writeAccess(false),
+    associatedBackend(nullptr)
+{
 
     QSettings settings;
-    settings.beginGroup("RecentTcpConnections");
-
-    recentHost =
-    settings.value("recentHost", QString(DEFAULTHOST)).toString();
+    settings.beginGroup("ConnectionWidgetTcp");
+    recentHost = settings.value("host", QString("%1:%2").arg(DEFAULTHOST).arg(CONTROLSERVER_PORT)).toString();
 
     //Bezeichner (Label) für den hostedit
     QLabel * hostLabel = new QLabel("Host: ");
@@ -24,7 +24,6 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
 
     // create button to connect
     connect_button = new QPushButton("Verbinden");
-    connect(connect_button, SIGNAL(clicked()), this, SLOT(connectToServer()));
 
     //GesamtLayout ist ein QVBoxLayout
     generalLayout = new QVBoxLayout();
@@ -53,20 +52,22 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     tcpMenu = new QMenu("Debug-Server", this);
     emergencyStopAction = new QAction("Notaus", this);
     emergencyStopAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
-    //emergencyStopAction->setToolTip("Nur drücken, wenn Skynet geladen hat");
+    emergencyStopAction->setDisabled(true);
     connect(emergencyStopAction, SIGNAL(triggered()), this, SLOT(emergencyStop()));
 
-    readWriteAccessAction = new QAction("Schreibrechte anfordern", this);
-    readWriteAccessAction->setShortcut(Qt::CTRL + Qt::Key_W);
-    connect(readWriteAccessAction, SIGNAL(triggered()), this, SLOT(readWriteAccess()));
+    requestWriteAccessAction = new QAction("Schreibrechte anfordern", this);
+    requestWriteAccessAction->setShortcut(Qt::CTRL + Qt::Key_W);
+    requestWriteAccessAction->setDisabled(true);
+    connect(requestWriteAccessAction, SIGNAL(triggered()), this, SLOT(onRequestWriteAccess()));
 
 
     //frage: wie teilen wir das dem datachannel mit?
     startBootloaderAction = new QAction("&Bootloader starten", this);
     startBootloaderAction->setShortcut(Qt::CTRL + Qt::Key_B);
+    startBootloaderAction->setDisabled(true);
     connect(startBootloaderAction, SIGNAL(triggered()), this, SLOT(reset()));
 
-    tcpMenu->addAction(readWriteAccessAction);
+    tcpMenu->addAction(requestWriteAccessAction);
     tcpMenu->addAction(emergencyStopAction);
     tcpMenu->addAction(startBootloaderAction);
 
@@ -81,20 +82,69 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     bottomInfoText = new QLabel("Doppelklick öffnet den Datachannel zum gewählten Gerät", this);
     generalLayout->addWidget(bottomInfoText);
 
-    //jetzt um den Socket kümmern
-    //listen leeren
-    puffer.clear();
-    allDevices.clear();
-
-    client = new  QTcpSocket(this);
-    //connect(client, SIGNAL(connected()), this, SLOT(connected()));
-    //connect(client, SIGNAL(hostFound()), this, SLOT(hostFound()));
-    //connect(client, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(error()));
-    connect(client, SIGNAL(readyRead()), this, SLOT(receive()));
-
+    socket = new  QTcpSocket(this);
+    connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
+    connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
+    connect(socket, SIGNAL(readyRead()), this, SLOT(receive()));
 }
 
 ConnectionWidgetTcp::~ConnectionWidgetTcp() {
+    QSettings settings;
+    settings.beginGroup("ConnectionWidgetTcp");
+
+    settings.setValue("host", hostEdit->text());
+
+    for (device* dev : allDevices) {
+        delete dev;
+    }
+}
+
+void ConnectionWidgetTcp::socketConnected(void) {
+    connect_button->setText("Trennen");
+
+    tcpMenu->setDisabled(false);
+    requestWriteAccessAction->setEnabled(true);
+
+    onRequestWriteAccess();
+}
+
+void ConnectionWidgetTcp::socketDisconnected(void) {
+    connect_button->setText("Verbinden");
+
+    tcpMenu->setDisabled(true);
+    for (QAction* action : tcpMenu->actions()) {
+        action->setDisabled(true);
+    }
+
+    writeAccess = false;
+
+    for (device* dev : allDevices) {
+        delete dev;
+    }
+    allDevices.clear();
+    allDevicesWidget->clear();
+}
+
+void ConnectionWidgetTcp::socketError(QAbstractSocket::SocketError error) {
+    qDebug() << socket->errorString();
+
+    switch (error) {
+    case QAbstractSocket::ConnectionRefusedError:
+        if (socket->isOpen()) socket->close();
+        emit errorOccured("Connection refused");
+        break;
+    case QAbstractSocket::HostNotFoundError:
+        if (socket->isOpen()) socket->close();
+        emit errorOccured("Host not found");
+        break;
+    case QAbstractSocket::RemoteHostClosedError:
+        if (socket->isOpen()) socket->close();
+        emit errorOccured("Remote host closed");
+        break;
+    default:
+        break;
+    }
 
 }
 
@@ -103,16 +153,19 @@ void ConnectionWidgetTcp::handleData() {
     if (puffer.at(0) == WADENIED) {
         //hier machen, was passieren soll, wenn man Schreibrechte erhalten hat
         writeAccess = false;
-        readWriteAccessAction->setText("Schreibrechte anfordern");
-
-        //anschließend puffer leeren
-        puffer.clear();
+        requestWriteAccessAction->setText("Schreibrechte anfordern");
+        if (associatedBackend) {
+            associatedBackend->setWriteAccess(false);
+            startBootloaderAction->setEnabled(false);
+        }
     }
     else if (puffer.at(0) == WAGRANTED) {
         writeAccess = true;
-        readWriteAccessAction->setText("Schreibrechte aufgeben");
-
-        puffer.clear();
+        requestWriteAccessAction->setText("Schreibrechte aufgeben");
+        if (associatedBackend) {
+            associatedBackend->setWriteAccess(true);
+            startBootloaderAction->setEnabled(true);
+        }
     }
     else if (puffer.at(0) == DEVICE) {
         /*
@@ -132,42 +185,50 @@ void ConnectionWidgetTcp::handleData() {
         for (i = 0; i < amount; i++) {
             qDebug() << "mache ein device" << endl;
             device * newDevice = new device;
-            newDevice->path = puffer.at(2 + i * 5);
-            newDevice->port = puffer.at(3 + i * 5);
-            newDevice->description = puffer.at(4 + i * 5);
-            newDevice->resetCode = puffer.at(5 + i * 5);
-            newDevice->baudRate = puffer.at(6 + i * 5);
+            newDevice->path = QString(puffer.at(2 + i * 5));
+            newDevice->port = QString(puffer.at(3 + i * 5));
+            newDevice->description = QString(puffer.at(4 + i * 5));
+            newDevice->resetCode = QString(puffer.at(5 + i * 5));
+            newDevice->baudRate = QString(puffer.at(6 + i * 5));
             allDevices.append(newDevice);
         }
+        QString online_status_line;
+        //amount liegt auf puffer.at(1), dann kommen die devices, 5 * amount
+        int offset = 1 + amount * 5 + 1;
+
         for (i = 0; i < amount; i++) {
-            //amount liegt auf puffer.at(1), dann kommen die devices, 5 * amount, + 1 in den ersten onlinestatus und je nach i inkrementieren
-            allDevices.at(i)->onlineStatus = puffer.at( 1 + amount * 5 + 1 + i).toInt();
-        }
-        puffer.clear();
+            online_status_line = puffer.at(i + offset);
 
-        //und jetzt für jedes das QListWidget füllen:
-        for (i = 0; i < allDevices.size(); i++) {
-            device * currentDevice = allDevices.at(i);
-            QString descr(currentDevice->description);
-            QListWidgetItem * item = new QListWidgetItem();
-
-            /*
-             *!!!Sollte der angehängte String geändert werden, muss uU die Anzahl der gechoppten
-             *Zeichen in ConnectionWidgetTcp::startDatachannel geändert werden!!!!!!!
-             */
-            if (currentDevice->onlineStatus) {
-                descr.append(" <online>");
-                item->setText(descr);
+            if (online_status_line.endsWith("online")) {
+                allDevices.at(i)->onlineStatus = true;
+            } else {
+                allDevices.at(i)->onlineStatus = false;
             }
-            else {
-                descr.append(" <offline>");
-                item->setText(descr);
-                item->setTextColor(Qt::red);
-            }
-
-
-            allDevicesWidget->addItem(item);
         }
+        fillDeviceList();
+    }
+    else if (puffer.at(0) == ONLINESTATUS) {
+        bool online;
+        QString path;
+        QString line(puffer.at(1));
+
+        if (line.endsWith(ONLINESTATUS_ONLINE)) {
+            path = line.left(line.size() - ONLINESTATUS_ONLINE.size() - 1);
+            online = true;
+        } else if (line.endsWith(ONLINESTATUS_OFFLINE)) {
+            path = line.left(line.size() - ONLINESTATUS_OFFLINE.size() - 1);
+            online = false;
+        } else {
+            return;
+        }
+
+        for (device* dev : allDevices) {
+            if (dev->path == path) {
+                dev->onlineStatus = online;
+                break;
+            }
+        }
+        fillDeviceList();
     }
     else {
         //dont know what to do
@@ -176,34 +237,49 @@ void ConnectionWidgetTcp::handleData() {
         for (i = 0; i < puffer.size(); i++) {
             qDebug() << puffer.at(i) << endl;
         }
-        puffer.clear();
+    }
+    puffer.clear();
+}
+
+void ConnectionWidgetTcp::fillDeviceList(void) {
+    allDevicesWidget->clear();
+
+    for (device* currentDevice : allDevices) {
+        QString descr(currentDevice->description);
+        QListWidgetItem * item = new QListWidgetItem();
+
+        if (currentDevice->onlineStatus) {
+            descr.append(" <online>");
+        }
+        else {
+            descr.append(" <offline>");
+            item->setTextColor(Qt::red);
+        }
+
+        if (currentDevice == selectedDevice) {
+            descr.append(" <aktiv>");
+        }
+
+        item->setText(descr);
+
+        allDevicesWidget->addItem(item);
     }
 }
 
 void ConnectionWidgetTcp::receiveData(QByteArray * data) {
-    *data = client->readLine(150);
+    *data = socket->readLine(150);
     data->chop(1);
 }
 
-void ConnectionWidgetTcp::send(QByteArray &data) {
+void ConnectionWidgetTcp::send(QByteArray data) {
     data.append("\n");
-    client->write(data);
+    socket->write(data);
 }
 
-void ConnectionWidgetTcp::send(QString &string) {
-    QByteArray data = string.toLatin1();
-    send(data);
+void ConnectionWidgetTcp::send(QString string) {
+    send(string.toLatin1());
 }
 
-device * ConnectionWidgetTcp::findDeviceDescr(QString &descr) {
-    int i;
-    for (i = 0; i < allDevices.size(); i++) {
-        if (allDevices.at(i)->description == descr) {
-            return allDevices.at(i);
-        }
-    }
-    return NULL;
-}
 
 QMenu* ConnectionWidgetTcp::getMenu() {
     return tcpMenu;
@@ -214,33 +290,39 @@ QMenu* ConnectionWidgetTcp::getMenu() {
  *SLOTS
  */
 void ConnectionWidgetTcp::connectToServer() {
-    qint16 port;
-    QString portString;
-    QString hostAddress;
-    QString host = hostEdit->text();
-    if (host == LOCALHOST) {
-        client->connectToHost(QHostAddress(QHostAddress::LocalHost), 30123);
-    }
-    else {
+    if (!socket->isOpen()) {
+        qint16 port;
+        QString hostAddress;
+        QString host = hostEdit->text().toCaseFolded();
+
         int index = host.indexOf(":");
-        int i;
-        for(i = 0; i < index; i++) {
-            hostAddress.append(host.at(i));
-        }
 
-        //QString::indexOf liefert -1, falls string nicht gefunden
-        if (index != -1) {
-            for(i = index; i < hostAddress.size(); i++) {
-                portString.append(hostAddress.at(i));
+        if (index == -1) {
+            port = CONTROLSERVER_PORT;
+            hostAddress = host;
+            if (hostAddress.isEmpty() || hostAddress == "localhost") {
+                hostAddress = "127.0.0.1";
             }
-            port = portString.toInt();
+        } else {
+            hostAddress = host.left(index);
+            if (hostAddress.isEmpty() || hostAddress == "localhost") {
+                hostAddress = "127.0.0.1";
+            }
+
+            if (host.endsWith(":")) {
+                port = CONTROLSERVER_PORT;
+            } else {
+                port = host.right(host.size() - index - 1).toInt();
+            }
         }
 
-        QHostAddress serverAddress(hostAddress);
-
-        client->connectToHost(serverAddress, port);
+        socket->connectToHost(QHostAddress(hostAddress), port);
+    } else {
+        socket->close();
+        if (associatedBackend) {
+            associatedBackend->closeConnection();
+        }
     }
-
 }
 
 void ConnectionWidgetTcp::emergencyStop() {
@@ -248,59 +330,62 @@ void ConnectionWidgetTcp::emergencyStop() {
 
 }
 
-void ConnectionWidgetTcp::readWriteAccess() {
+void ConnectionWidgetTcp::onRequestWriteAccess() {
     if (writeAccess == true) {
-        QString readonly(READONLY);
-        send(readonly);
+        send(READONLY);
     }
     else {
-        QString sWriteAccess(WRITEACCESS);
-        send(sWriteAccess);
+        send(WRITEACCESS);
     }
 }
 
 void ConnectionWidgetTcp::reset() {
+    send(RESET_DEVICE);
     send(selectedDevice->path);
 }
 
 void ConnectionWidgetTcp::receive() {
-    while (client->canReadLine()) {
+    while (socket->canReadLine()) {
         QByteArray data;
         receiveData(&data);
         if (data == TERMINATE) {
             handleData();
-        }
-        else {
+        } else {
             puffer.append(data);
         }
-
     }
-
 }
 
 void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
-    QString descr = item->text();
-    if (descr.endsWith("<offline>")) {
+    device * newSelectedDevice = allDevices.at(allDevicesWidget->row(item));
+
+    if (newSelectedDevice->onlineStatus == false) {
         return;
     }
-    else {
-        descr.chop(9);
-    }
+
+    selectedDevice = newSelectedDevice;
+    fillDeviceList();
+
     //den connection String zusammenbasteln
-    //ich nehm ein Tilde (~) zum Trennen, da das einiges erleichtert beim zerlegen
-    selectedDevice = findDeviceDescr(descr);
     QString connectionString("tcp://");
-    connectionString.append(client->peerAddress().toString());
+    connectionString.append(socket->peerAddress().toString());
     connectionString.append(":");
 
-    //direkt den Port zu dem ausgewählten device mitliefern -> Port auf CoCha uninteressant
-    connectionString.append(QString(selectedDevice->port));
+    connectionString.append(selectedDevice->port);
     connectionString.append("/");
-    connectionString.append(QString(selectedDevice->path));
+    connectionString.append(selectedDevice->description);
 
     //Signal emitten mit dem connectionstring;
     //save connectionString hat hier keine Bedeutung
-    emit connectionChanged(connectionString, &saveConnectionString);
+    BaseBackend* backend;
+    emit connectionChanged(connectionString, nullptr, &backend);
+
+    associatedBackend = static_cast<TcpBackend*>(backend);
+
+    if (associatedBackend) {
+        associatedBackend->setWriteAccess(writeAccess);
+        startBootloaderAction->setEnabled(writeAccess);
+    }
 }
 
 

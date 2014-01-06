@@ -2,7 +2,7 @@
 #define TCPBACKEND_H
 
 #include "basebackend.h"
-#include "backend/tcpBackend_protocol.h"
+#include "../../Debug-Server/Debug_Server/debugserver_protocol.h"
 
 #include <QString>
 #include <QStringList>
@@ -14,29 +14,27 @@ class TcpBackend : public BaseBackend {
     Q_OBJECT
 
 protected:
-
-private:
     QHostAddress * hostAddress;
     qint16 port;
     QString devicePath;
-
-    QTcpSocket * client;
+    bool writeAccessGranted;
 
 protected slots:
+    void socketConnected(void);
+    void socketDisconnected(void);
 
 
 public:
-    TcpBackend(QObject * parent);
+    TcpBackend(QObject * parent = 0);
 
     static const QString connectionPrefix;
-
-
+    virtual bool isReadOnly(void) const;
+    void setWriteAccess(bool granted);
+    virtual QString getConnectionInfo();
 
 public slots:
     virtual bool openConnection(QString connectionString);
-    void receive();
     void onTcpError(QAbstractSocket::SocketError err);
-    void writeData(QByteArray data);
 
 };
 

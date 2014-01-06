@@ -40,6 +40,7 @@ bool SerialBackend::openConnection(QString connectionString) {
     success = port->setBaudRate(baudrate.toInt());
     if (!success) {
         emit errorOccured(QString("Fehler beim Setzen der Baudrate: %1").arg(port->errorString()));
+        port->close();
         return false;
     }
 
@@ -49,8 +50,7 @@ bool SerialBackend::openConnection(QString connectionString) {
     connect(stream_.get(),SIGNAL(readyRead()),this,SLOT(checkData()));
     connect(stream_.get(),SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(onError(QSerialPort::SerialPortError)));
 
-
-    emit connected(!stream_->isWritable(), stream_->isSequential());
+    emitConnected();
 
     return true;
 }

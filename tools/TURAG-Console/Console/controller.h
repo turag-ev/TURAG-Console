@@ -63,7 +63,7 @@ public slots:
     void setAutoReconnect(bool on);
 
 protected slots:
-    void openConnection(QString connectionString, bool* success);
+    void openConnection(QString connectionString, bool* success, BaseBackend **openedBackend);
     void onCancelNewConnection();
     void onConnected(bool readOnly, bool isSequential);
     void onDisconnected();

@@ -1,10 +1,11 @@
 #ifndef CONNECTIONWIDGETTCP_H
 #define CONNECTIONWIDGETTCP_H
 
-#define DEFAULTHOST "robot.turag.et.tu-dresden.de:30000"
+#define DEFAULTHOST "robot.turag.et.tu-dresden.de"
 
 #include "connectionwidget.h"
-#include "backend/tcpBackend_protocol.h"
+#include "../../Debug-Server/Debug_Server/debugserver_protocol.h"
+#include "../backend/tcpbackend.h"
 
 #include <QSettings>
 #include <QLineEdit>
@@ -20,15 +21,6 @@
 #include <QAction>
 #include <QListWidget>
 
-typedef struct device{
-    QByteArray path;
-    QByteArray port;
-    QByteArray description;
-    QByteArray resetCode;
-    QByteArray baudRate;
-    bool       onlineStatus;
-} device;
-
 class QMenu;
 class QAction;
 class ConnectionWidget;
@@ -36,20 +28,23 @@ class ConnectionWidget;
 class ConnectionWidgetTcp: public ConnectionWidget {
     Q_OBJECT
 
+public:
+    struct device {
+        QString path;
+        QString port;
+        QString description;
+        QString resetCode;
+        QString baudRate;
+        bool       onlineStatus;
+    };
+
 protected:
     QMenu* tcpMenu;
     QAction* emergencyStopAction;
-    QAction* readWriteAccessAction;
+    QAction* requestWriteAccessAction;
     QAction* startBootloaderAction;
 
     virtual QMenu* getMenu();
-
-    //das mach ich, um ConnectionWidget::connectionChanged(..) einen Pointer
-    //auf ein bool übergeben zu können, ohne nullptr exceptions zu riskieren
-    bool saveConnectionString;
-
-protected slots:
-
 
 
 public:
@@ -62,11 +57,12 @@ private:
     //writeAccess steht auf false, falls readonly
     device * selectedDevice;
     bool writeAccess;
+    TcpBackend* associatedBackend;
 
     QString recentHost;
     QLineEdit * hostEdit;
     QPushButton * connect_button;
-    QTcpSocket * client;
+    QTcpSocket * socket;
     QVBoxLayout * generalLayout;
 
     QListWidget * allDevicesWidget;
@@ -77,23 +73,26 @@ private:
     QList<QByteArray> puffer;
     QList<device * > allDevices;
 
+    void fillDeviceList(void);
 
     void handleData();
     void receiveData(QByteArray * data);
 
     //sendet einfach in den ControlChannel
-    void send(QByteArray &data);
-    void send(QString &string);
+    void send(QByteArray data);
+    void send(QString string);
 
-    device * findDeviceDescr(QString &descr);
-
-public slots:
+protected slots:
     void connectToServer();
     void emergencyStop();
-    void readWriteAccess();
+    void onRequestWriteAccess();
     void reset();
     void receive();
     void startDataChannel(QListWidgetItem * item);
+
+    void socketConnected(void);
+    void socketDisconnected(void);
+    void socketError(QAbstractSocket::SocketError error);
 };
 
 #endif // CONNECTIONWIDGETTCP_H

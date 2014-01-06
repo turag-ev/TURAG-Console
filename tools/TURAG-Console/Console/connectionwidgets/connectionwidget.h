@@ -9,6 +9,7 @@ class QGroupBox;
 class QVBoxLayout;
 class QSignalMapper;
 class QMenu;
+class BaseBackend;
 
 class ConnectionWidget : public QWidget {
     Q_OBJECT
@@ -21,7 +22,8 @@ public:
     
 signals:
     // the details of the connection were changed
-    void connectionChanged(QString connectionString, bool* saveConnectionString);
+    void connectionChanged(QString connectionString, bool* saveConnectionString, BaseBackend** openedBackend);
+    void errorOccured(QString msg);
 
 protected:
     QStringList recent_connections;

@@ -39,7 +39,7 @@ bool FileBackend::openConnection(QString connectionString) {
 
     connectionString_ = connectionString;
 
-    emit connected(!stream_->isWritable(), stream_->isSequential());
+    emitConnected();
 
     return true;
 }

@@ -17,12 +17,14 @@ protected:
     QString connectionString_;
     const QString connectionPrefix_;
 
+    void emitConnected(void) { emit connected(isReadOnly(), stream_->isSequential()); }
+
 public:
     explicit BaseBackend(QString connectionPrefix, QObject *parent = 0);
     ~BaseBackend(void);
 
     bool isOpen(void) const;
-    bool isReadOnly(void) const;
+    virtual bool isReadOnly(void) const;
     bool isSequential(void) const;
     virtual QString getConnectionInfo();
     virtual QList<QAction*> getMenuEntries();

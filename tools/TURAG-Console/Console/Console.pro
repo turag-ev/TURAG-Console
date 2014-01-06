@@ -98,7 +98,7 @@ HEADERS  += mainwindow.h \
     debugprintclass.h \
     ../../../tina/tina++/feldbus/dynamixel/dynamixeldevice.h \
     frontend/feldbusviews/dynamixelview.h \
-    backend/tcpBackend_protocol.h \
+    ../../Debug-Server/Debug_Server/debugserver_protocol.h \
     backend/tcpbackend.h \
     frontend/feldbusviews/feldbusaktorview.h \
     ../../../tina/tina++/feldbus/host/device.h \
