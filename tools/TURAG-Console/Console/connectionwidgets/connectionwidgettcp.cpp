@@ -1,5 +1,6 @@
 #include "connectionwidgettcp.h"
 #include <QSettings>
+#include <QHostInfo>
 
 ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     ConnectionWidget("Letzte Verbindungen", parent),
@@ -300,12 +301,12 @@ void ConnectionWidgetTcp::connectToServer() {
         if (index == -1) {
             port = CONTROLSERVER_PORT;
             hostAddress = host;
-            if (hostAddress.isEmpty() || hostAddress == "localhost") {
+            if (hostAddress.isEmpty()) {
                 hostAddress = "127.0.0.1";
             }
         } else {
             hostAddress = host.left(index);
-            if (hostAddress.isEmpty() || hostAddress == "localhost") {
+            if (hostAddress.isEmpty()) {
                 hostAddress = "127.0.0.1";
             }
 
@@ -316,7 +317,13 @@ void ConnectionWidgetTcp::connectToServer() {
             }
         }
 
-        socket->connectToHost(QHostAddress(hostAddress), port);
+        QHostInfo hostinfo = QHostInfo::fromName(hostAddress);
+
+        if (hostinfo.addresses().isEmpty()) {
+            socket->connectToHost(QHostAddress::Null, port);
+        } else {
+            socket->connectToHost(QHostAddress(hostinfo.addresses().at(0)), port);
+        }
     } else {
         socket->close();
         if (associatedBackend) {
