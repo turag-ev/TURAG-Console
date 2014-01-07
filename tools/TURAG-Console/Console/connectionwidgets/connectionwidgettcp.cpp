@@ -103,6 +103,7 @@ ConnectionWidgetTcp::~ConnectionWidgetTcp() {
 
 void ConnectionWidgetTcp::socketConnected(void) {
     connect_button->setText("Trennen");
+    connect_button->setEnabled(true);
 
     tcpMenu->setDisabled(false);
     requestWriteAccessAction->setEnabled(true);
@@ -112,6 +113,7 @@ void ConnectionWidgetTcp::socketConnected(void) {
 
 void ConnectionWidgetTcp::socketDisconnected(void) {
     connect_button->setText("Verbinden");
+    connect_button->setEnabled(true);
 
     tcpMenu->setDisabled(true);
     for (QAction* action : tcpMenu->actions()) {
@@ -128,7 +130,8 @@ void ConnectionWidgetTcp::socketDisconnected(void) {
 }
 
 void ConnectionWidgetTcp::socketError(QAbstractSocket::SocketError error) {
-    qDebug() << socket->errorString();
+    qDebug() << error << socket->errorString();
+    connect_button->setEnabled(true);
 
     switch (error) {
     case QAbstractSocket::ConnectionRefusedError:
@@ -142,6 +145,10 @@ void ConnectionWidgetTcp::socketError(QAbstractSocket::SocketError error) {
     case QAbstractSocket::RemoteHostClosedError:
         if (socket->isOpen()) socket->close();
         emit errorOccured("Remote host closed");
+        break;
+    case QAbstractSocket::NetworkError:
+        if (socket->isOpen()) socket->close();
+        emit errorOccured("Host unreachebale");
         break;
     default:
         break;
@@ -324,6 +331,7 @@ void ConnectionWidgetTcp::connectToServer() {
         } else {
             socket->connectToHost(QHostAddress(hostinfo.addresses().at(0)), port);
         }
+        connect_button->setDisabled(true);
     } else {
         socket->close();
         if (associatedBackend) {
