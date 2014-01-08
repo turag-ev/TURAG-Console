@@ -43,6 +43,7 @@ protected:
     QAction* emergencyStopAction;
     QAction* requestWriteAccessAction;
     QAction* startBootloaderAction;
+    QAction* requestWriteAccessActionForce;
 
     virtual QMenu* getMenu();
 
@@ -89,6 +90,7 @@ protected slots:
     void reset();
     void receive();
     void startDataChannel(QListWidgetItem * item);
+    void forceWriteAccess();
 
     void socketConnected(void);
     void socketDisconnected(void);

@@ -68,9 +68,21 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     startBootloaderAction->setDisabled(true);
     connect(startBootloaderAction, SIGNAL(triggered()), this, SLOT(reset()));
 
+    //QAction, die Schreibrechte mit Gewalt einfordert
+    requestWriteAccessActionForce = new QAction("Schreibrechte erzwingen", this);
+    requestWriteAccessActionForce->setDisabled(true);
+    requestWriteAccessActionForce->setToolTip("Meister Yoda sagt: Die Macht dir helfen wird zu erlangen die Schreibrechte");
+    connect(requestWriteAccessActionForce, SIGNAL(triggered()), this, SLOT(forceWriteAccess()));
+
+
+    //submenu um Schreibrechte mit Gewalt an sich zu reißen
+    QMenu * extended = new QMenu("Erweitert", this);
+    extended->addAction(requestWriteAccessActionForce);
+
     tcpMenu->addAction(requestWriteAccessAction);
     tcpMenu->addAction(emergencyStopAction);
     tcpMenu->addAction(startBootloaderAction);
+    tcpMenu->addMenu(extended);
 
     //das QListWidget anlegen
     allDevicesWidget = new QListWidget(this);
@@ -107,6 +119,7 @@ void ConnectionWidgetTcp::socketConnected(void) {
 
     tcpMenu->setDisabled(false);
     requestWriteAccessAction->setEnabled(true);
+    requestWriteAccessActionForce->setEnabled(true);
 
     onRequestWriteAccess();
 }
@@ -400,6 +413,12 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
     if (associatedBackend) {
         associatedBackend->setWriteAccess(writeAccess);
         startBootloaderAction->setEnabled(writeAccess);
+    }
+}
+
+void ConnectionWidgetTcp::forceWriteAccess() {
+    if (!writeAccess) {
+        send(FORCEWRITEACCESS);
     }
 }
 
