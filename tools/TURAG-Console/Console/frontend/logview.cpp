@@ -238,11 +238,9 @@ bool LogFilter::filterAcceptsRow(int sourceRow,
                                                  StreamModel::COLUMN_SOURCE,
                                                  sourceParent);
         char src = sourceModel()->data(index, StreamModel::FilterRole)
-                   .toChar().toLatin1();
+                   .toUInt();
 
-        foreach (char c, filter_source_) {
-            if (src == c) return false;
-        }
+        return !TURAG::any_of_value(filter_source_, src);
     }
 
     return true;
@@ -312,6 +310,12 @@ LogView::LogView(TinaInterface *interface, QWidget *parent) :
     connect(interface, SIGNAL(beginUpdate()), this, SLOT(beginUpdate()));
     connect(interface, SIGNAL(endUpdate()), this, SLOT(endUpdate()));
     connect(interface, SIGNAL(tinaPackageReady(QByteArray)), this, SLOT(writeLine(QByteArray)));
+
+    readSettings();
+}
+
+LogView::~LogView() {
+    writeSettings();
 }
 
 static
@@ -328,9 +332,9 @@ void LogView::onConnected(bool readOnly, bool isSequential, QIODevice* dev) {
 
     setScrollOnOutput(!readOnly);
 
-    if (!readOnly) {
-        emit dataReady(QByteArray(">"));
-    }
+    //if (!readOnly) {
+    //    emit dataReady(QByteArray(">"));
+    //}
 }
 
 void LogView::onDisconnected(bool reconnecting) {
@@ -393,7 +397,7 @@ void LogView::contextMenu(QPoint point) {
 
     // Filter
     filter_mapper_ = new QSignalMapper(this);
-    connect(filter_mapper_, SIGNAL(mapped(int)), this, SLOT(onFilterSrc(int)));
+    connect(filter_mapper_, SIGNAL(mapped(int)), this, SLOT(filterSrc(int)));
 
     QMenu* filter_menu = new QMenu("Filter einstellen");
     const QString* sources = log_model_->getLogSources();
@@ -411,6 +415,8 @@ void LogView::contextMenu(QPoint point) {
         }
     }
     menu.addMenu(filter_menu);
+    menu.addAction("&nichts filtern", this, SLOT(deactivateFilter()));
+    menu.addAction("&alles filtern", this, SLOT(activateFilter()));
 
     menu.exec(log_->mapToGlobal(point));
 }
@@ -444,7 +450,7 @@ void LogView::hideMsgsFromSource() {
     }
 }
 
-void LogView::onFilterSrc(int index) {
+void LogView::filterSrc(int index) {
     std::string filter = filter_->getFilterSource();
     auto i = std::find(filter.begin(), filter.end(), index);
     if (i == filter.end()) {
@@ -458,6 +464,23 @@ void LogView::onFilterSrc(int index) {
     filter_->setFilterSource(std::move(filter));
 }
 
+void LogView::deactivateFilter() {
+    filter_->setFilterSource(std::string());
+}
+
+void LogView::activateFilter() {
+    std::string filter;
+    filter.reserve(20);
+
+    const QString* sources = log_model_->getLogSources();
+    for (int i = 33; i < 127; i++) {
+        if (!sources[i].isNull()) {
+            filter.push_back(i);
+        }
+    }
+    filter_->setFilterSource(std::move(filter));
+}
+
 void LogView::setLogSource(char source, const QString&& name) {
     QSettings settings;
     if (!settings.value(charToKey(source), true).toBool()) {
@@ -467,6 +490,18 @@ void LogView::setLogSource(char source, const QString&& name) {
     }
 
     log_model_->setLogSource(source, std::move(name));
+}
+
+void LogView::readSettings() {
+    QSettings settings;
+    settings.beginGroup(objectName());
+    filter_->setFilterSource(settings.value("filter", QString()).toString().toStdString());
+}
+
+void LogView::writeSettings() {
+    QSettings settings;
+    settings.beginGroup(objectName());
+    settings.setValue("filter", QString::fromStdString(filter_->getFilterSource()));
 }
 
 void LogView::writeLine(QByteArray line) {
@@ -497,7 +532,6 @@ void LogView::writeLine(QByteArray line) {
     }
 }
 
-
 void LogView::clear(void) {
     log_model_->clear();
 }
@@ -506,7 +540,7 @@ bool LogView::saveOutput(void) {
     QString filename = QFileDialog::getSaveFileName(this);
 
     if (filename.isEmpty()) {
-        return false;
+        return true;
     }
 
     QFile savefile(std::move(filename));

@@ -108,10 +108,15 @@ private:
 // LogView
 
 class LogView : public BaseFrontend {
- Q_OBJECT
+    Q_OBJECT
+    NOT_COPYABLE(LogView);
+    NOT_MOVABLE(LogView);
+
 public:
   explicit
   LogView(TinaInterface* interface, QWidget *parent = 0);
+
+  ~LogView();
 
   template<class... Args>
   void insertRow(Args&&... args) {
@@ -125,11 +130,14 @@ public:
 
   void setLogSource(char source, const QString&& name);
 
+  void readSettings();
+  void writeSettings();
+
 public slots:
-  virtual void onConnected(bool readOnly, bool isSequential, QIODevice*);
-  virtual void onDisconnected(bool reconnecting);
-  virtual void clear(void);
-  virtual bool saveOutput(void);
+  void onConnected(bool readOnly, bool isSequential, QIODevice*) override;
+  void onDisconnected(bool reconnecting) override;
+  void clear() override;
+  bool saveOutput() override;
   void writeData(QByteArray data) override;
 
 private slots:
@@ -141,7 +149,9 @@ private slots:
   void contextMenu(QPoint);
   void copy();
   void hideMsgsFromSource();
-  void onFilterSrc(int index);
+  void filterSrc(int index);
+  void deactivateFilter();
+  void activateFilter();
 
 private:
   QTableView* log_;

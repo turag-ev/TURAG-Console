@@ -2,6 +2,7 @@
 #define SCFRONTEND_H
 
 #include <QAbstractTableModel>
+#include <tina++/tina.h>
 
 #include "basefrontend.h"
 
@@ -21,15 +22,15 @@ public:
     SCFrontend(QWidget *parent = 0);
 
 public slots:
-    virtual void writeData(QByteArray data);
-    virtual void clear(void);
-    virtual bool saveOutput(void);
+    void writeData(QByteArray data) override;
+    void clear(void) override;
+    bool saveOutput(void) override;
 
     // frontend was connected to stream
-    virtual void onConnected(bool readOnly, bool isSequential, QIODevice*);
+    void onConnected(bool readOnly, bool isSequential, QIODevice*) override;
 
     // frontend was disconnected from stream
-    virtual void onDisconnected(bool reconnecting);
+    void onDisconnected(bool reconnecting) override;
 };
 
 #endif // SCFRONTEND_H
