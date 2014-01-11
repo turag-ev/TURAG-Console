@@ -5,10 +5,8 @@
 #include "../../Debug-Server/Debug_Server/debugserver_protocol.h"
 
 #include <QString>
-#include <QStringList>
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QTcpSocket>
-#include <QDebug>
 
 class TcpBackend : public BaseBackend {
     Q_OBJECT

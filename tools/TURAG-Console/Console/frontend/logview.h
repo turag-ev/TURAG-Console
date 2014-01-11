@@ -1,23 +1,20 @@
 #ifndef LOGVIEW_H
 #define LOGVIEW_H
 
-#include <QTabWidget>
-#include <QAbstractTableModel>
-#include <QVector>
-#include <QTime>
-#include <QSortFilterProxyModel>
-#include <QMutex>
 #include <tuple>
 #include <string>
 #include <vector>
-#include "basefrontend.h"
-#include <QTableView>
+#include <QAbstractTableModel>
+#include <QSortFilterProxyModel>
 #include <tina++/tina.h>
+
+#include "basefrontend.h"
 
 class QSettings;
 class QSortFilterProxyModel;
 class QSignalMapper;
 class TinaInterface;
+class QTableView;
 
 ////////////////////////////////////////////////////////////////////////////////
 // StreamModel

@@ -2,7 +2,6 @@
 
 #include <QTableView>
 #include <QSettings>
-#include <QTableView>
 #include <QSortFilterProxyModel>
 #include <QHeaderView>
 #include <QScrollBar>

@@ -1,5 +1,6 @@
 #include "basebackend.h"
 #include <QByteArray>
+#include <QIODevice>
 
 
 BaseBackend::BaseBackend(QString connectionPrefix, QObject *parent) :
@@ -92,3 +93,6 @@ bool BaseBackend::canHandleUrl(const QString& url) const {
     return url.startsWith(connectionPrefix_);
 }
 
+void BaseBackend::emitConnected() {
+    emit connected(isReadOnly(), stream_->isSequential());
+}

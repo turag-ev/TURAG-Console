@@ -118,7 +118,7 @@ RESOURCES += \
 OTHER_FILES += \
     TODO.txt
 
- # install
- target.path = $$PREFIX/bin
- sources.files = $$SOURCES $$HEADERS $$RESOURCES $$FORMS Console.pro
- INSTALLS += target
+# install
+target.path = $$PREFIX/bin
+sources.files = $$SOURCES $$HEADERS $$RESOURCES $$FORMS Console.pro
+INSTALLS += target

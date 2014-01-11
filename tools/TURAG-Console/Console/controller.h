@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QList>
 #include <QString>
-#include <QFont>
 #include <QStackedWidget>
 
 class BaseFrontend;

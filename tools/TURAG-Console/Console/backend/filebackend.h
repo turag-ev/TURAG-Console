@@ -2,8 +2,6 @@
 #define FILEBACKEND_H
 
 #include "basebackend.h"
-#include <QLineEdit>
-#include <QPushButton>
 
 class QFileSystemWatcher;
 

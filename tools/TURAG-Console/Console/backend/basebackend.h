@@ -1,13 +1,14 @@
 #ifndef BASEBACKEND_H
 #define BASEBACKEND_H
 
-#include <QObject>
 #include <memory>
+#include <QObject>
 #include <QString>
-#include <QIODevice>
 #include <QByteArray>
 #include <QList>
-#include <QAction>
+
+class QAction;
+class QIODevice;
 
 class BaseBackend : public QObject {
     Q_OBJECT
@@ -17,7 +18,7 @@ protected:
     QString connectionString_;
     const QString connectionPrefix_;
 
-    void emitConnected(void) { emit connected(isReadOnly(), stream_->isSequential()); }
+    void emitConnected();
 
 public:
     explicit BaseBackend(QString connectionPrefix, QObject *parent = 0);

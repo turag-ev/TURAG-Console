@@ -1,5 +1,8 @@
 #include "tcpbackend.h"
 
+#include <QDebug>
+#include <QStringList>
+
 const QString TcpBackend::connectionPrefix = "tcp://";
 
 TcpBackend::TcpBackend (QObject *parent) :

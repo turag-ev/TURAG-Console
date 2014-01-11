@@ -2,7 +2,8 @@
 #define PLAINTEXTFRONTEND_H
 
 #include "basefrontend.h"
-#include <QTextEdit>
+
+class QTextEdit;
 
 class PlainTextFrontend : public BaseFrontend
 {

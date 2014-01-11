@@ -1,7 +1,6 @@
 #ifndef SCFRONTEND_H
 #define SCFRONTEND_H
 
-#include <QAbstractTableModel>
 #include <tina++/tina.h>
 
 #include "basefrontend.h"
