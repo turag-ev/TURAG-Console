@@ -69,7 +69,8 @@ SOURCES +=\
     backend/tcpbackend.cpp \
     frontend/feldbusviews/feldbusaktorview.cpp \
     ../../../tina/tina++/feldbus/host/dcmotor_tina.cpp \
-    ../../../tina/tina++/feldbus/host/servo_tina.cpp
+    ../../../tina/tina++/feldbus/host/servo_tina.cpp \
+    ../../../tina/tina++/feldbus/host/aseb_tina.cpp
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -103,6 +104,7 @@ HEADERS  += mainwindow.h \
     frontend/feldbusviews/feldbusaktorview.h \
     ../../../tina/tina++/feldbus/host/device.h \
     ../../../tina/tina++/feldbus/host/aktor.h \
+    ../../../tina/tina++/feldbus/host/aseb.h \
     ../../../tina/tina++/feldbus/host/servo.h \
     ../../../tina/tina++/feldbus/host/dcmotor.h \
     ../../../tina/tina++/feldbus/host/farbsensor.h

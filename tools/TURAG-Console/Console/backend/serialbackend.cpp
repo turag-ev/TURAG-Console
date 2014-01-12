@@ -106,6 +106,8 @@ void SerialBackend::onError(QSerialPort::SerialPortError error) {
         break;
     case QSerialPort::UnknownError:
         errormsg = "An unidentified error occurred."; break;
+
+    default: break;
     }
 
 }
