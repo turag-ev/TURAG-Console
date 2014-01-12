@@ -2,9 +2,11 @@
 #include <tina/feldbus/protocol/turag_feldbus_bus_protokoll.h>
 #include <tina/feldbus/protocol/turag_feldbus_fuer_stellantriebe.h>
 #include <tina/feldbus/protocol/turag_feldbus_fuer_lokalisierungssensoren.h>
+#include <tina/feldbus/protocol/turag_feldbus_fuer_aseb.h>
 #include <tina++/feldbus/host/dcmotor.h>
 #include <tina++/feldbus/host/farbsensor.h>
 #include <tina++/feldbus/host/servo.h>
+#include <tina++/feldbus/host/aseb.h>
 
 
 bool FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfoExt &device_info) {
@@ -75,6 +77,20 @@ bool FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfoExt &device_info
             break;
         }
         break;
+
+    case TURAG_FELDBUS_DEVICE_PROTOCOL_ASEB:
+        protocolIdString = "ASEB (Application Specific Extension Board)";
+
+        switch (device_info.device_info.deviceTypeId) {
+        case TURAG_FELDBUS_ASEB_GENERIC:
+            device = new Feldbus::Aseb(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
+            deviceTypeString = "generic ASEB";
+            break;
+
+        default:
+            deviceTypeString = "unbekannt";
+            break;
+        }
 
     default:
         protocolIdString = "unbekannt";
