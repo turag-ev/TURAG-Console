@@ -60,8 +60,51 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
 
 void FeldbusAsebView::onReadDevice(void) {
     if (deviceWasRead_) {
+        for (LabelCheckboxCombo& combo : digitalInputs_) {
+            combo.checkbox->deleteLater();
+            combo.label->deleteLater();
+        }
+        for (LabelCheckboxCombo& combo : digitalOutputs_) {
+            combo.checkbox->deleteLater();
+            combo.label->deleteLater();
+        }
+        for (LabelLineeditCombo& combo : analogInputs_) {
+            combo.label->deleteLater();
+            combo.lineedit->deleteLater();
+        }
+        for (LabelLineeditCombo& combo : pwmOutputs_) {
+            combo.label->deleteLater();
+            combo.lineedit->deleteLater();
+        }
+        setOutputs_->setDisabled(true);
+        resetOutputs_->setDisabled(true);
 
+        updateTimer_.stop();
+
+        delete[] asebAnalogInputSet_;
+        delete[] asebPwmOutputSet_;
+        delete[] asebSyncBuffer_;
     }
+
+    int digInSize = 0;
+    int digOutSize = 0;
+    int analogInSize = 0;
+    int pwmOutSize = 0;
+    int syncSize = 0;
+    unsigned analogResolution = 0;
+
+
+    if (!aseb_->getDigitalInputSize(&digInSize)) return;
+    if (!aseb_->getDigitalOutputSize(&digOutSize)) return;
+    if (!aseb_->getPwmOutputSize(&pwmOutSize)) return;
+    if (!aseb_->getAnalogInputSize(&analogInSize)) return;
+    if (!aseb_->getSyncSize(&syncSize)) return;
+    if (!aseb_->getAnalogResolution(&analogResolution)) return;
+
+    asebAnalogInputSet_ = new Aseb::Analog_t[analogInSize];
+    asebPwmOutputSet_ = new Aseb::Pwm_t[pwmOutSize];
+    asebSyncBuffer_ = new uint8_t[syncSize];
+
 }
 
 void FeldbusAsebView::onResetOutputs(void) {

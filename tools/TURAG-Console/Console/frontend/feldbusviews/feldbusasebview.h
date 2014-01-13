@@ -45,9 +45,15 @@ protected:
 
 
     Aseb* aseb_;
+    Aseb::Analog_t* asebAnalogInputSet_;
+    Aseb::Pwm_t* asebPwmOutputSet_;
+    uint8_t* asebSyncBuffer_;
+
     QPushButton* readDevice_;
     QPushButton* resetOutputs_;
     QPushButton* setOutputs_;
+
+    QTimer updateTimer_;
 
     bool deviceWasRead_;
 
