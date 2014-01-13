@@ -11,6 +11,7 @@
 
 class QLabel;
 class QPushButton;
+class QGridLayout;
 
 
 using namespace TURAG::Feldbus;
@@ -27,6 +28,8 @@ protected:
         QCheckBox* checkbox;
 
         LabelCheckboxCombo() : label(nullptr), checkbox(nullptr) {}
+        LabelCheckboxCombo(QLabel* label_, QCheckBox* checkbox_) :
+            label(label_), checkbox(checkbox_) {}
     };
 
     struct LabelLineeditCombo {
@@ -34,6 +37,8 @@ protected:
         QLineEdit* lineedit;
 
         LabelLineeditCombo() : label(nullptr), lineedit(nullptr) {}
+        LabelLineeditCombo(QLabel* label_, QLineEdit* lineedit_) :
+            label(label_), lineedit(lineedit_) {}
     };
 
 
@@ -42,6 +47,10 @@ protected:
     QList<LabelLineeditCombo> analogInputs_;
     QList<LabelLineeditCombo> pwmOutputs_;
 
+    QGridLayout* digital_in_layout_;
+    QGridLayout* analog_in_layout_;
+    QGridLayout* digital_out_layout_;
+    QGridLayout* pwm_out_layout_;
 
 
     Aseb* aseb_;
@@ -66,6 +75,7 @@ protected slots:
     void onReadDevice(void);
     void onResetOutputs(void);
     void onSetOutputs(void);
+    void onUpdate(void);
 
 };
 
