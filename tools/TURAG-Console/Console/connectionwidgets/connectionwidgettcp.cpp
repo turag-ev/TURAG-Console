@@ -116,9 +116,10 @@ void ConnectionWidgetTcp::socketConnected(void) {
     connect_button->setText("Trennen");
     connect_button->setEnabled(true);
 
-    tcpMenu->setDisabled(false);
+    tcpMenu->setEnabled(true);
     requestWriteAccessAction->setEnabled(true);
-    requestWriteAccessActionForce->setEnabled(true);
+    emergencyStopAction->setDisabled(true);
+    startBootloaderAction->setDisabled(true);
 
     onRequestWriteAccess();
 }
@@ -128,9 +129,8 @@ void ConnectionWidgetTcp::socketDisconnected(void) {
     connect_button->setEnabled(true);
 
     tcpMenu->setDisabled(true);
-    for (QAction* action : tcpMenu->actions()) {
-        action->setDisabled(true);
-    }
+    requestWriteAccessAction->setDisabled(true);
+    requestWriteAccessActionForce->setDisabled(true);
 
     writeAccess = false;
 
@@ -174,6 +174,7 @@ void ConnectionWidgetTcp::handleData() {
         //hier machen, was passieren soll, wenn man Schreibrechte erhalten hat
         writeAccess = false;
         requestWriteAccessAction->setText("Schreibrechte anfordern");
+        requestWriteAccessActionForce->setEnabled(true);
         if (associatedBackend) {
             associatedBackend->setWriteAccess(false);
             startBootloaderAction->setEnabled(false);
@@ -182,6 +183,7 @@ void ConnectionWidgetTcp::handleData() {
     else if (puffer.at(0) == WAGRANTED) {
         writeAccess = true;
         requestWriteAccessAction->setText("Schreibrechte aufgeben");
+        requestWriteAccessActionForce->setDisabled(true);
         if (associatedBackend) {
             associatedBackend->setWriteAccess(true);
             startBootloaderAction->setEnabled(true);
