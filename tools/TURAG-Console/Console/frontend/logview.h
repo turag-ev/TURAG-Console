@@ -125,7 +125,9 @@ public:
   void deactivate();
   void onStart();
 
-  void setLogSource(char source, const QString&& name);
+  void setLogSource(char source, const QString&& name) {
+      log_model_->setLogSource(source, std::move(name));
+  }
 
   void readSettings();
   void writeSettings();

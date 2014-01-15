@@ -16,7 +16,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     CONFIG += serialport
 }
 
-TARGET = Console
+TARGET = turag-console
 TEMPLATE = app
 
 # Schneller als die Standardimplementierung wenn Strings mit + verbunden werden
@@ -121,7 +121,7 @@ RESOURCES += \
 
 OTHER_FILES += \
     TODO.txt
-
+    
 # install
 target.path = $$PREFIX/bin
 sources.files = $$SOURCES $$HEADERS $$RESOURCES $$FORMS Console.pro

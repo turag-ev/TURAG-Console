@@ -17,8 +17,6 @@
 #include <QFileDialog>
 #include <tina++/algorithm.h>
 
-#include <QDebug>
-
 #include "util/tinainterface.h"
 
 static QIcon icons[StreamModel::ICON_MAX];
@@ -458,7 +456,7 @@ void LogView::filterSrc(int index) {
 
     } else {
         // im Filter vorhanden -> inaktiv
-        filter.erase(i);
+        TURAG::remove(filter, index); // sicher ist sicher, wenn mehrfach vorhanden
     }
     filter_->setFilterSource(std::move(filter));
 }
@@ -478,17 +476,6 @@ void LogView::activateFilter() {
         }
     }
     filter_->setFilterSource(std::move(filter));
-}
-
-void LogView::setLogSource(char source, const QString&& name) {
-    QSettings settings;
-    if (!settings.value(charToKey(source), true).toBool()) {
-        std::string filter = filter_->getFilterSource();
-        filter.push_back(source);
-        filter_->setFilterSource(std::move(filter));
-    }
-
-    log_model_->setLogSource(source, std::move(name));
 }
 
 void LogView::readSettings() {
