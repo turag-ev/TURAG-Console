@@ -44,6 +44,7 @@ protected:
     QAction* requestWriteAccessAction;
     QAction* startBootloaderAction;
     QAction* requestWriteAccessActionForce;
+    QAction* reload;
 
     virtual QMenu* getMenu();
 

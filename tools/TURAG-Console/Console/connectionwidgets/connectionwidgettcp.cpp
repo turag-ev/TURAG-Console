@@ -74,7 +74,6 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     requestWriteAccessActionForce->setToolTip("Meister Yoda sagt: Die Macht dir helfen wird zu erlangen die Schreibrechte");
     connect(requestWriteAccessActionForce, SIGNAL(triggered()), this, SLOT(forceWriteAccess()));
 
-
     //submenu um Schreibrechte mit Gewalt an sich zu reißen
     QMenu * extended = new QMenu("Erweitert", this);
     extended->addAction(requestWriteAccessActionForce);
