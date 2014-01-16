@@ -179,6 +179,7 @@ void ConnectionWidgetTcp::handleData() {
             associatedBackend->setWriteAccess(false);
             startBootloaderAction->setEnabled(false);
         }
+        emit errorOccured("Schreibrechte nicht gewährt/verloren");
     }
     else if (puffer.at(0) == WAGRANTED) {
         writeAccess = true;
@@ -205,7 +206,6 @@ void ConnectionWidgetTcp::handleData() {
         int i;
         //int countDevice = 0; //ich muss mir merken, in welchem device ich bin
         for (i = 0; i < amount; i++) {
-            qDebug() << "mache ein device" << endl;
             device * newDevice = new device;
             newDevice->path = QString(puffer.at(2 + i * 5));
             newDevice->port = QString(puffer.at(3 + i * 5));
