@@ -2,7 +2,7 @@
 #define TCPBACKEND_H
 
 #include "basebackend.h"
-#include "../../Debug-Server/Debug_Server/debugserver_protocol.h"
+#include <Debug_Server/debugserver_protocol.h>
 
 #include <QString>
 #include <QtNetwork/QHostAddress>

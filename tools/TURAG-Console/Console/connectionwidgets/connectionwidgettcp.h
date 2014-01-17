@@ -4,7 +4,7 @@
 #define DEFAULTHOST "robot.turag.et.tu-dresden.de"
 
 #include "connectionwidget.h"
-#include "../../Debug-Server/Debug_Server/debugserver_protocol.h"
+#include <Debug_Server/debugserver_protocol.h>
 #include "../backend/tcpbackend.h"
 
 #include <QSettings>

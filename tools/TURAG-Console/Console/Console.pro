@@ -4,6 +4,8 @@
 #
 #-------------------------------------------------
 
+VERSION = 0.1
+
 CONFIG +=  qwt
 QT     += core gui
 QT     += network
@@ -109,12 +111,62 @@ HEADERS  += mainwindow.h \
     ../../../tina/tina++/feldbus/host/servo.h \
     ../../../tina/tina++/feldbus/host/dcmotor.h \
     ../../../tina/tina++/feldbus/host/farbsensor.h \
-    frontend/feldbusviews/feldbusasebview.h
+    frontend/feldbusviews/feldbusasebview.h \
+    ../../../tina/tina++/tina.h \
+    ../../../tina/tina++/math.h \
+    ../../../tina/tina++/debug.h \
+    ../../../tina/tina++/algorithm.h \
+    ../../../tina/tina/tina.h \
+    ../../../tina/tina/math.h \
+    ../../../tina/tina/debug.h \
+    ../../../tina/platform/desktop-qt/public/tina/timetype.h \
+    ../../../tina/platform/desktop-qt/public/tina/time.h \
+    ../../../tina/platform/desktop-qt/public/tina/debugprint.h \
+    ../../../tina/platform/desktop-qt/public/tina/config.h \
+    ../../../tina/platform/desktop-qt/public/tina++/time.h \
+    ../../../tina/tina/helper/types.h \
+    ../../../tina/tina/helper/normalize.h \
+    ../../../tina/tina/helper/macros.h \
+    ../../../tina/tina++/helper/normalize.h \
+    ../../../tina/tina++/helper/macros.h \
+    ../../../tina/platform/desktop-qt/public/tina/thread.h \
+    ../../../tina/platform/desktop-qt/public/tina++/thread.h \
+    ../../../tina/platform/desktop-qt/public/tina/can.h \
+    ../../../tina/platform/desktop-qt/public/tina++/can.h \
+    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_stellantriebe.h \
+    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_lokalisierungssensoren.h \
+    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_aseb.h \
+    ../../../tina/tina/feldbus/protocol/turag_feldbus_bus_protokoll.h \
+    ../../../tina/tina++/helper/scoped_lock.h \
+    ../../../tina/tina++/helper/packed.h \
+    ../../../tina/tina++/helper/integer.h \
+    ../../../tina/tina++/helper/init.h \
+    ../../../tina/tina++/helper/construct.h \
+    ../../../tina/tina/feldbus/dynamixel/dynamixel.h \
+    ../../../tina/tina/feldbus/dynamixel/dxl_hal.h \
+    ../../../tina/tina/crc/crc8_icode/crc8_icode.h \
+    ../../../tina/tina++/feldbus/host/sensor.h \
+    ../../../tina/tina++/range/algorithm.h \
+    ../../../tina/tina++/crc/xor.h \
+    ../../../tina/tina++/crc/crc16.h \
+    ../../../tina/tina++/crc/crc8.h \
+    ../../../tina/tina/crc/xor_checksum.h \
+    ../../../tina/tina/bytes.h
 
 INCLUDEPATH += \
     ../../../tina \
     ../../../tina/platform/desktop-qt/public \
-    tina-platform/public
+    tina-platform/public \
+    ../../Debug-Server
+    
+DISTR_FILES += \
+    images/ok.png \
+    images/nok.png \
+    images/turag-55.png \
+    images/lock.png \
+    images/warning-orange-16.png \
+    images/error-orange-16.png \
+    images/error-red-16.png
 
 RESOURCES += \
     images.qrc
@@ -126,3 +178,19 @@ OTHER_FILES += \
 target.path = $$PREFIX/bin
 sources.files = $$SOURCES $$HEADERS $$RESOURCES $$FORMS Console.pro
 INSTALLS += target
+
+# own make dist :P
+PACKAGE_STRING = $(TARGET)-$${VERSION}$${EXT_VERSION}
+TMP_DIR = .tmp
+DIST_DIR = $${TMP_DIR}/$${PACKAGE_STRING}
+DISTFILES = $${SOURCES} $${HEADERS} $${RESOURCES} $${FORMS} $${DISTR_FILES} Console.pro
+
+distr.commands = (test -d $${DIST_DIR}/src || mkdir -p $${DIST_DIR}/src) && \
+                 $(COPY_FILE) --parents $${DISTFILES} $${DIST_DIR}/src && \
+                 (cd $${TMP_DIR} && \
+                  $(TAR) $${PACKAGE_STRING}.tar $${PACKAGE_STRING} && \
+                  $(COMPRESS) $${PACKAGE_STRING}.tar) && \
+                 $(MOVE) $${TMP_DIR}/$${PACKAGE_STRING}.tar.gz . && \
+                 $(DEL_FILE) -r $${DIST_DIR}
+
+QMAKE_EXTRA_TARGETS += distr
