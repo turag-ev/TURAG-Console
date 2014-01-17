@@ -1,6 +1,7 @@
 #include "serialbackend.h"
 #include <QtSerialPort/QSerialPort>
 #include <QFileInfo>
+#include <QDebug>
 
 const QString SerialBackend::connectionPrefix = "serial://";
 
@@ -44,6 +45,34 @@ bool SerialBackend::openConnection(QString connectionString) {
         return false;
     }
 
+    success = port->setDataBits(QSerialPort::Data8);
+    if (!success) {
+        emit errorOccured(QString("Fehler beim Setzen der Framelänge: %1").arg(port->errorString()));
+        port->close();
+        return false;
+    }
+
+    success = port->setParity(QSerialPort::NoParity);
+    if (!success) {
+        emit errorOccured(QString("Fehler beim Setzen der Parität: %1").arg(port->errorString()));
+        port->close();
+        return false;
+    }
+
+    success = port->setStopBits(QSerialPort::OneStop);
+    if (!success) {
+        emit errorOccured(QString("Fehler beim Setzen der Stopp-Bits: %1").arg(port->errorString()));
+        port->close();
+        return false;
+    }
+
+    success = port->setFlowControl(QSerialPort::NoFlowControl);
+    if (!success) {
+        emit errorOccured(QString("Fehler beim Setzen der Flow-Control: %1").arg(port->errorString()));
+        port->close();
+        return false;
+    }
+
     connectionString_ = connectionString;
 
     stream_ = std::move(port);
@@ -71,6 +100,7 @@ QString SerialBackend::getConnectionInfo() {
 
 void SerialBackend::onError(QSerialPort::SerialPortError error) {
     QString errormsg;
+
 
     switch (error) {
     case QSerialPort::NoError:
@@ -109,6 +139,5 @@ void SerialBackend::onError(QSerialPort::SerialPortError error) {
 
     default: break;
     }
-
 }
 

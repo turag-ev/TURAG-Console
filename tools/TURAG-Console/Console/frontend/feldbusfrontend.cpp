@@ -105,7 +105,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 
 #ifdef Q_OS_WIN32
     // windows is a bit slower :D
-    turag_rs485_init(0, turag_ms_to_ticks(25));
+    turag_rs485_init(0, turag_ms_to_ticks(50));
 #else
      turag_rs485_init(0, turag_ms_to_ticks(10));
 #endif
