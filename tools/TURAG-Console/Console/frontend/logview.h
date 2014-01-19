@@ -7,6 +7,8 @@
 #include <QAbstractTableModel>
 #include <QSortFilterProxyModel>
 #include <tina++/tina.h>
+#include <QTimer>
+#include <QByteArray>
 
 #include "basefrontend.h"
 
@@ -82,6 +84,7 @@ private:
   Time logtime_;
 
   int old_size;
+
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -151,6 +154,7 @@ private slots:
   void filterSrc(int index);
   void deactivateFilter();
   void activateFilter();
+  void onSendTimeout(void);
 
 private:
   QTableView* log_;
@@ -159,6 +163,9 @@ private:
   QSignalMapper* filter_mapper_;
 
   bool scroll_on_output_;
+
+  QTimer sendTimer;
+  QByteArray timedSendString;
 };
 
 #endif // LOGVIEW_H

@@ -308,11 +308,23 @@ LogView::LogView(TinaInterface *interface, QWidget *parent) :
     connect(interface, SIGNAL(endUpdate()), this, SLOT(endUpdate()));
     connect(interface, SIGNAL(tinaPackageReady(QByteArray)), this, SLOT(writeLine(QByteArray)));
 
+    connect(&sendTimer, SIGNAL(timeout()), this, SLOT(onSendTimeout()));
+
     readSettings();
 }
 
 LogView::~LogView() {
     writeSettings();
+}
+
+void LogView::onSendTimeout(void) {
+    if (timedSendString.size()) {
+        emit dataReady(timedSendString.left(1));
+        timedSendString.remove(0,1);
+    }
+    if (timedSendString.size() == 0) {
+        sendTimer.stop();
+    }
 }
 
 static
@@ -329,9 +341,10 @@ void LogView::onConnected(bool readOnly, bool isSequential, QIODevice* dev) {
 
     setScrollOnOutput(!readOnly);
 
-    //if (!readOnly) {
-    //    emit dataReady(QByteArray(">"));
-    //}
+    if (!readOnly) {
+        timedSendString = "\x18\x18\x18\x18\x18\x18\x18>";
+        sendTimer.start(10);
+    }
 }
 
 void LogView::onDisconnected(bool reconnecting) {
