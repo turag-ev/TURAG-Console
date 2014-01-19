@@ -38,7 +38,7 @@ void DynamixelView::onUpdateTimeout(void) {
         presentPosition->setText("ERROR");
     }
 
-    int cwAngleLimit = 0; int ccwAngleLimit = 0;
+    float cwAngleLimit = 0; float ccwAngleLimit = 0; //19.01.2014, Richard R: Variabletyp auf float geändert
     if (device->getCcwAngleLimit(&ccwAngleLimit) && device->getCwAngleLimit(&cwAngleLimit)) {
         angleLimit->setText(QString("%1 - %2").arg(cwAngleLimit).arg(ccwAngleLimit));
     } else {
