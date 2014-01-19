@@ -10,6 +10,7 @@
 #include <QActionGroup>
 #include <QMenu>
 #include <QDebug>
+#include <QTextEdit>
 
 PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
     BaseFrontend("Standard-Konsole", parent), scroll_on_output(true), hasSequentialConnection(false)

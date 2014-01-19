@@ -1,23 +1,22 @@
 #ifndef LOGVIEW_H
 #define LOGVIEW_H
 
-#include <QTabWidget>
-#include <QAbstractTableModel>
-#include <QVector>
-#include <QTime>
-#include <QSortFilterProxyModel>
-#include <QMutex>
 #include <tuple>
 #include <string>
 #include <vector>
-#include "basefrontend.h"
-#include <QTableView>
+#include <QAbstractTableModel>
+#include <QSortFilterProxyModel>
 #include <tina++/tina.h>
+#include <QTimer>
+#include <QByteArray>
+
+#include "basefrontend.h"
 
 class QSettings;
 class QSortFilterProxyModel;
 class QSignalMapper;
 class TinaInterface;
+class QTableView;
 
 ////////////////////////////////////////////////////////////////////////////////
 // StreamModel
@@ -85,6 +84,7 @@ private:
   Time logtime_;
 
   int old_size;
+
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -108,10 +108,15 @@ private:
 // LogView
 
 class LogView : public BaseFrontend {
- Q_OBJECT
+    Q_OBJECT
+    NOT_COPYABLE(LogView);
+    NOT_MOVABLE(LogView);
+
 public:
   explicit
   LogView(TinaInterface* interface, QWidget *parent = 0);
+
+  ~LogView();
 
   template<class... Args>
   void insertRow(Args&&... args) {
@@ -123,13 +128,18 @@ public:
   void deactivate();
   void onStart();
 
-  void setLogSource(char source, const QString&& name);
+  void setLogSource(char source, const QString&& name) {
+      log_model_->setLogSource(source, std::move(name));
+  }
+
+  void readSettings();
+  void writeSettings();
 
 public slots:
-  virtual void onConnected(bool readOnly, bool isSequential, QIODevice*);
-  virtual void onDisconnected(bool reconnecting);
-  virtual void clear(void);
-  virtual bool saveOutput(void);
+  void onConnected(bool readOnly, bool isSequential, QIODevice*) override;
+  void onDisconnected(bool reconnecting) override;
+  void clear() override;
+  bool saveOutput() override;
   void writeData(QByteArray data) override;
 
 private slots:
@@ -141,7 +151,10 @@ private slots:
   void contextMenu(QPoint);
   void copy();
   void hideMsgsFromSource();
-  void onFilterSrc(int index);
+  void filterSrc(int index);
+  void deactivateFilter();
+  void activateFilter();
+  void onSendTimeout(void);
 
 private:
   QTableView* log_;
@@ -150,6 +163,9 @@ private:
   QSignalMapper* filter_mapper_;
 
   bool scroll_on_output_;
+
+  QTimer sendTimer;
+  QByteArray timedSendString;
 };
 
 #endif // LOGVIEW_H

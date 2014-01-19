@@ -12,6 +12,12 @@ void debug_printf(const char* fmt, ...) {
     vsnprintf(buffer, sizeof(buffer), fmt, args);
     va_end(args);
 
+    char* pChar = buffer;
+    while(*pChar) {
+        if (*pChar < 32) *pChar = 32;
+        ++pChar;
+    }
+
     qDebug() << buffer;
 }
 

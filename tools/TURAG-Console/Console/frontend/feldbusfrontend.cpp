@@ -20,6 +20,7 @@
 #include "feldbusviews/feldbusfarbsensorview.h"
 #include "feldbusviews/dynamixelview.h"
 #include "feldbusviews/feldbusaktorview.h"
+#include "feldbusviews/feldbusasebview.h"
 #include <debugprintclass.h>
 #include "plaintextfrontend.h"
 
@@ -104,7 +105,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 
 #ifdef Q_OS_WIN32
     // windows is a bit slower :D
-    turag_rs485_init(0, turag_ms_to_ticks(25));
+    turag_rs485_init(0, turag_ms_to_ticks(50));
 #else
      turag_rs485_init(0, turag_ms_to_ticks(10));
 #endif
@@ -120,7 +121,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 
 //#warning please remove me
 //    feldbusWidget->hide();
-//    splitter->addWidget(new FeldbusAktorView(0));
+//    splitter->addWidget(new FeldbusAsebView(0));
 
 }
 
@@ -347,6 +348,15 @@ void FeldbusFrontend::onDeviceSelected( int row) {
         Feldbus::Servo* servo = dynamic_cast<Feldbus::Servo*>(deviceFactory->getDevice());
         if (servo) {
             feldbusWidget = new FeldbusAktorView(servo);
+            splitter->addWidget(feldbusWidget);
+            splitter->setStretchFactor(1,2);
+            return;
+        }
+
+        // create ASEB view
+        Feldbus::Aseb* aseb = dynamic_cast<Feldbus::Aseb*>(deviceFactory->getDevice());
+        if (aseb) {
+            feldbusWidget = new FeldbusAsebView(aseb);
             splitter->addWidget(feldbusWidget);
             splitter->setStretchFactor(1,2);
             return;

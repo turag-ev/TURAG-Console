@@ -4,7 +4,7 @@
 #define DEFAULTHOST "robot.turag.et.tu-dresden.de"
 
 #include "connectionwidget.h"
-#include "../../Debug-Server/Debug_Server/debugserver_protocol.h"
+#include <Debug_Server/debugserver_protocol.h>
 #include "../backend/tcpbackend.h"
 
 #include <QSettings>
@@ -43,6 +43,8 @@ protected:
     QAction* emergencyStopAction;
     QAction* requestWriteAccessAction;
     QAction* startBootloaderAction;
+    QAction* requestWriteAccessActionForce;
+    QAction* reload;
 
     virtual QMenu* getMenu();
 
@@ -89,6 +91,7 @@ protected slots:
     void reset();
     void receive();
     void startDataChannel(QListWidgetItem * item);
+    void forceWriteAccess();
 
     void socketConnected(void);
     void socketDisconnected(void);
