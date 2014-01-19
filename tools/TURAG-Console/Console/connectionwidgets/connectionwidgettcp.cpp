@@ -62,7 +62,6 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     connect(requestWriteAccessAction, SIGNAL(triggered()), this, SLOT(onRequestWriteAccess()));
 
 
-    //frage: wie teilen wir das dem datachannel mit?
     startBootloaderAction = new QAction("&Bootloader starten", this);
     startBootloaderAction->setShortcut(Qt::CTRL + Qt::Key_B);
     startBootloaderAction->setDisabled(true);
