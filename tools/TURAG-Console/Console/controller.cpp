@@ -165,6 +165,9 @@ void Controller::setFrontend(int newFrontendIndex, bool calledManually) {
             if (!currentBackend->isSequential()) {
                 currentBackend->checkData();
             }
+            if (currentBackend->isNetworked()) {
+                currentBackend->reconnect();
+            }
         }
 
         currentFrontendIndex = newFrontendIndex;

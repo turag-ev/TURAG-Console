@@ -4,9 +4,10 @@
 #include <QStringList>
 
 const QString TcpBackend::connectionPrefix = "tcp://";
+const bool TcpBackend::networked = true;
 
 TcpBackend::TcpBackend (QObject *parent) :
-    BaseBackend(TcpBackend::connectionPrefix, parent),
+    BaseBackend(TcpBackend::connectionPrefix, networked, parent),
     writeAccessGranted(false)
 { }
 
@@ -108,6 +109,11 @@ QString TcpBackend::getConnectionInfo() {
     QString path = connectionString.right(connectionString.size() - index - 1);
 
     return QString("Debug-Server: %1").arg(path);
+}
+
+void TcpBackend::reconnect() {
+    static_cast<QTcpSocket * >(stream_.get())->disconnectFromHost();
+    static_cast<QTcpSocket * >(stream_.get())->connectToHost(* hostAddress, port);
 }
 
 

@@ -11,6 +11,7 @@ class FileBackend : public BaseBackend {
 protected:
     QFileSystemWatcher* watcher;
 
+
 protected slots:
     virtual void onFileChanged();
 
@@ -19,6 +20,7 @@ public:
     FileBackend(QObject *parent = 0);
 
     static const QString connectionPrefix;
+    static const bool networked;
     virtual QString getConnectionInfo();
 
 public slots:

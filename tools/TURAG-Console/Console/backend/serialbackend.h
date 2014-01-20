@@ -13,6 +13,7 @@ public:
     SerialBackend(QObject *parent = 0);
 
     static const QString connectionPrefix;
+    static const bool networked;
     virtual QString getConnectionInfo();
 
 protected slots:

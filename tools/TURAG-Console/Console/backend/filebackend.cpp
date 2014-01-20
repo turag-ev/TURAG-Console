@@ -5,10 +5,11 @@
 #include <QFileSystemWatcher>
 
 const QString FileBackend::connectionPrefix = "file://";
+const bool FileBackend::networked = false;
 
 
 FileBackend::FileBackend(QObject *parent) :
-    BaseBackend(FileBackend::connectionPrefix, parent)
+    BaseBackend(FileBackend::connectionPrefix, networked, parent)
 {
     watcher = new QFileSystemWatcher(this);
 }

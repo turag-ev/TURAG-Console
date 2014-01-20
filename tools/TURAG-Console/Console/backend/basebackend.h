@@ -17,18 +17,21 @@ protected:
     std::unique_ptr<QIODevice> stream_;
     QString connectionString_;
     const QString connectionPrefix_;
+    const bool networked_;
 
     void emitConnected();
 
 public:
-    explicit BaseBackend(QString connectionPrefix, QObject *parent = 0);
+    explicit BaseBackend(QString connectionPrefix, bool networked, QObject *parent = 0);
     ~BaseBackend(void);
 
     bool isOpen(void) const;
     virtual bool isReadOnly(void) const;
     bool isSequential(void) const;
+    bool isNetworked(void) const;
     virtual QString getConnectionInfo();
     virtual QList<QAction*> getMenuEntries();
+    virtual void reconnect(void);
     QIODevice* getDevice() { return stream_.get(); }
 
     // checks if backend is capable for this connection

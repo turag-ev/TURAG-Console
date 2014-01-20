@@ -4,9 +4,11 @@
 #include <QDebug>
 
 const QString SerialBackend::connectionPrefix = "serial://";
+const bool SerialBackend::networked = false;
+
 
 SerialBackend::SerialBackend(QObject *parent) :
-    BaseBackend(SerialBackend::connectionPrefix, parent)
+    BaseBackend(SerialBackend::connectionPrefix, networked, parent)
 {
 }
 

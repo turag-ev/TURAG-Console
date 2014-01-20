@@ -3,8 +3,8 @@
 #include <QIODevice>
 
 
-BaseBackend::BaseBackend(QString connectionPrefix, QObject *parent) :
-    QObject(parent), connectionPrefix_(connectionPrefix)
+BaseBackend::BaseBackend(QString connectionPrefix, bool networked, QObject *parent) :
+    QObject(parent), connectionPrefix_(connectionPrefix), networked_(networked)
 {
 }
 
@@ -39,6 +39,10 @@ bool BaseBackend::isSequential(void) const {
     } else {
         return stream_->isSequential();
     }
+}
+
+bool BaseBackend::isNetworked (void) const {
+    return networked_;
 }
 
 bool BaseBackend::openConnection(void) {
@@ -95,4 +99,8 @@ bool BaseBackend::canHandleUrl(const QString& url) const {
 
 void BaseBackend::emitConnected() {
     emit connected(isReadOnly(), stream_->isSequential());
+}
+
+void BaseBackend::reconnect() {
+
 }
