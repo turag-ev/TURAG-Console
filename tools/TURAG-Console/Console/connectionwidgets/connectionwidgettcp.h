@@ -43,6 +43,7 @@ protected:
     QAction* emergencyStopAction;
     QAction* requestWriteAccessAction;
     QAction* startBootloaderAction;
+    QAction* startBootloaderContextAction;
     QAction* requestWriteAccessActionForce;
     QAction* reload;
 
@@ -89,6 +90,7 @@ protected slots:
     void emergencyStop();
     void onRequestWriteAccess();
     void reset();
+    void resetFromContextMenu();
     void receive();
     void startDataChannel(QListWidgetItem * item);
     void forceWriteAccess();

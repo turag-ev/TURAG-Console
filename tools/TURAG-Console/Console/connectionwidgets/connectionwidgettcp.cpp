@@ -98,6 +98,11 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
     connect(socket, SIGNAL(readyRead()), this, SLOT(receive()));
+
+    setContextMenuPolicy(Qt::ActionsContextMenu);
+    startBootloaderContextAction = new QAction("&Bootloader starten", this);
+    connect(startBootloaderContextAction, SIGNAL(triggered()), this, SLOT(resetFromContextMenu()));
+    addAction(startBootloaderContextAction);
 }
 
 ConnectionWidgetTcp::~ConnectionWidgetTcp() {
@@ -370,6 +375,19 @@ void ConnectionWidgetTcp::onRequestWriteAccess() {
 void ConnectionWidgetTcp::reset() {
     send(RESET_DEVICE);
     send(selectedDevice->path);
+}
+
+void ConnectionWidgetTcp::resetFromContextMenu() {
+    if (allDevicesWidget->currentRow() >= 0 && allDevicesWidget->currentRow() < allDevicesWidget->count()) {
+        device * newSelectedDevice = allDevices.at(allDevicesWidget->currentRow());
+
+        if (newSelectedDevice->onlineStatus == false) {
+            return;
+        }
+
+        send(RESET_DEVICE);
+        send(newSelectedDevice->path);
+    }
 }
 
 void ConnectionWidgetTcp::receive() {
