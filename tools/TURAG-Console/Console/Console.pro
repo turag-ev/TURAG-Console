@@ -24,9 +24,13 @@ TEMPLATE = app
 # Schneller als die Standardimplementierung wenn Strings mit + verbunden werden
 DEFINES *= QT_USE_QSTRINGBUILDER
 
-QMAKE_CXXFLAGS         += -std=gnu++0x -static-libgcc -static-libstdc++
-QMAKE_LFLAGS           += -std=gnu++0x -static-libgcc -static-libstdc++
+QMAKE_CXXFLAGS         += -std=gnu++0x
+QMAKE_LFLAGS           += -std=gnu++0x
 
+win32 {
+  QMAKE_CXXFLAGS         += -static-libgcc -static-libstdc++
+  QMAKE_LFLAGS           += -static-libgcc -static-libstdc++
+}
 
 # Release
 QMAKE_CXXFLAGS_RELEASE += -O3 -flto -march=native -funroll-loops -mfpmath=sse
