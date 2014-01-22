@@ -30,7 +30,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
 
 void DynamixelView::onUpdateTimeout(void) {
-    int position = 0;
+    float position = 0;
 
     if (device->getCurrentPosition(&position)) {
         presentPosition->setText(QString("%1").arg(position));
