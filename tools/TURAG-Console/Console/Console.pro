@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-VERSION = 0.1
+VERSION = 2.1
 
 CONFIG +=  qwt
 QT     += core gui
@@ -23,6 +23,9 @@ TEMPLATE = app
 
 # Schneller als die Standardimplementierung wenn Strings mit + verbunden werden
 DEFINES *= QT_USE_QSTRINGBUILDER
+
+# Version für Quelldateien
+DEFINES += PACKAGE_VERSION=$$VERSION
 
 QMAKE_CXXFLAGS         += -std=gnu++0x
 QMAKE_LFLAGS           += -std=gnu++0x

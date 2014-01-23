@@ -14,5 +14,6 @@ Homepage: http://www.turag.de
 Package: turag-console
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Util to view serial output of TURAG robots
-	TURAG-Console displays output of TURAG robots to debug and develop them.
+Description: Util to communicate with TURAG robot components
+	TURAG-Console provides a GUI to communicate with from TURAG developed components.
+	

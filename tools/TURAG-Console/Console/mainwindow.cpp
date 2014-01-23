@@ -25,7 +25,8 @@
 # include <QApplication>
 #endif
 
-
+#define _TO_STRING(x) #x
+#define TO_STRING(x) _TO_STRING(x)
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent)
@@ -196,7 +197,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::about() {
   QMessageBox::about(this, QString::fromUtf8("Über TURAG-Console"),
-                     QString::fromUtf8("<b>TURAG-Console v2.0</b><br /><br />"
+                     QString::fromUtf8("<b>TURAG-Console v" TO_STRING(PACKAGE_VERSION) "</b><br /><br />"
                                        "Entwickelt von/für die <a href=\"http://www.turag.de\">TURAG e.V.</a>"
                                        "<br />"
                                        "insbesondere von:<br/><br />"
