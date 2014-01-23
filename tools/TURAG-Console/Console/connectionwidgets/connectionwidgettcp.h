@@ -43,11 +43,11 @@ protected:
     QAction* emergencyStopAction;
     QAction* requestWriteAccessAction;
     QAction* startBootloaderAction;
-    QAction* startBootloaderContextAction;
+    QAction* bootloaderContextAction;
     QAction* requestWriteAccessActionForce;
     QAction* reload;
 
-    virtual QMenu* getMenu();
+    virtual QMenu* getMenu() { return tcpMenu; }
 
 
 public:
@@ -76,6 +76,9 @@ private:
     QList<QByteArray> puffer;
     QList<device * > allDevices;
 
+    QMenu* contextMenu;
+
+
     void fillDeviceList(void);
 
     void handleData();
@@ -98,6 +101,8 @@ protected slots:
     void socketConnected(void);
     void socketDisconnected(void);
     void socketError(QAbstractSocket::SocketError error);
+
+    void showContextMenu(const QPoint & pos);
 };
 
 #endif // CONNECTIONWIDGETTCP_H

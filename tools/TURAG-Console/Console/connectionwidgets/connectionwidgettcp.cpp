@@ -99,10 +99,12 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
     connect(socket, SIGNAL(readyRead()), this, SLOT(receive()));
 
-    setContextMenuPolicy(Qt::ActionsContextMenu);
-    startBootloaderContextAction = new QAction("&Bootloader starten", this);
-    connect(startBootloaderContextAction, SIGNAL(triggered()), this, SLOT(resetFromContextMenu()));
-    addAction(startBootloaderContextAction);
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    contextMenu = new QMenu(this);
+    connect(this, SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(showContextMenu(QPoint)));
+    bootloaderContextAction = new QAction(this);
+    connect(bootloaderContextAction, SIGNAL(triggered()), this, SLOT(resetFromContextMenu()));
+    contextMenu->addAction(bootloaderContextAction);
 }
 
 ConnectionWidgetTcp::~ConnectionWidgetTcp() {
@@ -307,10 +309,6 @@ void ConnectionWidgetTcp::send(QString string) {
 }
 
 
-QMenu* ConnectionWidgetTcp::getMenu() {
-    return tcpMenu;
-}
-
 /*
  *
  *SLOTS
@@ -382,11 +380,12 @@ void ConnectionWidgetTcp::resetFromContextMenu() {
         device * newSelectedDevice = allDevices.at(allDevicesWidget->currentRow());
 
         if (newSelectedDevice->onlineStatus == false) {
-            return;
+            send(LEAVE_BOOTLOADER);
+            send(newSelectedDevice->path);
+        } else {
+            send(RESET_DEVICE);
+            send(newSelectedDevice->path);
         }
-
-        send(RESET_DEVICE);
-        send(newSelectedDevice->path);
     }
 }
 
@@ -440,6 +439,20 @@ void ConnectionWidgetTcp::forceWriteAccess() {
     }
 }
 
+
+void ConnectionWidgetTcp::showContextMenu(const QPoint & pos) {
+    if (allDevicesWidget->currentRow() >= 0 && allDevicesWidget->currentRow() < allDevicesWidget->count()) {
+        device * newSelectedDevice = allDevices.at(allDevicesWidget->currentRow());
+
+        if (newSelectedDevice->onlineStatus == false) {
+            bootloaderContextAction->setText("Bootloader verlassen/Programm starten");
+        } else {
+            bootloaderContextAction->setText("Bootloader starten/Programm verlassen");
+        }
+        QPoint globalPos = mapToGlobal(pos);
+        contextMenu->popup(globalPos);
+    }
+}
 
 
 
