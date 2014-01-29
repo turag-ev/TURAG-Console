@@ -20,13 +20,19 @@ protected:
     DynamixelDevice* device;
     QLabel* presentPosition;
     QLabel* angleLimit;
+    QLabel* presentBaudRate;
+    QLabel* presentLoad;
+    QLabel* presentVoltage;
     QTimer* updateTimer;
     QLineEdit* desiredPosition;
+    QLineEdit* desiredBaudRate;
     QPushButton* setPosition;
+    QPushButton* setBaudRate;
 
  protected slots:
     void onUpdateTimeout(void);
     void onSetPositionPushed(void);
+    void onSetBaudRate(void);
 
 public:
     explicit DynamixelView(DynamixelDevice* dev, QWidget *parent = 0);

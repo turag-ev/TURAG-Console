@@ -119,9 +119,9 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 
     deviceFactory = new FeldbusDeviceFactory(this);
 
-//#warning please remove me
-//    feldbusWidget->hide();
-//    splitter->addWidget(new FeldbusAsebView(0));
+/*#warning please remove me
+    feldbusWidget->hide();
+    splitter->addWidget(new DynamixelView(0));*/
 
 }
 
