@@ -131,7 +131,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //Baudrate@init
     float currentBaudRate = 0;
-    if (device->getBaudRate(&currentBaudRate)){
+    if (device && device->getBaudRate(&currentBaudRate)){
       desiredBaudRate->setText(QString("%1").arg(currentBaudRate));
     } else{
         desiredBaudRate->setText("Error. Unable to read BaudRate");
@@ -154,7 +154,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
 void DynamixelView::readTorqueLimit(void){
     int currentTorqueLimit = 0;
-    if (device->getTorqueLimit(&currentTorqueLimit)){
+    if (device && device->getTorqueLimit(&currentTorqueLimit)){
         torqueLimit->setText(QString("%1").arg(currentTorqueLimit));
     } else {
         torqueLimit->setText("Error. Unable to read TorqueLimit");
@@ -163,7 +163,7 @@ void DynamixelView::readTorqueLimit(void){
 
 void DynamixelView::readCwAngleLimit(void) {
     float currentCwAngleLimit = 0;
-    if (device->getCwAngleLimit(&currentCwAngleLimit)){
+    if (device && device->getCwAngleLimit(&currentCwAngleLimit)){
         cwAngleLimit->setText(QString("%1").arg(currentCwAngleLimit));
     } else
         cwAngleLimit->setText("Error. Unable to read CwAngleLimit");
@@ -171,7 +171,7 @@ void DynamixelView::readCwAngleLimit(void) {
 
 void DynamixelView::readCcwAngleLimit(void) {
     float currentCcwAngleLimit = 0;
-    if (device->getCcwAngleLimit(&currentCcwAngleLimit)){
+    if (device && device->getCcwAngleLimit(&currentCcwAngleLimit)){
         ccwAngleLimit->setText(QString("%1").arg(currentCcwAngleLimit));
     } else
         ccwAngleLimit->setText("Error. Unable to read CcwAngleLimit");
@@ -179,7 +179,7 @@ void DynamixelView::readCcwAngleLimit(void) {
 
 void DynamixelView::readMovingSpeed(void){
     float currentSpeed = 0;
-    if (device->getMovingSpeed(&currentSpeed)){
+    if (device && device->getMovingSpeed(&currentSpeed)){
         movingSpeed->setText(QString("%1").arg(currentSpeed));
     } else{
         movingSpeed->setText("Error: unable to read movingSpeed");
@@ -188,6 +188,7 @@ void DynamixelView::readMovingSpeed(void){
 
 void DynamixelView::onUpdateTimeout(void) {
     if (!device) return;
+
     float position = 0;
     float voltage = 0;
     int load = 0;
@@ -249,17 +250,20 @@ void DynamixelView::onUpdateTimeout(void) {
         angleLimit->setText("Error");
     }
 }
-void DynamixelView::onSetTorqueLimit(void){
+void DynamixelView::onSetTorqueLimit(void) {
+    if (!device) return;
     device->setTorqueLimit(torqueLimit->text().toInt());
     readTorqueLimit();
 }
 
 void DynamixelView::onSetPositionPushed(void) {
+    if (!device) return;
     device->setTorqueEnable(true);
     device->setGoalPosition(desiredPosition->text().toInt());
 }
 
 void DynamixelView::onSetBaudRate(void){
+    if (!device) return;
     device->setBaudRate(desiredBaudRate->text().toFloat());
     float currentBaudRate = 0;
     if (device->getBaudRate(&currentBaudRate)){
@@ -271,16 +275,19 @@ void DynamixelView::onSetBaudRate(void){
 }
 
 void DynamixelView::onSetCwAngleLimit(void) {
+    if (!device) return;
     device->setCwAngleLimit(cwAngleLimit->text().toFloat());
     readCwAngleLimit();
 }
 
 void DynamixelView::onSetCcwAngleLimit(void) {
+    if (!device) return;
     device->setCcwAngleLimit(ccwAngleLimit->text().toFloat());
     readCcwAngleLimit();
 }
 
 void DynamixelView::onSetMovingSpeed(void){
+    if (!device) return;
     device->setMovingSpeed(movingSpeed->text().toFloat());
     readMovingSpeed();
 }
