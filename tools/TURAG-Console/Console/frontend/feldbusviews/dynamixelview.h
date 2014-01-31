@@ -18,21 +18,44 @@ class DynamixelView : public QWidget
 
 protected:
     DynamixelDevice* device;
+
     QLabel* presentPosition;
     QLabel* angleLimit;
     QLabel* presentBaudRate;
     QLabel* presentLoad;
     QLabel* presentVoltage;
+    QLabel* presentSpeed;
+    QLabel* isMoving;
+
     QTimer* updateTimer;
+
     QLineEdit* desiredPosition;
     QLineEdit* desiredBaudRate;
+    QLineEdit* cwAngleLimit;
+    QLineEdit* ccwAngleLimit;
+    QLineEdit* movingSpeed;
+    QLineEdit* torqueLimit;
+
     QPushButton* setPosition;
     QPushButton* setBaudRate;
+    QPushButton* setCwAngleLimit;
+    QPushButton* setCcwAngleLimit;
+    QPushButton* setMovingSpeed;
+    QPushButton* setTorqueLimit;
 
  protected slots:
     void onUpdateTimeout(void);
     void onSetPositionPushed(void);
     void onSetBaudRate(void);
+    void onSetCwAngleLimit(void);
+    void onSetCcwAngleLimit(void);
+    void onSetMovingSpeed(void);
+    void onSetTorqueLimit(void);
+
+    void readCwAngleLimit(void);
+    void readCcwAngleLimit(void);
+    void readMovingSpeed(void);
+    void readTorqueLimit(void);
 
 public:
     explicit DynamixelView(DynamixelDevice* dev, QWidget *parent = 0);
