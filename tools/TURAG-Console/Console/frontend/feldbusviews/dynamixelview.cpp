@@ -14,7 +14,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //Present Position
     QHBoxLayout* presentPositionLayout = new QHBoxLayout;
-    QLabel* presentPositionLabel = new QLabel("Present Position");
+    QLabel* presentPositionLabel = new QLabel("Present Position (in °)");
     presentPosition = new QLabel;
     presentPositionLayout->addWidget(presentPositionLabel);
     presentPositionLayout->addWidget(presentPosition);
@@ -22,7 +22,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //Present Speed
     QHBoxLayout* presentSpeedLayout = new QHBoxLayout;
-    QLabel* presentSpeedLabel = new QLabel("Present Speed");
+    QLabel* presentSpeedLabel = new QLabel("Present Speed (in rpm)");
     presentSpeed = new QLabel;
     presentSpeedLayout->addWidget(presentSpeedLabel);
     presentSpeedLayout->addWidget(presentSpeed);
@@ -30,7 +30,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //Present Voltage
     QHBoxLayout* presentVoltageLayout = new QHBoxLayout;
-    QLabel* presentVoltageLabel = new QLabel("Present Voltage");
+    QLabel* presentVoltageLabel = new QLabel("Present Voltage (in V)");
     presentVoltage = new QLabel;
     presentVoltageLayout->addWidget(presentVoltageLabel);
     presentVoltageLayout->addWidget(presentVoltage);
@@ -38,7 +38,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //Present Load
     QHBoxLayout* presentLoadLayout = new QHBoxLayout;
-    QLabel* presentLoadLabel = new QLabel("Present Position");
+    QLabel* presentLoadLabel = new QLabel("Present Load (XX% of max Load)");
     presentLoad = new QLabel;
     presentLoadLayout->addWidget(presentLoadLabel);
     presentLoadLayout->addWidget(presentLoad);
@@ -65,9 +65,9 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //Desired Position
     QHBoxLayout* desiredPositionLayout = new QHBoxLayout;
-    QLabel* desiredPositionLabel = new QLabel("Desired Position");
+    QLabel* desiredPositionLabel = new QLabel("Desired Position (in °)");
     desiredPosition = new QLineEdit;
-    setPosition = new QPushButton("Position setzen");
+    setPosition = new QPushButton("Set Position");
     desiredPositionLayout->addWidget(desiredPositionLabel);
     desiredPositionLayout->addWidget(desiredPosition);
     desiredPositionLayout->addWidget(setPosition);
@@ -78,7 +78,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     QHBoxLayout* desiredBaudRateLayout = new QHBoxLayout;
     QLabel* desiredBaudRateLabel = new QLabel ("Baudrate");
     desiredBaudRate= new QLineEdit;
-    setBaudRate = new QPushButton ("Baudrate setzen");
+    setBaudRate = new QPushButton ("Set Baudrate");
     desiredBaudRateLayout ->addWidget(desiredBaudRateLabel);
     desiredBaudRateLayout ->addWidget(desiredBaudRate);
     desiredBaudRateLayout ->addWidget(setBaudRate);
@@ -87,9 +87,9 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //CW AngleLimit
     QHBoxLayout* cwAngleLimitLayout = new QHBoxLayout;
-    QLabel* cwAngleLimitLabel = new QLabel ("CW Angle Limit");
+    QLabel* cwAngleLimitLabel = new QLabel ("CW Angle Limit (in °)");
     cwAngleLimit= new QLineEdit;
-    setCwAngleLimit = new QPushButton ("CW Angle Limit setzten");
+    setCwAngleLimit = new QPushButton ("Set CW Angle Limit");
     cwAngleLimitLayout ->addWidget(cwAngleLimitLabel);
     cwAngleLimitLayout ->addWidget(cwAngleLimit);
     cwAngleLimitLayout ->addWidget(setCwAngleLimit);
@@ -98,9 +98,9 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //CcW AngleLimit
     QHBoxLayout* ccwAngleLimitLayout = new QHBoxLayout;
-    QLabel* ccwAngleLimitLabel = new QLabel ("CCW Angle Limit");
+    QLabel* ccwAngleLimitLabel = new QLabel ("CCW Angle Limit (in °)");
     ccwAngleLimit= new QLineEdit;
-    setCcwAngleLimit = new QPushButton ("CCW Angle Limit setzten");
+    setCcwAngleLimit = new QPushButton ("Set CCW Angle Limit");
     ccwAngleLimitLayout ->addWidget(ccwAngleLimitLabel);
     ccwAngleLimitLayout ->addWidget(ccwAngleLimit);
     ccwAngleLimitLayout ->addWidget(setCcwAngleLimit);
@@ -109,9 +109,9 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //MovingSpeed
     QHBoxLayout* movingSpeedLayout = new QHBoxLayout;
-    QLabel* movingSpeedLabel = new QLabel ("Moving Speed");
+    QLabel* movingSpeedLabel = new QLabel ("Moving Speed (0-1023)");
     movingSpeed= new QLineEdit;
-    setMovingSpeed = new QPushButton ("Moving Speed setzen");
+    setMovingSpeed = new QPushButton ("Set Moving Speed");
     movingSpeedLayout ->addWidget(movingSpeedLabel);
     movingSpeedLayout ->addWidget(movingSpeed);
     movingSpeedLayout ->addWidget(setMovingSpeed);
@@ -122,7 +122,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     QHBoxLayout* torqueLimitLayout = new QHBoxLayout;
     QLabel* torqueLimitLabel = new QLabel ("Torque Limit");
     torqueLimit= new QLineEdit;
-    setTorqueLimit= new QPushButton ("Torque Limit setzen");
+    setTorqueLimit= new QPushButton ("Set Torque Limit");
     torqueLimitLayout ->addWidget(torqueLimitLabel);
     torqueLimitLayout ->addWidget(torqueLimit);
     torqueLimitLayout ->addWidget(setTorqueLimit);
@@ -178,7 +178,7 @@ void DynamixelView::readCcwAngleLimit(void) {
 }
 
 void DynamixelView::readMovingSpeed(void){
-    float currentSpeed = 0;
+    int currentSpeed = 0;
     if (device && device->getMovingSpeed(&currentSpeed)){
         movingSpeed->setText(QString("%1").arg(currentSpeed));
     } else{
@@ -190,7 +190,7 @@ void DynamixelView::onUpdateTimeout(void) {
     if (!device) return;
 
     float position = 0;
-    float voltage = 0;
+    float u = 0;
     int load = 0;
     int direction = 0;
     float speed = 0;
@@ -213,42 +213,42 @@ void DynamixelView::onUpdateTimeout(void) {
         presentPosition->setText("ERROR");
     }
 
-    if (device->getPresentVoltage(&voltage)) {
-        presentVoltage->setText(QString("%1").arg(voltage));
+    if (device->getPresentVoltage(&u)) {
+        presentVoltage->setText(QString("%1").arg(u));
     } else {
         presentVoltage->setText("ERROR");
     }
 
     if (device->getPresentSpeed(&speed, &speedDirection)) {
         if (speedDirection==1){
-            speedDirectionString="CW";
+            speedDirectionString=" CW";
         }
         if (speedDirection==0){
-            speedDirectionString="CCW";
+            speedDirectionString=" CCW";
         }
-        presentLoad->setText(QString("%1").arg(speed)+speedDirectionString);
+        presentSpeed->setText(QString("%1").arg(speed)+speedDirectionString);
     } else {
-        presentLoad->setText("ERROR");
+        presentSpeed->setText("ERROR");
     }
 
     if (device->getPresentLoad(&load, &direction)) {
         if (direction==1){
-            directionString="CW";
+            directionString=" CW";
         }
         if (direction==0){
-            directionString="CCW";
+            directionString=" CCW";
         }
         presentLoad->setText(QString("%1").arg(load)+directionString);
     } else {
         presentLoad->setText("ERROR");
     }
 
-    float cwAngleLimit = 0; float ccwAngleLimit = 0; //19.01.2014, Richard R: Variabletyp auf float geändert
+/*    float cwAngleLimit = 0; float ccwAngleLimit = 0; //19.01.2014, Richard R: Variabletyp auf float geändert
     if (device->getCcwAngleLimit(&ccwAngleLimit) && device->getCwAngleLimit(&cwAngleLimit)) {
         angleLimit->setText(QString("%1 - %2").arg(cwAngleLimit).arg(ccwAngleLimit));
     } else {
         angleLimit->setText("Error");
-    }
+    }*/
 }
 void DynamixelView::onSetTorqueLimit(void) {
     if (!device) return;
