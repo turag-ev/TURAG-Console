@@ -26,6 +26,7 @@ protected:
     QLabel* presentVoltage;
     QLabel* presentSpeed;
     QLabel* isMoving;
+    QLabel* isOverload;
 
     QTimer* updateTimer;
 
@@ -35,6 +36,12 @@ protected:
     QLineEdit* ccwAngleLimit;
     QLineEdit* movingSpeed;
     QLineEdit* torqueLimit;
+    QLineEdit* cwComplMargin;
+    QLineEdit* ccwComplMargin;
+    QLineEdit* cwComplSlope;
+    QLineEdit* ccwComplSlope;
+    QLineEdit* alarmShutdown;
+
 
     QPushButton* setPosition;
     QPushButton* setBaudRate;
@@ -42,6 +49,11 @@ protected:
     QPushButton* setCcwAngleLimit;
     QPushButton* setMovingSpeed;
     QPushButton* setTorqueLimit;
+    QPushButton* setCwComplMargin;
+    QPushButton* setCcwComplMargin;
+    QPushButton* setCwComplSlope;
+    QPushButton* setCcwComplSlope;
+    QPushButton* setAlarmShutdown;
 
  protected slots:
     void onUpdateTimeout(void);
@@ -51,11 +63,22 @@ protected:
     void onSetCcwAngleLimit(void);
     void onSetMovingSpeed(void);
     void onSetTorqueLimit(void);
+    void onSetCwComplMargin(void);
+    void onSetCcwComplMargin(void);
+    void onSetCwComplSlope(void);
+    void onSetCcwComplSlope(void);
+    void onSetAlarmShutdown(void);
+
 
     void readCwAngleLimit(void);
     void readCcwAngleLimit(void);
     void readMovingSpeed(void);
     void readTorqueLimit(void);
+    void readCwComplMargin(void);
+    void readCcwComplMargin(void);
+    void readCwComplSlope(void);
+    void readCcwComplSlope(void);
+    void readAlarmShutdown(void);
 
 public:
     explicit DynamixelView(DynamixelDevice* dev, QWidget *parent = 0);

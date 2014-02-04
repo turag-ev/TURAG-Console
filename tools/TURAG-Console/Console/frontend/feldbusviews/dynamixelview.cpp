@@ -52,6 +52,14 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     isMovingLayout->addWidget(isMoving);
     layout->addLayout(isMovingLayout);
 
+    //Overload
+    QHBoxLayout* isOverloadLayout = new QHBoxLayout;
+    QLabel* isOverloadLabel = new QLabel("is Overload");
+    isOverload = new QLabel;
+    isOverloadLayout->addWidget(isOverloadLabel);
+    isOverloadLayout->addWidget(isOverload);
+    layout->addLayout(isOverloadLayout);
+
     /*QHBoxLayout* presentBaudRateLayout = new QHBoxLayout;
     QLabel* presentBaudRateLabel = new QLabel ("Present Baud Rate");
     presentBaudRate = new QLabel;
@@ -129,6 +137,61 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     connect(setTorqueLimit, SIGNAL(clicked()), this, SLOT(onSetTorqueLimit()));
     layout-> addLayout(torqueLimitLayout);
 
+    //Cw Compl Margin
+    QHBoxLayout* cwComplMarginLayout = new QHBoxLayout;
+    QLabel* cwComplMarginLabel = new QLabel ("Cw Compl Margin");
+    cwComplMargin= new QLineEdit;
+    setCwComplMargin= new QPushButton ("Ccw Compl Margin");
+    cwComplMarginLayout ->addWidget(cwComplMarginLabel);
+    cwComplMarginLayout ->addWidget(cwComplMargin);
+    cwComplMarginLayout ->addWidget(setCwComplMargin);
+    connect(setCwComplMargin, SIGNAL(clicked()), this, SLOT(onSetCwComplMargin()));
+    layout-> addLayout(cwComplMarginLayout);
+
+    //Ccw Compl Margin
+    QHBoxLayout* ccwComplMarginLayout = new QHBoxLayout;
+    QLabel* ccwComplMarginLabel = new QLabel ("Ccw Compl Margin");
+    ccwComplMargin= new QLineEdit;
+    setCcwComplMargin= new QPushButton ("Set Ccw Compl Margin");
+    ccwComplMarginLayout ->addWidget(ccwComplMarginLabel);
+    ccwComplMarginLayout ->addWidget(ccwComplMargin);
+    ccwComplMarginLayout ->addWidget(setCcwComplMargin);
+    connect(setCcwComplMargin, SIGNAL(clicked()), this, SLOT(onSetCcwComplMargin()));
+    layout-> addLayout(ccwComplMarginLayout);
+
+    //Cw Compl Slope
+    QHBoxLayout* cwComplSlopeLayout = new QHBoxLayout;
+    QLabel* cwComplSlopeLabel = new QLabel ("Cw Compl Slope");
+    cwComplSlope= new QLineEdit;
+    setCwComplSlope= new QPushButton ("Ccw Compl Slope");
+    cwComplSlopeLayout ->addWidget(cwComplSlopeLabel);
+    cwComplSlopeLayout ->addWidget(cwComplSlope);
+    cwComplSlopeLayout ->addWidget(setCwComplSlope);
+    connect(setCwComplSlope, SIGNAL(clicked()), this, SLOT(onSetCwComplSlope()));
+    layout-> addLayout(cwComplSlopeLayout);
+
+    //Ccw Compl Slope
+    QHBoxLayout* ccwComplSlopeLayout = new QHBoxLayout;
+    QLabel* ccwComplSlopeLabel = new QLabel ("Ccw Compl Slope");
+    ccwComplSlope= new QLineEdit;
+    setCcwComplSlope= new QPushButton ("Set Ccw Compl Slope");
+    ccwComplSlopeLayout ->addWidget(ccwComplSlopeLabel);
+    ccwComplSlopeLayout ->addWidget(ccwComplSlope);
+    ccwComplSlopeLayout ->addWidget(setCcwComplSlope);
+    connect(setCcwComplSlope, SIGNAL(clicked()), this, SLOT(onSetCcwComplSlope()));
+    layout-> addLayout(ccwComplSlopeLayout);
+
+    //Alarm Shutdown
+    QHBoxLayout* alarmShutdownLayout = new QHBoxLayout;
+    QLabel* alarmShutdownLabel = new QLabel ("Alarm Shutdown");
+    alarmShutdown= new QLineEdit;
+    setAlarmShutdown= new QPushButton ("Set AlarmShutdown");
+    alarmShutdownLayout ->addWidget(alarmShutdownLabel);
+    alarmShutdownLayout ->addWidget(alarmShutdown);
+    alarmShutdownLayout ->addWidget(setAlarmShutdown);
+    connect(setAlarmShutdown, SIGNAL(clicked()), this, SLOT(onSetAlarmShutdown()));
+    layout-> addLayout(alarmShutdownLayout);
+
     //Baudrate@init
     float currentBaudRate = 0;
     if (device && device->getBaudRate(&currentBaudRate)){
@@ -147,9 +210,63 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     //TorqueLimit @init
     readTorqueLimit();
 
+    //Compliance @init
+    readCwComplMargin();
+    readCcwComplMargin();
+    readCwComplSlope();
+    readCcwComplSlope();
+
+    //Alarm Shutdown
+    readAlarmShutdown();
+
     updateTimer = new QTimer(this);
     connect(updateTimer, SIGNAL(timeout()), this, SLOT(onUpdateTimeout()));
     updateTimer->start(500);
+}
+
+void DynamixelView::readAlarmShutdown(void){
+    int currentSetting = 0;
+    if (device && device->getAlarmShutdown(&currentSetting)){
+        alarmShutdown->setText(QString("%1").arg(currentSetting));
+    } else {
+        alarmShutdown->setText("Error. Unable to read.");
+    }
+}
+
+void DynamixelView::readCwComplMargin(void){
+    int currentCompliance = 0;
+    if (device && device->getCwComplianceMargin(&currentCompliance)){
+        cwComplMargin->setText(QString("%1").arg(currentCompliance));
+    } else {
+        cwComplMargin->setText("Error. Unable to read.");
+    }
+}
+
+void DynamixelView::readCcwComplMargin(void){
+    int currentCompliance = 0;
+    if (device && device->getCcwComplianceMargin(&currentCompliance)){
+        ccwComplMargin->setText(QString("%1").arg(currentCompliance));
+    } else {
+        ccwComplMargin->setText("Error. Unable to read.");
+    }
+}
+
+void DynamixelView::readCwComplSlope(void){
+    int currentCompliance = 0;
+    if (device && device->getCwComplianceSlope(&currentCompliance)){
+        cwComplSlope->setText(QString("%1").arg(currentCompliance));
+    } else {
+        cwComplSlope->setText("Error. Unable to read.");
+    }
+}
+
+void DynamixelView::readCcwComplSlope(void){
+    int currentCompliance = 0;
+    if (device && device->getCcwComplianceSlope(&currentCompliance)){
+        ccwComplSlope->setText(QString("%1").arg(currentCompliance));
+    } else {
+        ccwComplSlope->setText("Error. Unable to read.");
+    }
 }
 
 void DynamixelView::readTorqueLimit(void){
@@ -199,10 +316,18 @@ void DynamixelView::onUpdateTimeout(void) {
     QString directionString= "";
     QString speedDirectionString="";
 
+    if (device && device->isOverload()){
+            isOverload->setText("OVERLOAD");
+        } else {
+        isOverload->setText("-");
+    }
+
     if (device->isMoving(&movement)){
         if (movement){
             isMoving->setText("true");
-        }
+        } else {
+            isMoving->setText("false");
+}
     } else {
         isMoving->setText("Error: Unable to detect moving");
     }
@@ -290,4 +415,32 @@ void DynamixelView::onSetMovingSpeed(void){
     if (!device) return;
     device->setMovingSpeed(movingSpeed->text().toFloat());
     readMovingSpeed();
+}
+
+void DynamixelView::onSetCwComplMargin(void){
+    if (!device) return;
+    device->setCwComplianceMargin(cwComplMargin->text().toInt());
+    readCwComplMargin();
+}
+
+void DynamixelView::onSetCcwComplMargin(void){
+    if (!device) return;
+    device->setCcwComplianceMargin(ccwComplMargin->text().toInt());
+    readCcwComplMargin();
+}
+void DynamixelView::onSetCwComplSlope(void){
+    if (!device) return;
+    device->setCwComplianceSlope(cwComplSlope->text().toInt());
+    readCwComplSlope();
+}
+void DynamixelView::onSetCcwComplSlope(void){
+    if (!device) return;
+    device->setCcwComplianceSlope(ccwComplSlope->text().toInt());
+    readCcwComplSlope();
+}
+
+void DynamixelView::onSetAlarmShutdown(void){
+    if (!device) return;
+    device->setAlarmShutdown(alarmShutdown->text().toInt());
+    readAlarmShutdown();
 }
