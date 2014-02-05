@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <tina++/feldbus/host/device.h>
+#include <tina++/feldbus/dynamixel/dynamixeldevice.h>
 
 #include <QByteArray>
 #include <QString>
@@ -22,38 +23,40 @@ public:
     QString toString() { return QString("%1: %2").arg(address).arg(QString(device_name)); }
 };
 
+struct FeldbusDeviceWrapper {
+    FeldbusDeviceInfoExt devInfo;
+    std::shared_ptr<Feldbus::Device> device;
+    QString deviceInfoText;
 
-
-class FeldbusDeviceFactory : public QObject {
-    Q_OBJECT
-protected:
-    Feldbus::Device* device;
-    QString checksumString;
-    QString protocolIdString;
-    QString deviceTypeString;
-    FeldbusDeviceInfoExt device_info_;
-
-
-public:
-    FeldbusDeviceFactory(QObject* parent = nullptr) :
-        QObject(parent),
-        device(nullptr),
-        checksumString("unbekannt"),
-        protocolIdString("unbekannt"),
-        deviceTypeString("unbekannt")   {}
-
-    ~FeldbusDeviceFactory() {
-        if (device) {
-            delete device;
-        }
-    }
-
-    bool createFeldbusDevice(FeldbusDeviceInfoExt& device_info);
-    Feldbus::Device* getDevice() const { return device; }
-    QString getDeviceInfoText() const;
+    FeldbusDeviceWrapper() : device(nullptr) {}
 };
 
 
+class FeldbusDeviceFactory  {
+public:
+    static FeldbusDeviceWrapper createFeldbusDevice(FeldbusDeviceInfoExt& device_info);
+};
+
+
+class DynamixelDeviceWrapper {
+public:
+    std::shared_ptr<Feldbus::DynamixelDevice> device_;
+
+protected:
+    int modelNumber_;
+    int version_;
+
+public:
+    DynamixelDeviceWrapper(Feldbus::DynamixelDevice* dev, int modelNumber, int version) :
+        device_(dev),
+        modelNumber_(modelNumber),
+        version_(version) {}
+
+    QString toString(void) {
+        return QString("%1: Modell: %2 Version: %3 [dynamixel]").arg(device_.get()->getID()).arg(modelNumber_).arg(version_);
+    }
+
+};
 
 
 #endif // FELDBUSDEVICEFACTORY_H

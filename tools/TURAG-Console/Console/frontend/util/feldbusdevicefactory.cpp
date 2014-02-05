@@ -9,11 +9,11 @@
 #include <tina++/feldbus/host/aseb.h>
 
 
-bool FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfoExt &device_info) {
-    if (device) delete device;
-    device = nullptr;
-
-    device_info_ = device_info;
+FeldbusDeviceWrapper FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfoExt &device_info) {
+    QString checksumString;
+    QString protocolIdString;
+    QString deviceTypeString;
+    TURAG::Feldbus::Device* device = nullptr;
 
     switch (device_info.device_info.crcType) {
     case TURAG_FELDBUS_CHECKSUM_XOR:
@@ -98,36 +98,28 @@ bool FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfoExt &device_info
         break;
     }
 
-    if (device) {
-        return true;
-    } else {
-        return false;
+    QString devString;
+    if (device_info.address != 0) {
+        devString += "<table>\n<tr><td>Name: </td><td>";
+        devString += device_info.device_name;
+        devString += "</td></tr>\n<tr><td>Adresse: </td><td>";
+        devString += QString("%1").arg(device_info.address);
+        devString += "</td></tr>\n<tr><td>Protokoll: </td><td>";
+        devString += protocolIdString;
+        devString += "</td></tr>\n<tr><td>Gerätetyp: </td><td>";
+        devString += deviceTypeString;
+        devString += "</td></tr>\n<tr><td>Checksumme: </td><td>";
+        devString += checksumString;
+        devString += "</td></tr>\n<tr><td>Puffer-Größe: </td><td>";
+        devString += QString("%1").arg(device_info.device_info.bufferSize);
+        devString += "</td></tr>\n</table>";
     }
+
+    FeldbusDeviceWrapper wrapper;
+    wrapper.device.reset(device);
+    wrapper.devInfo = device_info;
+    wrapper.deviceInfoText = devString;
+
+    return wrapper;
 }
-
-
-QString FeldbusDeviceFactory::getDeviceInfoText() const {
-    QString output("");
-
-    if (device_info_.address == 0) {
-        return output;
-    }
-
-    output += "<table>\n<tr><td>Name: </td><td>";
-    output += device_info_.device_name;
-    output += "</td></tr>\n<tr><td>Adresse: </td><td>";
-    output += QString("%1").arg(device_info_.address);
-    output += "</td></tr>\n<tr><td>Protokoll: </td><td>";
-    output += protocolIdString;
-    output += "</td></tr>\n<tr><td>Gerätetyp: </td><td>";
-    output += deviceTypeString;
-    output += "</td></tr>\n<tr><td>Checksumme: </td><td>";
-    output += checksumString;
-    output += "</td></tr>\n<tr><td>Puffer-Größe: </td><td>";
-    output += QString("%1").arg(device_info_.device_info.bufferSize);
-    output += "</td></tr>\n</table>";
-
-    return output;
-}
-
 

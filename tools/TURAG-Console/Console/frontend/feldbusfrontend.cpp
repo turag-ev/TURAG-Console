@@ -103,6 +103,8 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     connect(dynamixelStartInquiry_, SIGNAL(clicked()), SLOT(onStartDynamixelInquiry()));
     setEnabled(false);
 
+    connect(&availabilityChecker_, SIGNAL(timeout()), this, SLOT(onCheckDeviceAvailability()));
+
 #ifdef Q_OS_WIN32
     // windows is a bit slower :D
     turag_rs485_init(0, turag_ms_to_ticks(50));
@@ -117,8 +119,6 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     dynamixelFromEdit_->setText(settings.value("dynamixelFromAddress", "1").toString());
     dynamixelToEdit_->setText(settings.value("dynamixelToAddress", "253").toString());
 
-    deviceFactory = new FeldbusDeviceFactory(this);
-
 /*#warning please remove me
     feldbusWidget->hide();
     splitter->addWidget(new DynamixelView(0));*/
@@ -127,9 +127,6 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 
 
 FeldbusFrontend::~FeldbusFrontend() {
-    for (Feldbus::DynamixelDevice* dev : dynamixelDevices_) {
-        delete dev;
-    }
     validateAdressFields();
     dynamixelValidateAdressFields();
 
@@ -162,6 +159,8 @@ void FeldbusFrontend::writeData(QByteArray data) {
 void FeldbusFrontend::clear(void) {
     deviceInfo_->clear();
     deviceList_->clear();
+    dynamixelDevices_.clear();
+    devices_.clear();
     busLog_->clear();
 }
 
@@ -201,6 +200,7 @@ void FeldbusFrontend::dynamixelValidateAdressFields() {
 
 void FeldbusFrontend::onStartInquiry(void) {
     startInquiry_->setEnabled(false);
+    availabilityChecker_.stop();
 
     validateAdressFields();
 
@@ -247,31 +247,29 @@ void FeldbusFrontend::onStartInquiry(void) {
             Feldbus::Device* dev = new TURAG::Feldbus::Device("", dev_info.address, (Feldbus::Device::ChecksumType)dev_info.device_info.crcType, 5, 1);
             if (dev->receiveDeviceRealName(name_buffer.data())) {
                 dev_info.device_name = name_buffer;
-                devices_.append(dev_info);
                 deviceList_->addItem(dev_info.toString());
+                devices_.append(FeldbusDeviceFactory::createFeldbusDevice(dev_info));
             }
             delete dev;
+
         }
 
         QCoreApplication::processEvents();
     }
 
-    for (Feldbus::DynamixelDevice* dev : dynamixelDevices_) {
-        int modelNumber = 0;
-        int version = 0;
-
-        dev->getModelNumber(&modelNumber);
-        dev->getFirmwareVersion(&version);
-
-        deviceList_->addItem(QString("%1: Modell: %2 Version: %3 [dynamixel]").arg(dev->getID()).arg(modelNumber).arg(version));
+    for (DynamixelDeviceWrapper dev_wrapper : dynamixelDevices_) {
+        deviceList_->addItem(dev_wrapper.toString());
     }
 
     startInquiry_->setEnabled(true);
     startInquiry_->setText("Geräte suchen");
+
+    availabilityChecker_.start(250);
 }
 
 void FeldbusFrontend::onStartDynamixelInquiry(void) {
     dynamixelStartInquiry_->setEnabled(false);
+    availabilityChecker_.stop();
 
     dynamixelValidateAdressFields();
 
@@ -282,14 +280,11 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
     deviceList_->clear();
     turag_rs485_data_buffer.clear();
 
-    for (Feldbus::DynamixelDevice* dev : dynamixelDevices_) {
-        delete dev;
-    }
     dynamixelDevices_.clear();
     deviceInfo_->clear();
 
-    for (FeldbusDeviceInfoExt dev_info : devices_) {
-        deviceList_->addItem(dev_info.toString());
+    for (FeldbusDeviceWrapper dev_wrapper: devices_) {
+        deviceList_->addItem(dev_wrapper.devInfo.toString());
     }
 
     for (int i = fromAddress; i <= toAddress; i++) {
@@ -299,35 +294,38 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
         int modelNumber = 0;
         int version = 0;
         if (dev->isAvailable() && dev->getModelNumber(&modelNumber) && dev->getFirmwareVersion(&version)) {
-            dev->setMaxTransmissionAttempts(TURAG_DYNAMIXEL_DEVICE_CONFIG_MAX_TRANSMISSION_ATTEMPTS);
-            dynamixelDevices_.append(dev);
-            deviceList_->addItem(QString("%1: Modell: %2 Version: %3 [dynamixel]").arg(dev->getID()).arg(modelNumber).arg(version));
+            delete dev;
+            dev = new Feldbus::DynamixelDevice("", i, 5, 35);
+            DynamixelDeviceWrapper dev_wrapper(dev, modelNumber, version);
+            dynamixelDevices_.append(dev_wrapper);
+            deviceList_->addItem(dev_wrapper.toString());
         }
         QCoreApplication::processEvents();
     }
 
     dynamixelStartInquiry_->setEnabled(true);
     dynamixelStartInquiry_->setText("Dynamixel-Servos suchen");
+
+    availabilityChecker_.start(250);
 }
 
 void FeldbusFrontend::onDeviceSelected( int row) {
     feldbusWidget->hide();
     delete feldbusWidget;
 
-    for (Feldbus::DynamixelDevice* dev : dynamixelDevices_) {
-        dev->setLed(false);
+    for (DynamixelDeviceWrapper dev_wrapper : dynamixelDevices_) {
+        dev_wrapper.device_.get()->setLed(false);
     }
 
 
     if (row < devices_.size() && row != -1) {
-        FeldbusDeviceInfoExt device_info = devices_.at(row);
+        FeldbusDeviceWrapper dev_wrapper = devices_.at(row);
 
-        deviceFactory->createFeldbusDevice(device_info);
-        deviceInfo_->setText(deviceFactory->getDeviceInfoText());
+        deviceInfo_->setText(dev_wrapper.deviceInfoText);
 
 
         // create Farbsensor view
-        Feldbus::Farbsensor* farbsensor = dynamic_cast<Feldbus::Farbsensor*>(deviceFactory->getDevice());
+        Feldbus::Farbsensor* farbsensor = dynamic_cast<Feldbus::Farbsensor*>(dev_wrapper.device.get());
         if (farbsensor) {
             feldbusWidget = new FeldbusFarbsensorView(farbsensor);
             splitter->addWidget(feldbusWidget);
@@ -336,7 +334,7 @@ void FeldbusFrontend::onDeviceSelected( int row) {
         }
 
         // create Aktor view for DC motor
-        Feldbus::DCMotor* dcmotor = dynamic_cast<Feldbus::DCMotor*>(deviceFactory->getDevice());
+        Feldbus::DCMotor* dcmotor = dynamic_cast<Feldbus::DCMotor*>(dev_wrapper.device.get());
         if (dcmotor) {
             feldbusWidget = new FeldbusAktorView(dcmotor);
             splitter->addWidget(feldbusWidget);
@@ -345,7 +343,7 @@ void FeldbusFrontend::onDeviceSelected( int row) {
         }
 
         // create Aktor view for servo
-        Feldbus::Servo* servo = dynamic_cast<Feldbus::Servo*>(deviceFactory->getDevice());
+        Feldbus::Servo* servo = dynamic_cast<Feldbus::Servo*>(dev_wrapper.device.get());
         if (servo) {
             feldbusWidget = new FeldbusAktorView(servo);
             splitter->addWidget(feldbusWidget);
@@ -354,7 +352,7 @@ void FeldbusFrontend::onDeviceSelected( int row) {
         }
 
         // create ASEB view
-        Feldbus::Aseb* aseb = dynamic_cast<Feldbus::Aseb*>(deviceFactory->getDevice());
+        Feldbus::Aseb* aseb = dynamic_cast<Feldbus::Aseb*>(dev_wrapper.device.get());
         if (aseb) {
             feldbusWidget = new FeldbusAsebView(aseb);
             splitter->addWidget(feldbusWidget);
@@ -366,7 +364,7 @@ void FeldbusFrontend::onDeviceSelected( int row) {
 
 
     } else if (row >= devices_.size() && row < devices_.size() + dynamixelDevices_.size()) {
-        Feldbus::DynamixelDevice* dev = dynamixelDevices_.at(row - devices_.size());
+        Feldbus::DynamixelDevice* dev = dynamixelDevices_.at(row - devices_.size()).device_.get();
         dev->setLed(true);
 
         feldbusWidget = new DynamixelView(dev);
@@ -384,4 +382,22 @@ void FeldbusFrontend::onDeviceSelected( int row) {
 
 void FeldbusFrontend::onRs485DebugMsg(QString msg) {
     busLog_->writeData(msg.toLatin1());
+}
+
+void FeldbusFrontend::onCheckDeviceAvailability(void) {
+    int i = 0;
+
+    for (FeldbusDeviceWrapper dev_wrapper_ : devices_) {
+        if (dev_wrapper_.device.get()->hasReachedTransmissionErrorLimit()) {
+            deviceList_->item(i)->setText(dev_wrapper_.devInfo.toString() + " OFFLINE");
+        }
+    }
+
+    i = 0;
+    for (DynamixelDeviceWrapper dev_wrapper : dynamixelDevices_) {
+        if (dev_wrapper.device_.get()->hasReachedTransmissionErrorLimit()) {
+            deviceList_->item(i + devices_.size())->setText(dev_wrapper.toString() + " OFFLINE");
+        }
+        ++i;
+    }
 }

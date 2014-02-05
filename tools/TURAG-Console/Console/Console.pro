@@ -81,7 +81,8 @@ SOURCES +=\
     ../../../tina/tina++/feldbus/host/dcmotor_tina.cpp \
     ../../../tina/tina++/feldbus/host/servo_tina.cpp \
     ../../../tina/tina++/feldbus/host/aseb_tina.cpp \
-    frontend/feldbusviews/feldbusasebview.cpp
+    frontend/feldbusviews/feldbusasebview.cpp \
+    libs/qlineedit2.cpp
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -159,7 +160,8 @@ HEADERS  += mainwindow.h \
     ../../../tina/tina++/crc/crc16.h \
     ../../../tina/tina++/crc/crc8.h \
     ../../../tina/tina/crc/xor_checksum.h \
-    ../../../tina/tina/bytes.h
+    ../../../tina/tina/bytes.h \
+    libs/qlineedit2.h
 
 INCLUDEPATH += \
     ../../../tina \

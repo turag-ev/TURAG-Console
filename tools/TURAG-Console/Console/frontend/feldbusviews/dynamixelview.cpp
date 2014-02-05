@@ -2,9 +2,12 @@
 
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QGridLayout>
 #include <QTimer>
 #include <QPushButton>
-#include <QLineEdit>
+#include <libs/qlineedit2.h>
+#include <QCheckBox>
+#include <QDebug>
 
 DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     QWidget(parent), device(dev)
@@ -12,185 +15,179 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     QVBoxLayout* layout = new QVBoxLayout;
     setLayout(layout);
 
+    torqueEnable = new QCheckBox("Motor aktiviert");
+    layout->addWidget(torqueEnable);
+    connect(torqueEnable, SIGNAL(toggled(bool)), this, SLOT(onTorqueEnable(bool)));
+
+    QGridLayout* read_layout = new QGridLayout;
+    layout->addLayout(read_layout);
+
     //Present Position
-    QHBoxLayout* presentPositionLayout = new QHBoxLayout;
-    QLabel* presentPositionLabel = new QLabel("Present Position (in °)");
+    QLabel* presentPositionLabel = new QLabel("Present Position [°]");
     presentPosition = new QLabel;
-    presentPositionLayout->addWidget(presentPositionLabel);
-    presentPositionLayout->addWidget(presentPosition);
-    layout->addLayout(presentPositionLayout);
+    read_layout->addWidget(presentPositionLabel, 0 , 0);
+    read_layout->addWidget(presentPosition, 0 , 1);
 
     //Present Speed
-    QHBoxLayout* presentSpeedLayout = new QHBoxLayout;
-    QLabel* presentSpeedLabel = new QLabel("Present Speed (in rpm)");
+    QLabel* presentSpeedLabel = new QLabel("Present Speed [rpm]");
     presentSpeed = new QLabel;
-    presentSpeedLayout->addWidget(presentSpeedLabel);
-    presentSpeedLayout->addWidget(presentSpeed);
-    layout->addLayout(presentSpeedLayout);
+    read_layout->addWidget(presentSpeedLabel, 1, 0);
+    read_layout->addWidget(presentSpeed, 1, 1);
 
     //Present Voltage
-    QHBoxLayout* presentVoltageLayout = new QHBoxLayout;
-    QLabel* presentVoltageLabel = new QLabel("Present Voltage (in V)");
+    QLabel* presentVoltageLabel = new QLabel("Present Voltage [V]");
     presentVoltage = new QLabel;
-    presentVoltageLayout->addWidget(presentVoltageLabel);
-    presentVoltageLayout->addWidget(presentVoltage);
-    layout->addLayout(presentVoltageLayout);
+    read_layout->addWidget(presentVoltageLabel, 2, 0);
+    read_layout->addWidget(presentVoltage, 2, 1);
 
     //Present Load
-    QHBoxLayout* presentLoadLayout = new QHBoxLayout;
-    QLabel* presentLoadLabel = new QLabel("Present Load (XX% of max Load)");
+    QLabel* presentLoadLabel = new QLabel("Present Load [% of max]");
     presentLoad = new QLabel;
-    presentLoadLayout->addWidget(presentLoadLabel);
-    presentLoadLayout->addWidget(presentLoad);
-    layout->addLayout(presentLoadLayout);
+    read_layout->addWidget(presentLoadLabel, 3, 0);
+    read_layout->addWidget(presentLoad, 3, 1);
 
     //Moving
-    QHBoxLayout* isMovingLayout = new QHBoxLayout;
     QLabel* isMovingLabel = new QLabel("is Moving");
     isMoving = new QLabel;
-    isMovingLayout->addWidget(isMovingLabel);
-    isMovingLayout->addWidget(isMoving);
-    layout->addLayout(isMovingLayout);
+    read_layout->addWidget(isMovingLabel, 4, 0);
+    read_layout->addWidget(isMoving, 4, 1);
 
     //Overload
-    QHBoxLayout* isOverloadLayout = new QHBoxLayout;
     QLabel* isOverloadLabel = new QLabel("is Overload");
     isOverload = new QLabel;
-    isOverloadLayout->addWidget(isOverloadLabel);
-    isOverloadLayout->addWidget(isOverload);
-    layout->addLayout(isOverloadLayout);
+    read_layout->addWidget(isOverloadLabel, 5, 0);
+    read_layout->addWidget(isOverload, 5, 1);
 
-    /*QHBoxLayout* presentBaudRateLayout = new QHBoxLayout;
-    QLabel* presentBaudRateLabel = new QLabel ("Present Baud Rate");
-    presentBaudRate = new QLabel;
-    presentBaudRateLayout ->addWidget(presentBaudRateLabel);
-    presentBaudRateLayout ->addWidget(presentBaudRate);
-    layout->addLayout(presentBaudRateLayout);*/
+    // Temperature
+    QLabel* temperatureLabel = new QLabel("Temperature [° C]");
+    temperature = new QLabel;
+    read_layout->addWidget(temperatureLabel, 6, 0);
+    read_layout->addWidget(temperature, 6, 1);
 
-    angleLimit = new QLabel;
-    layout->addWidget(angleLimit);
 
+
+    QGridLayout* gridLayout = new QGridLayout;
+    layout->addLayout(gridLayout);
 
     //Desired Position
-    QHBoxLayout* desiredPositionLayout = new QHBoxLayout;
-    QLabel* desiredPositionLabel = new QLabel("Desired Position (in °)");
-    desiredPosition = new QLineEdit;
-    setPosition = new QPushButton("Set Position");
-    desiredPositionLayout->addWidget(desiredPositionLabel);
-    desiredPositionLayout->addWidget(desiredPosition);
-    desiredPositionLayout->addWidget(setPosition);
+    QLabel* desiredPositionLabel = new QLabel("Desired Position [°]");
+    desiredPosition = new QLineEdit2;
+    setPosition = new QPushButton("Set");
+    gridLayout-> addWidget(desiredPositionLabel, 0, 0);
+    gridLayout->addWidget(desiredPosition, 0, 1);
+    gridLayout->addWidget(setPosition, 0 , 2);
     connect(setPosition, SIGNAL(clicked()), this, SLOT(onSetPositionPushed()));
-    layout->addLayout(desiredPositionLayout);
+    connect(desiredPosition, SIGNAL(returnPressed()), this, SLOT(onSetPositionPushed()));
 
     //Baudrate
-    QHBoxLayout* desiredBaudRateLayout = new QHBoxLayout;
     QLabel* desiredBaudRateLabel = new QLabel ("Baudrate");
-    desiredBaudRate= new QLineEdit;
-    setBaudRate = new QPushButton ("Set Baudrate");
-    desiredBaudRateLayout ->addWidget(desiredBaudRateLabel);
-    desiredBaudRateLayout ->addWidget(desiredBaudRate);
-    desiredBaudRateLayout ->addWidget(setBaudRate);
+    desiredBaudRate= new QLineEdit2;
+    setBaudRate = new QPushButton ("Set");
+    gridLayout ->addWidget(desiredBaudRateLabel, 1, 0);
+    gridLayout ->addWidget(desiredBaudRate, 1, 1);
+    gridLayout ->addWidget(setBaudRate, 1, 2);
     connect(setBaudRate, SIGNAL(clicked()), this, SLOT(onSetBaudRate()));
-    layout-> addLayout(desiredBaudRateLayout);
+    connect(desiredBaudRate, SIGNAL(returnPressed()), this, SLOT(onSetBaudRate()));
 
     //CW AngleLimit
-    QHBoxLayout* cwAngleLimitLayout = new QHBoxLayout;
-    QLabel* cwAngleLimitLabel = new QLabel ("CW Angle Limit (in °)");
-    cwAngleLimit= new QLineEdit;
-    setCwAngleLimit = new QPushButton ("Set CW Angle Limit");
-    cwAngleLimitLayout ->addWidget(cwAngleLimitLabel);
-    cwAngleLimitLayout ->addWidget(cwAngleLimit);
-    cwAngleLimitLayout ->addWidget(setCwAngleLimit);
+    QLabel* cwAngleLimitLabel = new QLabel ("CW Angle Limit [°]");
+    cwAngleLimit= new QLineEdit2;
+    setCwAngleLimit = new QPushButton ("Set");
+    gridLayout ->addWidget(cwAngleLimitLabel, 2, 0);
+    gridLayout ->addWidget(cwAngleLimit, 2, 1);
+    gridLayout ->addWidget(setCwAngleLimit, 2, 2);
     connect(setCwAngleLimit, SIGNAL(clicked()), this, SLOT(onSetCwAngleLimit()));
-    layout-> addLayout(cwAngleLimitLayout);
+    connect(cwAngleLimit, SIGNAL(returnPressed()), this, SLOT(onSetCwAngleLimit()));
 
     //CcW AngleLimit
-    QHBoxLayout* ccwAngleLimitLayout = new QHBoxLayout;
-    QLabel* ccwAngleLimitLabel = new QLabel ("CCW Angle Limit (in °)");
-    ccwAngleLimit= new QLineEdit;
-    setCcwAngleLimit = new QPushButton ("Set CCW Angle Limit");
-    ccwAngleLimitLayout ->addWidget(ccwAngleLimitLabel);
-    ccwAngleLimitLayout ->addWidget(ccwAngleLimit);
-    ccwAngleLimitLayout ->addWidget(setCcwAngleLimit);
+    QLabel* ccwAngleLimitLabel = new QLabel ("CCW Angle Limit [°]");
+    ccwAngleLimit= new QLineEdit2;
+    setCcwAngleLimit = new QPushButton ("Set");
+    gridLayout ->addWidget(ccwAngleLimitLabel, 3, 0);
+    gridLayout ->addWidget(ccwAngleLimit, 3, 1);
+    gridLayout ->addWidget(setCcwAngleLimit, 3, 2);
     connect(setCcwAngleLimit, SIGNAL(clicked()), this, SLOT(onSetCcwAngleLimit()));
-    layout-> addLayout(ccwAngleLimitLayout);
+    connect(ccwAngleLimit, SIGNAL(returnPressed()), this, SLOT(onSetCcwAngleLimit()));
 
     //MovingSpeed
-    QHBoxLayout* movingSpeedLayout = new QHBoxLayout;
     QLabel* movingSpeedLabel = new QLabel ("Moving Speed (0-1023)");
-    movingSpeed= new QLineEdit;
-    setMovingSpeed = new QPushButton ("Set Moving Speed");
-    movingSpeedLayout ->addWidget(movingSpeedLabel);
-    movingSpeedLayout ->addWidget(movingSpeed);
-    movingSpeedLayout ->addWidget(setMovingSpeed);
+    movingSpeed= new QLineEdit2;
+    setMovingSpeed = new QPushButton ("Set");
+    gridLayout ->addWidget(movingSpeedLabel, 4, 0);
+    gridLayout ->addWidget(movingSpeed, 4, 1);
+    gridLayout ->addWidget(setMovingSpeed, 4, 2);
     connect(setMovingSpeed, SIGNAL(clicked()), this, SLOT(onSetMovingSpeed()));
-    layout-> addLayout(movingSpeedLayout);
+    connect(movingSpeed, SIGNAL(returnPressed()), this, SLOT(onSetMovingSpeed()));
 
     //TorqueLimit
-    QHBoxLayout* torqueLimitLayout = new QHBoxLayout;
-    QLabel* torqueLimitLabel = new QLabel ("Torque Limit");
-    torqueLimit= new QLineEdit;
-    setTorqueLimit= new QPushButton ("Set Torque Limit");
-    torqueLimitLayout ->addWidget(torqueLimitLabel);
-    torqueLimitLayout ->addWidget(torqueLimit);
-    torqueLimitLayout ->addWidget(setTorqueLimit);
+    QLabel* torqueLimitLabel = new QLabel ("Torque Limit [%]");
+    torqueLimit= new QLineEdit2;
+    setTorqueLimit= new QPushButton ("Set");
+    gridLayout ->addWidget(torqueLimitLabel, 5, 0);
+    gridLayout ->addWidget(torqueLimit, 5, 1);
+    gridLayout ->addWidget(setTorqueLimit, 5, 2);
     connect(setTorqueLimit, SIGNAL(clicked()), this, SLOT(onSetTorqueLimit()));
-    layout-> addLayout(torqueLimitLayout);
+    connect(torqueLimit, SIGNAL(returnPressed()), this, SLOT(onSetTorqueLimit()));
 
     //Cw Compl Margin
-    QHBoxLayout* cwComplMarginLayout = new QHBoxLayout;
     QLabel* cwComplMarginLabel = new QLabel ("Cw Compl Margin");
-    cwComplMargin= new QLineEdit;
-    setCwComplMargin= new QPushButton ("Ccw Compl Margin");
-    cwComplMarginLayout ->addWidget(cwComplMarginLabel);
-    cwComplMarginLayout ->addWidget(cwComplMargin);
-    cwComplMarginLayout ->addWidget(setCwComplMargin);
+    cwComplMargin= new QLineEdit2;
+    setCwComplMargin= new QPushButton ("Set");
+    gridLayout ->addWidget(cwComplMarginLabel, 6, 0);
+    gridLayout ->addWidget(cwComplMargin, 6, 1);
+    gridLayout ->addWidget(setCwComplMargin, 6, 2);
     connect(setCwComplMargin, SIGNAL(clicked()), this, SLOT(onSetCwComplMargin()));
-    layout-> addLayout(cwComplMarginLayout);
+    connect(cwComplMargin, SIGNAL(returnPressed()), this, SLOT(onSetCwComplMargin()));
 
     //Ccw Compl Margin
-    QHBoxLayout* ccwComplMarginLayout = new QHBoxLayout;
     QLabel* ccwComplMarginLabel = new QLabel ("Ccw Compl Margin");
-    ccwComplMargin= new QLineEdit;
-    setCcwComplMargin= new QPushButton ("Set Ccw Compl Margin");
-    ccwComplMarginLayout ->addWidget(ccwComplMarginLabel);
-    ccwComplMarginLayout ->addWidget(ccwComplMargin);
-    ccwComplMarginLayout ->addWidget(setCcwComplMargin);
+    ccwComplMargin= new QLineEdit2;
+    setCcwComplMargin= new QPushButton ("Set");
+    gridLayout ->addWidget(ccwComplMarginLabel, 7, 0);
+    gridLayout ->addWidget(ccwComplMargin, 7, 1);
+    gridLayout ->addWidget(setCcwComplMargin, 7, 2);
     connect(setCcwComplMargin, SIGNAL(clicked()), this, SLOT(onSetCcwComplMargin()));
-    layout-> addLayout(ccwComplMarginLayout);
+    connect(ccwComplMargin, SIGNAL(returnPressed()), this, SLOT(onSetCcwComplMargin()));
 
     //Cw Compl Slope
-    QHBoxLayout* cwComplSlopeLayout = new QHBoxLayout;
     QLabel* cwComplSlopeLabel = new QLabel ("Cw Compl Slope");
-    cwComplSlope= new QLineEdit;
-    setCwComplSlope= new QPushButton ("Ccw Compl Slope");
-    cwComplSlopeLayout ->addWidget(cwComplSlopeLabel);
-    cwComplSlopeLayout ->addWidget(cwComplSlope);
-    cwComplSlopeLayout ->addWidget(setCwComplSlope);
+    cwComplSlope= new QLineEdit2;
+    setCwComplSlope= new QPushButton ("Set");
+    gridLayout ->addWidget(cwComplSlopeLabel, 8, 0);
+    gridLayout ->addWidget(cwComplSlope, 8, 1);
+    gridLayout ->addWidget(setCwComplSlope, 8, 2);
     connect(setCwComplSlope, SIGNAL(clicked()), this, SLOT(onSetCwComplSlope()));
-    layout-> addLayout(cwComplSlopeLayout);
+    connect(cwComplSlope, SIGNAL(returnPressed()), this, SLOT(onSetCwComplSlope()));
 
     //Ccw Compl Slope
-    QHBoxLayout* ccwComplSlopeLayout = new QHBoxLayout;
     QLabel* ccwComplSlopeLabel = new QLabel ("Ccw Compl Slope");
-    ccwComplSlope= new QLineEdit;
-    setCcwComplSlope= new QPushButton ("Set Ccw Compl Slope");
-    ccwComplSlopeLayout ->addWidget(ccwComplSlopeLabel);
-    ccwComplSlopeLayout ->addWidget(ccwComplSlope);
-    ccwComplSlopeLayout ->addWidget(setCcwComplSlope);
+    ccwComplSlope= new QLineEdit2;
+    setCcwComplSlope= new QPushButton ("Set");
+    gridLayout ->addWidget(ccwComplSlopeLabel, 9, 0);
+    gridLayout ->addWidget(ccwComplSlope, 9, 1);
+    gridLayout ->addWidget(setCcwComplSlope, 9, 2);
     connect(setCcwComplSlope, SIGNAL(clicked()), this, SLOT(onSetCcwComplSlope()));
-    layout-> addLayout(ccwComplSlopeLayout);
+    connect(ccwComplSlope, SIGNAL(returnPressed()), this, SLOT(onSetCcwComplSlope()));
 
     //Alarm Shutdown
-    QHBoxLayout* alarmShutdownLayout = new QHBoxLayout;
     QLabel* alarmShutdownLabel = new QLabel ("Alarm Shutdown");
-    alarmShutdown= new QLineEdit;
-    setAlarmShutdown= new QPushButton ("Set AlarmShutdown");
-    alarmShutdownLayout ->addWidget(alarmShutdownLabel);
-    alarmShutdownLayout ->addWidget(alarmShutdown);
-    alarmShutdownLayout ->addWidget(setAlarmShutdown);
+    alarmShutdown= new QLineEdit2;
+    setAlarmShutdown= new QPushButton ("Set");
+    gridLayout ->addWidget(alarmShutdownLabel, 10, 0);
+    gridLayout ->addWidget(alarmShutdown, 10, 1);
+    gridLayout ->addWidget(setAlarmShutdown, 10, 2);
     connect(setAlarmShutdown, SIGNAL(clicked()), this, SLOT(onSetAlarmShutdown()));
-    layout-> addLayout(alarmShutdownLayout);
+    connect(alarmShutdown, SIGNAL(returnPressed()), this, SLOT(onSetAlarmShutdown()));
+
+    //Return delay time
+    QLabel* returnDelayLabel = new QLabel ("Return Delay Time (0 - 508) [us]");
+    returnDelayTime= new QLineEdit2;
+    setReturnDelayTime= new QPushButton ("Set");
+    gridLayout ->addWidget(returnDelayLabel, 11, 0);
+    gridLayout ->addWidget(returnDelayTime, 11, 1);
+    gridLayout ->addWidget(setReturnDelayTime, 11, 2);
+    connect(setReturnDelayTime, SIGNAL(clicked()), this, SLOT(onSetReturnDelayTime()));
+    connect(returnDelayTime, SIGNAL(returnPressed()), this, SLOT(onSetReturnDelayTime()));
 
     //Baudrate@init
     float currentBaudRate = 0;
@@ -199,6 +196,8 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     } else{
         desiredBaudRate->setText("Error. Unable to read BaudRate");
     }
+
+    readGoalPosition();
 
     //Angle Limit@init
     readCcwAngleLimit();
@@ -219,9 +218,12 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     //Alarm Shutdown
     readAlarmShutdown();
 
+    readReturnDelayTime();
+    readTorqueEnable();
+
     updateTimer = new QTimer(this);
     connect(updateTimer, SIGNAL(timeout()), this, SLOT(onUpdateTimeout()));
-    updateTimer->start(500);
+//    updateTimer->start(500);
 }
 
 void DynamixelView::readAlarmShutdown(void){
@@ -230,6 +232,33 @@ void DynamixelView::readAlarmShutdown(void){
         alarmShutdown->setText(QString("%1").arg(currentSetting));
     } else {
         alarmShutdown->setText("Error. Unable to read.");
+    }
+}
+
+void DynamixelView::readReturnDelayTime(void) {
+    int currentSetting = 0;
+    if (device && device->getReturnDelayTime(&currentSetting)){
+        returnDelayTime->setText(QString("%1").arg(currentSetting));
+    } else {
+        returnDelayTime->setText("Error. Unable to read.");
+    }
+}
+
+void DynamixelView::readGoalPosition(void) {
+    float currentSetting = 0;
+    if (device && device->getGoalPosition(&currentSetting)){
+        desiredPosition->setText(QString("%1").arg(currentSetting));
+    } else {
+        desiredPosition->setText("Error. Unable to read.");
+    }
+}
+
+void DynamixelView::readTorqueEnable(void) {
+    bool currentSetting = false;
+    if (device && device->getTorqueEnable(&currentSetting)){
+        torqueEnable->setChecked(currentSetting);
+    } else {
+        torqueEnable->setChecked(false);
     }
 }
 
@@ -374,6 +403,13 @@ void DynamixelView::onUpdateTimeout(void) {
     } else {
         angleLimit->setText("Error");
     }*/
+
+    int temperature_value = 0;
+    if (device->getTemperature(&temperature_value)) {
+        temperature->setText(QString("%1").arg(temperature_value));
+    } else {
+        temperature->setText("ERROR");
+    }
 }
 void DynamixelView::onSetTorqueLimit(void) {
     if (!device) return;
@@ -383,8 +419,9 @@ void DynamixelView::onSetTorqueLimit(void) {
 
 void DynamixelView::onSetPositionPushed(void) {
     if (!device) return;
-    device->setTorqueEnable(true);
-    device->setGoalPosition(desiredPosition->text().toInt());
+
+    device->setGoalPosition(desiredPosition->text().toFloat());
+    readGoalPosition();
 }
 
 void DynamixelView::onSetBaudRate(void){
@@ -443,4 +480,16 @@ void DynamixelView::onSetAlarmShutdown(void){
     if (!device) return;
     device->setAlarmShutdown(alarmShutdown->text().toInt());
     readAlarmShutdown();
+}
+
+void DynamixelView::onSetReturnDelayTime(void) {
+    if (!device) return;
+    device->setReturnDelayTime(returnDelayTime->text().toInt());
+    readReturnDelayTime();
+}
+
+void DynamixelView::onTorqueEnable(bool state) {
+    if (!device) return;
+    device->setTorqueEnable(state);
+    readTorqueEnable();
 }

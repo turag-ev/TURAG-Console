@@ -6,8 +6,9 @@
 
 class QLabel;
 class QTimer;
-class QLineEdit;
+class QLineEdit2;
 class QPushButton;
+class QCheckBox;
 
 using namespace TURAG::Feldbus;
 
@@ -19,6 +20,8 @@ class DynamixelView : public QWidget
 protected:
     DynamixelDevice* device;
 
+    QCheckBox* torqueEnable;
+
     QLabel* presentPosition;
     QLabel* angleLimit;
     QLabel* presentBaudRate;
@@ -27,20 +30,22 @@ protected:
     QLabel* presentSpeed;
     QLabel* isMoving;
     QLabel* isOverload;
+    QLabel* temperature;
 
     QTimer* updateTimer;
 
-    QLineEdit* desiredPosition;
-    QLineEdit* desiredBaudRate;
-    QLineEdit* cwAngleLimit;
-    QLineEdit* ccwAngleLimit;
-    QLineEdit* movingSpeed;
-    QLineEdit* torqueLimit;
-    QLineEdit* cwComplMargin;
-    QLineEdit* ccwComplMargin;
-    QLineEdit* cwComplSlope;
-    QLineEdit* ccwComplSlope;
-    QLineEdit* alarmShutdown;
+    QLineEdit2* desiredPosition;
+    QLineEdit2* desiredBaudRate;
+    QLineEdit2* cwAngleLimit;
+    QLineEdit2* ccwAngleLimit;
+    QLineEdit2* movingSpeed;
+    QLineEdit2* torqueLimit;
+    QLineEdit2* cwComplMargin;
+    QLineEdit2* ccwComplMargin;
+    QLineEdit2* cwComplSlope;
+    QLineEdit2* ccwComplSlope;
+    QLineEdit2* alarmShutdown;
+    QLineEdit2* returnDelayTime;
 
 
     QPushButton* setPosition;
@@ -54,6 +59,7 @@ protected:
     QPushButton* setCwComplSlope;
     QPushButton* setCcwComplSlope;
     QPushButton* setAlarmShutdown;
+    QPushButton* setReturnDelayTime;
 
  protected slots:
     void onUpdateTimeout(void);
@@ -68,6 +74,7 @@ protected:
     void onSetCwComplSlope(void);
     void onSetCcwComplSlope(void);
     void onSetAlarmShutdown(void);
+    void onSetReturnDelayTime(void);
 
 
     void readCwAngleLimit(void);
@@ -79,6 +86,11 @@ protected:
     void readCwComplSlope(void);
     void readCcwComplSlope(void);
     void readAlarmShutdown(void);
+    void readReturnDelayTime(void);
+    void readGoalPosition(void);
+    void readTorqueEnable(void);
+
+    void onTorqueEnable(bool state);
 
 public:
     explicit DynamixelView(DynamixelDevice* dev, QWidget *parent = 0);
