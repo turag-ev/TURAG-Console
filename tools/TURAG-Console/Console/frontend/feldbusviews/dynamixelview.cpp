@@ -223,7 +223,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     updateTimer = new QTimer(this);
     connect(updateTimer, SIGNAL(timeout()), this, SLOT(onUpdateTimeout()));
-//    updateTimer->start(500);
+    updateTimer->start(500);
 }
 
 void DynamixelView::readAlarmShutdown(void){
