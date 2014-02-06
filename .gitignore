@@ -13,6 +13,13 @@ bin
 *.pro.user
 *.pro.user.*
 
+# Qt
+moc_*.cpp
+qrc_*.cpp
+
+# ;)
+core
+
 # NXT
 *.sym
 
