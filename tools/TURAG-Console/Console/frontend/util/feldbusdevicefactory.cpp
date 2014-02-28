@@ -91,6 +91,7 @@ FeldbusDeviceWrapper FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfo
             deviceTypeString = "unbekannt";
             break;
         }
+        break;
 
     default:
         protocolIdString = "unbekannt";

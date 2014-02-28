@@ -120,6 +120,7 @@ void FeldbusAsebView::onReadDevice(void) {
             aseb_->getCommandName(i + TURAG_FELDBUS_ASEB_INDEX_START_DIGITAL_INPUT, name);
             label = new QLabel(QString(name));
             checkbox = new QCheckBox;
+            checkbox->setEnabled(false);
 
             digitalInputs_.push_back(LabelCheckboxCombo(label, checkbox));
             digital_in_layout_->addWidget(label, i, 0);
@@ -177,12 +178,14 @@ void FeldbusAsebView::onReadDevice(void) {
             lineedit = new QLineEdit;
 
             pwmOutputs_.push_back(LabelLineeditCombo(label, lineedit));
-            analog_in_layout_->addWidget(label, i, 0);
-            analog_in_layout_->addWidget(lineedit, i, 1);
+            pwm_out_layout_->addWidget(label, i, 0);
+            pwm_out_layout_->addWidget(lineedit, i, 1);
         }
 
         updateTimer_.start(25);
         deviceWasRead_ = true;
+        setOutputs_->setDisabled(false);
+        resetOutputs_->setDisabled(false);
     } else {
         delete[] asebAnalogInputSet_;
         delete[] asebPwmOutputSet_;
