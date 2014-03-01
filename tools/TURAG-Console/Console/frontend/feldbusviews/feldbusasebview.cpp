@@ -186,6 +186,8 @@ void FeldbusAsebView::onReadDevice(void) {
         deviceWasRead_ = true;
         setOutputs_->setDisabled(false);
         resetOutputs_->setDisabled(false);
+
+        onResetOutputs();
     } else {
         delete[] asebAnalogInputSet_;
         delete[] asebPwmOutputSet_;
