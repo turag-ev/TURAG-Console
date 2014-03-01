@@ -8,6 +8,7 @@
 #include <QCompleter>
 #include <QStringList>
 #include <QShowEvent>
+#include <QSerialPortInfo>
 
 
 ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
@@ -54,16 +55,22 @@ ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
 
 
 QStringList ConnectionWidgetSerial::listDevices(void) {
-  QStringList result;
-  QDir dev_dir("/dev");
-  dev_dir.setFilter(QDir::System | QDir::Readable | QDir::NoDotAndDotDot);
+//  QStringList result;
+//  QDir dev_dir("/dev");
+//  dev_dir.setFilter(QDir::System | QDir::Readable | QDir::NoDotAndDotDot);
 
-  QStringList entries = dev_dir.entryList();
-  foreach (QString dev, entries) {
-    result.push_back(QString("/dev/") + dev);
-  }
+//  QStringList entries = dev_dir.entryList();
+//  foreach (QString dev, entries) {
+//    result.push_back(QString("/dev/") + dev);
+//  }
 
-  return result;
+    QStringList list;
+
+    for (const QSerialPortInfo& info : QSerialPortInfo::availablePorts()) {
+        list.push_back(info.systemLocation());
+    }
+
+  return list;
 }
 
 
@@ -81,10 +88,13 @@ void ConnectionWidgetSerial::connectionChangedInternal() {
 
 
 void ConnectionWidgetSerial::showEvent ( QShowEvent * event ) {
-    completer->deleteLater();
+    if (completer) completer->deleteLater();
     completer = new QCompleter(ConnectionWidgetSerial::listDevices(), this);
-    completer->setCaseSensitivity(Qt::CaseInsensitive);
-    port_name_edit->setCompleter(completer);
+
+    if (completer) {
+        completer->setCaseSensitivity(Qt::CaseInsensitive);
+        port_name_edit->setCompleter(completer);
+    }
 
     ConnectionWidget::showEvent(event);
 }
