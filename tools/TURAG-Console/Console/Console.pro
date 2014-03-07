@@ -59,7 +59,7 @@ SOURCES +=\
     frontend/oscilloscope.cpp \
     frontend/util/colormap.cpp \
     frontend/util/tinainterface.cpp \
-    ../../../tina/platform/desktop-qt/thread.cpp \
+    ../../../tina/platform/desktop/thread.cpp \
     tina-platform/rs485.cpp \
     frontend/feldbusfrontend.cpp \
     ../../../tina/tina++/feldbus/host/device_tina.cpp \
@@ -128,20 +128,20 @@ HEADERS  += mainwindow.h \
     ../../../tina/tina/tina.h \
     ../../../tina/tina/math.h \
     ../../../tina/tina/debug.h \
-    ../../../tina/platform/desktop-qt/public/tina/timetype.h \
-    ../../../tina/platform/desktop-qt/public/tina/time.h \
-    ../../../tina/platform/desktop-qt/public/tina/debugprint.h \
-    ../../../tina/platform/desktop-qt/public/tina/config.h \
+    ../../../tina/platform/desktop/public/tina/timetype.h \
+    ../../../tina/platform/desktop/public/tina/time.h \
+    ../../../tina/platform/desktop/public/tina/debugprint.h \
+    ../../../tina/platform/desktop/public/tina/config.h \
     ../../../tina/tina++/time.h \
     ../../../tina/tina/helper/types.h \
     ../../../tina/tina/helper/normalize.h \
     ../../../tina/tina/helper/macros.h \
     ../../../tina/tina++/helper/normalize.h \
     ../../../tina/tina++/helper/macros.h \
-    ../../../tina/platform/desktop-qt/public/tina/thread.h \
-    ../../../tina/platform/desktop-qt/public/tina++/thread.h \
-    ../../../tina/platform/desktop-qt/public/tina/can.h \
-    ../../../tina/platform/desktop-qt/public/tina++/can.h \
+    ../../../tina/platform/desktop/public/tina/thread.h \
+    ../../../tina/platform/desktop/public/tina++/thread.h \
+    ../../../tina/platform/desktop/public/tina/can.h \
+    ../../../tina/platform/desktop/public/tina++/can.h \
     ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_stellantriebe.h \
     ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_lokalisierungssensoren.h \
     ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_aseb.h \
@@ -165,7 +165,7 @@ HEADERS  += mainwindow.h \
 
 INCLUDEPATH += \
     ../../../tina \
-    ../../../tina/platform/desktop-qt/public \
+    ../../../tina/platform/desktop/public \
     tina-platform/public \
     ../../Debug-Server
     
