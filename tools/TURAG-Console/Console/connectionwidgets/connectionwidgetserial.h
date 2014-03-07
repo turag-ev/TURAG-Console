@@ -3,22 +3,19 @@
 
 #include "connectionwidget.h"
 #include <QStringList>
-#include <QLineEdit>
-#include <QPushButton>
 
 class QShowEvent;
-class QCompleter;
+class QComboBox;
+class QPushButton;
 
 class ConnectionWidgetSerial : public ConnectionWidget {
     Q_OBJECT
 
 protected:
-    QLineEdit* port_name_edit;
-    QLineEdit* bd_edit;
+    QComboBox* baudrate_;
     QPushButton* serial_button;
-    QCompleter* completer;
+    QComboBox* port_name_;
 
-    static QStringList listDevices(void);
     void showEvent ( QShowEvent * event );
 
 protected slots:

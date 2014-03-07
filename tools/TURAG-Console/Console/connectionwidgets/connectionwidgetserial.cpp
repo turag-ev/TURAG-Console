@@ -9,31 +9,33 @@
 #include <QStringList>
 #include <QShowEvent>
 #include <QSerialPortInfo>
+#include <QDebug>
+#include <QComboBox>
+#include <QPushButton>
 
 
 ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
     ConnectionWidget("Letzte Verbindungen", parent)
 {
     // create input for serial device
-    port_name_edit = new QLineEdit();
-    port_name_edit->setPlaceholderText("Gerätename");
-    port_name_edit->setMaximumWidth(350);
-    completer = new QCompleter(ConnectionWidgetSerial::listDevices(), this);
-    completer->setCaseSensitivity(Qt::CaseInsensitive);
-    port_name_edit->setCompleter(completer);
+    port_name_ = new QComboBox;
+    port_name_->setMaximumWidth(350);
+    port_name_->setEditable(true);
+    port_name_->setToolTip("Choose device from list or type in custom device name.");
 
     // create input for baud rate
-    bd_edit = new QLineEdit();
-    bd_edit->setPlaceholderText("Baudrate");
-    bd_edit->setMaximumWidth(100);
+    baudrate_ = new QComboBox();
+    baudrate_->setToolTip("Choose baudrate from list or type in custom baudrate value.");
+    baudrate_->setMaximumWidth(100);
+    baudrate_->setEditable(true);
 
     // create button to connect
     serial_button = new QPushButton("Verbinden");
 
     // horizontal layout for input text edits
     QHBoxLayout* port_layout = new QHBoxLayout();
-    port_layout->addWidget(port_name_edit, 1);
-    port_layout->addWidget(bd_edit, 1);
+    port_layout->addWidget(port_name_, 1);
+    port_layout->addWidget(baudrate_, 1);
     port_layout->addWidget(serial_button, 0);
     port_layout->addStretch();
 
@@ -47,35 +49,15 @@ ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
     setLayout(layout);
 
     // connect signals directly to base signal
-    connect(bd_edit, SIGNAL(returnPressed()), this, SLOT(connectionChangedInternal()));
     connect(serial_button, SIGNAL(clicked()), this, SLOT(connectionChangedInternal()));
 
     setObjectName("Serielle Schnittstelle");
 }
 
 
-QStringList ConnectionWidgetSerial::listDevices(void) {
-//  QStringList result;
-//  QDir dev_dir("/dev");
-//  dev_dir.setFilter(QDir::System | QDir::Readable | QDir::NoDotAndDotDot);
-
-//  QStringList entries = dev_dir.entryList();
-//  foreach (QString dev, entries) {
-//    result.push_back(QString("/dev/") + dev);
-//  }
-
-    QStringList list;
-
-    for (const QSerialPortInfo& info : QSerialPortInfo::availablePorts()) {
-        list.push_back(info.systemLocation());
-    }
-
-  return list;
-}
-
 
 void ConnectionWidgetSerial::connectionChangedInternal() {
-    QString connectionString = SerialBackend::connectionPrefix + port_name_edit->text() + ":" + bd_edit->text();
+    QString connectionString = SerialBackend::connectionPrefix + port_name_->currentText() + ":" + baudrate_->currentText();
 
     bool save = false;
     emit connectionChanged(connectionString, &save, nullptr);
@@ -88,12 +70,14 @@ void ConnectionWidgetSerial::connectionChangedInternal() {
 
 
 void ConnectionWidgetSerial::showEvent ( QShowEvent * event ) {
-    if (completer) completer->deleteLater();
-    completer = new QCompleter(ConnectionWidgetSerial::listDevices(), this);
+    port_name_->clear();
+    for (const QSerialPortInfo& info : QSerialPortInfo::availablePorts()) {
+        port_name_->addItem(info.systemLocation());
+    }
 
-    if (completer) {
-        completer->setCaseSensitivity(Qt::CaseInsensitive);
-        port_name_edit->setCompleter(completer);
+    baudrate_->clear();
+    for (const qint32 baudrate : QSerialPortInfo::standardBaudRates()) {
+        baudrate_->addItem(QString("%1").arg(baudrate));
     }
 
     ConnectionWidget::showEvent(event);

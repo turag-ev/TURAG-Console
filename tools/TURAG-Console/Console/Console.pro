@@ -132,7 +132,7 @@ HEADERS  += mainwindow.h \
     ../../../tina/platform/desktop-qt/public/tina/time.h \
     ../../../tina/platform/desktop-qt/public/tina/debugprint.h \
     ../../../tina/platform/desktop-qt/public/tina/config.h \
-    ../../../tina/platform/desktop-qt/public/tina++/time.h \
+    ../../../tina/tina++/time.h \
     ../../../tina/tina/helper/types.h \
     ../../../tina/tina/helper/normalize.h \
     ../../../tina/tina/helper/macros.h \
