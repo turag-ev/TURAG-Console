@@ -30,16 +30,6 @@ DEFINES += PACKAGE_VERSION=$$VERSION
 QMAKE_CXXFLAGS         += -std=gnu++0x
 QMAKE_LFLAGS           += -std=gnu++0x
 
-win32 {
-  QMAKE_CXXFLAGS         += -static-libgcc -static-libstdc++
-  QMAKE_LFLAGS           += -static-libgcc -static-libstdc++
-}
-
-# Release
-QMAKE_CXXFLAGS_RELEASE += -O3 -flto -march=native -funroll-loops -mfpmath=sse
-QMAKE_CFLAGS_RELEASE   += -O3 -flto -march=native -funroll-loops -mfpmath=sse
-QMAKE_LFLAGS_RELEASE   += -O3 -flto -march=native -funroll-loops -mfpmath=sse
-
 SOURCES +=\
         mainwindow.cpp \
     libs/elidedbutton.cpp \
