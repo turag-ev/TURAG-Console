@@ -197,7 +197,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::about() {
   QMessageBox::about(this, QString::fromUtf8("Über TURAG-Console"),
-                     QString::fromUtf8("<b>TURAG-Console v" TO_STRING(PACKAGE_VERSION) "</b><br /><br />"
+                     QString::fromUtf8("<b>TURAG-Console v" TO_STRING(PACKAGE_VERSION) "</b><br />"
+                                       "compiled on " __DATE__ " " __TIME__ "<br /><br />"
                                        "Entwickelt von/für die <a href=\"http://www.turag.de\">TURAG e.V.</a>"
                                        "<br />"
                                        "insbesondere von:<br/><br />"
