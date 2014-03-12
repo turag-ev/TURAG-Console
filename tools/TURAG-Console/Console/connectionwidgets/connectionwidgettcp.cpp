@@ -371,8 +371,13 @@ void ConnectionWidgetTcp::onRequestWriteAccess() {
 }
 
 void ConnectionWidgetTcp::reset() {
-    send(RESET_DEVICE);
-    send(selectedDevice->path);
+    /*send(RESET_DEVICE);
+    send(selectedDevice->path);*/
+
+    QByteArray data(RESET_DEVICE);
+    data.append(" ");
+    data.append(selectedDevice->path);
+    send(data);
 }
 
 void ConnectionWidgetTcp::resetFromContextMenu() {
@@ -380,11 +385,22 @@ void ConnectionWidgetTcp::resetFromContextMenu() {
         device * newSelectedDevice = allDevices.at(allDevicesWidget->currentRow());
 
         if (newSelectedDevice->onlineStatus == false) {
-            send(LEAVE_BOOTLOADER);
-            send(newSelectedDevice->path);
+            /*send(LEAVE_BOOTLOADER);
+            send(newSelectedDevice->path);*/
+
+            QByteArray data(LEAVE_BOOTLOADER);
+            data.append(" ");
+            data.append(newSelectedDevice->path);
+            send(data);
+
         } else {
-            send(RESET_DEVICE);
-            send(newSelectedDevice->path);
+            /*send(RESET_DEVICE);
+            send(selectedDevice->path);*/
+
+            QByteArray data(RESET_DEVICE);
+            data.append(" ");
+            data.append(selectedDevice->path);
+            send(data);
         }
     }
 }
