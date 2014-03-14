@@ -3,7 +3,7 @@
 
 #include "basefrontend.h"
 
-class QTextEdit;
+class QPlainTextEdit;
 
 class PlainTextFrontend : public BaseFrontend
 {
@@ -18,7 +18,7 @@ public:
     };
 
 protected:
-    QTextEdit* textbox;
+    QPlainTextEdit* textbox;
     bool scroll_on_output;
     bool auto_wrap;
     bool hasSequentialConnection;

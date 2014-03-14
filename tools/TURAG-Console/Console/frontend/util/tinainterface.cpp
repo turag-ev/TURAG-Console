@@ -17,16 +17,22 @@ void TinaInterface::dataInput(const QByteArray data) {
 
     // try to fill incomplete tina package in buffer with incoming data
     if (content_ == BufferContentType::TINA_DEBUG) {
-        for (; iter < data.end(); iter++) {
-            if (*iter == '\n') {
-                packageBuffer_.append(data.constBegin(), iter - data.constBegin());
-                emit tinaPackageReady(trimmedBuffer(packageBuffer_));
-                packageBuffer_.clear();
-                msg_begin = iter + 1;
-                break;
+        iter = std::find(iter, data.constEnd(), '\n');
+        if (iter != data.constEnd()) {
+            if (iter - msg_begin > 0) {
+                packageBuffer_.append(msg_begin, iter - msg_begin);
+            }
+            emit tinaPackageReady(trimmedBuffer(packageBuffer_));
+            content_ = BufferContentType::CMENU;
+            msg_begin = iter + 1;
+            packageBuffer_.clear();
+        } else {
+            if (iter - msg_begin > 0) {
+                packageBuffer_.append(msg_begin, iter - msg_begin);
             }
         }
     }
+
 
     // search for tina packages with cmenu outputs in between
     while (iter < data.end()) {

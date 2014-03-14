@@ -10,14 +10,14 @@
 #include <QActionGroup>
 #include <QMenu>
 #include <QDebug>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 
 PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
     BaseFrontend("Standard-Konsole", parent), scroll_on_output(true), hasSequentialConnection(false)
 {
     QVBoxLayout* layout = new QVBoxLayout();
 
-    textbox = new QTextEdit(this);
+    textbox = new QPlainTextEdit(this);
     textbox->setReadOnly(true);
     textbox->setWordWrapMode(QTextOption::NoWrap);
     textbox->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
@@ -149,7 +149,7 @@ void PlainTextFrontend::writeData(QByteArray data) {
     // and has some funny side effects.
 
 //    if (!auto_wrap) {
-        end.insertText(data);
+        end.insertText(QString(data));
 //    } else {
 //        for (auto character : data) {
 //            end.insertText(QString(character));
