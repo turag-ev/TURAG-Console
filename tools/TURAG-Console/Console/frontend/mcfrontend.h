@@ -1,20 +1,23 @@
-#ifndef SCFRONTEND_H
-#define SCFRONTEND_H
-
-#include <tina++/tina.h>
+#ifndef MCFRONTEND_H
+#define MCFRONTEND_H
 
 #include "basefrontend.h"
 
 class TinaInterface;
 class PlainTextFrontend;
 class LogView;
+class QStackedWidget;
+class TinaGraphFrontend;
 
-class SCFrontend : public BaseFrontend {
-	Q_OBJECT
 
+class MCFrontend : public BaseFrontend
+{
+    Q_OBJECT
 public:
-    SCFrontend(QWidget *parent = 0);
+    explicit MCFrontend(QWidget *parent = 0);
     virtual void setExternalContextActions(QList<QAction*> actions);
+
+signals:
 
 public slots:
     void writeData(QByteArray data) override;
@@ -27,11 +30,12 @@ public slots:
     // frontend was disconnected from stream
     void onDisconnected(bool reconnecting) override;
 
-protected:
+private:
     TinaInterface* interface;
     LogView* logview;
     PlainTextFrontend* cmenu;
+    TinaGraphFrontend* graphView;
 
 };
 
-#endif // SCFRONTEND_H
+#endif // MCFRONTEND_H

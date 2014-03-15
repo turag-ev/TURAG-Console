@@ -156,6 +156,9 @@ private slots:
   void activateFilter();
   void onSendTimeout(void);
 
+signals:
+  void activatedGraph(int index);
+
 private:
   QTableView* log_;
   StreamModel* log_model_;

@@ -39,8 +39,8 @@ class CurveData;
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 
-DataGraph::DataGraph(QWidget *parent) :
-    QwtPlot(parent)
+DataGraph::DataGraph(QString title, QWidget *parent) :
+    QwtPlot(title, parent)
 {
     // panning with the left mouse button
     (void) new QwtPlotPanner( canvas() );
@@ -48,6 +48,7 @@ DataGraph::DataGraph(QWidget *parent) :
     // zoom in/out with the wheel
     QwtPlotMagnifier* magnifier = new QwtPlotMagnifier( canvas() );
     magnifier->setWheelFactor(1.2);
+    magnifier->setMouseButton(Qt::NoButton);
 
 //    zoomer = new QwtPlotZoomer(canvas());
 

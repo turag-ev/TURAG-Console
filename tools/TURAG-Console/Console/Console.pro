@@ -24,6 +24,9 @@ TEMPLATE = app
 # Schneller als die Standardimplementierung wenn Strings mit + verbunden werden
 DEFINES *= QT_USE_QSTRINGBUILDER
 
+# causes segfaults in qwt ?!?!?!?!
+#DEFINES += QT_COORD_TYPE=float
+
 # Version für Quelldateien
 DEFINES += PACKAGE_VERSION=$$VERSION
 
@@ -72,7 +75,10 @@ SOURCES +=\
     ../../../tina/tina++/feldbus/host/servo_tina.cpp \
     ../../../tina/tina++/feldbus/host/aseb_tina.cpp \
     frontend/feldbusviews/feldbusasebview.cpp \
-    libs/qlineedit2.cpp
+    libs/qlineedit2.cpp \
+    frontend/mcfrontend.cpp \
+    frontend/tinagraphfrontend.cpp \
+    ../../../tina/tina/utils/base64.c
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -151,7 +157,11 @@ HEADERS  += mainwindow.h \
     ../../../tina/tina++/crc/crc8.h \
     ../../../tina/tina/crc/xor_checksum.h \
     ../../../tina/tina/bytes.h \
-    libs/qlineedit2.h
+    libs/qlineedit2.h \
+    frontend/mcfrontend.h \
+    frontend/tinagraphfrontend.h \
+    ../../../tina/tina/utils/base64.h \
+    ../../../tina/tina++/utils/base64.h
 
 INCLUDEPATH += \
     ../../../tina \

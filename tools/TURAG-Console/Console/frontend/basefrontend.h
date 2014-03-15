@@ -17,23 +17,10 @@ class BaseFrontend : public QWidget
 {
     Q_OBJECT
 
-protected:
-    QList<QAction*> externalContextActions;
-    QMenu* contextMenu;
-
-    void rebuildContextMenu();
-
-    void addAction(QAction * action);
-    void addActions(QList<QAction *> actions);
-    void insertAction(QAction * before, QAction * action);
-    void insertActions(QAction * before, QList<QAction *> actions);
-    void removeAction(QAction * action);
-
-
 public:
     explicit BaseFrontend(QString name, QWidget *parent = 0);
 
-    void setExternalContextActions(QList<QAction*> actions);
+    virtual void setExternalContextActions(QList<QAction*> actions);
 
 signals:
     // data was received from the frontend (usually user input)
@@ -56,6 +43,19 @@ public slots:
 
     // frontend was disconnected from stream, does nothing if not overloaded
     virtual void onDisconnected(bool reconnecting);
+
+
+protected:
+    QList<QAction*> externalContextActions;
+    QMenu* contextMenu;
+
+    void rebuildContextMenu();
+
+    void addAction(QAction * action);
+    void addActions(QList<QAction *> actions);
+    void insertAction(QAction * before, QAction * action);
+    void insertActions(QAction * before, QList<QAction *> actions);
+    void removeAction(QAction * action);
 
 
 };

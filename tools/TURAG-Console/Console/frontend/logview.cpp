@@ -16,6 +16,8 @@
 #include <QFile>
 #include <QFileDialog>
 #include <tina++/algorithm.h>
+#include <QList>
+#include <QDebug>
 
 #include "util/tinainterface.h"
 
@@ -153,9 +155,10 @@ bool StreamModel::insertRow(char level, const char *data, std::size_t len, unsig
 
         int sec = 0, msec = 0;
         stream >> sec;
-        stream.seek(stream.pos() + 1); // ,
-        stream >> msec;
-
+        if (!stream.atEnd()) {
+            stream.seek(stream.pos() + 1); // ,
+            stream >> msec;
+        }
         logtime_ = sec + msec / 1000.f;
         return true;
     }
@@ -345,6 +348,8 @@ void LogView::onConnected(bool readOnly, bool isSequential, QIODevice* dev) {
         timedSendString = "\x18\x18\x18\x18\x18\x18\x18>";
         sendTimer.start(10);
     }
+
+//    log_->setEnabled(true);
 }
 
 void LogView::onDisconnected(bool reconnecting) {
@@ -359,6 +364,8 @@ void LogView::onDisconnected(bool reconnecting) {
             settings.remove(charToKey(key));
         }
     }
+
+//    log_->setEnabled(false);
 }
 
 void LogView::beginUpdate() {
@@ -367,6 +374,7 @@ void LogView::beginUpdate() {
 
 void LogView::endUpdate() {
     log_model_->endUpdate();
+    log_->resizeRowsToContents();
 }
 
 void LogView::setScrollOnOutput(bool on) {
@@ -391,6 +399,18 @@ void LogView::scroll(int, int) {
 
 void LogView::activated(QModelIndex index) {
     log_->resizeRowToContents(index.row());
+
+    StreamModel::Row data = log_model_->rows()[index.row()];
+    QString line = std::get<StreamModel::DataColumn::DATA_MESSAGE>(data);
+    if (line.startsWith("Graph") && line.size() > 6) {
+        bool ok = false;
+        int index = line.mid(6, line.indexOf(':') - 6).toInt(&ok);
+
+        if (ok) {
+            emit activatedGraph(index);
+            qDebug() << "emit activatedGraph" << index;
+        }
+    }
 }
 
 void LogView::contextMenu(QPoint point) {
@@ -516,6 +536,16 @@ void LogView::writeLine(QByteArray line) {
             insertRow(level, line.data(), line.size(), source);
             break;
 
+        case 'D':
+            if (source == 'n') {
+                QTextStream stream(line);
+                int index = 0;
+                stream >> index;
+                QString graphline = QString("Graph %1: '%2'").arg(index).arg(stream.readAll().trimmed());
+                insertRow(';', graphline.toLatin1().constData(), graphline.size(), ';');
+            }
+            break;
+
         case '>':
             if (std::isprint(source)) {
                 setLogSource(source, QString::fromUtf8(line));
@@ -573,9 +603,11 @@ bool LogView::saveOutput(void) {
         savefile.write(&c, 1);
     }
 
-    return false;
+    return true;
 }
 
+// we need to implement this function as part of the base classes interface
+// but we don't actually need it.
 void LogView::writeData(QByteArray data)
 {
     Q_UNUSED(data);

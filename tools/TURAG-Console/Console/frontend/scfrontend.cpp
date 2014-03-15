@@ -62,3 +62,8 @@ void SCFrontend::onDisconnected(bool reconnecting) {
     cmenu->onDisconnected(reconnecting);
     qDebug() << objectName() << " disconnected";
 }
+
+void SCFrontend::setExternalContextActions(QList<QAction*> actions) {
+    cmenu->setExternalContextActions(actions);
+    BaseFrontend::setExternalContextActions(actions);
+}

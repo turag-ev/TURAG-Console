@@ -22,6 +22,8 @@ PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
     textbox->setWordWrapMode(QTextOption::NoWrap);
     textbox->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
     textbox->setFocusPolicy(Qt::NoFocus);
+
+    // this option effectively leaves the context menu handling to the BaseFrontend.
     textbox->setContextMenuPolicy(Qt::NoContextMenu);
     textbox->setFont(QFont("Monospace", 9));
 

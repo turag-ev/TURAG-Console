@@ -18,24 +18,16 @@ class DataGraph : public QwtPlot
 {
     Q_OBJECT
 
-protected:
-    QList<QwtPlotCurve*> channels;
-    QwtPlotZoomer* zoomer;
-
-    virtual void updateCurveColors();
-    virtual void addChannelGeneric(QString title, CurveDataBase* curveData);
-
 public:
-    explicit DataGraph(QWidget *parent = 0);
+    explicit DataGraph(QWidget *parent = 0) : DataGraph(QString(""), parent) { }
+    explicit DataGraph(QString title, QWidget* parent = 0);
+
+//    explicit DataGraph(QWidget *parent = 0) {
+//        DataGraph(QString(""), parent);
+//    }
 
     int getNumberOfChannels() const;
     QString getChannelTitle(int index) const;
-
-protected slots:
-    void showCurve(QwtPlotItem *item, bool on);
-#if QWT_VERSION >= 0x060100
-    void legendChecked(const QVariant &itemInfo, bool on);
-#endif
 
 public slots:
     virtual void clear();
@@ -47,6 +39,21 @@ public slots:
     virtual void removeChannel(int index);
     virtual void addData(int channel, QPointF data);
     virtual bool saveOutput();
+
+protected:
+    QList<QwtPlotCurve*> channels;
+    QwtPlotZoomer* zoomer;
+
+    virtual void updateCurveColors();
+    virtual void addChannelGeneric(QString title, CurveDataBase* curveData);
+
+
+protected slots:
+    void showCurve(QwtPlotItem *item, bool on);
+#if QWT_VERSION >= 0x060100
+    void legendChecked(const QVariant &itemInfo, bool on);
+#endif
+
 };
 
 

@@ -8,6 +8,7 @@
 #include "frontend/scfrontend.h"
 #include "frontend/oscilloscope.h"
 #include "frontend/feldbusfrontend.h"
+#include "frontend/mcfrontend.h"
 
 #include "connectionwidgets/connectionwidgetfile.h"
 #include "connectionwidgets/connectionwidgetserial.h"
@@ -36,6 +37,7 @@ Controller::Controller(QWidget *parent) :
     // add all available Frontends to list without a parent
     availableFrontends.append(new PlainTextFrontend);
     availableFrontends.append(new SCFrontend);
+    availableFrontends.append(new MCFrontend);
     availableFrontends.append(new Oscilloscope);
     availableFrontends.append(new FeldbusFrontend);
 
