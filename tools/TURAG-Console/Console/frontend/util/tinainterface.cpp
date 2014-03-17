@@ -4,7 +4,7 @@
 #include <QDebug>
 
 TinaInterface::TinaInterface(QObject *parent) :
-    QObject(parent), content_(BufferContentType::CMENU)
+    QObject(parent), tina_package_depth_(0)
 {
 }
 
@@ -14,62 +14,45 @@ void TinaInterface::dataInput(const QByteArray data) {
 
     const char* msg_begin = data.constBegin(); // begin of message
     const char* iter = msg_begin; // Index in data buffer
-
-    // try to fill incomplete tina package in buffer with incoming data
-    if (content_ == BufferContentType::TINA_DEBUG) {
-        iter = std::find(iter, data.constEnd(), '\n');
-        if (iter != data.constEnd()) {
-            if (iter - msg_begin > 0) {
-                packageBuffer_.append(msg_begin, iter - msg_begin);
-            }
-            emit tinaPackageReady(trimmedBuffer(packageBuffer_));
-            content_ = BufferContentType::CMENU;
-            msg_begin = iter + 1;
-            packageBuffer_.clear();
-        } else {
-            if (iter - msg_begin > 0) {
-                packageBuffer_.append(msg_begin, iter - msg_begin);
-            }
-        }
-    }
-
+    int tina_separators[] = {'\n','\x02'};
 
     // search for tina packages with cmenu outputs in between
     while (iter < data.end()) {
-        if (content_ == BufferContentType::CMENU) {
+        if (tina_package_depth_ == 0) {
+            // look for separator in stream
             iter = std::find(iter, data.constEnd(), '\x02');
-            if (iter != data.constEnd()) {
-                if (iter - msg_begin > 0) {
-                    emit cmenuDataReady(trimmedBuffer(msg_begin, iter));
-                }
-                content_ = BufferContentType::TINA_DEBUG;
-                msg_begin = iter + 1;
 
-            } else {
-                // we are at the end, print the rest
-                if (data.end() - msg_begin > 0) {
-                    emit cmenuDataReady(trimmedBuffer(msg_begin, data.end()));
-                }
-                break;
+            // output data until separator or end
+            if (iter - msg_begin > 0) {
+                emit cmenuDataReady(trimmedBuffer(msg_begin, iter));
+            }
+            if (iter != data.constEnd()) {
+                ++tina_package_depth_;
+                packageBuffer_.append(QByteArray(""));
+                ++iter;
+                msg_begin = iter;
+            }
+        } else { // if (tina_package_depth_ > 0)
+            iter = std::find_first_of(iter, data.constEnd(), tina_separators, tina_separators + 2);
+
+            // append data to buffer until separator or end
+            if (iter - msg_begin > 0) {
+                packageBuffer_.last().append(msg_begin, iter - msg_begin);
             }
 
-        } else { // if (content_ == BufferContentType::TINA_DEBUG)
-            iter = std::find(iter, data.constEnd(), '\n');
             if (iter != data.constEnd()) {
-                if (iter - msg_begin > 0) {
-                    emit tinaPackageReady(trimmedBuffer(msg_begin, iter));
+                if (*iter == '\x02') {
+                    ++tina_package_depth_;
+                    packageBuffer_.append(QByteArray(""));
+                } else { // if (*iter == '\n')
+                    emit tinaPackageReady(trimmedBuffer(packageBuffer_.last()));
+                    --tina_package_depth_;
+                    packageBuffer_.removeLast();
                 }
-                content_ = BufferContentType::CMENU;
-                msg_begin = iter + 1;
-
-            } else {
-                // we are at the end, save incomplete tina packages in buffer
-                packageBuffer_.append(msg_begin, data.end() - msg_begin);
-                break;
+                ++iter;
+                msg_begin = iter;
             }
         }
-
-        iter++;
     }
 
     emit endUpdate();
@@ -87,4 +70,10 @@ QByteArray TinaInterface::trimmedBuffer(const char* begin, const char* end) {
     for (; *(end-1) == '\r' && end > begin; end--) { }
 
     return QByteArray(begin, end - begin);
+}
+
+
+void TinaInterface::clear(void) {
+    tina_package_depth_ = 0;
+    packageBuffer_.clear();
 }

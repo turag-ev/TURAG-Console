@@ -54,20 +54,30 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
                     int listindex = graphIndices.indexOf(index);
                     if (listindex != -1) {
                         QString encoded = line.right(line.size() - space_pos - 1);
-                        size_t decoded_size = TURAG::Base64::decodeLength(encoded.size());
-                        uint8_t decoded[decoded_size];
-                        TURAG::Base64::decode(reinterpret_cast<const uint8_t*>(encoded.toLatin1().constData()), line.size(), decoded);
+                        QByteArray byte_data = encoded.toLatin1();
+                        const uint8_t* data = reinterpret_cast<const uint8_t*>(byte_data.constData());
+                        size_t encoded_values = encoded.size() / 6;
 
-                        DataGraph* graph = static_cast<DataGraph*>(stack->widget(listindex));
-                        int channel = 0;
+                        if (encoded_values >= 2) {
+                            float time;
+                            TURAG::Base64::decode(data, 6, reinterpret_cast<uint8_t*>(&time));
+                            data += 6;
 
-                        uint8_t* entry = decoded;
-                        float time = *(reinterpret_cast<float*>(entry));
+                            DataGraph* graph = static_cast<DataGraph*>(stack->widget(listindex));
+                            int channel = 0;
 
-                        for (entry = decoded + 4; entry < decoded + decoded_size; entry += 4) {
-                            float value = *(reinterpret_cast<float*>(entry));
-                            graph->addData(channel, QPointF(time, value));
-                            ++channel;
+                            qDebug() << "size=" << encoded.size() << QString(reinterpret_cast<const char*>(data));
+
+                            for (unsigned i = 1; i < encoded_values; ++i) {
+                                float value;
+                                int result = TURAG::Base64::decode(data, 6, reinterpret_cast<uint8_t*>(&value));
+                                graph->addData(channel, QPointF(time, value));
+
+                                qDebug() << i << time << value << result;
+
+                                ++channel;
+                                data += 6;
+                            }
                         }
                     }
                     break;
@@ -98,7 +108,7 @@ void TinaGraphFrontend::onDisconnected(bool ) {
 
 void TinaGraphFrontend::clear(void) {
     QWidget* widget;
-    while (widget = stack->currentWidget()) {
+    while ((widget = stack->currentWidget())) {
         stack->removeWidget(widget);
         widget->deleteLater();
     }

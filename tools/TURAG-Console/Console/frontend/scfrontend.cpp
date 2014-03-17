@@ -43,6 +43,7 @@ void SCFrontend::writeData(QByteArray data) {
 void SCFrontend::clear(void) {
     logview->clear();
     cmenu->clear();
+    interface->clear();
 }
 
 bool SCFrontend::saveOutput(void) {

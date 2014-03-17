@@ -55,6 +55,7 @@ void MCFrontend::clear(void) {
     logview->clear();
     cmenu->clear();
     graphView->clear();
+    interface->clear();
 }
 
 bool MCFrontend::saveOutput(void) {
