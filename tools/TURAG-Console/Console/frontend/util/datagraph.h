@@ -12,6 +12,7 @@ class QwtPlotCurve;
 class QwtPlotZoomer;
 class QwtPlotItem;
 class CurveDataBase;
+class QwtPlotPanner;
 
 
 class DataGraph : public QwtPlot
@@ -39,10 +40,14 @@ public slots:
     virtual void removeChannel(int index);
     virtual void addData(int channel, QPointF data);
     virtual bool saveOutput();
+    virtual void doAutoZoom(void);
+    void setZoomer(void);
+    void setPanner(void);
 
 protected:
     QList<QwtPlotCurve*> channels;
     QwtPlotZoomer* zoomer;
+    QwtPlotPanner* panner;
 
     virtual void updateCurveColors();
     virtual void addChannelGeneric(QString title, CurveDataBase* curveData);
@@ -67,6 +72,9 @@ public:
 
     virtual QRectF boundingRect() const;
     virtual void append( const QPointF &point ) = 0;
+    void resetBoundingRect(void) {
+        d_boundingRect = CurveDataBase::boundingRect();
+    }
 };
 
 

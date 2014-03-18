@@ -8,6 +8,7 @@ class PlainTextFrontend;
 class LogView;
 class QStackedWidget;
 class TinaGraphFrontend;
+class QTabWidget;
 
 
 class MCFrontend : public BaseFrontend
@@ -30,11 +31,15 @@ public slots:
     // frontend was disconnected from stream
     void onDisconnected(bool reconnecting) override;
 
+private slots:
+    void activateGraph(int index);
+
 private:
     TinaInterface* interface;
     LogView* logview;
     PlainTextFrontend* cmenu;
     TinaGraphFrontend* graphView;
+    QTabWidget* tabs;
 
 };
 

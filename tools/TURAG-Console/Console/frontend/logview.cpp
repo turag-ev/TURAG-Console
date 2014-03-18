@@ -408,7 +408,6 @@ void LogView::activated(QModelIndex index) {
 
         if (ok) {
             emit activatedGraph(index);
-            qDebug() << "emit activatedGraph" << index;
         }
     }
 }

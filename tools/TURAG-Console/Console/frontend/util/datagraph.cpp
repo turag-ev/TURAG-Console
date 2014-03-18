@@ -40,10 +40,10 @@ class CurveData;
 // ------------------------------------------------------------------------------
 
 DataGraph::DataGraph(QString title, QWidget *parent) :
-    QwtPlot(title, parent)
+    QwtPlot(title, parent), zoomer(nullptr)
 {
     // panning with the left mouse button
-    (void) new QwtPlotPanner( canvas() );
+    panner =  new QwtPlotPanner( canvas() );
 
     // zoom in/out with the wheel
     QwtPlotMagnifier* magnifier = new QwtPlotMagnifier( canvas() );
@@ -86,6 +86,8 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     QPalette canvasPalette( Qt::white );
     canvasPalette.setColor( QPalette::Foreground, QColor( 133, 190, 232 ) );
     canvas()->setPalette( canvasPalette );
+
+    setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 }
 
 
@@ -159,6 +161,17 @@ void DataGraph::clear() {
     replot();
 }
 
+void DataGraph::setZoomer(void) {
+    zoomer = new QwtPlotZoomer(canvas());
+   if (panner) panner->deleteLater();
+}
+
+void DataGraph::setPanner(void) {
+    if (zoomer) zoomer->deleteLater();
+    panner =  new QwtPlotPanner( canvas() );
+}
+
+
 
 void DataGraph::addData(int channel, QPointF data) {
     if (channel < channels.size()) {
@@ -168,6 +181,17 @@ void DataGraph::addData(int channel, QPointF data) {
         (void) data;
     }
 
+    setAxisAutoScale(xBottom, true);
+    setAxisAutoScale(yLeft, true);
+    replot();
+}
+
+void DataGraph::doAutoZoom(void) {
+
+    for (QwtPlotCurve* channel : channels) {
+        CurveDataBase *curvedata = static_cast<CurveData *>( channel->data() );
+        curvedata->resetBoundingRect();
+    }
     setAxisAutoScale(xBottom, true);
     setAxisAutoScale(yLeft, true);
     replot();
@@ -262,7 +286,15 @@ bool DataGraph::saveOutput() {
 QRectF CurveDataBase::boundingRect() const {
     QRectF rect;
 
-    for (const QPointF& point : d_samples) {
+    if (d_samples.size()) {
+        rect.setRight(d_samples[0].x());
+        rect.setLeft(d_samples[0].x());
+        rect.setTop(d_samples[0].y());
+        rect.setBottom(d_samples[0].y());
+    }
+
+    for (int i = 1; i < d_samples.size(); ++i) {
+        const QPointF& point = d_samples[i];
         if (point.x() > rect.right()) {
             rect.setRight(point.x());
         } else if (point.x() < rect.left()) {
@@ -274,6 +306,7 @@ QRectF CurveDataBase::boundingRect() const {
             rect.setTop(point.y());
         }
     }
+
     if (rect.height() == 0) {
         rect.setHeight(1);
     }

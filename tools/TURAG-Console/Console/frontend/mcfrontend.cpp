@@ -3,7 +3,7 @@
 #include <QHBoxLayout>
 #include <QSplitter>
 #include <QDebug>
-#include <QStackedWidget>
+#include <QTabWidget>
 
 #include "logview.h"
 #include "plaintextfrontend.h"
@@ -14,6 +14,7 @@
 MCFrontend::MCFrontend(QWidget *parent) :
     BaseFrontend("Motion Control", parent)
 {
+    tabs = new QTabWidget;
     interface = new TinaInterface(this);
     logview = new LogView(interface);
     cmenu = new PlainTextFrontend();
@@ -21,19 +22,16 @@ MCFrontend::MCFrontend(QWidget *parent) :
 
     QHBoxLayout* layout = new QHBoxLayout;
     QSplitter* splitter = new QSplitter;
-    QSplitter* vsplitter = new QSplitter;
 
-    layout->addWidget(splitter);
-    layout->setMargin(0);
+    layout->addWidget(tabs);
+//    layout->setMargin(0);
     setLayout(layout);
+    tabs->addTab(splitter, "Log");
     splitter->addWidget(logview);
-    splitter->addWidget(vsplitter);
-    splitter->setContentsMargins(0,0,0,0);
+    splitter->addWidget(cmenu);
+//    splitter->setContentsMargins(0,0,0,0);
 
-    vsplitter->setOrientation(Qt::Vertical);
-    vsplitter->addWidget(cmenu);
-    vsplitter->addWidget(graphView);
-    vsplitter->setContentsMargins(0,0,0,0);
+    tabs->addTab(graphView, "Diagramme");
 
 
     connect(interface, SIGNAL(cmenuDataReady(QByteArray)), cmenu, SLOT(writeData(QByteArray)));
@@ -41,8 +39,9 @@ MCFrontend::MCFrontend(QWidget *parent) :
     // connect outputs of logview and cmenu to own dataReadySignal
     connect(logview, SIGNAL(dataReady(QByteArray)), this, SIGNAL(dataReady(QByteArray)));
     connect(cmenu, SIGNAL(dataReady(QByteArray)), this, SIGNAL(dataReady(QByteArray)));
-    connect(logview, SIGNAL(activatedGraph(int)), graphView, SLOT(activateGraph(int)));
+    connect(logview, SIGNAL(activatedGraph(int)), this, SLOT(activateGraph(int)));
     connect(interface, SIGNAL(tinaPackageReady(QByteArray)), graphView, SLOT(writeLine(QByteArray)));
+    connect(graphView, SIGNAL(newGraph(int)), this, SLOT(activateGraph(int)));
 
 }
 
@@ -82,4 +81,11 @@ void MCFrontend::setExternalContextActions(QList<QAction*> actions) {
     cmenu->setExternalContextActions(actions);
     graphView->setExternalContextActions(actions);
     BaseFrontend::setExternalContextActions(actions);
+}
+
+
+void MCFrontend::activateGraph(int index) {
+    tabs->setCurrentIndex(1);
+    graphView->activateGraph(index);
+
 }
