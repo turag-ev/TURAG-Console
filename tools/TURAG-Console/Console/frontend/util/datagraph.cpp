@@ -40,17 +40,16 @@ class CurveData;
 // ------------------------------------------------------------------------------
 
 DataGraph::DataGraph(QString title, QWidget *parent) :
-    QwtPlot(title, parent), zoomer(nullptr)
+    QwtPlot(title, parent)
 {
-    // panning with the left mouse button
-    panner =  new QwtPlotPanner( canvas() );
+    panner = new QwtPlotPanner( canvas() );
+    zoomer = new QwtPlotZoomer(canvas());
 
     // zoom in/out with the wheel
     QwtPlotMagnifier* magnifier = new QwtPlotMagnifier( canvas() );
     magnifier->setWheelFactor(1.2);
     magnifier->setMouseButton(Qt::NoButton);
 
-//    zoomer = new QwtPlotZoomer(canvas());
 
 //    setTitle("A Simple QwtPlot Demonstration");
     QwtLegend *legend = new QwtLegend;
@@ -162,13 +161,13 @@ void DataGraph::clear() {
 }
 
 void DataGraph::setZoomer(void) {
-    zoomer = new QwtPlotZoomer(canvas());
-   if (panner) panner->deleteLater();
+   zoomer->setEnabled(true);
+   panner->setEnabled(false);
 }
 
 void DataGraph::setPanner(void) {
-    if (zoomer) zoomer->deleteLater();
-    panner =  new QwtPlotPanner( canvas() );
+    zoomer->setEnabled(false);
+    panner->setEnabled(true);
 }
 
 

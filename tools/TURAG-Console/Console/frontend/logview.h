@@ -68,7 +68,7 @@ public:
 
   bool insertRow(char level, const char* data, std::size_t len, unsigned source);
   void beginUpdate();
-  void endUpdate();
+  bool endUpdate();
 
   const Rows& rows() const { return rows_; }
 
@@ -79,7 +79,7 @@ public:
 
 private:
   Rows rows_;
-  size_t last_size;
+  int last_size;
   QString log_sources_[127];
   Time logtime_;
 
@@ -156,6 +156,7 @@ private slots:
   void activateFilter();
   void onSendTimeout(void);
 
+
 signals:
   void activatedGraph(int index);
 
@@ -168,6 +169,7 @@ private:
   bool scroll_on_output_;
 
   QTimer sendTimer;
+  QTimer updateTimer;
   QByteArray timedSendString;
 };
 

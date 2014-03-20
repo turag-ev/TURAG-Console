@@ -17,6 +17,8 @@
 ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
     ConnectionWidget("Letzte Verbindungen", parent)
 {
+    setObjectName("Serielle Schnittstelle");
+
     // create input for serial device
     port_name_ = new QComboBox;
     port_name_->setMaximumWidth(350);
@@ -29,8 +31,16 @@ ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
     baudrate_->setMaximumWidth(100);
     baudrate_->setEditable(true);
 
+    baudrate_->clear();
+    for (const qint32 baudrate : QSerialPortInfo::standardBaudRates()) {
+        baudrate_->addItem(QString("%1").arg(baudrate));
+    }
+
     // create button to connect
     serial_button = new QPushButton("Verbinden");
+    // connect signals directly to base signal
+    connect(serial_button, SIGNAL(clicked()), this, SLOT(connectionChangedInternal()));
+
 
     // horizontal layout for input text edits
     QHBoxLayout* port_layout = new QHBoxLayout();
@@ -48,10 +58,7 @@ ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
 
     setLayout(layout);
 
-    // connect signals directly to base signal
-    connect(serial_button, SIGNAL(clicked()), this, SLOT(connectionChangedInternal()));
-
-    setObjectName("Serielle Schnittstelle");
+    connect(&deviceUpdateTimer, SIGNAL(timeout()), this, SLOT(onDeviceUpdate()));
 }
 
 
@@ -69,16 +76,29 @@ void ConnectionWidgetSerial::connectionChangedInternal() {
 }
 
 
+
+void ConnectionWidgetSerial::onDeviceUpdate(void) {
+    if (QSerialPortInfo::availablePorts().count() != port_name_->count()) {
+        port_name_->clear();
+        for (const QSerialPortInfo& info : QSerialPortInfo::availablePorts()) {
+            port_name_->addItem(info.systemLocation());
+        }
+    }
+}
+
+
 void ConnectionWidgetSerial::showEvent ( QShowEvent * event ) {
     port_name_->clear();
     for (const QSerialPortInfo& info : QSerialPortInfo::availablePorts()) {
         port_name_->addItem(info.systemLocation());
     }
 
-    baudrate_->clear();
-    for (const qint32 baudrate : QSerialPortInfo::standardBaudRates()) {
-        baudrate_->addItem(QString("%1").arg(baudrate));
-    }
+    deviceUpdateTimer.start(500);
 
-    ConnectionWidget::showEvent(event);
+    QWidget::showEvent(event);
+}
+void ConnectionWidgetSerial::hideEvent ( QHideEvent * event ) {
+    deviceUpdateTimer.stop();
+
+    QWidget::hideEvent(event);
 }
