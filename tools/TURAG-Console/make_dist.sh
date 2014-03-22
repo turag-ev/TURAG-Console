@@ -4,7 +4,7 @@
 OLD_PWD=`pwd`
 
 # in Verzeichnis von Skript gehen
-cd "$( dirname "${BASH_SOURCE[0]}" )"
+cd "$( dirname "${BASH_SOURCE[0]}" )/Console"
 
 # Links zu tina und Debug-Server erstellen
 ln -s ../../tina ../
