@@ -26,7 +26,7 @@ function texec() {
 }
 
 # Git-Repro aktuallisieren
-cd "${SRC_DIR}"
+cd "${ROOT_DIR}"
 techo "Git-Repro aktuallisieren"
 texec git pull
 cd "${WORKING_DIR}"
@@ -48,5 +48,11 @@ texec dch -d "new upstream release" -D "$(lsb_release -sc)"
 texec cp -r debian "${ROOT_DIR}"
 
 texec debuild -sa -S
+
+# Git-Commit durchführen
+cd "${ROOT_DIR}"
+techo "Git-Commit durchführen"
+texec git commit debian/changelog -m "[Console] neue Paketversion $SRC_VERSION"
+texec git push
 
 
