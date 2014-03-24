@@ -4,7 +4,7 @@
 
 
 extern "C"
-void debug_printf(const char* fmt, ...) {
+void turag_debug_printf(const char* fmt, ...) {
     char buffer[4096];
 
     va_list args;
@@ -22,7 +22,7 @@ void debug_printf(const char* fmt, ...) {
 }
 
 extern "C"
-void debug_puts(const char* s) {
+void turag_debug_puts(const char* s) {
     qDebug() << s;
 }
 

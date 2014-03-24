@@ -23,10 +23,6 @@ public:
     explicit DataGraph(QWidget *parent = 0) : DataGraph(QString(""), parent) { }
     explicit DataGraph(QString title, QWidget* parent = 0);
 
-//    explicit DataGraph(QWidget *parent = 0) {
-//        DataGraph(QString(""), parent);
-//    }
-
     int getNumberOfChannels() const;
     QString getChannelTitle(int index) const;
 

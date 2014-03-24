@@ -20,8 +20,8 @@ FeldbusFarbsensorView::FeldbusFarbsensorView(Farbsensor *farbsensor, QWidget *pa
     QLabel* title = new QLabel("<br>Farbsensor-Analyse</br>");
     layout->addWidget(title, 0, 0, 1, 2);
 
-    rgbGraph = new DataGraph;
-    hsvGraph = new DataGraph;
+    rgbGraph = new DataGraph("RGB");
+    hsvGraph = new DataGraph("HSV");
     layout->addWidget(rgbGraph, 1, 0);
     layout->addWidget(hsvGraph, 1, 1);
 

@@ -85,8 +85,6 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     QPalette canvasPalette( Qt::white );
     canvasPalette.setColor( QPalette::Foreground, QColor( 133, 190, 232 ) );
     canvas()->setPalette( canvasPalette );
-
-    setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 }
 
 

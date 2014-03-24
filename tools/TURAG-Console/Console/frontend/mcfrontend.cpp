@@ -19,6 +19,8 @@ MCFrontend::MCFrontend(QWidget *parent) :
     logview = new LogView(interface);
     cmenu = new PlainTextFrontend();
     graphView = new TinaGraphFrontend;
+    graphView->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+
 
     QHBoxLayout* layout = new QHBoxLayout;
     QSplitter* splitter = new QSplitter;
