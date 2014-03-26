@@ -5,6 +5,7 @@
 #include <qwt_plot_canvas.h>
 #include <qwt_plot_zoomer.h>
 #include <qwt_interval.h>
+#include <qwt_legend_label.h>
 #include <QPen>
 #include <QColor>
 #include <QImageWriter>
@@ -12,6 +13,7 @@
 #include <QStringList>
 #include <QByteArray>
 #include <QFileDialog>
+#include <QSignalMapper>
 #include "colormap.h"
 #include <qwt_plot_picker.h>
 #include <qwt_picker_machine.h>
@@ -20,15 +22,14 @@
 #include <qwt_plot_magnifier.h>
 #include <QDebug>
 #include <QVector>
-
-#if QWT_VERSION < 0x060100
-# include <qwt_legend_item.h>
-#else
-# include <qwt_legend_label.h>
-#endif
+#include <QAction>
+#include <QActionGroup>
+#include <QSettings>
+#include <qwt_legend_label.h>
 
 class CurveDataBase;
 class CurveData;
+
 
 
 // ------------------------------------------------------------------------------
@@ -50,18 +51,12 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     magnifier->setWheelFactor(1.2);
     magnifier->setMouseButton(Qt::NoButton);
 
-
-//    setTitle("A Simple QwtPlot Demonstration");
-    QwtLegend *legend = new QwtLegend;
+    HoverableQwtLegend *legend = new HoverableQwtLegend;
     insertLegend(legend, QwtPlot::BottomLegend);
-
-#if QWT_VERSION < 0x060100
-    legend->setItemMode(QwtLegend::CheckableItem);
-    connect(this, SIGNAL(legendChecked(QwtPlotItem *, bool)), SLOT(showCurve(QwtPlotItem *, bool)));
-#else
     legend->setDefaultItemMode( QwtLegendData::Checkable );
+    connect(legend, SIGNAL(enter(const QVariant&)), this, SLOT(onHighlightCurve(const QVariant&)));
+    connect(legend, SIGNAL(leave(const QVariant&)), this, SLOT(onUnhighlightCurve(const QVariant)));
     connect(legend, SIGNAL(checked(const QVariant &, bool, int)), SLOT(legendChecked(const QVariant &, bool)));
-#endif
 
     QwtPlotPicker* d_picker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOn, canvas());
 //    d_picker->setStateMachine(new QwtPickerDragPointMachine());
@@ -85,6 +80,65 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     QPalette canvasPalette( Qt::white );
     canvasPalette.setColor( QPalette::Foreground, QColor( 133, 190, 232 ) );
     canvas()->setPalette( canvasPalette );
+
+    QAction* separator_action2 = new QAction(this);
+    separator_action2->setSeparator(true);
+    addAction(separator_action2);
+
+    QAction* zoom_fit_action = new QAction("Apply automatic zoom", this);
+    addAction(zoom_fit_action);
+    connect(zoom_fit_action, SIGNAL(triggered()), this, SLOT(doAutoZoom()));
+
+    QActionGroup* zoom_group = new QActionGroup(this);
+
+    zoom_box_zoom_action = new QAction("Activate box zoom", this);
+    zoom_box_zoom_action->setActionGroup(zoom_group);
+    connect(zoom_box_zoom_action, SIGNAL(triggered()), this, SLOT(setZoomer()));
+    zoom_box_zoom_action->setCheckable(true);
+
+    zoom_drag_action = new QAction("Activate graph panner", this);
+    connect(zoom_drag_action, SIGNAL(triggered()), this, SLOT(setPanner()));
+    zoom_drag_action->setActionGroup(zoom_group);
+    zoom_drag_action->setCheckable(true);
+
+    addActions(zoom_group->actions());
+
+    QAction* separator_action = new QAction(this);
+    separator_action->setSeparator(true);
+    addAction(separator_action);
+
+    QAction* hide_all_action = new QAction("Hide all graphs", this);
+    addAction(hide_all_action);
+    connect(hide_all_action, SIGNAL(triggered()), this, SLOT(hideAllCurves()));
+
+    QAction* show_all_action = new QAction("Show all graphs", this);
+    addAction(show_all_action);
+    connect(show_all_action, SIGNAL(triggered()), this, SLOT(showAllCurves()));
+
+    QAction* separator_action3 = new QAction(this);
+    separator_action3->setSeparator(true);
+    addAction(separator_action3);
+
+    QAction* save_action = new QAction("Save Graph", this);
+    addAction(save_action);
+    connect(save_action, SIGNAL(triggered()), this, SLOT(saveOutput()));
+
+    QSettings settings;
+    settings.beginGroup(objectName());
+    zoom_drag_action->setChecked(settings.value("zoom_drag_action", true).toBool());
+    zoom_box_zoom_action->setChecked(!(settings.value("zoom_drag_action", true).toBool()));
+
+    if (zoom_drag_action->isChecked()) {
+        setPanner();
+    } else {
+        setZoomer();
+    }
+}
+
+DataGraph::~DataGraph() {
+    QSettings settings;
+    settings.beginGroup(objectName());
+    settings.setValue("zoom_drag_action", zoom_drag_action->isChecked());
 }
 
 
@@ -102,16 +156,14 @@ QString DataGraph::getChannelTitle(int index) const {
 
 void DataGraph::addChannelGeneric(QString title, CurveDataBase* curveData) {
     QwtPlotCurve *curve = new QwtPlotCurve(title);
-    curve->setRenderHint(QwtPlotItem::RenderAntialiased);
     curve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
     curve->attach(this);
     curve->setData(curveData);
+    curve->setRenderHint(QwtPlotItem::RenderHint::RenderAntialiased, true);
 
     channels.append(curve);
     updateCurveColors();
     showCurve(curve, true);
-
-    //    curve->setPen(QPen(Qt::red));
 }
 
 void DataGraph::addChannel(QString title) {
@@ -161,6 +213,7 @@ void DataGraph::clear() {
 void DataGraph::setZoomer(void) {
    zoomer->setEnabled(true);
    panner->setEnabled(false);
+   zoomer->setZoomBase();
 }
 
 void DataGraph::setPanner(void) {
@@ -168,7 +221,51 @@ void DataGraph::setPanner(void) {
     panner->setEnabled(true);
 }
 
+void DataGraph::onHighlightCurve(const QVariant &itemInfo) {
+    QwtPlotItem *plotItem = infoToItem(itemInfo);
+    if (plotItem) {
+        QwtPlotCurve *curve = dynamic_cast<QwtPlotCurve *>(plotItem);
 
+        if (curve) {
+            QPen pen = curve->pen();
+            pen.setWidth(pen.width() * 5);
+            curve->setPen(pen);
+
+            QwtLegend *lgd = qobject_cast<QwtLegend *>(legend());
+            QWidget * legendWidget = lgd->legendWidget(itemInfo);
+            if (legendWidget) {
+                HoverableQwtLegendLabel *legendLabel = qobject_cast<HoverableQwtLegendLabel *>(legendWidget);
+                if (legendLabel) {
+                    legendLabel->highlight();
+                }
+            }
+            replot();
+        }
+    }
+}
+
+void DataGraph::onUnhighlightCurve(const QVariant &itemInfo) {
+    QwtPlotItem *plotItem = infoToItem(itemInfo);
+    if (plotItem) {
+        QwtPlotCurve *curve = dynamic_cast<QwtPlotCurve *>(plotItem);
+
+        if (curve) {
+            QPen pen = curve->pen();
+            pen.setWidth(pen.width() / 5);
+            curve->setPen(pen);
+
+            QwtLegend *lgd = qobject_cast<QwtLegend *>(legend());
+            QWidget * legendWidget = lgd->legendWidget(itemInfo);
+            if (legendWidget) {
+                HoverableQwtLegendLabel *legendLabel = qobject_cast<HoverableQwtLegendLabel *>(legendWidget);
+                if (legendLabel) {
+                    legendLabel->unhighlight();
+                }
+            }
+            replot();
+        }
+    }
+}
 
 void DataGraph::addData(int channel, QPointF data) {
     if (channel < channels.size()) {
@@ -192,18 +289,10 @@ void DataGraph::doAutoZoom(void) {
     setAxisAutoScale(xBottom, true);
     setAxisAutoScale(yLeft, true);
     replot();
+
+    zoomer->setZoomBase();
 }
 
-#if QWT_VERSION < 0x060100
-void DataGraph::showCurve(QwtPlotItem *item, bool on) {
-    item->setVisible(on);
-    QWidget *w = legend()->find(item);
-    if ( w && w->inherits("QwtLegendItem") )
-        ((QwtLegendItem *)w)->setChecked(on);
-
-    replot();
-}
-#else
 void DataGraph::legendChecked(const QVariant &itemInfo, bool on) {
     QwtPlotItem *plotItem = infoToItem(itemInfo);
     if (plotItem) {
@@ -215,7 +304,6 @@ void DataGraph::showCurve(QwtPlotItem *item, bool on) {
     item->setVisible(on);
 
     QwtLegend *lgd = qobject_cast<QwtLegend *>(legend());
-
     QList<QWidget *> legendWidgets = lgd->legendWidgets(itemToInfo(item));
 
     if (legendWidgets.size() == 1) {
@@ -227,11 +315,22 @@ void DataGraph::showCurve(QwtPlotItem *item, bool on) {
     }
     replot();
 }
-#endif
+
+void DataGraph::showAllCurves(void) {
+    for (QwtPlotCurve* curve : channels) {
+        showCurve(curve, true);
+    }
+}
+
+void DataGraph::hideAllCurves(void) {
+    for (QwtPlotCurve* curve : channels) {
+        showCurve(curve, false);
+    }
+}
 
 
 void DataGraph::updateCurveColors() {
-    ColorMapDiscrete colormap(channels.size());
+    ColorMapDiscrete2 colormap(channels.size());
 
     for (int i = 0; i < channels.size(); ++i) {
         channels.at(i)->setPen(QPen(colormap.getColor(i)));

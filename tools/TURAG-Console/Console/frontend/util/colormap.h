@@ -26,9 +26,26 @@ public:
 };
 
 
+class ColorMapLinear2 : public ColorMap {
+public:
+    ColorMapLinear2(int numberOfColors = 1) :
+        ColorMap(numberOfColors) {}
+
+    virtual QColor getColor(int index);
+};
+
+
 class ColorMapDiscrete : public ColorMap {
 public:
     ColorMapDiscrete(int numberOfColors = 1) :
+        ColorMap(numberOfColors) {}
+
+    virtual QColor getColor(int index);
+};
+
+class ColorMapDiscrete2 : public ColorMap {
+public:
+    ColorMapDiscrete2(int numberOfColors = 1) :
         ColorMap(numberOfColors) {}
 
     virtual QColor getColor(int index);

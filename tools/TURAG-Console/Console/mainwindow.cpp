@@ -14,6 +14,9 @@
 #include <QProcess>
 #include <QCoreApplication>
 #include <QImage>
+#include <QTreeWidget>
+#include <QDialog>
+#include <QHBoxLayout>
 #include "mainwindow.h"
 #include "controller.h"
 #include "connectionwidgets/connectionwidgetfile.h"
@@ -159,18 +162,28 @@ MainWindow::MainWindow(QWidget *parent) :
     view_menu->addActions(frontendOptions->actions());
 
 
+
     // Hilfe
+    QMenu* help_menu = menuBar()->addMenu("&Hilfe");
+
+#   ifdef QT_DEBUG
+        QAction* objecttree_action = new QAction("Print Objecttree", this);
+        objecttree_action->setStatusTip("QT-Objecttree anzeigen");
+        connect(objecttree_action, SIGNAL(triggered()), this, SLOT(dumpAllObjectTrees()));
+        help_menu->addAction(objecttree_action);
+#   endif
+
+
     QAction* about_action = new QAction("&Über", this);
     about_action->setStatusTip("Informationen über TURAG Console");
     connect(about_action, SIGNAL(triggered()), this, SLOT(about()));
+    help_menu->addAction(about_action);
 
     QAction* about_qt_action = new QAction("Über &Qt", this);
     about_qt_action->setStatusTip("Zeigt Information über die Qt Bibliothek");
     connect(about_qt_action, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-
-    QMenu* help_menu = menuBar()->addMenu("&Hilfe");
-    help_menu->addAction(about_action);
     help_menu->addAction(about_qt_action);
+
 
     // context menu
     setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -291,6 +304,68 @@ void MainWindow::onDisconnected(bool reconnecting) {
     permanentStatusImage->setPixmap(QPixmap::fromImage(*imgCross));
     permanentReadOnlyImage->setPixmap(QPixmap());
 }
+
+#   ifdef QT_DEBUG
+void MainWindow::dumpAllObjectTrees(void) {
+    class TreeDialog : public QDialog {
+
+    public:
+        explicit TreeDialog(QWidget *parent = 0) :
+            QDialog(parent)
+        {
+            tree = new QTreeWidget;
+            tree->setColumnCount(3);
+            tree->setHeaderLabels(QStringList{QString("Class"), QString("Name"), QString("Geometry")});
+
+            QHBoxLayout* layout = new QHBoxLayout;
+            layout->addWidget(tree);
+            layout->setMargin(0);
+            setLayout(layout);
+        }
+
+        void showObjectTree(QObject* base) {
+            tree->clear();
+            dumpRecursive(base->children());
+        }
+
+    private:
+        QTreeWidget *tree;
+
+        void dumpRecursive( const QObjectList& list, QTreeWidgetItem *parent = nullptr ) {
+            for (QObject* obj : list) {
+                if (obj == tree) {
+                    continue;
+                }
+
+                QString flags;
+                if ( obj->isWidgetType() ) {
+                    QWidget *w = (QWidget *) obj;
+                    if ( w->isVisible() ) {
+                        flags.sprintf( "<%d,%d,%d,%d>", w->x(),
+                                       w->y(), w->width(),
+                                       w->height() );
+                    } else {
+                        flags = "invisible";
+                    }
+                }
+                QTreeWidgetItem *child;
+                child = parent ? new QTreeWidgetItem( parent )
+                               : new QTreeWidgetItem( tree );
+                child->setText( 0, obj->metaObject()->className() );
+                child->setText( 1, obj->objectName() );
+                child->setText( 2, flags );
+                dumpRecursive( obj->children(), child );
+            }
+        }
+    };
+
+
+    TreeDialog* treedialog = new TreeDialog(this);
+    treedialog->open();
+    treedialog->showObjectTree(this);
+
+}
+#   endif
 
 
 void MainWindow::readSettings() {

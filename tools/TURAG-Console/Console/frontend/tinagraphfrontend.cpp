@@ -2,9 +2,6 @@
 #include "util/datagraph.h"
 #include <tina++/utils/base64.h>
 #include <QHBoxLayout>
-#include <QAction>
-#include <QActionGroup>
-#include <QSettings>
 #include <QListWidget>
 
 TinaGraphFrontend::TinaGraphFrontend(QWidget *parent) :
@@ -21,49 +18,6 @@ TinaGraphFrontend::TinaGraphFrontend(QWidget *parent) :
     layout->setStretch(1, 2);
 
     setLayout(layout);
-
-    QAction* separator_action = new QAction(this);
-    separator_action->setSeparator(true);
-    addAction(separator_action);
-
-    QAction* save_action = new QAction("Save Graph", this);
-    addAction(save_action);
-    connect(save_action, SIGNAL(triggered()), this, SLOT(saveOutput()));
-
-    QAction* zoom_fit_action = new QAction("Apply automatic zoom", this);
-    addAction(zoom_fit_action);
-    connect(zoom_fit_action, SIGNAL(triggered()), this, SLOT(onZoomAuto()));
-
-    QActionGroup* zoom_group = new QActionGroup(this);
-
-    zoom_box_zoom_action = new QAction("Activate box zoom", this);
-    zoom_box_zoom_action->setActionGroup(zoom_group);
-    connect(zoom_box_zoom_action, SIGNAL(triggered()), this, SLOT(onSetZoomer()));
-    zoom_box_zoom_action->setCheckable(true);
-
-    zoom_drag_action = new QAction("Activate graph panner", this);
-    connect(zoom_drag_action, SIGNAL(triggered()), this, SLOT(onDragGraph()));
-    zoom_drag_action->setActionGroup(zoom_group);
-    zoom_drag_action->setCheckable(true);
-
-    addActions(zoom_group->actions());
-
-    QSettings settings;
-    settings.beginGroup(objectName());
-    zoom_drag_action->setChecked(settings.value("zoom_drag_action", true).toBool());
-    zoom_box_zoom_action->setChecked(!(settings.value("zoom_drag_action", true).toBool()));
-
-    if (zoom_drag_action->isChecked()) {
-        onDragGraph();
-    } else {
-        onSetZoomer();
-    }
-}
-
-TinaGraphFrontend::~TinaGraphFrontend(void) {
-    QSettings settings;
-    settings.beginGroup(objectName());
-    settings.setValue("zoom_drag_action", zoom_drag_action->isChecked());
 }
 
 void TinaGraphFrontend::writeLine(QByteArray line) {
@@ -79,16 +33,22 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
 
             if (ok) {
                 switch (type) {
-                case 'n':
-                    if (graphIndices.indexOf(index) == -1) {
-                        QString title = line.right(line.size() - space_pos - 1);
+                case 'n': {
+                    QString title = line.right(line.size() - space_pos - 1);
+                    int oldIndex = graphIndices.indexOf(index);
+                    if (oldIndex != -1) {
+                        static_cast<DataGraph*>(stack->widget(oldIndex))->clear();
+                        static_cast<DataGraph*>(stack->widget(oldIndex))->setTitle(title);
+                        graphlist->item(oldIndex)->setText(QString("%1 - ").arg(index) + title);
+                    } else {
                         stack->addWidget(new DataGraph(title));
                         graphIndices.append(index);
                         graphlist->addItem(QString("%1 - ").arg(index) + title);
-                        emit newGraph(index);
                     }
-                    break;
+                    emit newGraph(index);
 
+                    break;
+                }
                 case 'b': {
                     int listindex = graphIndices.indexOf(index);
                     if (listindex != -1) {
@@ -143,11 +103,9 @@ void TinaGraphFrontend::activateGraph(int index) {
 void TinaGraphFrontend::activateGraphInternal(int index) {
     stack->setCurrentIndex(index);
     graphlist->setCurrentRow(index);
-    if (zoom_box_zoom_action->isChecked()) {
-        onSetZoomer();
-    } else {
-        onDragGraph();
-    }
+    DataGraph* graph = static_cast<DataGraph*>(stack->currentWidget());
+    clearActions();
+    if (graph) addActions(graph->getActions());
 }
 
 void TinaGraphFrontend::onConnected(bool , bool , QIODevice*) {
@@ -184,24 +142,3 @@ void TinaGraphFrontend::writeData(QByteArray data) {
 }
 
 
-void TinaGraphFrontend::onZoomAuto(void) {
-    if (stack->count()) {
-        DataGraph* graph = static_cast<DataGraph*>(stack->currentWidget());
-        graph->doAutoZoom();
-    }
-}
-
-
-void TinaGraphFrontend::onSetZoomer(void) {
-    if (stack->count()) {
-        DataGraph* graph = static_cast<DataGraph*>(stack->currentWidget());
-        graph->setZoomer();
-    }
-}
-
-void TinaGraphFrontend::onDragGraph(void) {
-    if (stack->count()) {
-        DataGraph* graph = static_cast<DataGraph*>(stack->currentWidget());
-        graph->setPanner();
-    }
-}

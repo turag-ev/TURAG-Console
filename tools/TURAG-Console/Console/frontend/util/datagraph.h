@@ -5,6 +5,10 @@
 #include <QWidget>
 #include <QList>
 #include <qwt_series_data.h>
+#include <qwt_legend_label.h>
+#include <qwt_legend.h>
+#include <qwt_plot_curve.h>
+#include <QPalette>
 
 class QString;
 class QPointF;
@@ -13,6 +17,90 @@ class QwtPlotZoomer;
 class QwtPlotItem;
 class CurveDataBase;
 class QwtPlotPanner;
+class QSignalMapper;
+class QAction;
+
+
+class HoverableQwtLegendLabel : public QwtLegendLabel {
+    Q_OBJECT
+
+public:
+    explicit HoverableQwtLegendLabel(QWidget *parent = 0) : QwtLegendLabel(parent) {
+        setAutoFillBackground(true);
+        setBackgroundRole(QPalette::Base);
+    }
+
+public slots:
+    void highlight(void) {
+        paletteBuffer = palette();
+        QPalette p = palette();
+        p.setColor(QPalette::Button, Qt::white);
+        p.setColor(QPalette::Base, Qt::black);
+        p.setColor(QPalette::Text, Qt::white);
+        setPalette(p);
+    }
+
+    void unhighlight(void) {
+        setPalette(paletteBuffer);
+    }
+
+protected:
+    virtual void enterEvent ( QEvent * event ) {
+        QWidget::enterEvent(event);
+        emit enter();
+    }
+
+    virtual void leaveEvent ( QEvent * event ) {
+        QWidget::leaveEvent(event);
+        emit leave();
+    }
+
+signals:
+    void enter(void);
+    void leave(void);
+
+private:
+    QPalette paletteBuffer;
+
+};
+
+
+class HoverableQwtLegend : public QwtLegend {
+    Q_OBJECT
+
+public:
+    explicit HoverableQwtLegend(QWidget *parent=0) : QwtLegend(parent) {}
+
+protected:
+    virtual QWidget* createWidget(const QwtLegendData& data) const {
+        Q_UNUSED( data );
+        HoverableQwtLegendLabel* label = new HoverableQwtLegendLabel;
+        label->setItemMode( defaultItemMode() );
+
+        connect(label, SIGNAL(enter()), this, SLOT(onLabelEnter()));
+        connect(label, SIGNAL(leave()), this, SLOT(onLabelLeave()));
+        connect( label, SIGNAL( clicked() ), SLOT( itemClicked() ) );
+        connect( label, SIGNAL( checked( bool ) ), SLOT( itemChecked( bool ) ) );
+
+        return label;
+    }
+
+signals:
+    void enter(const QVariant &itemInfo);
+    void leave(const QVariant &itemInfo);
+
+private slots:
+    void onLabelEnter(void) {
+        HoverableQwtLegendLabel* label = static_cast<HoverableQwtLegendLabel*>(sender());
+        emit enter(itemInfo(label));
+    }
+
+    void onLabelLeave(void) {
+        HoverableQwtLegendLabel* label = static_cast<HoverableQwtLegendLabel*>(sender());
+        emit leave(itemInfo(label));
+    }
+};
+
 
 
 class DataGraph : public QwtPlot
@@ -22,9 +110,11 @@ class DataGraph : public QwtPlot
 public:
     explicit DataGraph(QWidget *parent = 0) : DataGraph(QString(""), parent) { }
     explicit DataGraph(QString title, QWidget* parent = 0);
+    ~DataGraph(void);
 
     int getNumberOfChannels() const;
     QString getChannelTitle(int index) const;
+    QList<QAction *> getActions(void) { return actions(); }
 
 public slots:
     virtual void clear();
@@ -45,15 +135,21 @@ protected:
     QwtPlotZoomer* zoomer;
     QwtPlotPanner* panner;
 
+    QAction* zoom_box_zoom_action;
+    QAction* zoom_drag_action;
+
     virtual void updateCurveColors();
     virtual void addChannelGeneric(QString title, CurveDataBase* curveData);
 
 
 protected slots:
     void showCurve(QwtPlotItem *item, bool on);
-#if QWT_VERSION >= 0x060100
     void legendChecked(const QVariant &itemInfo, bool on);
-#endif
+    void onHighlightCurve(const QVariant &itemInfo);
+    void onUnhighlightCurve(const QVariant &itemInfo);
+    void showAllCurves(void);
+    void hideAllCurves(void);
+
 
 };
 

@@ -17,57 +17,59 @@ class QFont;
 class QImage;
 
 class MainWindow : public QMainWindow {
-  Q_OBJECT
-  
+    Q_OBJECT
+
 public:
-  MainWindow(QWidget *parent = 0);
-  ~MainWindow();
+    MainWindow(QWidget *parent = 0);
+    ~MainWindow();
 
 private slots:
-  void onNewWindow();
-  void close();
+    void onNewWindow();
+    void close();
 
-  void onShowStatusbar(bool show);
-  void onShowMenubar(bool show);
+    void onShowStatusbar(bool show);
+    void onShowMenubar(bool show);
 
-  void about();
-  void resetStatusBar();
+    void about();
+    void resetStatusBar();
 
-  void printError(const QString& message);
-  void printMessage(const QString& message);
+    void printError(const QString& message);
+    void printMessage(const QString& message);
 
-  void onConnected(bool readOnly);
-  void onDisconnected(bool reconnecting);
+    void onConnected(bool readOnly);
+    void onDisconnected(bool reconnecting);
+
+#   ifdef QT_DEBUG
+        void dumpAllObjectTrees(void);
+#   endif
 
 protected:
-  void closeEvent(QCloseEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 private:
-  Controller* controller;
+    Controller* controller;
 
-  QAction *connect_action;
-  QAction *disconnect_action;
-  QAction* auto_reconnect_action;
-  QAction* show_statusbar;
-  QAction* show_menubar;
+    QAction *connect_action;
+    QAction *disconnect_action;
+    QAction* auto_reconnect_action;
+    QAction* show_statusbar;
+    QAction* show_menubar;
 
-  QActionGroup* frontendOptions;
+    QActionGroup* frontendOptions;
 
-  // status bar
-  QLabel* status;
-  QLabel* permanentStatus;
-  QLabel* permanentStatusImage;
-  QLabel* permanentReadOnlyImage;
-  QPalette default_palette;
-  QTimer* status_bar_timer;
-  QImage* imgTick;
-  QImage* imgCross;
-  QImage* imgLock;
+    // status bar
+    QLabel* status;
+    QLabel* permanentStatus;
+    QLabel* permanentStatusImage;
+    QLabel* permanentReadOnlyImage;
+    QPalette default_palette;
+    QTimer* status_bar_timer;
+    QImage* imgTick;
+    QImage* imgCross;
+    QImage* imgLock;
 
-  void writeSettings();
-  void readSettings();
-
-
+    void writeSettings();
+    void readSettings();
 };
 
 #endif // MAINWINDOW_H

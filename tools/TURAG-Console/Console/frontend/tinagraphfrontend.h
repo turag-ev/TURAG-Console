@@ -13,7 +13,6 @@ class TinaGraphFrontend : public BaseFrontend
     Q_OBJECT
 public:
     explicit TinaGraphFrontend(QWidget *parent = 0);
-    ~TinaGraphFrontend(void);
 
 signals:
     void newGraph(int index);
@@ -31,16 +30,11 @@ public slots:
     bool saveOutput(void);
 
 private slots:
-    void onZoomAuto(void);
-    void onSetZoomer(void);
-    void onDragGraph(void);
     void activateGraphInternal(int index);
 
 private:
     QList<int> graphIndices;
     QStackedWidget* stack;
-    QAction* zoom_box_zoom_action;
-    QAction* zoom_drag_action;
     QListWidget* graphlist;
 };
 

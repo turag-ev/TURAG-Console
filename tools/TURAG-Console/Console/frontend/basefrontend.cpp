@@ -60,6 +60,12 @@ void BaseFrontend::removeAction(QAction * action) {
     rebuildContextMenu();
 }
 
+void BaseFrontend::clearActions(void) {
+    while(QWidget::actions().count()) {
+        QWidget::removeAction(QWidget::actions().at(0));
+    }
+}
+
 void BaseFrontend::rebuildContextMenu() {
     contextMenu->clear();
     contextMenu->addActions(externalContextActions);

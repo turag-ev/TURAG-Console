@@ -56,6 +56,7 @@ protected:
     void insertAction(QAction * before, QAction * action);
     void insertActions(QAction * before, QList<QAction *> actions);
     void removeAction(QAction * action);
+    void clearActions(void);
 
 
 };
