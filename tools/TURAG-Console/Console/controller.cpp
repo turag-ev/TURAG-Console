@@ -345,6 +345,11 @@ void Controller::onConnected(bool readOnly, bool isSequential) {
 }
 
 void Controller::onDisconnected() {
+    if (availableFrontends.at(currentFrontendIndex)) {
+        currentBackend->disconnect(availableFrontends.at(currentFrontendIndex));
+        availableFrontends.at(currentFrontendIndex)->disconnect(currentBackend);
+    }
+
     if (autoReconnect && connectionShouldBeOpen) {
         reconnectTimer->start();
         emit disconnected(true);
