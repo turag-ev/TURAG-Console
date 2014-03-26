@@ -20,7 +20,7 @@ public:
 
     bool isOpen(void) const;
     virtual bool isReadOnly(void) const;
-    bool isSequential(void) const;
+    virtual bool isBuffered(void) const;
     virtual QString getConnectionInfo();
     virtual QList<QAction*> getMenuEntries();
     QIODevice* getDevice() { return stream_.get(); }
@@ -34,7 +34,7 @@ public:
 signals:
     // data was received from the backend
     void dataReady(QByteArray data);
-    void connected(bool readOnly, bool isSequential);
+    void connected(bool readOnly, bool isBuffered);
     void disconnected(bool reconnecting);
     void errorOccured(QString msg);
     void infoMessage(QString msg);
@@ -82,7 +82,7 @@ private slots:
 
 private:
     QTimer recoverDeviceTimer;
-    bool deviceShouldBeConnected;
+    QString deviceShouldBeConnectedString;
     bool deviceRecoveryActive;
 
 };

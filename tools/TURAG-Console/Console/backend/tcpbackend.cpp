@@ -35,7 +35,7 @@ bool TcpBackend::openConnection(QString connectionString) {
 
     //und jetzt den Socket erzeugen
     std::unique_ptr<QTcpSocket>  socket(new QTcpSocket);
-    connect(socket.get(), SIGNAL(readyRead()), this, SLOT(checkData()));
+    connect(socket.get(), SIGNAL(readyRead()), this, SLOT(emitData()));
     connect(socket.get(), SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onTcpError(QAbstractSocket::SocketError)));
     connect(socket.get(), SIGNAL(connected()), this, SLOT(socketConnected()));
     connect(socket.get(), SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
@@ -108,5 +108,13 @@ QString TcpBackend::getConnectionInfo() {
     QString path = connectionString.right(connectionString.size() - index - 1);
 
     return QString("Debug-Server: %1").arg(path);
+}
+
+void TcpBackend::checkData(void) {
+
+}
+
+void TcpBackend::emitData(void) {
+    emit dataReady(stream_->readAll());
 }
 

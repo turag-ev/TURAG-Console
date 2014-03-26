@@ -136,7 +136,7 @@ public:
   void writeSettings();
 
 public slots:
-  void onConnected(bool readOnly, bool isSequential, QIODevice*) override;
+  void onConnected(bool readOnly, bool isBuffered, QIODevice*) override;
   void onDisconnected(bool reconnecting) override;
   void clear() override;
   bool saveOutput() override;

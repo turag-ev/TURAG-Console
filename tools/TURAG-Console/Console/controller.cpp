@@ -155,13 +155,7 @@ void Controller::setFrontend(int newFrontendIndex, bool calledManually) {
             connect(newFrontend, SIGNAL(requestData()), currentBackend, SLOT(checkData()), Qt::QueuedConnection);
             connect(this,SIGNAL(connected(bool,bool,QIODevice*)),newFrontend,SLOT(onConnected(bool,bool,QIODevice*)));
             connect(this,SIGNAL(disconnected(bool)),newFrontend,SLOT(onDisconnected(bool)));
-            if (calledManually) newFrontend->onConnected(currentBackend->isReadOnly(), currentBackend->isSequential(), currentBackend->getDevice());
-
-            // ensure that new frontends receive all data if the backend is
-            // a random-access-device
-            if (!currentBackend->isSequential()) {
-                currentBackend->checkData();
-            }
+            if (calledManually) newFrontend->onConnected(currentBackend->isReadOnly(), currentBackend->isBuffered(), currentBackend->getDevice());
         }
 
         currentFrontendIndex = newFrontendIndex;
@@ -192,20 +186,18 @@ QString Controller::getConnectionInfo() {
 
 void Controller::openConnection(void) {
     if (currentBackend != nullptr && !currentBackend->isOpen()) {
-        availableFrontends.at(currentFrontendIndex)->clear();
+        BaseFrontend* currentFrontend = availableFrontends.at(currentFrontendIndex);
+        currentFrontend->clear();
+
+        closeConnection();
 
         // build signal-slot connection before opening stream
-        BaseFrontend* currentFrontend = availableFrontends.at(currentFrontendIndex);
         connect(currentBackend, SIGNAL(dataReady(QByteArray)), currentFrontend, SLOT(writeData(QByteArray)));
         connect(currentFrontend, SIGNAL(dataReady(QByteArray)), currentBackend, SLOT(writeData(QByteArray)));
         connect(currentFrontend, SIGNAL(requestData()), currentBackend, SLOT(checkData()), Qt::QueuedConnection);
 
         if (currentBackend->openConnection()) {
             cancelButton->show();
-
-            if (!currentBackend->isSequential()) {
-                currentBackend->checkData();
-            }
 
         } else {
             // destroy signal-slot connection in case of failure
@@ -311,20 +303,20 @@ void Controller::setAutoReconnect(bool on) {
 }
 
 
-void Controller::onConnected(bool readOnly, bool isSequential) {
+void Controller::onConnected(bool readOnly, bool isBuffered) {
     if (connectionMenu) {
         connectionMenu->addActions(currentBackend->getMenuEntries());
     }
 
-    emit connected(readOnly, isSequential, currentBackend->getDevice());
+    BaseFrontend* currentFrontend = availableFrontends.at(currentFrontendIndex);
+    currentFrontend->clear();
+    currentBackend->checkData();
+
+
+    emit connected(readOnly, isBuffered, currentBackend->getDevice());
 }
 
 void Controller::onDisconnected() {
-    if (availableFrontends.at(currentFrontendIndex)) {
-        currentBackend->disconnect(availableFrontends.at(currentFrontendIndex));
-        availableFrontends.at(currentFrontendIndex)->disconnect(currentBackend);
-    }
-
     if (connectionMenu) {
         for (QAction* action : currentBackend->getMenuEntries()) {
             connectionMenu->removeAction(action);

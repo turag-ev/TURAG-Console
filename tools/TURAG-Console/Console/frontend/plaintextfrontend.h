@@ -21,7 +21,7 @@ protected:
     QPlainTextEdit* textbox;
     bool scroll_on_output;
     bool auto_wrap;
-    bool hasSequentialConnection;
+    bool hasBufferedConnection;
     STYLE selectedStyle;
 
     // menu actions
@@ -52,7 +52,7 @@ public slots:
     virtual void clear(void);
 
     // frontend was connected to stream
-    virtual void onConnected(bool readOnly, bool isSequential, QIODevice*);
+    virtual void onConnected(bool readOnly, bool isBuffered, QIODevice*);
 
     // frontend was disconnected from stream
     virtual void onDisconnected(bool reconnecting);

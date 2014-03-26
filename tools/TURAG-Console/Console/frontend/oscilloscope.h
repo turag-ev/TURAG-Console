@@ -31,7 +31,7 @@ protected:
     QLabel* channel_label;
     
     DataPointInterface* interface;
-    bool hasSequentialConnection;
+    bool hasBufferedConnection;
 
     void readSettings();
     void writeSettings();
@@ -53,7 +53,7 @@ public slots:
     virtual void writeData(QByteArray data);
     virtual void clear(void);
     virtual bool saveOutput(void);
-    virtual void onConnected(bool readOnly, bool isSequential, QIODevice*);
+    virtual void onConnected(bool readOnly, bool isBuffered, QIODevice*);
 };
 
 

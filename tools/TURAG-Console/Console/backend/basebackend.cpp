@@ -3,7 +3,7 @@
 #include <QIODevice>
 
 BaseBackend::BaseBackend(QString connectionPrefix, QObject *parent) :
-    QObject(parent), connectionPrefix_(connectionPrefix), deviceShouldBeConnected(false), deviceRecoveryActive(false)
+    QObject(parent), connectionPrefix_(connectionPrefix), deviceShouldBeConnectedString(""), deviceRecoveryActive(false)
 {
     recoverDeviceTimer.setInterval(500);
     connect(&recoverDeviceTimer, SIGNAL(timeout()), this, SLOT(onRecoverDevice()));
@@ -34,11 +34,11 @@ bool BaseBackend::isOpen(void) const {
 }
 
 
-bool BaseBackend::isSequential(void) const {
+bool BaseBackend::isBuffered(void) const {
     if (stream_.get() == nullptr) {
         return false;
     } else {
-        return stream_->isSequential();
+        return !stream_->isSequential();
     }
 }
 
@@ -60,7 +60,8 @@ void BaseBackend::closeConnection(void) {
         stream_->close();
         stream_->disconnect(this);
     }
-    deviceShouldBeConnected = false;
+
+    deviceShouldBeConnectedString = "";
     recoverDeviceTimer.stop();
 }
 
@@ -100,12 +101,12 @@ bool BaseBackend::canHandleUrl(const QString& url) const {
 }
 
 void BaseBackend::emitConnected() {
-    if (deviceShouldBeConnected && deviceRecoveryActive && recoverDeviceTimer.isActive()) {
-        emit infoMessage("Verbindung erflogreich wiederaufgebaut");
+    if (deviceShouldBeConnectedString == connectionString_ && deviceRecoveryActive && recoverDeviceTimer.isActive()) {
+        emit infoMessage("Verbindung erfolgreich wiederaufgebaut");
     }
 
-    deviceShouldBeConnected = true;
-    emit connected(isReadOnly(), stream_->isSequential());
+    deviceShouldBeConnectedString = connectionString_;
+    emit connected(isReadOnly(), isBuffered());
 
     recoverDeviceTimer.stop();
 }
@@ -114,9 +115,9 @@ void BaseBackend::connectionWasLost(void) {
     if (isOpen()) {
         stream_->close();
         stream_->disconnect(this);
-        emit disconnected(deviceShouldBeConnected && deviceRecoveryActive);
+        emit disconnected(deviceShouldBeConnectedString.size() && deviceRecoveryActive);
     }
-    if (deviceShouldBeConnected && deviceRecoveryActive) {
+    if (deviceShouldBeConnectedString.size() && deviceRecoveryActive) {
         recoverDeviceTimer.start();
     }
 }
@@ -129,7 +130,7 @@ void BaseBackend::onRecoverDevice(void) {
 void BaseBackend::setDeviceRecovery(bool on) {
     if (!on) {
         recoverDeviceTimer.stop();
-    } else if (on && deviceShouldBeConnected && !isOpen()) {
+    } else if (on && deviceShouldBeConnectedString.size() && !isOpen()) {
         recoverDeviceTimer.start();
     }
 

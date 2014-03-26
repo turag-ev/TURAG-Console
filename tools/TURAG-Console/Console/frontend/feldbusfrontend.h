@@ -64,7 +64,7 @@ public:
     ~FeldbusFrontend();
 
 public slots:
-    virtual void onConnected(bool readOnly, bool isSequential, QIODevice*);
+    virtual void onConnected(bool readOnly, bool isBuffered, QIODevice*);
     virtual void onDisconnected(bool reconnecting);
     virtual void writeData(QByteArray data);
     virtual void clear(void);

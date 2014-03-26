@@ -62,7 +62,10 @@ void FileBackend::checkData(void) {
 //        QApplication::processEvents();
 
         stream_->seek(0);
-        emit dataReady(stream_->readAll());
+
+        QByteArray data = stream_->readAll();
+
+        emit dataReady(data);
 
         emitInfoMessage("Datei gelesen");
     }
@@ -74,7 +77,7 @@ void FileBackend::onFileChanged() {
         emitErrorOccured("Datei existiert nicht mehr");
         connectionWasLost();
     } else {
-        checkData();
+        BaseBackend::openConnection();
     }
 }
 

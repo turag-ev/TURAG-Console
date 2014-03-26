@@ -26,7 +26,7 @@ public slots:
     bool saveOutput(void) override;
 
     // frontend was connected to stream
-    void onConnected(bool readOnly, bool isSequential, QIODevice*) override;
+    void onConnected(bool readOnly, bool isBuffered, QIODevice*) override;
 
     // frontend was disconnected from stream
     void onDisconnected(bool reconnecting) override;

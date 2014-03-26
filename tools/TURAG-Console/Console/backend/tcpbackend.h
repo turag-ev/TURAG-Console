@@ -11,6 +11,19 @@
 class TcpBackend : public BaseBackend {
     Q_OBJECT
 
+public:
+    TcpBackend(QObject * parent = 0);
+
+    static const QString connectionPrefix;
+    virtual bool isReadOnly(void) const;
+    virtual bool isBuffered(void) const { return false; }
+    void setWriteAccess(bool granted);
+    virtual QString getConnectionInfo();
+
+public slots:
+    virtual bool openConnection(QString connectionString);
+    virtual void checkData(void);
+
 protected:
     QHostAddress * hostAddress;
     qint16 port;
@@ -20,19 +33,9 @@ protected:
 protected slots:
     void socketConnected(void);
     void socketDisconnected(void);
-
-
-public:
-    TcpBackend(QObject * parent = 0);
-
-    static const QString connectionPrefix;
-    virtual bool isReadOnly(void) const;
-    void setWriteAccess(bool granted);
-    virtual QString getConnectionInfo();
-
-public slots:
-    virtual bool openConnection(QString connectionString);
     void onTcpError(QAbstractSocket::SocketError err);
+    void emitData(void);
+
 
 };
 

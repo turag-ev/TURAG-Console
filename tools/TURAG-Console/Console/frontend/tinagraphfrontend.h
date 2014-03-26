@@ -22,7 +22,7 @@ public slots:
     virtual void writeData(QByteArray data);
     void activateGraph(int index);
     // frontend was connected to stream
-    void onConnected(bool readOnly, bool isSequential, QIODevice*);
+    void onConnected(bool readOnly, bool isBuffered, QIODevice*);
 
     // frontend was disconnected from stream
     void onDisconnected(bool reconnecting);

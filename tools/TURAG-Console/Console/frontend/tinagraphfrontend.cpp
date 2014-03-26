@@ -108,7 +108,7 @@ void TinaGraphFrontend::activateGraphInternal(int index) {
     if (graph) addActions(graph->getActions());
 }
 
-void TinaGraphFrontend::onConnected(bool , bool , QIODevice*) {
+void TinaGraphFrontend::onConnected(bool , bool, QIODevice*) {
     
 }
 

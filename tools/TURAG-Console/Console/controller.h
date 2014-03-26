@@ -45,13 +45,13 @@ public slots:
 protected slots:
     void openConnection(QString connectionString, bool* success, BaseBackend **openedBackend);
     void onCancelNewConnection();
-    void onConnected(bool readOnly, bool isSequential);
+    void onConnected(bool readOnly, bool isBuffered);
     void onDisconnected();
     void onErrorOccured(QString msg);
     void onInfoMessage(QString msg);
 
 signals:
-    void connected(bool readOnly, bool isSequential, QIODevice*);
+    void connected(bool readOnly, bool isBuffered, QIODevice*);
     void disconnected(bool reconnecting);
     void errorOccured(QString msg);
     void infoMessage(QString msg);

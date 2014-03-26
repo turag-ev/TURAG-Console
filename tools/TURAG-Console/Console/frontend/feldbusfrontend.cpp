@@ -138,8 +138,8 @@ FeldbusFrontend::~FeldbusFrontend() {
     settings.setValue("dynamixelToAddress", dynamixelToEdit_->text());
 }
 
-void FeldbusFrontend::onConnected(bool readOnly, bool isSequential, QIODevice* dev) {
-    (void)isSequential;
+void FeldbusFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
+    (void)isBuffered;
     turag_rs485_io_device = dev;
     if (!readOnly) {
         setEnabled(true);

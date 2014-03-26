@@ -63,12 +63,12 @@ bool MCFrontend::saveOutput(void) {
     return logview->saveOutput();
 }
 
-void MCFrontend::onConnected(bool readOnly, bool isSequential, QIODevice* dev) {
+void MCFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
     Q_UNUSED(dev);
 
-    logview->onConnected(readOnly, isSequential, dev);
-    cmenu->onConnected(readOnly, isSequential, dev);
-    graphView->onConnected(readOnly, isSequential, dev);
+    logview->onConnected(readOnly, isBuffered, dev);
+    cmenu->onConnected(readOnly, isBuffered, dev);
+    graphView->onConnected(readOnly, isBuffered, dev);
     qDebug() << objectName() << " connected";
 }
 

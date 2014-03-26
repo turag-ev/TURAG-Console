@@ -13,7 +13,7 @@
 #include <QPlainTextEdit>
 
 PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
-    BaseFrontend("Standard-Konsole", parent), scroll_on_output(true), hasSequentialConnection(false)
+    BaseFrontend("Standard-Konsole", parent), scroll_on_output(true), hasBufferedConnection(false)
 {
     QVBoxLayout* layout = new QVBoxLayout();
 
@@ -220,7 +220,7 @@ bool PlainTextFrontend::saveOutput(void) {
     return true;
 }
 
-void PlainTextFrontend::onConnected(bool readOnly, bool isSequential, QIODevice* dev) {
+void PlainTextFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
 	Q_UNUSED(dev);
 
     if (readOnly) {
@@ -229,13 +229,13 @@ void PlainTextFrontend::onConnected(bool readOnly, bool isSequential, QIODevice*
         paste_action->setEnabled(true);
     }
 
-    if (isSequential) {
+    if (!isBuffered) {
         clear_action->setEnabled(true);
     } else {
         clear_action->setEnabled(false);
     }
 
-    hasSequentialConnection = isSequential;
+    hasBufferedConnection = isBuffered;
 }
 
 
