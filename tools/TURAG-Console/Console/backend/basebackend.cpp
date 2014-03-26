@@ -2,10 +2,11 @@
 #include <QByteArray>
 #include <QIODevice>
 
-
-BaseBackend::BaseBackend(QString connectionPrefix, bool networked, QObject *parent) :
-    QObject(parent), connectionPrefix_(connectionPrefix), networked_(networked)
+BaseBackend::BaseBackend(QString connectionPrefix, QObject *parent) :
+    QObject(parent), connectionPrefix_(connectionPrefix), deviceShouldBeConnected(false), deviceRecoveryActive(false)
 {
+    recoverDeviceTimer.setInterval(500);
+    connect(&recoverDeviceTimer, SIGNAL(timeout()), this, SLOT(onRecoverDevice()));
 }
 
 
@@ -41,10 +42,6 @@ bool BaseBackend::isSequential(void) const {
     }
 }
 
-bool BaseBackend::isNetworked (void) const {
-    return networked_;
-}
-
 bool BaseBackend::openConnection(void) {
     if (connectionString_.isEmpty()) {
         return false;
@@ -55,11 +52,16 @@ bool BaseBackend::openConnection(void) {
 
 
 void BaseBackend::closeConnection(void) {
+    if (isOpen() || recoverDeviceTimer.isActive()) {
+        emit disconnected(false);
+    }
+
     if (isOpen()) {
         stream_->close();
         stream_->disconnect(this);
-        emit disconnected();
     }
+    deviceShouldBeConnected = false;
+    recoverDeviceTimer.stop();
 }
 
 
@@ -98,9 +100,52 @@ bool BaseBackend::canHandleUrl(const QString& url) const {
 }
 
 void BaseBackend::emitConnected() {
+    if (deviceShouldBeConnected && deviceRecoveryActive && recoverDeviceTimer.isActive()) {
+        emit infoMessage("Verbindung erflogreich wiederaufgebaut");
+    }
+
+    deviceShouldBeConnected = true;
     emit connected(isReadOnly(), stream_->isSequential());
+
+    recoverDeviceTimer.stop();
 }
 
-void BaseBackend::reconnect() {
+void BaseBackend::connectionWasLost(void) {
+    if (isOpen()) {
+        stream_->close();
+        stream_->disconnect(this);
+        emit disconnected(deviceShouldBeConnected && deviceRecoveryActive);
+    }
+    if (deviceShouldBeConnected && deviceRecoveryActive) {
+        recoverDeviceTimer.start();
+    }
+}
+
+void BaseBackend::onRecoverDevice(void) {
+    emit infoMessage("Versuche wiederzuverbinden...");
+    openConnection();
+}
+
+void BaseBackend::setDeviceRecovery(bool on) {
+    if (!on) {
+        recoverDeviceTimer.stop();
+    } else if (on && deviceShouldBeConnected && !isOpen()) {
+        recoverDeviceTimer.start();
+    }
+
+    deviceRecoveryActive = on;
+}
+
+void BaseBackend::emitErrorOccured(QString msg) {
+    if (!recoverDeviceTimer.isActive()) {
+        emit errorOccured(msg);
+    }
+}
+
+void BaseBackend::emitInfoMessage(QString msg) {
+    if (!recoverDeviceTimer.isActive()) {
+        emit infoMessage(msg);
+    }
 
 }
+

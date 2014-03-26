@@ -17,7 +17,6 @@
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QPushButton>
-#include <QTimer>
 #include <QMenu>
 #include <QToolBox>
 #include <QLabel>
@@ -27,7 +26,7 @@
 
 Controller::Controller(QWidget *parent) :
     QStackedWidget(parent), currentBackend(nullptr), currentFrontendIndex(0),
-    autoReconnect(false), connectionShouldBeOpen(false), menuBar_(nullptr), widgetMenu_(nullptr)
+    menuBar_(nullptr), widgetMenu_(nullptr)
 {
     // add all available Backends to list with parent this
     availableBackends.append(new FileBackend(this));
@@ -58,7 +57,8 @@ Controller::Controller(QWidget *parent) :
         connect(iter, SIGNAL(errorOccured(QString)), this, SLOT(onErrorOccured(QString)));
         connect(iter, SIGNAL(infoMessage(QString)), this, SLOT(onInfoMessage(QString)));
         connect(iter,SIGNAL(connected(bool,bool)),this,SLOT(onConnected(bool,bool)), Qt::QueuedConnection);
-        connect(iter,SIGNAL(disconnected()),this,SLOT(onDisconnected()), Qt::QueuedConnection);
+        connect(iter,SIGNAL(disconnected(bool)),this,SLOT(onDisconnected()), Qt::QueuedConnection);
+        connect(iter,SIGNAL(disconnected(bool)),this,SIGNAL(disconnected(bool)), Qt::QueuedConnection);
     }
 
 
@@ -99,11 +99,6 @@ Controller::Controller(QWidget *parent) :
         addWidget(iter);
     }
     addWidget(welcome_screen);
-
-    // set up reconnection timer
-    reconnectTimer = new QTimer(this);
-    reconnectTimer->setInterval(500);
-    connect(reconnectTimer, SIGNAL(timeout()), this, SLOT(onReconnectTimeout()));
 
     openNewConnection();
 }
@@ -167,9 +162,6 @@ void Controller::setFrontend(int newFrontendIndex, bool calledManually) {
             if (!currentBackend->isSequential()) {
                 currentBackend->checkData();
             }
-            if (currentBackend->isNetworked()) {
-                currentBackend->reconnect();
-            }
         }
 
         currentFrontendIndex = newFrontendIndex;
@@ -210,7 +202,6 @@ void Controller::openConnection(void) {
 
         if (currentBackend->openConnection()) {
             cancelButton->show();
-            connectionShouldBeOpen = true;
 
             if (!currentBackend->isSequential()) {
                 currentBackend->checkData();
@@ -262,7 +253,6 @@ void Controller::openConnection(QString connectionString, bool *success, BaseBac
             setFrontend(currentFrontendIndex, false);
             if (success) *success = true;
             if (openedBackend) *openedBackend = currentBackend;
-            connectionShouldBeOpen = true;
             return;
         }
 
@@ -281,11 +271,6 @@ void Controller::closeConnection(void) {
         return;
     } else {
         currentBackend->closeConnection();
-        connectionShouldBeOpen = false;
-        if (autoReconnect && connectionShouldBeOpen && reconnectTimer->isActive()) {
-            reconnectTimer->stop();
-            emit disconnected(false);
-        }
 
         BaseFrontend* currentFrontend = availableFrontends.at(currentFrontendIndex);
         currentBackend->disconnect(currentFrontend);
@@ -320,23 +305,13 @@ void Controller::setExternalContextActions(QList<QAction*> actions) {
 
 
 void Controller::setAutoReconnect(bool on) {
-    autoReconnect = on;
-    if (autoReconnect && connectionShouldBeOpen && currentBackend && !currentBackend->isOpen()) {
-        reconnectTimer->start();
-    } else if (!autoReconnect && reconnectTimer->isActive()) {
-        connectionShouldBeOpen = false;
-        reconnectTimer->stop();
-        emit disconnected(false);
+    for (BaseBackend* backend : availableBackends) {
+        backend->setDeviceRecovery(on);
     }
 }
 
 
 void Controller::onConnected(bool readOnly, bool isSequential) {
-    if (autoReconnect && connectionShouldBeOpen && reconnectTimer->isActive()) {
-        reconnectTimer->stop();
-        emit infoMessage("Verbindung erfolgreich wiederaufgebaut");
-    }
-
     if (connectionMenu) {
         connectionMenu->addActions(currentBackend->getMenuEntries());
     }
@@ -350,13 +325,6 @@ void Controller::onDisconnected() {
         availableFrontends.at(currentFrontendIndex)->disconnect(currentBackend);
     }
 
-    if (autoReconnect && connectionShouldBeOpen) {
-        reconnectTimer->start();
-        emit disconnected(true);
-    } else {
-        emit disconnected(false);
-    }
-
     if (connectionMenu) {
         for (QAction* action : currentBackend->getMenuEntries()) {
             connectionMenu->removeAction(action);
@@ -365,25 +333,11 @@ void Controller::onDisconnected() {
 }
 
 void Controller::onErrorOccured(QString msg) {
-    // only forward error messages if we are not reconnecting
-    if (!(autoReconnect && connectionShouldBeOpen && currentBackend && !currentBackend->isOpen())) {
-        emit errorOccured(msg);
-    }
+    emit errorOccured(msg);
 }
 
 void Controller::onInfoMessage(QString msg) {
-    // only forward info messages if we are not reconnecting
-    if (!(autoReconnect && connectionShouldBeOpen && currentBackend && !currentBackend->isOpen())) {
-        emit infoMessage(msg);
-    }
+    emit infoMessage(msg);
 }
 
 
-void Controller::onReconnectTimeout() {
-    if (autoReconnect && connectionShouldBeOpen && currentBackend && !currentBackend->isOpen()) {
-        emit infoMessage("Versuche wiederzuverbinden...");
-        openConnection();
-    } else {
-        reconnectTimer->stop();
-    }
-}

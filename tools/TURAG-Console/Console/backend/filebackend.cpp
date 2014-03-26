@@ -5,11 +5,10 @@
 #include <QFileSystemWatcher>
 
 const QString FileBackend::connectionPrefix = "file://";
-const bool FileBackend::networked = false;
 
 
 FileBackend::FileBackend(QObject *parent) :
-    BaseBackend(FileBackend::connectionPrefix, networked, parent)
+    BaseBackend(FileBackend::connectionPrefix, parent)
 {
     watcher = new QFileSystemWatcher(this);
 }
@@ -21,7 +20,7 @@ bool FileBackend::openConnection(QString connectionString) {
     }
 
     // close connection in case we had one open
-    closeConnection();
+    if (isOpen()) closeConnection();
 
     // extract filename
     QString newConnectionString = connectionString.right(connectionString.length() - connectionPrefix.length());
@@ -31,7 +30,7 @@ bool FileBackend::openConnection(QString connectionString) {
 
     bool success = stream_->open(QIODevice::ReadOnly);
     if (!success) {
-      emit errorOccured(QString("Fehler beim Öffnen von Datei: %1").arg(stream_->errorString()));
+      emitErrorOccured(QString("Fehler beim Öffnen von Datei: %1").arg(stream_->errorString()));
       return false;
     }
 
@@ -65,15 +64,15 @@ void FileBackend::checkData(void) {
         stream_->seek(0);
         emit dataReady(stream_->readAll());
 
-        emit infoMessage("Datei gelesen");
+        emitInfoMessage("Datei gelesen");
     }
 }
 
 
 void FileBackend::onFileChanged() {
     if (!static_cast<QFile*>(stream_.get())->exists()) {
-        emit errorOccured("Datei existiert nicht mehr");
-        closeConnection();
+        emitErrorOccured("Datei existiert nicht mehr");
+        connectionWasLost();
     } else {
         checkData();
     }

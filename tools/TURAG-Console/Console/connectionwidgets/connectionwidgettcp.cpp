@@ -423,6 +423,9 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
     if (newSelectedDevice->onlineStatus == false) {
         return;
     }
+//    if (selectedDevice == newSelectedDevice) {
+//        return;
+//    }
 
     selectedDevice = newSelectedDevice;
     fillDeviceList();

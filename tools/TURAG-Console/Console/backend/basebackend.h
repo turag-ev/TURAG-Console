@@ -6,6 +6,7 @@
 #include <QString>
 #include <QByteArray>
 #include <QList>
+#include <QTimer>
 
 class QAction;
 class QIODevice;
@@ -13,36 +14,28 @@ class QIODevice;
 class BaseBackend : public QObject {
     Q_OBJECT
 
-protected:
-    std::unique_ptr<QIODevice> stream_;
-    QString connectionString_;
-    const QString connectionPrefix_;
-    const bool networked_;
-
-    void emitConnected();
-
 public:
-    explicit BaseBackend(QString connectionPrefix, bool networked, QObject *parent = 0);
+    explicit BaseBackend(QString connectionPrefix, QObject *parent = 0);
     ~BaseBackend(void);
 
     bool isOpen(void) const;
     virtual bool isReadOnly(void) const;
     bool isSequential(void) const;
-    bool isNetworked(void) const;
     virtual QString getConnectionInfo();
     virtual QList<QAction*> getMenuEntries();
-    virtual void reconnect(void);
     QIODevice* getDevice() { return stream_.get(); }
 
     // checks if backend is capable for this connection
     // normally only checks url prefix
     virtual bool canHandleUrl(const QString& url) const;
 
+    void setDeviceRecovery(bool on);
+
 signals:
     // data was received from the backend
     void dataReady(QByteArray data);
     void connected(bool readOnly, bool isSequential);
-    void disconnected(void);
+    void disconnected(bool reconnecting);
     void errorOccured(QString msg);
     void infoMessage(QString msg);
 
@@ -53,21 +46,44 @@ public slots:
     virtual bool openConnection(void);
 
     // this function needs to open a stream, if possible, with the provided connectionString
-    // and has to build the signal-slot connection between stream and backend.
     // Further it has to emit the appropriate `connected'-signal.
     virtual bool openConnection(QString connectionString) = 0;
 
-    // closes a connection, disconnects signals to frontend and emits `disconnected'-signal to controller
+    // closes a connection and emits `disconnected'-signal
     virtual void closeConnection(void);
 
     // writes data to opened stream. Assumes that all data can be written. Emits error messages otherwise.
     virtual void writeData(QByteArray data);
 
     // checks for data and, if data is available, results in the emission of a dataReady-Signal.
-    // returns all data for non-sequential devices.
+    // returns all data for buffered devices.
     virtual void checkData(void);
 
+protected slots:
+    // class this function after successfully opening a connection
+    void emitConnected(void);
 
+    // call this function as a response to a loss of connection rather than closeConnection()
+    void connectionWasLost(void);
+
+    // you should rather use these functions as opposed to directly
+    // emitting the associated signals as this would inhibit the message
+    // filtering of the base class
+    void emitErrorOccured(QString msg);
+    void emitInfoMessage(QString msg);
+
+protected:
+    std::unique_ptr<QIODevice> stream_;
+    QString connectionString_;
+    const QString connectionPrefix_;
+
+private slots:
+    void onRecoverDevice(void);
+
+private:
+    QTimer recoverDeviceTimer;
+    bool deviceShouldBeConnected;
+    bool deviceRecoveryActive;
 
 };
 

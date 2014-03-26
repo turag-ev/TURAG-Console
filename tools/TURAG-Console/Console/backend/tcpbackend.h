@@ -26,11 +26,9 @@ public:
     TcpBackend(QObject * parent = 0);
 
     static const QString connectionPrefix;
-    static const bool networked;
     virtual bool isReadOnly(void) const;
     void setWriteAccess(bool granted);
     virtual QString getConnectionInfo();
-    void reconnect();
 
 public slots:
     virtual bool openConnection(QString connectionString);

@@ -4,10 +4,9 @@
 #include <QStringList>
 
 const QString TcpBackend::connectionPrefix = "tcp://";
-const bool TcpBackend::networked = true;
 
 TcpBackend::TcpBackend (QObject *parent) :
-    BaseBackend(TcpBackend::connectionPrefix, networked, parent),
+    BaseBackend(TcpBackend::connectionPrefix, parent),
     writeAccessGranted(false)
 { }
 
@@ -17,7 +16,7 @@ bool TcpBackend::openConnection(QString connectionString) {
     }
 
     // close connection in case we had one open
-    closeConnection();
+    if (isOpen()) closeConnection();
 
     connectionString_ = connectionString;
 
@@ -63,16 +62,16 @@ void TcpBackend::socketDisconnected(void) {
 void TcpBackend::onTcpError(QAbstractSocket::SocketError error) {
     switch (error) {
     case QAbstractSocket::ConnectionRefusedError:
-        if (stream_->isOpen()) closeConnection();
-        emit errorOccured("Connection refused");
+        if (stream_->isOpen()) connectionWasLost();
+        emitErrorOccured("Connection refused");
         break;
     case QAbstractSocket::HostNotFoundError:
-        if (stream_->isOpen()) closeConnection();
-        emit errorOccured("Host not found");
+        if (stream_->isOpen()) connectionWasLost();
+        emitErrorOccured("Host not found");
         break;
     case QAbstractSocket::RemoteHostClosedError:
-        if (stream_->isOpen()) closeConnection();
-        emit errorOccured("Remote host closed");
+        if (stream_->isOpen()) connectionWasLost();
+        emitErrorOccured("Remote host closed");
         break;
     default:
         qDebug() << error << stream_->errorString();
@@ -110,10 +109,4 @@ QString TcpBackend::getConnectionInfo() {
 
     return QString("Debug-Server: %1").arg(path);
 }
-
-void TcpBackend::reconnect() {
-    static_cast<QTcpSocket * >(stream_.get())->disconnectFromHost();
-    static_cast<QTcpSocket * >(stream_.get())->connectToHost(* hostAddress, port);
-}
-
 

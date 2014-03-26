@@ -11,7 +11,6 @@ class BaseBackend;
 class ConnectionWidget;
 class QPushButton;
 class QAction;
-class QTimer;
 class QMenuBar;
 class QMenu;
 class QToolBox;
@@ -20,24 +19,6 @@ class QToolBox;
 class Controller : public QStackedWidget
 {
     Q_OBJECT
-
-protected:
-    QList<BaseBackend*> availableBackends;
-    QList<BaseFrontend*> availableFrontends;
-    QList<ConnectionWidget*> availableConnectionWidgets;
-
-    BaseBackend* currentBackend;
-    int currentFrontendIndex;
-
-    QPushButton* cancelButton;
-
-    bool autoReconnect;
-    bool connectionShouldBeOpen;
-    QTimer* reconnectTimer;
-    QMenuBar* menuBar_;
-    QMenu* widgetMenu_;
-    QMenu* connectionMenu;
-    QToolBox* toolbox;
 
 public:
     explicit Controller(QWidget *parent = 0);
@@ -68,7 +49,6 @@ protected slots:
     void onDisconnected();
     void onErrorOccured(QString msg);
     void onInfoMessage(QString msg);
-    void onReconnectTimeout();
 
 signals:
     void connected(bool readOnly, bool isSequential, QIODevice*);
@@ -76,6 +56,21 @@ signals:
     void errorOccured(QString msg);
     void infoMessage(QString msg);
 
+
+protected:
+    QList<BaseBackend*> availableBackends;
+    QList<BaseFrontend*> availableFrontends;
+    QList<ConnectionWidget*> availableConnectionWidgets;
+
+    BaseBackend* currentBackend;
+    int currentFrontendIndex;
+
+    QPushButton* cancelButton;
+
+    QMenuBar* menuBar_;
+    QMenu* widgetMenu_;
+    QMenu* connectionMenu;
+    QToolBox* toolbox;
     
 };
 
