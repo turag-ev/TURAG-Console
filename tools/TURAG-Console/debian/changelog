@@ -1,3 +1,9 @@
+turag-console (2.2~git20140326-1) saucy; urgency=low
+
+  * new upstream release
+
+ -- Richard Liebscher <richard_liebscher@turag.de>  Wed, 26 Mar 2014 21:35:39 +0100
+
 turag-console (2.2~git20140322-1) saucy; urgency=low
 
   * new upstream release
