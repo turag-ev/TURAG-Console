@@ -28,5 +28,4 @@ core
 .cproject
 .settings
 
-# linux executables
-/tina/tests/tests
+

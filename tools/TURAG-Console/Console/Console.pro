@@ -78,7 +78,8 @@ SOURCES +=\
     libs/qlineedit2.cpp \
     frontend/mcfrontend.cpp \
     frontend/tinagraphfrontend.cpp \
-    ../../../tina/tina/utils/base64.c
+    ../../../tina/tina/utils/base64.c \
+    ../../../tina/tina/debug/graph.c
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -161,7 +162,10 @@ HEADERS  += mainwindow.h \
     frontend/mcfrontend.h \
     frontend/tinagraphfrontend.h \
     ../../../tina/tina/utils/base64.h \
-    ../../../tina/tina++/utils/base64.h
+    ../../../tina/tina++/utils/base64.h \
+    ../../../tina/tina/debug/defines.h \
+    ../../../tina/tina/debug/graph.h \
+    ../../../tina/tina/debug/print.h
 
 INCLUDEPATH += \
     ../../../tina \

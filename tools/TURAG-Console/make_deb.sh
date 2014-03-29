@@ -3,7 +3,7 @@
 function texec() {
   echo -e "\e[01;32m$@\e[00m"
 					  
-  $@ > /dev/null
+  $@
 						  
   OUT=$?
   if [ $OUT -ne 0 ]; then
