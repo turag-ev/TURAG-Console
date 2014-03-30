@@ -93,9 +93,9 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     QLabel* idLabel = new QLabel ("ID/Adresse");
     setIdText= new QLineEdit2;
     setIdButton = new QPushButton ("Set");
-    gridLayout ->addWidget(idLabel, 1, 0);
-    gridLayout ->addWidget(setIdText, 1, 1);
-    gridLayout ->addWidget(setIdButton, 1, 2);
+    gridLayout ->addWidget(idLabel, 2, 0);
+    gridLayout ->addWidget(setIdText, 2, 1);
+    gridLayout ->addWidget(setIdButton, 2, 2);
     connect(setIdButton, SIGNAL(clicked()), this, SLOT(onSetID()));
     connect(setIdText, SIGNAL(returnPressed()), this, SLOT(onSetID()));
 
@@ -103,9 +103,9 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     QLabel* cwAngleLimitLabel = new QLabel ("CW Angle Limit [°]");
     cwAngleLimit= new QLineEdit2;
     setCwAngleLimit = new QPushButton ("Set");
-    gridLayout ->addWidget(cwAngleLimitLabel, 2, 0);
-    gridLayout ->addWidget(cwAngleLimit, 2, 1);
-    gridLayout ->addWidget(setCwAngleLimit, 2, 2);
+    gridLayout ->addWidget(cwAngleLimitLabel, 3, 0);
+    gridLayout ->addWidget(cwAngleLimit, 3, 1);
+    gridLayout ->addWidget(setCwAngleLimit, 3, 2);
     connect(setCwAngleLimit, SIGNAL(clicked()), this, SLOT(onSetCwAngleLimit()));
     connect(cwAngleLimit, SIGNAL(returnPressed()), this, SLOT(onSetCwAngleLimit()));
 
@@ -113,9 +113,9 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     QLabel* ccwAngleLimitLabel = new QLabel ("CCW Angle Limit [°]");
     ccwAngleLimit= new QLineEdit2;
     setCcwAngleLimit = new QPushButton ("Set");
-    gridLayout ->addWidget(ccwAngleLimitLabel, 3, 0);
-    gridLayout ->addWidget(ccwAngleLimit, 3, 1);
-    gridLayout ->addWidget(setCcwAngleLimit, 3, 2);
+    gridLayout ->addWidget(ccwAngleLimitLabel, 4, 0);
+    gridLayout ->addWidget(ccwAngleLimit, 4, 1);
+    gridLayout ->addWidget(setCcwAngleLimit, 4, 2);
     connect(setCcwAngleLimit, SIGNAL(clicked()), this, SLOT(onSetCcwAngleLimit()));
     connect(ccwAngleLimit, SIGNAL(returnPressed()), this, SLOT(onSetCcwAngleLimit()));
 
@@ -123,9 +123,9 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     QLabel* movingSpeedLabel = new QLabel ("Moving Speed (0-1023)");
     movingSpeed= new QLineEdit2;
     setMovingSpeed = new QPushButton ("Set");
-    gridLayout ->addWidget(movingSpeedLabel, 4, 0);
-    gridLayout ->addWidget(movingSpeed, 4, 1);
-    gridLayout ->addWidget(setMovingSpeed, 4, 2);
+    gridLayout ->addWidget(movingSpeedLabel, 5, 0);
+    gridLayout ->addWidget(movingSpeed, 5, 1);
+    gridLayout ->addWidget(setMovingSpeed, 5, 2);
     connect(setMovingSpeed, SIGNAL(clicked()), this, SLOT(onSetMovingSpeed()));
     connect(movingSpeed, SIGNAL(returnPressed()), this, SLOT(onSetMovingSpeed()));
 
@@ -133,9 +133,9 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     QLabel* torqueLimitLabel = new QLabel ("Torque Limit [%]");
     torqueLimit= new QLineEdit2;
     setTorqueLimit= new QPushButton ("Set");
-    gridLayout ->addWidget(torqueLimitLabel, 5, 0);
-    gridLayout ->addWidget(torqueLimit, 5, 1);
-    gridLayout ->addWidget(setTorqueLimit, 5, 2);
+    gridLayout ->addWidget(torqueLimitLabel, 6, 0);
+    gridLayout ->addWidget(torqueLimit, 6, 1);
+    gridLayout ->addWidget(setTorqueLimit, 6, 2);
     connect(setTorqueLimit, SIGNAL(clicked()), this, SLOT(onSetTorqueLimit()));
     connect(torqueLimit, SIGNAL(returnPressed()), this, SLOT(onSetTorqueLimit()));
 
@@ -143,9 +143,9 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     QLabel* cwComplMarginLabel = new QLabel ("Cw Compl Margin");
     cwComplMargin= new QLineEdit2;
     setCwComplMargin= new QPushButton ("Set");
-    gridLayout ->addWidget(cwComplMarginLabel, 6, 0);
-    gridLayout ->addWidget(cwComplMargin, 6, 1);
-    gridLayout ->addWidget(setCwComplMargin, 6, 2);
+    gridLayout ->addWidget(cwComplMarginLabel, 7, 0);
+    gridLayout ->addWidget(cwComplMargin, 7, 1);
+    gridLayout ->addWidget(setCwComplMargin, 7, 2);
     connect(setCwComplMargin, SIGNAL(clicked()), this, SLOT(onSetCwComplMargin()));
     connect(cwComplMargin, SIGNAL(returnPressed()), this, SLOT(onSetCwComplMargin()));
 
@@ -153,9 +153,9 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     QLabel* ccwComplMarginLabel = new QLabel ("Ccw Compl Margin");
     ccwComplMargin= new QLineEdit2;
     setCcwComplMargin= new QPushButton ("Set");
-    gridLayout ->addWidget(ccwComplMarginLabel, 7, 0);
-    gridLayout ->addWidget(ccwComplMargin, 7, 1);
-    gridLayout ->addWidget(setCcwComplMargin, 7, 2);
+    gridLayout ->addWidget(ccwComplMarginLabel, 8, 0);
+    gridLayout ->addWidget(ccwComplMargin, 8, 1);
+    gridLayout ->addWidget(setCcwComplMargin, 8, 2);
     connect(setCcwComplMargin, SIGNAL(clicked()), this, SLOT(onSetCcwComplMargin()));
     connect(ccwComplMargin, SIGNAL(returnPressed()), this, SLOT(onSetCcwComplMargin()));
 
@@ -163,9 +163,9 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     QLabel* cwComplSlopeLabel = new QLabel ("Cw Compl Slope");
     cwComplSlope= new QLineEdit2;
     setCwComplSlope= new QPushButton ("Set");
-    gridLayout ->addWidget(cwComplSlopeLabel, 8, 0);
-    gridLayout ->addWidget(cwComplSlope, 8, 1);
-    gridLayout ->addWidget(setCwComplSlope, 8, 2);
+    gridLayout ->addWidget(cwComplSlopeLabel, 9, 0);
+    gridLayout ->addWidget(cwComplSlope, 9, 1);
+    gridLayout ->addWidget(setCwComplSlope, 9, 2);
     connect(setCwComplSlope, SIGNAL(clicked()), this, SLOT(onSetCwComplSlope()));
     connect(cwComplSlope, SIGNAL(returnPressed()), this, SLOT(onSetCwComplSlope()));
 
@@ -173,9 +173,9 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     QLabel* ccwComplSlopeLabel = new QLabel ("Ccw Compl Slope");
     ccwComplSlope= new QLineEdit2;
     setCcwComplSlope= new QPushButton ("Set");
-    gridLayout ->addWidget(ccwComplSlopeLabel, 9, 0);
-    gridLayout ->addWidget(ccwComplSlope, 9, 1);
-    gridLayout ->addWidget(setCcwComplSlope, 9, 2);
+    gridLayout ->addWidget(ccwComplSlopeLabel, 10, 0);
+    gridLayout ->addWidget(ccwComplSlope, 10, 1);
+    gridLayout ->addWidget(setCcwComplSlope, 10, 2);
     connect(setCcwComplSlope, SIGNAL(clicked()), this, SLOT(onSetCcwComplSlope()));
     connect(ccwComplSlope, SIGNAL(returnPressed()), this, SLOT(onSetCcwComplSlope()));
 
@@ -183,9 +183,9 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     QLabel* alarmShutdownLabel = new QLabel ("Alarm Shutdown");
     alarmShutdown= new QLineEdit2;
     setAlarmShutdown= new QPushButton ("Set");
-    gridLayout ->addWidget(alarmShutdownLabel, 10, 0);
-    gridLayout ->addWidget(alarmShutdown, 10, 1);
-    gridLayout ->addWidget(setAlarmShutdown, 10, 2);
+    gridLayout ->addWidget(alarmShutdownLabel, 11, 0);
+    gridLayout ->addWidget(alarmShutdown, 11, 1);
+    gridLayout ->addWidget(setAlarmShutdown, 11, 2);
     connect(setAlarmShutdown, SIGNAL(clicked()), this, SLOT(onSetAlarmShutdown()));
     connect(alarmShutdown, SIGNAL(returnPressed()), this, SLOT(onSetAlarmShutdown()));
 
@@ -193,9 +193,9 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     QLabel* returnDelayLabel = new QLabel ("Return Delay Time (0 - 508) [us]");
     returnDelayTime= new QLineEdit2;
     setReturnDelayTime= new QPushButton ("Set");
-    gridLayout ->addWidget(returnDelayLabel, 11, 0);
-    gridLayout ->addWidget(returnDelayTime, 11, 1);
-    gridLayout ->addWidget(setReturnDelayTime, 11, 2);
+    gridLayout ->addWidget(returnDelayLabel, 12, 0);
+    gridLayout ->addWidget(returnDelayTime, 12, 1);
+    gridLayout ->addWidget(setReturnDelayTime, 12, 2);
     connect(setReturnDelayTime, SIGNAL(clicked()), this, SLOT(onSetReturnDelayTime()));
     connect(returnDelayTime, SIGNAL(returnPressed()), this, SLOT(onSetReturnDelayTime()));
 
