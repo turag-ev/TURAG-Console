@@ -1,4 +1,4 @@
-#define LOG_SOURCE "H"
+#define TURAG_LOG_SOURCE "H"
 
 #include <tina/tina.h>
 #include <tina/time.h>
