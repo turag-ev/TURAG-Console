@@ -207,6 +207,10 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
         desiredBaudRate->setText("Error. Unable to read BaudRate");
     }
 
+    if (device) {
+        setIdText->setText(QString("%1").arg(device->getID()));
+    }
+
     readGoalPosition();
 
     //Angle Limit@init
