@@ -19,7 +19,7 @@ public:
 public slots:
     void writeData(QByteArray data) override;
     void clear(void) override;
-    bool saveOutput(void) override;
+    bool saveOutput(QString file) override;
 
     // frontend was connected to stream
     void onConnected(bool readOnly, bool isBuffered, QIODevice*) override;

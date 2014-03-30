@@ -139,7 +139,7 @@ public slots:
   void onConnected(bool readOnly, bool isBuffered, QIODevice*) override;
   void onDisconnected(bool reconnecting) override;
   void clear() override;
-  bool saveOutput() override;
+  bool saveOutput(QString file) override;
   void writeData(QByteArray data) override;
 
 private slots:
@@ -170,6 +170,8 @@ private:
 
   QTimer sendTimer;
   QByteArray timedSendString;
+
+  bool hasReadOnlyConnection;
 };
 
 #endif // LOGVIEW_H

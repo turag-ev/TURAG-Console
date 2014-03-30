@@ -250,7 +250,7 @@ bool LogFilter::filterAcceptsRow(int sourceRow,
 // LogView
 
 LogView::LogView(TinaInterface *interface, QWidget *parent) :
-    BaseFrontend("Meldungen", parent), scroll_on_output_(false)
+    BaseFrontend("Meldungen", parent), scroll_on_output_(false), hasReadOnlyConnection(false)
 {
     // icons
     icons[StreamModel::ICON_WARNING]  = QIcon(":/images/warning-orange-16.png");
@@ -349,6 +349,7 @@ void LogView::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
         sendTimer.start(10);
     }
 
+    hasReadOnlyConnection = readOnly;
 //    log_->setEnabled(true);
 }
 
@@ -423,7 +424,7 @@ void LogView::contextMenu(QPoint point) {
         menu.addAction("&Nachrichten von Quelle ausblenden", this, SLOT(hideMsgsFromSource()));
     }
     menu.addAction("&Alles markieren", log_, SLOT(selectAll()));
-    menu.addAction("Ausgabe löschen", this, SLOT(clear()));
+    if (!hasReadOnlyConnection) menu.addAction("Ausgabe löschen", this, SLOT(clear()));
     menu.addSeparator();
 
     // Filter
@@ -566,9 +567,7 @@ void LogView::clear(void) {
     log_model_->clear();
 }
 
-bool LogView::saveOutput(void) {
-    QString filename = QFileDialog::getSaveFileName(this);
-
+bool LogView::saveOutput(QString filename) {
     if (filename.isEmpty()) {
         return true;
     }

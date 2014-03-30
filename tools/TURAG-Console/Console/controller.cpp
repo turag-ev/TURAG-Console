@@ -22,11 +22,14 @@
 #include <QLabel>
 #include <QSettings>
 #include <QMenuBar>
+#include <QDateTime>
+#include <QFileDialog>
+#include <QDir>
 
 
 Controller::Controller(QWidget *parent) :
     QStackedWidget(parent), currentBackend(nullptr), currentFrontendIndex(0),
-    menuBar_(nullptr), widgetMenu_(nullptr)
+    menuBar_(nullptr), widgetMenu_(nullptr), autoSaveOn(false)
 {
     // add all available Backends to list with parent this
     availableBackends.append(new FileBackend(this));
@@ -279,7 +282,11 @@ void Controller::closeConnection(void) {
 
 
 void Controller::saveOutput(void) {
-    if (availableFrontends.at(currentFrontendIndex)->saveOutput()) {
+    QString filename = QFileDialog::getSaveFileName(this);
+
+    if (filename.isEmpty()) return;
+
+    if (availableFrontends.at(currentFrontendIndex)->saveOutput(filename)) {
         emit infoMessage("Ausgabe erfolgreich geschrieben");
     } else {
         emit errorOccured("Ausgabe schreiben fehlgeschlagen");
@@ -309,13 +316,13 @@ void Controller::setAutoReconnect(bool on) {
     }
 }
 
-
 void Controller::onConnected(bool readOnly, bool isBuffered) {
     if (connectionMenu) {
         connectionMenu->addActions(currentBackend->getMenuEntries());
     }
 
     BaseFrontend* currentFrontend = availableFrontends.at(currentFrontendIndex);
+
     currentFrontend->clear();
     currentBackend->checkData();
 
@@ -324,6 +331,10 @@ void Controller::onConnected(bool readOnly, bool isBuffered) {
 }
 
 void Controller::onDisconnected() {
+    if (autoSaveOn) {
+        QString file = QDir::toNativeSeparators(QDir::homePath() + "/turag-" + QDateTime::currentDateTime().toString(Qt::ISODate));
+        availableFrontends.at(currentFrontendIndex)->saveOutput(file);
+    }
     if (connectionMenu) {
         for (QAction* action : currentBackend->getMenuEntries()) {
             connectionMenu->removeAction(action);
@@ -338,5 +349,4 @@ void Controller::onErrorOccured(QString msg) {
 void Controller::onInfoMessage(QString msg) {
     emit infoMessage(msg);
 }
-
 

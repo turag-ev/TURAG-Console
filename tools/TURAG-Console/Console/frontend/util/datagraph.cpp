@@ -338,22 +338,7 @@ void DataGraph::updateCurveColors() {
 }
 
 
-bool DataGraph::saveOutput() {
-    QString fileName = "plot.png";
-
-    QStringList filter;
-    filter += "PNG-Images (*.png)";
-    filter += "JPEG-Images (*.jpg)";
-    filter += "PDF Documents (*.pdf)";
-#ifndef QWT_NO_SVG
-    filter += "SVG Documents (*.svg)";
-#endif
-    filter += "Postscript Documents (*.ps)";
-
-    fileName = QFileDialog::getSaveFileName(this, "Export File Name", fileName,
-        filter.join(";;"), NULL);
-
-
+bool DataGraph::saveOutput(QString fileName) {
     if ( !fileName.isEmpty() )
     {
         QwtPlotRenderer renderer;
@@ -368,6 +353,24 @@ bool DataGraph::saveOutput() {
     } else {
         return false;
     }
+}
+
+bool DataGraph::saveOutput(void) {
+    QString fileName = "plot.png";
+
+    QStringList filter;
+    filter += "PNG-Images (*.png)";
+    filter += "JPEG-Images (*.jpg)";
+    filter += "PDF Documents (*.pdf)";
+#ifndef QWT_NO_SVG
+    filter += "SVG Documents (*.svg)";
+#endif
+    filter += "Postscript Documents (*.ps)";
+
+    fileName = QFileDialog::getSaveFileName(this, "Export File Name", fileName,
+        filter.join(";;"), NULL);
+
+    return saveOutput(fileName);
 }
 
 

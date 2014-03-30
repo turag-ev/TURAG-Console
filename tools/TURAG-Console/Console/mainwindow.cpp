@@ -81,6 +81,10 @@ MainWindow::MainWindow(QWidget *parent) :
     save_action->setStatusTip("Ausgabe speicheren");
     connect(save_action, SIGNAL(triggered()), controller, SLOT(saveOutput()));
 
+    save_auto_action = new QAction("Automatisches Speichern", this);
+    connect(save_auto_action, SIGNAL(triggered(bool)), controller, SLOT(setAutoSave(bool)));
+    save_auto_action->setCheckable(true);
+
     QAction *exit_action = new QAction("&Beenden", this);
     exit_action->setShortcuts(QKeySequence::Quit);
     exit_action->setStatusTip("Programm verlassen");
@@ -90,6 +94,7 @@ MainWindow::MainWindow(QWidget *parent) :
     file_menu->addAction(new_window);
     file_menu->addSeparator();
     file_menu->addAction(save_action);
+    file_menu->addAction(save_auto_action);
     file_menu->addSeparator();
     file_menu->addAction(exit_action);
 
@@ -375,8 +380,12 @@ void MainWindow::readSettings() {
   resize(settings.value("size", QSize(1100, 850)).toSize());
   onShowStatusbar(settings.value("showStatusBar", true).toBool());
   onShowMenubar(settings.value("showMenuBar", true).toBool());
+
   auto_reconnect_action->setChecked(settings.value("AutoReconnect", true).toBool());
   controller->setAutoReconnect(settings.value("AutoReconnect", true).toBool());
+
+  save_auto_action->setChecked(settings.value("AutoSave", false).toBool());
+  controller->setAutoSave(settings.value("AutoSave", false).toBool());
 
   int currentFrontend = settings.value("currentFrontend", 0).toInt();
   frontendOptions->actions().at(currentFrontend)->setChecked(true);
@@ -390,6 +399,7 @@ void MainWindow::writeSettings() {
   settings.setValue("showStatusBar", show_statusbar->isChecked());
   settings.setValue("showMenuBar", show_menubar->isChecked());
   settings.setValue("AutoReconnect", auto_reconnect_action->isChecked());
+  settings.setValue("AutoSave", save_auto_action->isChecked());
 
   QList<QAction*> actions = frontendOptions->actions();
   int currentFrontend = actions.indexOf(frontendOptions->checkedAction());

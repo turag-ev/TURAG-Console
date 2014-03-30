@@ -49,6 +49,7 @@ protected:
 private:
     Controller* controller;
 
+    QAction *save_auto_action;
     QAction *connect_action;
     QAction *disconnect_action;
     QAction* auto_reconnect_action;

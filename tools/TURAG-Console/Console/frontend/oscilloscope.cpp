@@ -128,8 +128,8 @@ void Oscilloscope::clear(void) {
     channel_label->setText("0");
 }
 
-bool Oscilloscope::saveOutput(void) {
-    return plot->saveOutput();
+bool Oscilloscope::saveOutput(QString file) {
+    return plot->saveOutput(file);
 }
 
 void Oscilloscope::readSettings() {

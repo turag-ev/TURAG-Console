@@ -41,6 +41,7 @@ public slots:
     void setFrontend(int newFrontendIndex, bool calledManually);
     void saveOutput(void);
     void setAutoReconnect(bool on);
+    void setAutoSave(bool on) { autoSaveOn = on; }
 
 protected slots:
     void openConnection(QString connectionString, bool* success, BaseBackend **openedBackend);
@@ -71,6 +72,9 @@ protected:
     QMenu* widgetMenu_;
     QMenu* connectionMenu;
     QToolBox* toolbox;
+
+private:
+    bool autoSaveOn;
     
 };
 

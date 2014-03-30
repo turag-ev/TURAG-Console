@@ -125,7 +125,8 @@ public slots:
     virtual void addChannel(QString title, qreal x, qreal width, qreal y, qreal height, bool keepHiddenPoints = true);
     virtual void removeChannel(int index);
     virtual void addData(int channel, QPointF data);
-    virtual bool saveOutput();
+    virtual bool saveOutput(QString file);
+    virtual bool saveOutput(void);
     virtual void doAutoZoom(void);
     void setZoomer(void);
     void setPanner(void);

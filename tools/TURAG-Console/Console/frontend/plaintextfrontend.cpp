@@ -196,9 +196,7 @@ void PlainTextFrontend::setAutoWrap(bool on) {
 }
 
 
-bool PlainTextFrontend::saveOutput(void) {
-    QString filename = QFileDialog::getSaveFileName(this);
-
+bool PlainTextFrontend::saveOutput(QString filename) {
     if (filename.isEmpty()) {
         return false;
     }

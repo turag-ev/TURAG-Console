@@ -68,7 +68,7 @@ public slots:
     virtual void onDisconnected(bool reconnecting);
     virtual void writeData(QByteArray data);
     virtual void clear(void);
-    virtual bool saveOutput(void);
+    virtual bool saveOutput(QString file);
 
 private:
     void validateAdressFields();

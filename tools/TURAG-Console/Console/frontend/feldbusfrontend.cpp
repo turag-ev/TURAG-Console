@@ -164,7 +164,7 @@ void FeldbusFrontend::clear(void) {
     busLog_->clear();
 }
 
-bool FeldbusFrontend::saveOutput(void) {
+bool FeldbusFrontend::saveOutput(QString) {
     return false;
 }
 
