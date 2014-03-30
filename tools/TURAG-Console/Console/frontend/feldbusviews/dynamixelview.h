@@ -36,6 +36,7 @@ protected:
 
     QLineEdit2* desiredPosition;
     QLineEdit2* desiredBaudRate;
+    QLineEdit2* setIdText;
     QLineEdit2* cwAngleLimit;
     QLineEdit2* ccwAngleLimit;
     QLineEdit2* movingSpeed;
@@ -50,6 +51,7 @@ protected:
 
     QPushButton* setPosition;
     QPushButton* setBaudRate;
+    QPushButton* setIdButton;
     QPushButton* setCwAngleLimit;
     QPushButton* setCcwAngleLimit;
     QPushButton* setMovingSpeed;
@@ -65,6 +67,7 @@ protected:
     void onUpdateTimeout(void);
     void onSetPositionPushed(void);
     void onSetBaudRate(void);
+    void onSetID(void);
     void onSetCwAngleLimit(void);
     void onSetCcwAngleLimit(void);
     void onSetMovingSpeed(void);

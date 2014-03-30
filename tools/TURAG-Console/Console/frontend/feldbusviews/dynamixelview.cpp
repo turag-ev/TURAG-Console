@@ -89,6 +89,16 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
     connect(setBaudRate, SIGNAL(clicked()), this, SLOT(onSetBaudRate()));
     connect(desiredBaudRate, SIGNAL(returnPressed()), this, SLOT(onSetBaudRate()));
 
+    //ID
+    QLabel* idLabel = new QLabel ("ID/Adresse");
+    setIdText= new QLineEdit2;
+    setIdButton = new QPushButton ("Set");
+    gridLayout ->addWidget(idLabel, 1, 0);
+    gridLayout ->addWidget(setIdText, 1, 1);
+    gridLayout ->addWidget(setIdButton, 1, 2);
+    connect(setIdButton, SIGNAL(clicked()), this, SLOT(onSetID()));
+    connect(setIdText, SIGNAL(returnPressed()), this, SLOT(onSetID()));
+
     //CW AngleLimit
     QLabel* cwAngleLimitLabel = new QLabel ("CW Angle Limit [°]");
     cwAngleLimit= new QLineEdit2;
@@ -434,6 +444,11 @@ void DynamixelView::onSetBaudRate(void){
         desiredBaudRate->setText("Error. Unable to read BaudRate");
     }
 
+}
+
+void DynamixelView::onSetID(void) {
+    if (!device) return;
+    device->setID(setIdText->text().toInt());
 }
 
 void DynamixelView::onSetCwAngleLimit(void) {

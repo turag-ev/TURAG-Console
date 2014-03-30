@@ -33,7 +33,7 @@ QColor ColorMapDiscrete2::getColor(int index) {
     }
 
     int base = (int)(cbrt((float)(numberOfColors_ + 1)));
-    int base_red, base_green, base_blue;
+    int base_red = 0, base_green = 0, base_blue = 0;
     if (numberOfColors_ + 1 <= base * base * base) {
         base_blue = base;
         base_green = base;
