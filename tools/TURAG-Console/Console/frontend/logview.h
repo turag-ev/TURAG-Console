@@ -68,7 +68,7 @@ public:
 
   bool insertRow(char level, const char* data, std::size_t len, unsigned source);
   void beginUpdate();
-  bool endUpdate();
+  void endUpdate();
 
   const Rows& rows() const { return rows_; }
 
@@ -169,7 +169,6 @@ private:
   bool scroll_on_output_;
 
   QTimer sendTimer;
-  QTimer updateTimer;
   QByteArray timedSendString;
 };
 

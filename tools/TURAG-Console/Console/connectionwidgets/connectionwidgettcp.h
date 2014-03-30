@@ -38,6 +38,12 @@ public:
         bool       onlineStatus;
     };
 
+    ConnectionWidgetTcp(QWidget *parent = 0);
+    ~ConnectionWidgetTcp();
+
+public slots:
+    void checkData(QString path);
+
 protected:
     QMenu* tcpMenu;
     QAction* emergencyStopAction;
@@ -49,11 +55,21 @@ protected:
 
     virtual QMenu* getMenu() { return tcpMenu; }
 
+protected slots:
+    void connectToServer();
+    void emergencyStop();
+    void onRequestWriteAccess();
+    void reset();
+    void resetFromContextMenu();
+    void receive();
+    void startDataChannel(QListWidgetItem * item);
+    void forceWriteAccess();
 
-public:
-    ConnectionWidgetTcp(QWidget *parent = 0);
-    ~ConnectionWidgetTcp();
+    void socketConnected(void);
+    void socketDisconnected(void);
+    void socketError(QAbstractSocket::SocketError error);
 
+    void showContextMenu(const QPoint & pos);
 
 private:
 
@@ -88,21 +104,6 @@ private:
     void send(QByteArray data);
     void send(QString string);
 
-protected slots:
-    void connectToServer();
-    void emergencyStop();
-    void onRequestWriteAccess();
-    void reset();
-    void resetFromContextMenu();
-    void receive();
-    void startDataChannel(QListWidgetItem * item);
-    void forceWriteAccess();
-
-    void socketConnected(void);
-    void socketDisconnected(void);
-    void socketError(QAbstractSocket::SocketError error);
-
-    void showContextMenu(const QPoint & pos);
 };
 
 #endif // CONNECTIONWIDGETTCP_H

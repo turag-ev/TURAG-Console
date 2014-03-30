@@ -16,9 +16,12 @@ public:
 
     static const QString connectionPrefix;
     virtual bool isReadOnly(void) const;
-    virtual bool isBuffered(void) const { return false; }
+    virtual bool isBuffered(void) const { return true; }
     void setWriteAccess(bool granted);
     virtual QString getConnectionInfo();
+
+signals:
+    void checkData(QString path);
 
 public slots:
     virtual bool openConnection(QString connectionString);

@@ -473,6 +473,16 @@ void ConnectionWidgetTcp::showContextMenu(const QPoint & pos) {
     }
 }
 
+void ConnectionWidgetTcp::checkData(QString path) {
+    if (selectedDevice && path == selectedDevice->description && socket->isOpen()) {
+        QByteArray data(PRINT_BUFFER);
+        data.append(" ");
+        data.append(selectedDevice->path);
+        data.append(" ");
+        data.append(socket->localAddress().toString());
+        send(data);
 
+    }
+}
 
 

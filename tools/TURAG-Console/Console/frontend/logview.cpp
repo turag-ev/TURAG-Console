@@ -29,7 +29,7 @@ static QIcon icons[StreamModel::ICON_MAX];
 StreamModel::StreamModel(QObject* parent) :
     QAbstractTableModel(parent),
     rows_(),
-    last_size(-1),
+    last_size(),
     log_sources_(),
     logtime_(0)
 {
@@ -133,7 +133,7 @@ QVariant StreamModel::headerData(int section,
 }
 
 void StreamModel::beginUpdate() {
-    if (last_size == -1) last_size = rows_.size();
+    last_size = rows_.size();
 }
 
 bool StreamModel::insertRow(char level, const char *data, std::size_t len, unsigned source)
@@ -172,16 +172,13 @@ bool StreamModel::insertRow(char level, const char *data, std::size_t len, unsig
     return true;
 }
 
-bool StreamModel::endUpdate() {
-    if (last_size == -1) return false;
-
+void StreamModel::endUpdate() {
     int size = rows_.size();
     int diff = size - last_size;
     if (diff == 0) {
-        return false;
+        return;
     }
     int old_size = last_size;
-    last_size = -1,
     /*
   while (diff > 250) {
     beginInsertRows(QModelIndex(), old_size, old_size + 250);
@@ -193,7 +190,6 @@ bool StreamModel::endUpdate() {
 
     beginInsertRows(QModelIndex(), old_size, size - 1);
     endInsertRows();
-    return true;
 }
 
 void StreamModel::clear() {
@@ -312,9 +308,7 @@ LogView::LogView(TinaInterface *interface, QWidget *parent) :
 
     // connect to input source TinaInterface
     connect(interface, SIGNAL(beginUpdate()), this, SLOT(beginUpdate()));
-//    connect(interface, SIGNAL(endUpdate()), this, SLOT(endUpdate()));
-    connect(&updateTimer, SIGNAL(timeout()), this, SLOT(endUpdate()));
-    updateTimer.start(100);
+    connect(interface, SIGNAL(endUpdate()), this, SLOT(endUpdate()));
     connect(interface, SIGNAL(tinaPackageReady(QByteArray)), this, SLOT(writeLine(QByteArray)));
 
     connect(&sendTimer, SIGNAL(timeout()), this, SLOT(onSendTimeout()));
@@ -379,10 +373,9 @@ void LogView::beginUpdate() {
 }
 
 void LogView::endUpdate() {
-    if (log_model_->endUpdate()) {
-        // causes performance issues
+    log_model_->endUpdate();
+    // causes performance issues
 //        log_->resizeRowsToContents();
-    }
 }
 
 void LogView::setScrollOnOutput(bool on) {

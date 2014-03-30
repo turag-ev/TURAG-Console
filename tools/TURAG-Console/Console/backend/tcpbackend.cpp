@@ -111,7 +111,14 @@ QString TcpBackend::getConnectionInfo() {
 }
 
 void TcpBackend::checkData(void) {
+    QString connectionString = connectionString_;
 
+    connectionString.remove(0, connectionPrefix.length());
+
+    int index = connectionString.indexOf("/");
+    QString path = connectionString.right(connectionString.size() - index - 1);
+
+    emit checkData(path);
 }
 
 void TcpBackend::emitData(void) {

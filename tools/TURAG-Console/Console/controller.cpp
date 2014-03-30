@@ -31,7 +31,8 @@ Controller::Controller(QWidget *parent) :
     // add all available Backends to list with parent this
     availableBackends.append(new FileBackend(this));
     availableBackends.append(new SerialBackend(this));
-    availableBackends.append(new TcpBackend(this));
+    TcpBackend* tcpbackend = new TcpBackend(this);
+    availableBackends.append(tcpbackend);
 
     // add all available Frontends to list without a parent
     availableFrontends.append(new PlainTextFrontend);
@@ -43,7 +44,8 @@ Controller::Controller(QWidget *parent) :
     // add all available connectionWidgets to list without a parent
     availableConnectionWidgets.append(new ConnectionWidgetSerial);
     availableConnectionWidgets.append(new ConnectionWidgetFile);
-    availableConnectionWidgets.append(new ConnectionWidgetTcp);
+    ConnectionWidgetTcp* connectionwidgettcp = new ConnectionWidgetTcp;
+    availableConnectionWidgets.append(connectionwidgettcp);
 
 
     // ---------------------------------------------------------------
@@ -60,6 +62,10 @@ Controller::Controller(QWidget *parent) :
         connect(iter,SIGNAL(disconnected(bool)),this,SLOT(onDisconnected()), Qt::QueuedConnection);
         connect(iter,SIGNAL(disconnected(bool)),this,SIGNAL(disconnected(bool)), Qt::QueuedConnection);
     }
+
+
+    // special feature for tcp connections
+    connect(tcpbackend, SIGNAL(checkData(QString)), connectionwidgettcp, SLOT(checkData(QString)));
 
 
     // build welcome screen
@@ -156,6 +162,7 @@ void Controller::setFrontend(int newFrontendIndex, bool calledManually) {
             connect(this,SIGNAL(connected(bool,bool,QIODevice*)),newFrontend,SLOT(onConnected(bool,bool,QIODevice*)));
             connect(this,SIGNAL(disconnected(bool)),newFrontend,SLOT(onDisconnected(bool)));
             if (calledManually) newFrontend->onConnected(currentBackend->isReadOnly(), currentBackend->isBuffered(), currentBackend->getDevice());
+            currentBackend->checkData();
         }
 
         currentFrontendIndex = newFrontendIndex;
