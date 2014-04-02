@@ -17,6 +17,9 @@ class DynamixelView : public QWidget
 {
     Q_OBJECT
 
+public:
+    explicit DynamixelView(DynamixelDevice* dev, QWidget *parent = 0);
+
 protected:
     DynamixelDevice* device;
 
@@ -94,13 +97,6 @@ protected:
     void readTorqueEnable(void);
 
     void onTorqueEnable(bool state);
-
-public:
-    explicit DynamixelView(DynamixelDevice* dev, QWidget *parent = 0);
-
-signals:
-
-public slots:
 
 };
 

@@ -165,7 +165,7 @@ void Controller::setFrontend(int newFrontendIndex, bool calledManually) {
             connect(this,SIGNAL(connected(bool,bool,QIODevice*)),newFrontend,SLOT(onConnected(bool,bool,QIODevice*)));
             connect(this,SIGNAL(disconnected(bool)),newFrontend,SLOT(onDisconnected(bool)));
             if (calledManually) newFrontend->onConnected(currentBackend->isReadOnly(), currentBackend->isBuffered(), currentBackend->getDevice());
-            currentBackend->checkData();
+            if (newFrontendIndex != currentFrontendIndex) currentBackend->checkData();
         }
 
         currentFrontendIndex = newFrontendIndex;
@@ -332,7 +332,7 @@ void Controller::onConnected(bool readOnly, bool isBuffered) {
 
 void Controller::onDisconnected() {
     if (autoSaveOn) {
-        QString file = QDir::toNativeSeparators(QDir::homePath() + "/turag-" + QDateTime::currentDateTime().toString(Qt::ISODate));
+        QString file = QDir::toNativeSeparators(QDir::homePath() + "/turag-" + QDateTime::currentDateTime().toString(Qt::ISODate) + ".turag");
         availableFrontends.at(currentFrontendIndex)->saveOutput(file);
     }
     if (connectionMenu) {

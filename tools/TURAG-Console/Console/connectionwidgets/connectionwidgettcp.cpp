@@ -447,7 +447,7 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
     associatedBackend = static_cast<TcpBackend*>(backend);
 
     if (associatedBackend) {
-        associatedBackend->setWriteAccess(writeAccess);
+        //associatedBackend->setWriteAccess(writeAccess);   // not necessary
         startBootloaderAction->setEnabled(writeAccess);
     }
 }
