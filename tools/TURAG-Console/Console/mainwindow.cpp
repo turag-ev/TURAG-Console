@@ -284,6 +284,7 @@ void MainWindow::onConnected(bool readOnly) {
     frontendOptions->setEnabled(true);
 
     status->setText(controller->getConnectionInfo());
+    setWindowTitle(controller->getConnectionInfo());
 
     permanentStatusImage->setPixmap(QPixmap::fromImage(*imgTick));
 

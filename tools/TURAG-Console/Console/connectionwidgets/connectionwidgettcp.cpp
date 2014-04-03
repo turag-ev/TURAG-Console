@@ -399,7 +399,7 @@ void ConnectionWidgetTcp::resetFromContextMenu() {
 
             QByteArray data(RESET_DEVICE);
             data.append(" ");
-            data.append(selectedDevice->path);
+            data.append(newSelectedDevice->path);
             send(data);
         }
     }
