@@ -5,7 +5,6 @@
 ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     ConnectionWidget("Letzte Verbindungen", parent),
     selectedDevice(nullptr),
-    writeAccess(false),
     associatedBackend(nullptr)
 {
 
@@ -56,32 +55,13 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     emergencyStopAction->setDisabled(true);
     connect(emergencyStopAction, SIGNAL(triggered()), this, SLOT(emergencyStop()));
 
-    requestWriteAccessAction = new QAction("Schreibrechte anfordern", this);
-    requestWriteAccessAction->setShortcut(Qt::CTRL + Qt::Key_W);
-    requestWriteAccessAction->setDisabled(true);
-    connect(requestWriteAccessAction, SIGNAL(triggered()), this, SLOT(onRequestWriteAccess()));
-
-
     startBootloaderAction = new QAction("&Bootloader starten", this);
     startBootloaderAction->setShortcut(Qt::CTRL + Qt::Key_B);
     startBootloaderAction->setDisabled(true);
     connect(startBootloaderAction, SIGNAL(triggered()), this, SLOT(reset()));
 
-    //QAction, die Schreibrechte mit Gewalt einfordert
-    requestWriteAccessActionForce = new QAction("Schreibrechte erzwingen", this);
-    requestWriteAccessActionForce->setDisabled(true);
-    startBootloaderAction->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_B);
-    requestWriteAccessActionForce->setToolTip("Meister Yoda sagt: Die Macht dir helfen wird zu erlangen die Schreibrechte");
-    connect(requestWriteAccessActionForce, SIGNAL(triggered()), this, SLOT(forceWriteAccess()));
-
-    //submenu um Schreibrechte mit Gewalt an sich zu reißen
-    QMenu * extended = new QMenu("Erweitert", this);
-    extended->addAction(requestWriteAccessActionForce);
-
-    tcpMenu->addAction(requestWriteAccessAction);
     tcpMenu->addAction(emergencyStopAction);
     tcpMenu->addAction(startBootloaderAction);
-    tcpMenu->addMenu(extended);
 
     //das QListWidget anlegen
     allDevicesWidget = new QListWidget(this);
@@ -124,11 +104,8 @@ void ConnectionWidgetTcp::socketConnected(void) {
     connect_button->setEnabled(true);
 
     tcpMenu->setEnabled(true);
-    requestWriteAccessAction->setEnabled(true);
     emergencyStopAction->setDisabled(true);
-    startBootloaderAction->setDisabled(true);
-
-    onRequestWriteAccess();
+    startBootloaderAction->setEnabled(true);
 }
 
 void ConnectionWidgetTcp::socketDisconnected(void) {
@@ -136,10 +113,7 @@ void ConnectionWidgetTcp::socketDisconnected(void) {
     connect_button->setEnabled(true);
 
     tcpMenu->setDisabled(true);
-    requestWriteAccessAction->setDisabled(true);
-    requestWriteAccessActionForce->setDisabled(true);
-
-    writeAccess = false;
+    startBootloaderAction->setEnabled(false);
 
     for (device* dev : allDevices) {
         delete dev;
@@ -176,28 +150,7 @@ void ConnectionWidgetTcp::socketError(QAbstractSocket::SocketError error) {
 }
 
 void ConnectionWidgetTcp::handleData() {
-
-    if (puffer.at(0) == WADENIED) {
-        //hier machen, was passieren soll, wenn man Schreibrechte erhalten hat
-        writeAccess = false;
-        requestWriteAccessAction->setText("Schreibrechte anfordern");
-        requestWriteAccessActionForce->setEnabled(true);
-        if (associatedBackend) {
-            associatedBackend->setWriteAccess(false);
-            startBootloaderAction->setEnabled(false);
-        }
-        emit errorOccured("Schreibrechte nicht gewährt/verloren");
-    }
-    else if (puffer.at(0) == WAGRANTED) {
-        writeAccess = true;
-        requestWriteAccessAction->setText("Schreibrechte aufgeben");
-        requestWriteAccessActionForce->setDisabled(true);
-        if (associatedBackend) {
-            associatedBackend->setWriteAccess(true);
-            startBootloaderAction->setEnabled(true);
-        }
-    }
-    else if (puffer.at(0) == DEVICE) {
+    if (puffer.at(0) == DEVICE) {
         /*
          *Das Übermitteln der Devices läuft wie folgt ab:
          *I.Ankündigen, dass man devices übermittelt
@@ -362,19 +315,8 @@ void ConnectionWidgetTcp::emergencyStop() {
 
 }
 
-void ConnectionWidgetTcp::onRequestWriteAccess() {
-    if (writeAccess == true) {
-        send(READONLY);
-    }
-    else {
-        send(WRITEACCESS);
-    }
-}
 
 void ConnectionWidgetTcp::reset() {
-    /*send(RESET_DEVICE);
-    send(selectedDevice->path);*/
-
     QByteArray data(RESET_DEVICE);
     data.append(" ");
     data.append(selectedDevice->path);
@@ -386,18 +328,12 @@ void ConnectionWidgetTcp::resetFromContextMenu() {
         device * newSelectedDevice = allDevices.at(allDevicesWidget->currentRow());
 
         if (newSelectedDevice->onlineStatus == false) {
-            /*send(LEAVE_BOOTLOADER);
-            send(newSelectedDevice->path);*/
-
             QByteArray data(LEAVE_BOOTLOADER);
             data.append(" ");
             data.append(newSelectedDevice->path);
             send(data);
 
         } else {
-            /*send(RESET_DEVICE);
-            send(selectedDevice->path);*/
-
             QByteArray data(RESET_DEVICE);
             data.append(" ");
             data.append(newSelectedDevice->path);
@@ -445,18 +381,6 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
     BaseBackend* backend;
     emit connectionChanged(connectionString, nullptr, &backend);
 
-    associatedBackend = static_cast<TcpBackend*>(backend);
-
-    if (associatedBackend) {
-        //associatedBackend->setWriteAccess(writeAccess);   // not necessary
-        startBootloaderAction->setEnabled(writeAccess);
-    }
-}
-
-void ConnectionWidgetTcp::forceWriteAccess() {
-    if (!writeAccess) {
-        send(FORCEWRITEACCESS);
-    }
 }
 
 

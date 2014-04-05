@@ -47,10 +47,8 @@ public slots:
 protected:
     QMenu* tcpMenu;
     QAction* emergencyStopAction;
-    QAction* requestWriteAccessAction;
     QAction* startBootloaderAction;
     QAction* bootloaderContextAction;
-    QAction* requestWriteAccessActionForce;
     QAction* reload;
 
     virtual QMenu* getMenu() { return tcpMenu; }
@@ -58,12 +56,10 @@ protected:
 protected slots:
     void connectToServer();
     void emergencyStop();
-    void onRequestWriteAccess();
     void reset();
     void resetFromContextMenu();
     void receive();
     void startDataChannel(QListWidgetItem * item);
-    void forceWriteAccess();
 
     void socketConnected(void);
     void socketDisconnected(void);
@@ -73,9 +69,7 @@ protected slots:
 
 private:
 
-    //writeAccess steht auf false, falls readonly
     device * selectedDevice;
-    bool writeAccess;
     TcpBackend* associatedBackend;
 
     QString recentHost;

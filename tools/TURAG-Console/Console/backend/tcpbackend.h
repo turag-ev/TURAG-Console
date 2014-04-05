@@ -17,7 +17,6 @@ public:
     static const QString connectionPrefix;
     virtual bool isReadOnly(void) const;
     virtual bool isBuffered(void) const { return true; }
-    void setWriteAccess(bool granted);
     virtual QString getConnectionInfo();
 
 signals:
@@ -31,7 +30,6 @@ protected:
     QHostAddress * hostAddress;
     qint16 port;
     QString devicePath;
-    bool writeAccessGranted;
 
 protected slots:
     void socketConnected(void);

@@ -6,8 +6,7 @@
 const QString TcpBackend::connectionPrefix = "tcp://";
 
 TcpBackend::TcpBackend (QObject *parent) :
-    BaseBackend(TcpBackend::connectionPrefix, parent),
-    writeAccessGranted(false)
+    BaseBackend(TcpBackend::connectionPrefix, parent)
 { }
 
 bool TcpBackend::openConnection(QString connectionString) {
@@ -85,18 +84,10 @@ bool TcpBackend::isReadOnly(void) const {
     if (stream_.get() == nullptr) {
         return true;
     } else {
-        return !writeAccessGranted;
+        return false;
     }
 }
 
-
-void TcpBackend::setWriteAccess(bool granted) {
-    writeAccessGranted = granted;
-
-    if (isOpen()) {
-        emitConnected();
-    }
-}
 
 
 QString TcpBackend::getConnectionInfo() {
