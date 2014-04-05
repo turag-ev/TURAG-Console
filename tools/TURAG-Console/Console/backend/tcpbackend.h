@@ -37,7 +37,8 @@ protected slots:
     void onTcpError(QAbstractSocket::SocketError err);
     void emitData(void);
 
-
+private:
+    bool connecting;
 };
 
 #endif // TCPBACKEND_H

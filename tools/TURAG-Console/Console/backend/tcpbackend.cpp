@@ -6,13 +6,18 @@
 const QString TcpBackend::connectionPrefix = "tcp://";
 
 TcpBackend::TcpBackend (QObject *parent) :
-    BaseBackend(TcpBackend::connectionPrefix, parent)
+    BaseBackend(TcpBackend::connectionPrefix, parent), connecting(false)
 { }
 
 bool TcpBackend::openConnection(QString connectionString) {
     if (!canHandleUrl(connectionString)) {
         return false;
     }
+
+    // prevent another connection attempt while already connecting
+    if (connecting) return false;
+
+    connecting = true;
 
     // close connection in case we had one open
     if (isOpen()) closeConnection();
@@ -51,11 +56,12 @@ bool TcpBackend::openConnection(QString connectionString) {
 
 
 void TcpBackend::socketConnected(void) {
+    connecting = false;
     emitConnected();
 }
 
 void TcpBackend::socketDisconnected(void) {
-
+    connecting = false;
 }
 
 void TcpBackend::onTcpError(QAbstractSocket::SocketError error) {
