@@ -13,6 +13,7 @@
 #include <QPalette>
 #include <QColor>
 #include <vector>
+#include <QDebug>
 
 
 FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :

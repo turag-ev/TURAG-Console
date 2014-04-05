@@ -70,6 +70,7 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     //QAction, die Schreibrechte mit Gewalt einfordert
     requestWriteAccessActionForce = new QAction("Schreibrechte erzwingen", this);
     requestWriteAccessActionForce->setDisabled(true);
+    startBootloaderAction->setShortcut(Qt::CTRL + Qt::Shift + Qt::Key_B);
     requestWriteAccessActionForce->setToolTip("Meister Yoda sagt: Die Macht dir helfen wird zu erlangen die Schreibrechte");
     connect(requestWriteAccessActionForce, SIGNAL(triggered()), this, SLOT(forceWriteAccess()));
 

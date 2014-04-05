@@ -339,6 +339,8 @@ void FeldbusFrontend::onDeviceSelected( int row) {
             feldbusWidget = new FeldbusAktorView(dcmotor);
             splitter->addWidget(feldbusWidget);
             splitter->setStretchFactor(1,2);
+            clearActions();
+            addActions(static_cast<FeldbusAktorView*>(feldbusWidget)->getActions());
             return;
         }
 
