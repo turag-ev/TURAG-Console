@@ -13,6 +13,8 @@ function texec() {
 
 if [ "$1" == "" ]; then
 	LSB="$(lsb_release -sc)"
+else
+  LSB="$1"
 fi
 
 SRC="$(ls -t *.dsc | head -n 1)"

@@ -1,3 +1,15 @@
+turag-console (2.2~git20140407-1~trusty1) trusty; urgency=medium
+
+  * new upstream release
+
+ -- TURAG Developers <dev-team@turag.de>  Mon, 07 Apr 2014 21:03:06 +0200
+
+turag-console (2.2~git20140407-1~trusty0) trusty; urgency=medium
+
+  * new upstream release
+
+ -- TURAG Developers <dev-team@turag.de>  Mon, 07 Apr 2014 20:44:48 +0200
+
 turag-console (2.2~git20140326-3) saucy; urgency=low
 
   * new upstream release

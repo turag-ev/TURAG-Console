@@ -2,6 +2,14 @@
 
 VERBOSE="yes"
 
+# Argumente
+
+if [ "$1" == "" ]; then
+	LSB="$(lsb_release -sc)"
+else
+  LSB="$1"
+fi
+
 # Verzeichnisse speichern
 WORKING_DIR=`pwd`
 ROOT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
@@ -43,9 +51,9 @@ texec mv "${SRC_TAR}" "${DEB_TAR}"
 texec tar zxf "${DEB_TAR}"
 texec cd "turag-console-${SRC_VERSION}"
 
-texec cp -r "${ROOT_DIR}/debian" .
-texec dch -d "new upstream release" -D "$(lsb_release -sc)"
-texec cp -r debian "${ROOT_DIR}"
+texec cp -r "${ROOT_DIR}/debian-${LSB}" debian
+texec dch -d "new upstream release" -D "${LSB}"
+texec cp -r debian/* "${ROOT_DIR}/debian-${LSB}"
 
 texec debuild -sa -S
 
