@@ -10,8 +10,8 @@
 #include <QShowEvent>
 #include <QSerialPortInfo>
 #include <QDebug>
-#include <QComboBox>
 #include <QPushButton>
+#include <libs/keyboardenabledcombobox.h>
 
 
 ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
@@ -20,16 +20,18 @@ ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
     setObjectName("Serielle Schnittstelle");
 
     // create input for serial device
-    port_name_ = new QComboBox;
+    port_name_ = new KeyboardEnabledComboBox;
     port_name_->setMaximumWidth(350);
     port_name_->setEditable(true);
     port_name_->setToolTip("Choose device from list or type in custom device name.");
+    connect(port_name_, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onKeyPressed(QKeyEvent*)));
 
     // create input for baud rate
-    baudrate_ = new QComboBox();
+    baudrate_ = new KeyboardEnabledComboBox();
     baudrate_->setToolTip("Choose baudrate from list or type in custom baudrate value.");
     baudrate_->setMaximumWidth(100);
     baudrate_->setEditable(true);
+    connect(baudrate_, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onKeyPressed(QKeyEvent*)));
 
     baudrate_->clear();
     for (const qint32 baudrate : QSerialPortInfo::standardBaudRates()) {
@@ -101,4 +103,11 @@ void ConnectionWidgetSerial::hideEvent ( QHideEvent * event ) {
     deviceUpdateTimer.stop();
 
     QWidget::hideEvent(event);
+}
+
+
+void ConnectionWidgetSerial::onKeyPressed(QKeyEvent* e) {
+    if (e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter) {
+        connectionChangedInternal();
+    }
 }

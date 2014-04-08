@@ -6,8 +6,10 @@
 #include <QTimer>
 
 class QShowEvent;
-class QComboBox;
+class KeyboardEnabledComboBox;
 class QPushButton;
+
+
 
 
 class ConnectionWidgetSerial : public ConnectionWidget {
@@ -17,9 +19,9 @@ public:
     ConnectionWidgetSerial(QWidget *parent = 0);
 
 protected:
-    QComboBox* baudrate_;
+    KeyboardEnabledComboBox* baudrate_;
     QPushButton* serial_button;
-    QComboBox* port_name_;
+    KeyboardEnabledComboBox* port_name_;
 
     virtual void showEvent ( QShowEvent * event );
     virtual void hideEvent ( QHideEvent * event );
@@ -32,6 +34,7 @@ private:
 
 private slots:
     void onDeviceUpdate(void);
+    void onKeyPressed(QKeyEvent* e);
 
 };
 

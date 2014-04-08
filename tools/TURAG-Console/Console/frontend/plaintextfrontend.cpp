@@ -140,31 +140,29 @@ void PlainTextFrontend::setStyle(STYLE style) {
 
 void PlainTextFrontend::writeData(QByteArray data) {
     QScrollBar* scrollbar = textbox->verticalScrollBar();
-    int value = scrollbar->value();
-    bool scroll_to_max = scroll_on_output && value == scrollbar->maximum();
+    bool scroll_to_max = scroll_on_output && scrollbar->value() == scrollbar->maximum();
 
-    QTextCursor end = textbox->textCursor();
-    end.movePosition(QTextCursor::End);
+    QTextCursor cursor = textbox->textCursor();
+    cursor.movePosition(QTextCursor::End);
 
-    // the following code is supposed to improve performance for very long strings
-    // without newlines. Unfortunately it reduces performance in the opposite case
-    // and has some funny side effects.
+    // inspect the data stream for backspace characters and act appropriately
+    char backspace_chars[] = {'\x08', '\x7f'};
 
-//    if (!auto_wrap) {
-        end.insertText(QString(data));
-//    } else {
-//        for (auto character : data) {
-//            end.insertText(QString(character));
+    const char* begin = data.constBegin();
+    const char* end = std::find_first_of(begin, data.constEnd(), backspace_chars, backspace_chars+2);
 
-//            if (textbox->cursorRect().x() + textbox->verticalScrollBar()->width() > textbox->maximumViewportSize().width()) {
-//                end.deletePreviousChar();
-//                end.insertText("\n");
-//                end.insertText(QString(character));
-//            }
-//        }
-//    }
+    while (end != data.constEnd()) {
+        cursor.insertText(QString::fromLatin1(QByteArray(begin, end - begin)));
+        cursor.deletePreviousChar();
+        begin = end + 1;
+        end = std::find_first_of(begin, data.constEnd(), backspace_chars, backspace_chars+2);
+    }
+    cursor.insertText(QString::fromLatin1(QByteArray(begin, end - begin)));
 
-    scrollbar->setValue(scroll_to_max ? scrollbar->maximum() : value);
+
+    if (scroll_to_max) {
+        scrollbar->setValue(scrollbar->maximum());
+    }
 }
 
 
