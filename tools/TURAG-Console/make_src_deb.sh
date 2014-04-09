@@ -57,10 +57,3 @@ texec cp -r debian/* "${ROOT_DIR}/debian-${LSB}"
 
 texec debuild -sa -S
 
-# Git-Commit durchführen
-cd "${ROOT_DIR}"
-techo "Git-Commit durchführen"
-texec git commit debian/changelog -m "[Console] neue Paketversion $SRC_VERSION"
-texec git push
-
-
