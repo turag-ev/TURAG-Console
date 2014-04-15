@@ -22,10 +22,10 @@ SRC="$(ls -t *.dsc | head -n 1)"
 texec pbuilder-dist "$LSB" i386 build "$SRC"
 if [ "$(uname -m)" == "x86_64" ]; then
   texec pbuilder-dist "$LSB" amd64 build "$SRC"
-	PBUILDER_32="~/pbuilder/${LSB}-i386_result"
-	PBUILDER_64="~/pbuilder/${LSB}_result"
+	PBUILDER_32="${HOME}/pbuilder/${LSB}-i386_result"
+	PBUILDER_64="${HOME}/pbuilder/${LSB}_result"
 else
-  PBUILDER_32="~/pbuilder/${LSB}_result"
+  PBUILDER_32="${HOME}/pbuilder/${LSB}_result"
 fi
 
 read -p "Bitte zu TURAG-VPN verbinden. Weiter mit ENTER."
