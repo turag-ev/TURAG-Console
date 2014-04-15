@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-VERSION = 2.2
+VERSION = 2.3
 
 CONFIG +=  qwt
 QT     += core gui
@@ -48,7 +48,6 @@ SOURCES +=\
     frontend/logview.cpp \
     frontend/scfrontend.cpp \
     frontend/util/datagraph.cpp \
-    frontend/util/lineinterface.cpp \
     frontend/oscilloscope.cpp \
     frontend/util/colormap.cpp \
     frontend/util/tinainterface.cpp \
@@ -96,7 +95,6 @@ HEADERS  += mainwindow.h \
     frontend/logview.h \
     frontend/scfrontend.h \
     frontend/util/datagraph.h \
-    frontend/util/lineinterface.h \
     frontend/oscilloscope.h \
     frontend/util/colormap.h \
     frontend/util/tinainterface.h \

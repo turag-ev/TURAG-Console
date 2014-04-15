@@ -12,6 +12,7 @@
 #include <QApplication>
 #include <QTextStream>
 #include <algorithm>
+#include <iterator>
 #include <QVBoxLayout>
 #include <QFile>
 #include <QFileDialog>
@@ -28,12 +29,15 @@ static QIcon icons[StreamModel::ICON_MAX];
 
 StreamModel::StreamModel(QObject* parent) :
     QAbstractTableModel(parent),
+    row_buffer_(),
     rows_(),
     last_size(),
     log_sources_(),
     logtime_(0)
 {
     log_sources_[';'] = "System";
+    connect(&insertTimer, SIGNAL(timeout()), this, SLOT(insertRowsTimeout()));
+    insertTimer.setInterval(100);
 }
 
 int StreamModel::rowCount(const QModelIndex& parent) const {
@@ -132,10 +136,6 @@ QVariant StreamModel::headerData(int section,
     return QVariant();
 }
 
-void StreamModel::beginUpdate() {
-    last_size = rows_.size();
-}
-
 bool StreamModel::insertRow(char level, const char *data, std::size_t len, unsigned source)
 {
     // icon
@@ -167,29 +167,25 @@ bool StreamModel::insertRow(char level, const char *data, std::size_t len, unsig
         log_sources_[source] = "";
     }
 
-    rows_.emplace_back(icon, QString::fromUtf8(data, len), source, logtime_);
+    row_buffer_.emplace_back(icon, QString::fromUtf8(data, len), source, logtime_);
+
+    if (!insertTimer.isActive()) {
+        insertTimer.start();
+    }
 
     return true;
 }
 
-void StreamModel::endUpdate() {
-    int size = rows_.size();
-    int diff = size - last_size;
-    if (diff == 0) {
-        return;
-    }
-    int old_size = last_size;
-    /*
-  while (diff > 250) {
-    beginInsertRows(QModelIndex(), old_size, old_size + 250);
-    endInsertRows();
-    qApp->processEvents();
-    old_size += 250;
-    diff -= 250;
-  }*/
 
-    beginInsertRows(QModelIndex(), old_size, size - 1);
-    endInsertRows();
+void StreamModel::insertRowsTimeout(void) {
+    if (row_buffer_.size()) {
+        rows_.reserve(rows_.size() + row_buffer_.size());
+        beginInsertRows(QModelIndex(), rows_.size(), rows_.size() + row_buffer_.size() - 1);
+        std::move(row_buffer_.begin(), row_buffer_.end(), std::back_inserter(rows_));
+        endInsertRows();
+        row_buffer_.clear();
+        insertTimer.stop();
+    }
 }
 
 void StreamModel::clear() {
@@ -202,6 +198,8 @@ void StreamModel::clear() {
         endRemoveRows();
     }
     logtime_ = 0;
+    row_buffer_.clear();
+    insertTimer.stop();
 }
 
 void StreamModel::setLogSource(char source, const QString&& name) {
@@ -307,8 +305,6 @@ LogView::LogView(TinaInterface *interface, QWidget *parent) :
     setLayout(layout);
 
     // connect to input source TinaInterface
-    connect(interface, SIGNAL(beginUpdate()), this, SLOT(beginUpdate()));
-    connect(interface, SIGNAL(endUpdate()), this, SLOT(endUpdate()));
     connect(interface, SIGNAL(tinaPackageReady(QByteArray)), this, SLOT(writeLine(QByteArray)));
 
     connect(&sendTimer, SIGNAL(timeout()), this, SLOT(onSendTimeout()));
@@ -369,15 +365,6 @@ void LogView::onDisconnected(bool reconnecting) {
 //    log_->setEnabled(false);
 }
 
-void LogView::beginUpdate() {
-    log_model_->beginUpdate();
-}
-
-void LogView::endUpdate() {
-    log_model_->endUpdate();
-    // causes performance issues
-//        log_->resizeRowsToContents();
-}
 
 void LogView::setScrollOnOutput(bool on) {
     if (scroll_on_output_ != on) {

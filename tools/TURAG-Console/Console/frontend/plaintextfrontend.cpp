@@ -13,7 +13,7 @@
 #include <QPlainTextEdit>
 
 PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
-    BaseFrontend("Standard-Konsole", parent), scroll_on_output(true), hasBufferedConnection(false)
+    BaseFrontend("Standard-Konsole", parent), scroll_on_output(true), hasBufferedConnection(false), buffer_()
 {
     QVBoxLayout* layout = new QVBoxLayout();
 
@@ -50,12 +50,22 @@ PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
     white_on_black_action->setActionGroup(styleOptions);
     white_on_black_action->setCheckable(true);
     white_on_black_action->setChecked(true);
-    connect(white_on_black_action, SIGNAL(triggered()), this, SLOT(onStyleWhiteOnBlack()));
+    connect(white_on_black_action, SIGNAL(triggered()), this, SLOT(onStyleGreyOnBlack()));
 
     green_on_black_action = new QAction("Grün auf schwarz", this);
     green_on_black_action->setActionGroup(styleOptions);
     green_on_black_action->setCheckable(true);
     connect(green_on_black_action, SIGNAL(triggered()), this, SLOT(onStyleGreenOnBlack()));
+
+    blue_on_black_action = new QAction("Blau auf schwarz", this);
+    blue_on_black_action->setActionGroup(styleOptions);
+    blue_on_black_action->setCheckable(true);
+    connect(blue_on_black_action, SIGNAL(triggered()), this, SLOT(onStyleBlueOnBlack()));
+
+    raspberry_on_black_action = new QAction("Himbeer auf schwarz", this);
+    raspberry_on_black_action->setActionGroup(styleOptions);
+    raspberry_on_black_action->setCheckable(true);
+    connect(raspberry_on_black_action, SIGNAL(triggered()), this, SLOT(onStyleRaspberryOnBlack()));
 
     QAction* colorscheme_action = new QAction("Farbschema", this);
     QMenu* colorscheme_menu = new QMenu(this);
@@ -93,6 +103,9 @@ PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
     addAction(wrap_action);
 
     readSettings();
+
+    updateTimer.setInterval(100);
+    connect(&updateTimer, SIGNAL(timeout()), this, SLOT(onUpdate()));
 }
 
 PlainTextFrontend::~PlainTextFrontend() {
@@ -104,12 +117,20 @@ void PlainTextFrontend::onStyleBlackOnWhite() {
     setStyle(STYLE::BLACK_ON_WHITE);
 }
 
-void PlainTextFrontend::onStyleWhiteOnBlack() {
-    setStyle(STYLE::WHITE_ON_BLACK);
+void PlainTextFrontend::onStyleGreyOnBlack() {
+    setStyle(STYLE::GREY_ON_BLACK);
 }
 
 void PlainTextFrontend::onStyleGreenOnBlack() {
     setStyle(STYLE::GREEN_ON_BLACK);
+}
+
+void PlainTextFrontend::onStyleBlueOnBlack() {
+    setStyle(STYLE::BLUE_ON_BLACK);
+}
+
+void PlainTextFrontend::onStyleRaspberryOnBlack() {
+    setStyle(STYLE::RASPBERRY_ON_BLACK);
 }
 
 void PlainTextFrontend::setStyle(STYLE style) {
@@ -128,9 +149,19 @@ void PlainTextFrontend::setStyle(STYLE style) {
         p.setColor(QPalette::Text, Qt::green);
         break;
 
-    case STYLE::WHITE_ON_BLACK:
+    case STYLE::GREY_ON_BLACK:
         p.setColor(QPalette::Base, Qt::black);
         p.setColor(QPalette::Text, QColor(178,178,178));
+        break;
+
+    case STYLE::BLUE_ON_BLACK:
+        p.setColor(QPalette::Base, Qt::black);
+        p.setColor(QPalette::Text, QColor(23,74,240));
+        break;
+
+    case STYLE::RASPBERRY_ON_BLACK:
+        p.setColor(QPalette::Base, Qt::black);
+        p.setColor(QPalette::Text, QColor(0xcc,0x00,0x99));
         break;
     }
 
@@ -139,29 +170,40 @@ void PlainTextFrontend::setStyle(STYLE style) {
 
 
 void PlainTextFrontend::writeData(QByteArray data) {
-    QScrollBar* scrollbar = textbox->verticalScrollBar();
-    bool scroll_to_max = scroll_on_output && scrollbar->value() == scrollbar->maximum();
-
-    QTextCursor cursor = textbox->textCursor();
-    cursor.movePosition(QTextCursor::End);
-
-    // inspect the data stream for backspace characters and act appropriately
-    char backspace_chars[] = {'\x08', '\x7f'};
-
-    const char* begin = data.constBegin();
-    const char* end = std::find_first_of(begin, data.constEnd(), backspace_chars, backspace_chars+2);
-
-    while (end != data.constEnd()) {
-        cursor.insertText(QString::fromLatin1(QByteArray(begin, end - begin)));
-        cursor.deletePreviousChar();
-        begin = end + 1;
-        end = std::find_first_of(begin, data.constEnd(), backspace_chars, backspace_chars+2);
+    buffer_.append(data);
+    if (!updateTimer.isActive()) {
+        updateTimer.start();
     }
-    cursor.insertText(QString::fromLatin1(QByteArray(begin, end - begin)));
+}
+
+void PlainTextFrontend::onUpdate(void) {
+    if (buffer_.size()) {
+        QScrollBar* scrollbar = textbox->verticalScrollBar();
+        bool scroll_to_max = scroll_on_output && scrollbar->value() == scrollbar->maximum();
+
+        QTextCursor cursor = textbox->textCursor();
+        cursor.movePosition(QTextCursor::End);
+
+        // inspect the data stream for backspace characters and act appropriately
+        char backspace_chars[] = {'\x08', '\x7f'};
+
+        const char* begin = buffer_.constBegin();
+        const char* end = std::find_first_of(begin, buffer_.constEnd(), backspace_chars, backspace_chars+2);
+
+        while (end != buffer_.constEnd()) {
+            cursor.insertText(QString::fromLatin1(QByteArray(begin, end - begin)));
+            cursor.deletePreviousChar();
+            begin = end + 1;
+            end = std::find_first_of(begin, buffer_.constEnd(), backspace_chars, backspace_chars+2);
+        }
+        cursor.insertText(QString::fromLatin1(QByteArray(begin, end - begin)));
 
 
-    if (scroll_to_max) {
-        scrollbar->setValue(scrollbar->maximum());
+        if (scroll_to_max) {
+            scrollbar->setValue(scrollbar->maximum());
+        }
+        buffer_.clear();
+        updateTimer.stop();
     }
 }
 
@@ -258,8 +300,12 @@ void PlainTextFrontend::readSettings() {
         black_on_white_action->setChecked(true); break;
     case STYLE::GREEN_ON_BLACK:
         green_on_black_action->setChecked(true); break;
-    case STYLE::WHITE_ON_BLACK:
+    case STYLE::GREY_ON_BLACK:
         white_on_black_action->setChecked(true); break;
+    case STYLE::BLUE_ON_BLACK:
+        blue_on_black_action->setChecked(true); break;
+    case STYLE::RASPBERRY_ON_BLACK:
+        raspberry_on_black_action->setChecked(true); break;
     }
 }
 

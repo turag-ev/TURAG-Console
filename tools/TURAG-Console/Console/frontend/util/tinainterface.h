@@ -12,10 +12,8 @@ public:
     explicit TinaInterface(QObject *parent = 0);
 
 signals:
-    void beginUpdate(void);
     void tinaPackageReady(QByteArray line);
     void cmenuDataReady(QByteArray data);
-    void endUpdate(void);
 
 public slots:
     virtual void dataInput(const QByteArray data);

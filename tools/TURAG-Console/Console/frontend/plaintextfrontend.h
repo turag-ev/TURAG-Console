@@ -2,6 +2,7 @@
 #define PLAINTEXTFRONTEND_H
 
 #include "basefrontend.h"
+#include <QTimer>
 
 class QPlainTextEdit;
 
@@ -12,40 +13,17 @@ class PlainTextFrontend : public BaseFrontend
 public:
     enum class STYLE {
         BLACK_ON_WHITE,
-        WHITE_ON_BLACK,
+        GREY_ON_BLACK,
         GREEN_ON_BLACK,
-        DEFAULT = STYLE::WHITE_ON_BLACK
+        BLUE_ON_BLACK,
+        RASPBERRY_ON_BLACK,
+        DEFAULT = STYLE::GREY_ON_BLACK
     };
-
-protected:
-    QPlainTextEdit* textbox;
-    bool scroll_on_output;
-    bool auto_wrap;
-    bool hasBufferedConnection;
-    STYLE selectedStyle;
-
-    // menu actions
-    QAction* clear_action;
-    QAction* paste_action;
-    QAction* scroll_action;
-    QAction* wrap_action;
-    QAction* green_on_black_action;
-    QAction* white_on_black_action;
-    QAction* black_on_white_action;
-
-    virtual void keyPressEvent ( QKeyEvent * e );
-    virtual void readSettings();
-    virtual void writeSettings();
 
 public:
     PlainTextFrontend(QWidget *parent = 0);
     ~PlainTextFrontend();
 
-
-protected slots:
-    void onStyleBlackOnWhite();
-    void onStyleWhiteOnBlack();
-    void onStyleGreenOnBlack();
 
 public slots:
     virtual void writeData(QByteArray data);
@@ -64,6 +42,41 @@ public slots:
     virtual void setStyle(STYLE style);
     virtual void setAutoWrap(bool on);
     virtual void onPaste();
+
+protected slots:
+    void onStyleBlackOnWhite();
+    void onStyleGreyOnBlack();
+    void onStyleGreenOnBlack();
+    void onStyleBlueOnBlack();
+    void onStyleRaspberryOnBlack();
+
+    void onUpdate(void);
+
+protected:
+    QPlainTextEdit* textbox;
+    bool scroll_on_output;
+    bool auto_wrap;
+    bool hasBufferedConnection;
+    STYLE selectedStyle;
+
+    // menu actions
+    QAction* clear_action;
+    QAction* paste_action;
+    QAction* scroll_action;
+    QAction* wrap_action;
+    QAction* green_on_black_action;
+    QAction* raspberry_on_black_action;
+    QAction* blue_on_black_action;
+    QAction* white_on_black_action;
+    QAction* black_on_white_action;
+
+    virtual void keyPressEvent ( QKeyEvent * e );
+    virtual void readSettings();
+    virtual void writeSettings();
+
+private:
+    QTimer updateTimer;
+    QByteArray buffer_;
 
 };
 

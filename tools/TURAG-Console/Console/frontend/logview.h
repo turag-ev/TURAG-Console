@@ -67,8 +67,6 @@ public:
   Qt::ItemFlags flags(const QModelIndex& index) const;
 
   bool insertRow(char level, const char* data, std::size_t len, unsigned source);
-  void beginUpdate();
-  void endUpdate();
 
   const Rows& rows() const { return rows_; }
 
@@ -77,11 +75,17 @@ public:
   void setLogSource(char source, const QString&& name);
   const QString* getLogSources() const { return log_sources_; }
 
+private slots:
+  void insertRowsTimeout(void);
+
 private:
+  Rows row_buffer_;
   Rows rows_;
   int last_size;
   QString log_sources_[127];
   Time logtime_;
+
+  QTimer insertTimer;
 
   int old_size;
 
@@ -143,9 +147,7 @@ public slots:
   void writeData(QByteArray data) override;
 
 private slots:
-  void beginUpdate();
   void writeLine(QByteArray line);
-  void endUpdate();
   void scroll(int, int);
   void activated(QModelIndex index);
   void contextMenu(QPoint);

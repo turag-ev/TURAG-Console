@@ -10,8 +10,6 @@ TinaInterface::TinaInterface(QObject *parent) :
 
 
 void TinaInterface::dataInput(const QByteArray data) {
-    emit beginUpdate();
-
     const char* msg_begin = data.constBegin(); // begin of message
     const char* iter = msg_begin; // Index in data buffer
     int tina_separators[] = {'\n','\x02'};
@@ -54,8 +52,6 @@ void TinaInterface::dataInput(const QByteArray data) {
             }
         }
     }
-
-    emit endUpdate();
 }
 
 /**
