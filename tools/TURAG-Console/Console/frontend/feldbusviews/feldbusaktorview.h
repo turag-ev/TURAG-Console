@@ -27,8 +27,14 @@ class FeldbusAktorView : public QWidget
 {
     Q_OBJECT
 
-private:
-    void validateInput(void);
+public:
+    explicit FeldbusAktorView(Aktor* aktor, QWidget *parent = 0);
+    ~FeldbusAktorView(void);
+    QList<QAction *> getActions(void) { return plot->getActions(); }
+
+signals:
+
+public slots:
 
 protected:
     struct CommandsetEntry {
@@ -75,14 +81,8 @@ protected slots:
     void onValueSet(int id);
     void onCheckboxChanged(void);
 
-public:
-    explicit FeldbusAktorView(Aktor* aktor, QWidget *parent = 0);
-    ~FeldbusAktorView(void);
-    QList<QAction *> getActions(void) { return plot->getActions(); }
-
-signals:
-
-public slots:
+private:
+    void validateInput(void);
 
 };
 
