@@ -52,8 +52,19 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
                 case 'b': {
                     int listindex = graphIndices.indexOf(index);
                     if (listindex != -1) {
-                        QString title = line.right(line.size() - space_pos - 1);
-                        static_cast<DataGraph*>(stack->widget(listindex))->addChannel(title);
+                        int secondSpacePos = line.indexOf(' ', space_pos + 1);
+                        int timesize = line.mid(space_pos + 1, secondSpacePos - space_pos - 1).toInt(&ok);
+
+                        if (ok) {
+                            QString title = line.right(line.size() - secondSpacePos - 1);
+                            if (timesize == 0) {
+                                static_cast<DataGraph*>(stack->widget(listindex))->addChannel(title);
+                            } else {
+                                qDebug() << timesize;
+                                static_cast<DataGraph*>(stack->widget(listindex))->addChannel(title, static_cast<qreal>(timesize), false);
+                            }
+                        }
+
                     }
                     break;
                 }
