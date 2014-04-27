@@ -34,9 +34,14 @@ ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
     connect(baudrate_, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(onKeyPressed(QKeyEvent*)));
 
     baudrate_->clear();
+    int default_index = 0;
     for (const qint32 baudrate : QSerialPortInfo::standardBaudRates()) {
         baudrate_->addItem(QString("%1").arg(baudrate));
+        if (baudrate == 115200) {
+            default_index = baudrate_->count()-1;
+        }
     }
+    baudrate_->setCurrentIndex(default_index);
 
     // create button to connect
     serial_button = new QPushButton("Verbinden");
