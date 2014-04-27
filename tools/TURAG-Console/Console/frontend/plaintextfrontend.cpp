@@ -188,20 +188,21 @@ void PlainTextFrontend::onUpdate(void) {
         char backspace_chars[] = {'\x08', '\x7f'};
 
         const char* begin = buffer_.constBegin();
-        const char* end = std::find_first_of(begin, buffer_.constEnd(), backspace_chars, backspace_chars+2);
+        const char* end = std::find_first_of(begin, buffer_.constEnd(), std::begin(backspace_chars), std::end(backspace_chars));
 
         while (end != buffer_.constEnd()) {
-            cursor.insertText(QString::fromLatin1(QByteArray(begin, end - begin)));
+            cursor.insertText(QString::fromUtf8(QByteArray(begin, end - begin)));
             cursor.deletePreviousChar();
             begin = end + 1;
-            end = std::find_first_of(begin, buffer_.constEnd(), backspace_chars, backspace_chars+2);
+            end = std::find_first_of(begin, buffer_.constEnd(), std::begin(backspace_chars), std::end(backspace_chars));
         }
-        cursor.insertText(QString::fromLatin1(QByteArray(begin, end - begin)));
+        cursor.insertText(QString::fromUtf8(QByteArray(begin, end - begin)));
 
 
         if (scroll_to_max) {
             scrollbar->setValue(scrollbar->maximum());
         }
+
         buffer_.clear();
         updateTimer.stop();
     }
