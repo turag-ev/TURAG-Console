@@ -191,12 +191,12 @@ void PlainTextFrontend::onUpdate(void) {
         const char* end = std::find_first_of(begin, buffer_.constEnd(), std::begin(backspace_chars), std::end(backspace_chars));
 
         while (end != buffer_.constEnd()) {
-            cursor.insertText(QString::fromUtf8(QByteArray(begin, end - begin)));
+            cursor.insertText(QString::fromUtf8(QByteArray(begin, end - begin)).remove('\r'));
             cursor.deletePreviousChar();
             begin = end + 1;
             end = std::find_first_of(begin, buffer_.constEnd(), std::begin(backspace_chars), std::end(backspace_chars));
         }
-        cursor.insertText(QString::fromUtf8(QByteArray(begin, end - begin)));
+        cursor.insertText(QString::fromUtf8(QByteArray(begin, end - begin)).remove('\r'));
 
 
         if (scroll_to_max) {
