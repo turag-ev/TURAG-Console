@@ -9,6 +9,7 @@
 #include "frontend/oscilloscope.h"
 #include "frontend/feldbusfrontend.h"
 #include "frontend/mcfrontend.h"
+#include "frontend/stmcamfrontend.h"
 
 #include "connectionwidgets/connectionwidgetfile.h"
 #include "connectionwidgets/connectionwidgetserial.h"
@@ -43,6 +44,7 @@ Controller::Controller(QWidget *parent) :
     availableFrontends.append(new MCFrontend);
     availableFrontends.append(new Oscilloscope);
     availableFrontends.append(new FeldbusFrontend);
+    availableFrontends.append(new STMCamFrontend);
 
     // add all available connectionWidgets to list without a parent
     availableConnectionWidgets.append(new ConnectionWidgetSerial);
