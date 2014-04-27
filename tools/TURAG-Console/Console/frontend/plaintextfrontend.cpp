@@ -11,6 +11,8 @@
 #include <QMenu>
 #include <QDebug>
 #include <QPlainTextEdit>
+#include <QApplication>
+#include <QClipboard>
 
 PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
     BaseFrontend("Standard-Konsole", parent), scroll_on_output(true), hasBufferedConnection(false), buffer_()
@@ -284,7 +286,13 @@ void PlainTextFrontend::onDisconnected(bool reconnecting) {
 }
 
 void PlainTextFrontend::onPaste() {
-    // TODO
+    QTextCursor cursor = textbox->textCursor();
+    cursor.movePosition(QTextCursor::End);
+
+    QClipboard *clipboard = QApplication::clipboard();
+    QString txt = clipboard->text();
+
+    emit dataReady(txt.toUtf8());
 }
 
 void PlainTextFrontend::readSettings() {
