@@ -14,6 +14,9 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     QT += printsupport
     QT += serialport
     QT += widgets
+    # camera stuff
+    QT += multimedia
+    QT += multimediawidgets
 } else {
     CONFIG += serialport
 }
@@ -80,7 +83,8 @@ SOURCES +=\
     ../../../tina/tina/utils/base64.c \
     ../../../tina/tina/debug/graph.c \
     libs/keyboardenabledcombobox.cpp \
-    frontend/stmcamfrontend.cpp
+    frontend/stmcamfrontend.cpp \
+    frontend/camerafrontend.cpp
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -167,7 +171,8 @@ HEADERS  += mainwindow.h \
     ../../../tina/tina/debug/graph.h \
     ../../../tina/tina/debug/print.h \
     libs/keyboardenabledcombobox.h \
-    frontend/stmcamfrontend.h
+    frontend/stmcamfrontend.h \
+    frontend/camerafrontend.h
 
 INCLUDEPATH += \
     ../../../tina \

@@ -4,6 +4,7 @@
 #include <QSplitter>
 #include <QDebug>
 
+#include "camerafrontend.h"
 #include "logview.h"
 #include "plaintextfrontend.h"
 #include "util/tinainterface.h"
@@ -15,18 +16,37 @@ STMCamFrontend::STMCamFrontend(QWidget *parent) :
     BaseFrontend("STMCam", parent)
 {
     interface = new TinaInterface(this);
+    camview = new TinaCameraFrontend(this);
     logview = new LogView(interface);
-    cshell = new PlainTextFrontend();
+    cshell = new PlainTextFrontend(this);
 
-    QHBoxLayout* layout = new QHBoxLayout;
-    QSplitter* splitter = new QSplitter;
+    // IO box
+    QHBoxLayout* IOlayout = new QHBoxLayout;
+    QSplitter* IOsplitter = new QSplitter;
 
-    layout->addWidget(splitter);
-    layout->setMargin(0);
-    splitter->addWidget(logview);
-    splitter->addWidget(cshell);
-    splitter->setContentsMargins(0,0,0,0);
-    setLayout(layout);
+    IOlayout->addWidget(IOsplitter);
+    IOlayout->setMargin(0);
+
+    // top: logview, bottom: shell
+    IOsplitter->setOrientation(Qt::Vertical);
+    IOsplitter->addWidget(logview);
+    IOsplitter->addWidget(cshell);
+    IOsplitter->setContentsMargins(0,0,0,0);
+
+    // main box
+    QHBoxLayout* viewlayout = new QHBoxLayout;
+    QSplitter* viewsplitter = new QSplitter;
+
+    viewlayout->addWidget(viewsplitter);
+    viewlayout->setMargin(0);
+
+    // left: cam viewer, right: IO box
+    viewsplitter->addWidget(camview);
+    viewsplitter->addWidget(IOsplitter);
+    viewsplitter->setContentsMargins(0,0,0,0);
+
+    // set main box as layout
+    setLayout(viewlayout);
 
     connect(interface, SIGNAL(cmenuDataReady(QByteArray)), cshell, SLOT(writeData(QByteArray)));
 

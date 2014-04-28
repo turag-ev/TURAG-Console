@@ -6,8 +6,9 @@
 #include "basefrontend.h"
 
 class TinaInterface;
-class PlainTextFrontend;
+class TinaCameraFrontend;
 class LogView;
+class PlainTextFrontend;
 
 class STMCamFrontend : public BaseFrontend {
     Q_OBJECT
@@ -29,6 +30,7 @@ public slots:
 
 protected:
     TinaInterface* interface;
+    TinaCameraFrontend* camview;
     LogView* logview;
     PlainTextFrontend* cshell;
 
