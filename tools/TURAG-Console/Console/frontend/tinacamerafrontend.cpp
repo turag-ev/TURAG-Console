@@ -5,17 +5,26 @@
 #include <QListWidget>
 #include <QGraphicsView>
 #include <QGraphicsScene>
+#include <QPushButton>
 
 TinaCameraFrontend::TinaCameraFrontend(QWidget *parent) :
     BaseFrontend("TinaCameraFrontend", parent)
 {
-    QHBoxLayout* layout = new QHBoxLayout;
+    QVBoxLayout* layout = new QVBoxLayout;
 
     scene = new QGraphicsScene(this);
-    scene->addText("Waiting for camera image ...");
+    scene->addText("Waiting for connection ...");
 
     view = new QGraphicsView(scene);
+
+    QHBoxLayout *buttonBox = new QHBoxLayout;
+
+    QPushButton* b_dump = new QPushButton(style()->standardIcon(QStyle::SP_BrowserReload), "Dump &image");
+    connect(b_dump, SIGNAL(pressed()), this, SLOT(handleButtonDump()));
+    buttonBox->addWidget(b_dump);
+
     layout->addWidget(view);
+    layout->addLayout(buttonBox);
 
     setLayout(layout);
 }
@@ -78,7 +87,7 @@ void TinaCameraFrontend::writeLine(QByteArray line) {
                 }
 
                 // cast source data array around for b64 decoding
-                QByteArray source_data = image_buffer_b64.toLatin1();
+                QByteArray source_data = image_buffer_b64.toUtf8();
                 const uint8_t* source_data_cu = reinterpret_cast<const uint8_t*>(source_data.constData());
 
                 // target buffer for decoded data
@@ -99,14 +108,8 @@ void TinaCameraFrontend::writeLine(QByteArray line) {
                     break;
                 }
 
-                qDebug() << "TinaCameraFrontend: decoded correctly";
-
                 QImage image(reinterpret_cast<const uchar*>(decoded_data.constData()), resolution_x, resolution_y, QImage::Format_RGB16);
-                image = image.scaledToWidth(view->width()-2);
-                scene->addPixmap(QPixmap::fromImage(image));
-                scene->setSceneRect(image.rect());
-
-                // TODO update system time
+                updateImage(image);
 
                 break;
             }
@@ -116,15 +119,17 @@ void TinaCameraFrontend::writeLine(QByteArray line) {
 }
 
 void TinaCameraFrontend::onConnected(bool , bool, QIODevice*) {
-    
+    scene->clear();
+    scene->addText("Connected. Waiting for camera image ...");
 }
 
 void TinaCameraFrontend::onDisconnected(bool ) {
-    
+    scene->clear();
+    scene->addText("Disconnected");
 }
 
 void TinaCameraFrontend::clear(void) {
-
+    scene->clear();
 }
 
 bool TinaCameraFrontend::saveOutput(QString file) {
@@ -135,4 +140,23 @@ bool TinaCameraFrontend::saveOutput(QString file) {
 // needed for the interface
 void TinaCameraFrontend::writeData(QByteArray data) {
     (void)data;
+}
+
+void TinaCameraFrontend::updateImage(const QImage image)
+{
+    QImage ni = image.scaledToWidth(view->width()-2);
+    current_image = ni;
+    updateImageScaling();
+}
+
+void TinaCameraFrontend::updateImageScaling(void)
+{
+    scene->addPixmap(QPixmap::fromImage(current_image));
+    scene->setSceneRect(current_image.rect());
+}
+
+void TinaCameraFrontend::handleButtonDump(void)
+{
+    qDebug() << "dump button pressed";
+    emit dataReady("\r\ndump\r\n");
 }

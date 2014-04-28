@@ -52,6 +52,7 @@ STMCamFrontend::STMCamFrontend(QWidget *parent) :
     connect(interface, SIGNAL(tinaPackageReady(QByteArray)), camview, SLOT(writeLine(QByteArray)));
 
     // connect outputs of logview and cmenu to own dataReadySignal
+    connect(camview, SIGNAL(dataReady(QByteArray)), this, SIGNAL(dataReady(QByteArray)));
     connect(logview, SIGNAL(dataReady(QByteArray)), this, SIGNAL(dataReady(QByteArray)));
     connect(cshell, SIGNAL(dataReady(QByteArray)), this, SIGNAL(dataReady(QByteArray)));
 }

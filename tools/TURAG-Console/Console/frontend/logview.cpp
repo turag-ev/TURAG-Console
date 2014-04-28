@@ -341,7 +341,7 @@ void LogView::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
     setScrollOnOutput(!readOnly);
 
     if (!readOnly) {
-        timedSendString = "\x18\x18\x18\x18\x18\x18\x18>";
+        timedSendString = "\x18\x18\x18\x18\x18\x18\x18>\r\n";
         sendTimer.start(10);
     }
 

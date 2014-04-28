@@ -27,7 +27,15 @@ public slots:
     void clear(void);
     bool saveOutput(QString file);
 
+    // ui handler
+    void handleButtonDump(void);
+
 private:
+    void updateImage(const QImage image);
+    void updateImageScaling(void);
+
+    QImage current_image;
+
     QGraphicsScene* scene;
     QGraphicsView* view;
 };
