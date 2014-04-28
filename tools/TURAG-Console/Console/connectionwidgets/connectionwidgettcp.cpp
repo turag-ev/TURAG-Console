@@ -1,12 +1,16 @@
 #include "connectionwidgettcp.h"
 #include <QSettings>
 #include <QHostInfo>
+#include <QGroupBox>
 
 ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     ConnectionWidget("Letzte Verbindungen", parent),
     selectedDevice(nullptr),
     associatedBackend(nullptr)
 {
+    setObjectName("Debug Server");
+    setToolTip("Mit Doppelklick oder <Enter> Gerät öffnen");
+
 
     QSettings settings;
     settings.beginGroup("ConnectionWidgetTcp");
@@ -25,9 +29,6 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     // create button to connect
     connect_button = new QPushButton("Verbinden");
 
-    //GesamtLayout ist ein QVBoxLayout
-    generalLayout = new QVBoxLayout();
-
     QHBoxLayout * editLayout = new QHBoxLayout();
     editLayout->addWidget(hostLabel, 0);
     editLayout->addWidget(hostEdit, 1);
@@ -35,18 +36,14 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     editLayout->addStretch();
 
     //editLayout in generalLayout einfügen
-    generalLayout->addLayout(editLayout);
+    layout->addLayout(editLayout);
 
     //channelBoxLabel in generalLayout einfügen
-    generalLayout->addWidget(channelBoxLabel);
-
-    setLayout(generalLayout);
+    layout->addWidget(channelBoxLabel);
 
     //Signals abfangen
     connect(hostEdit, SIGNAL(returnPressed()), this, SLOT(connectToServer()));
     connect(connect_button, SIGNAL(clicked()), this, SLOT(connectToServer()));
-
-    setObjectName("Debug Server");
 
     //tcp menu erstellen
     tcpMenu = new QMenu("Debug-Server", this);
@@ -65,14 +62,15 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
 
     //das QListWidget anlegen
     allDevicesWidget = new QListWidget(this);
-    connect(allDevicesWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(startDataChannel(QListWidgetItem*)));
+    allDevicesWidget->setEnabled(false);
+    connect(allDevicesWidget, SIGNAL(itemActivated(QListWidgetItem*)), this, SLOT(startDataChannel(QListWidgetItem*)));
 
 
-    generalLayout->addWidget(allDevicesWidget);
+    layout->addWidget(allDevicesWidget);
 
     //für usability:
-    bottomInfoText = new QLabel("Doppelklick öffnet den Datachannel zum gewählten Gerät", this);
-    generalLayout->addWidget(bottomInfoText);
+    timeText = new QLabel;
+    layout->addWidget(timeText);
 
     socket = new  QTcpSocket(this);
     connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
@@ -86,6 +84,12 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     bootloaderContextAction = new QAction(this);
     connect(bootloaderContextAction, SIGNAL(triggered()), this, SLOT(resetFromContextMenu()));
     contextMenu->addAction(bootloaderContextAction);
+
+    heartBeatTimer.setInterval(3 * HEARTBEAT_SEND_PERIOD);
+    connect(&heartBeatTimer, SIGNAL(timeout()), this, SLOT(heartBeatTimerOccured()));
+
+    layout->addSpacing(10);
+    addRecentConnections();
 }
 
 ConnectionWidgetTcp::~ConnectionWidgetTcp() {
@@ -103,23 +107,39 @@ void ConnectionWidgetTcp::socketConnected(void) {
     connect_button->setText("Trennen");
     connect_button->setEnabled(true);
 
+    hostEdit->setEnabled(false);
+    allDevicesWidget->setEnabled(true);
+
     tcpMenu->setEnabled(true);
     emergencyStopAction->setDisabled(true);
     startBootloaderAction->setEnabled(true);
+
+    heartBeatTimer.start();
+
+    saveConnection(hostEdit->text());
+    addRecentConnections();
+    recentConnectionsContainer->setEnabled(false);
 }
 
 void ConnectionWidgetTcp::socketDisconnected(void) {
     connect_button->setText("Verbinden");
     connect_button->setEnabled(true);
 
+    timeText->setText("");
+    hostEdit->setEnabled(true);
+    allDevicesWidget->setEnabled(false);
+
     tcpMenu->setDisabled(true);
     startBootloaderAction->setEnabled(false);
 
+    selectedDevice = nullptr;
     for (device* dev : allDevices) {
         delete dev;
     }
     allDevices.clear();
     allDevicesWidget->clear();
+
+    recentConnectionsContainer->setEnabled(true);
 }
 
 void ConnectionWidgetTcp::socketError(QAbstractSocket::SocketError error) {
@@ -150,8 +170,9 @@ void ConnectionWidgetTcp::socketError(QAbstractSocket::SocketError error) {
 }
 
 void ConnectionWidgetTcp::handleData() {
-    if (puffer.at(0) == DEVICE) {
-        /*
+    if (puffer.size() > 0) {
+        if (puffer.at(0) == QByteArray(DEVICE)) {
+            /*
          *Das Übermitteln der Devices läuft wie folgt ab:
          *I.Ankündigen, dass man devices übermittelt
          *II.Anzahl der Devices übermitteln
@@ -162,65 +183,78 @@ void ConnectionWidgetTcp::handleData() {
          *  4)reset code
          *  5)baudrate
          */
-        int amount = puffer.at(1).toInt();
-        int i;
-        //int countDevice = 0; //ich muss mir merken, in welchem device ich bin
-        for (i = 0; i < amount; i++) {
-            device * newDevice = new device;
-            newDevice->path = QString(puffer.at(2 + i * 5));
-            newDevice->port = QString(puffer.at(3 + i * 5));
-            newDevice->description = QString(puffer.at(4 + i * 5));
-            newDevice->resetCode = QString(puffer.at(5 + i * 5));
-            newDevice->baudRate = QString(puffer.at(6 + i * 5));
-            allDevices.append(newDevice);
+            if (puffer.size() > 1) {
+                bool ok;
+                int amount = puffer.at(1).toInt(&ok);
+
+                if (ok && puffer.size() > 1 + amount * 6) {
+                    int i;
+                    //int countDevice = 0; //ich muss mir merken, in welchem device ich bin
+                    for (i = 0; i < amount; i++) {
+                        device * newDevice = new device;
+                        newDevice->path = QString(puffer.at(2 + i * 5));
+                        newDevice->port = QString(puffer.at(3 + i * 5));
+                        newDevice->description = QString(puffer.at(4 + i * 5));
+                        newDevice->resetCode = QString(puffer.at(5 + i * 5));
+                        newDevice->baudRate = QString(puffer.at(6 + i * 5));
+                        allDevices.append(newDevice);
+                    }
+                    QString online_status_line;
+                    //amount liegt auf puffer.at(1), dann kommen die devices, 5 * amount
+                    int offset = 1 + amount * 5 + 1;
+
+                    for (i = 0; i < amount; i++) {
+                        online_status_line = puffer.at(i + offset);
+
+                        if (online_status_line.endsWith("online")) {
+                            allDevices.at(i)->onlineStatus = true;
+                        } else {
+                            allDevices.at(i)->onlineStatus = false;
+                        }
+                    }
+                    fillDeviceList();
+                }
+            }
         }
-        QString online_status_line;
-        //amount liegt auf puffer.at(1), dann kommen die devices, 5 * amount
-        int offset = 1 + amount * 5 + 1;
+        else if (puffer.at(0) == QByteArray(ONLINESTATUS) && puffer.size() > 1) {
+            bool online;
+            QString path;
+            QString line(puffer.at(1));
 
-        for (i = 0; i < amount; i++) {
-            online_status_line = puffer.at(i + offset);
-
-            if (online_status_line.endsWith("online")) {
-                allDevices.at(i)->onlineStatus = true;
+            if (line.endsWith(QString(ONLINESTATUS_ONLINE))) {
+                path = line.left(line.size() - QString(ONLINESTATUS_ONLINE).size() - 1);
+                online = true;
+            } else if (line.endsWith(QString(ONLINESTATUS_OFFLINE))) {
+                path = line.left(line.size() - QString(ONLINESTATUS_OFFLINE).size() - 1);
+                online = false;
             } else {
-                allDevices.at(i)->onlineStatus = false;
+                return;
+            }
+
+            for (device* dev : allDevices) {
+                if (dev->path == path) {
+                    dev->onlineStatus = online;
+                    break;
+                }
+            }
+            fillDeviceList();
+        }
+        else if (puffer.at(0) == QByteArray(CONTROL_TIME) && puffer.size() > 1) {
+            timeText->setText(QString("Serverzeit: ").append(puffer.at(1)));
+        }
+        else {
+            //dont know what to do
+            qDebug() << "Unknown data package type, received: " << endl;
+            int i;
+            for (i = 0; i < puffer.size(); i++) {
+                qDebug() << puffer.at(i) << endl;
             }
         }
-        fillDeviceList();
+        puffer.clear();
     }
-    else if (puffer.at(0) == ONLINESTATUS) {
-        bool online;
-        QString path;
-        QString line(puffer.at(1));
 
-        if (line.endsWith(ONLINESTATUS_ONLINE)) {
-            path = line.left(line.size() - ONLINESTATUS_ONLINE.size() - 1);
-            online = true;
-        } else if (line.endsWith(ONLINESTATUS_OFFLINE)) {
-            path = line.left(line.size() - ONLINESTATUS_OFFLINE.size() - 1);
-            online = false;
-        } else {
-            return;
-        }
-
-        for (device* dev : allDevices) {
-            if (dev->path == path) {
-                dev->onlineStatus = online;
-                break;
-            }
-        }
-        fillDeviceList();
-    }
-    else {
-        //dont know what to do
-        qDebug() << "Unknown data package type, received: " << endl;
-        int i;
-        for (i = 0; i < puffer.size(); i++) {
-            qDebug() << puffer.at(i) << endl;
-        }
-    }
-    puffer.clear();
+    // restart heartbeat timer because we received something
+    heartBeatTimer.start();
 }
 
 void ConnectionWidgetTcp::fillDeviceList(void) {
@@ -248,11 +282,6 @@ void ConnectionWidgetTcp::fillDeviceList(void) {
     }
 }
 
-void ConnectionWidgetTcp::receiveData(QByteArray * data) {
-    *data = socket->readLine(150);
-    data->chop(1);
-}
-
 void ConnectionWidgetTcp::send(QByteArray data) {
     data.append("\n");
     socket->write(data);
@@ -267,6 +296,12 @@ void ConnectionWidgetTcp::send(QString string) {
  *
  *SLOTS
  */
+void ConnectionWidgetTcp::heartBeatTimerOccured(void) {
+    if (socket->isOpen()) {
+        connectToServer();
+    }
+}
+
 void ConnectionWidgetTcp::connectToServer() {
     if (!socket->isOpen()) {
         qint16 port;
@@ -307,6 +342,7 @@ void ConnectionWidgetTcp::connectToServer() {
         if (associatedBackend) {
             associatedBackend->closeConnection();
         }
+        heartBeatTimer.stop();
     }
 }
 
@@ -344,9 +380,9 @@ void ConnectionWidgetTcp::resetFromContextMenu() {
 
 void ConnectionWidgetTcp::receive() {
     while (socket->canReadLine()) {
-        QByteArray data;
-        receiveData(&data);
-        if (data == TERMINATE) {
+        QByteArray data(socket->readLine(150));
+        data.chop(1);
+        if (data == QByteArray(TERMINATE)) {
             handleData();
         } else {
             puffer.append(data);
@@ -380,7 +416,7 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
     //save connectionString hat hier keine Bedeutung
     BaseBackend* backend;
     emit connectionChanged(connectionString, nullptr, &backend);
-
+    associatedBackend = dynamic_cast<TcpBackend*>(backend);
 }
 
 
@@ -407,6 +443,14 @@ void ConnectionWidgetTcp::checkData(QString path) {
         data.append(socket->localAddress().toString());
         send(data);
 
+    }
+}
+
+
+void ConnectionWidgetTcp::onOpenRecentConnection(int index) {
+    if (!socket->isOpen()) {
+        hostEdit->setText(recent_connections.at(index));
+        connectToServer();
     }
 }
 

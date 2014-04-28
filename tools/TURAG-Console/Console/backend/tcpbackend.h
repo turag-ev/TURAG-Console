@@ -26,18 +26,17 @@ public slots:
     virtual bool openConnection(QString connectionString);
     virtual void checkData(void);
 
-protected:
-    QHostAddress * hostAddress;
-    qint16 port;
-    QString devicePath;
-
-protected slots:
+private slots:
     void socketConnected(void);
     void socketDisconnected(void);
     void onTcpError(QAbstractSocket::SocketError err);
     void emitData(void);
 
 private:
+    QHostAddress * hostAddress;
+    qint16 port;
+    QString devicePath;
+
     bool connecting;
 };
 

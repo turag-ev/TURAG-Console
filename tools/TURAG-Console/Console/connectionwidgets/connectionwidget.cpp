@@ -15,26 +15,30 @@ ConnectionWidget::ConnectionWidget(QString recentConnectionSpecifier, QWidget *p
 {
     recent_files_map_ = new QSignalMapper(this);
     connect(recent_files_map_,SIGNAL(mapped(int)),this,SLOT(onOpenRecentConnection(int)));
+
+    layout = new QVBoxLayout();
+    setLayout(layout);
 }
 
 void ConnectionWidget::addRecentConnections() {
-    // remove recentCOnnections in case this is not the first call of this function
+    // remove recentConnections in case this is not the first call of this function
     if (recentConnectionsContainer != nullptr) {
         layout->removeWidget(recentConnectionsContainer);
-        delete recentConnectionsContainer;
+        recentConnectionsContainer->deleteLater();
     }
 
     QSettings settings;
     settings.beginGroup("RecentConnections");
-    recent_connections = settings.value(recentConnectionSpecifier_).toStringList();
+    recent_connections = settings.value(objectName()).toStringList();
 
     if (!recent_connections.empty()) {
         recentConnectionsContainer = new QGroupBox(recentConnectionSpecifier_ + ":");
+        recentConnectionsContainer->setFlat(true);
         QVBoxLayout* innerLayout = new QVBoxLayout;
 
         for (int i = 0; i < recent_connections.length(); i++) {
-            ElidedButton* link = new ElidedButton(recent_connections[i]);
-            link->setFlat(true);
+            ElidedButton* link = new ElidedButton(" " + recent_connections[i]);
+            //link->setFlat(true);
             link->setElideMode(Qt::ElideMiddle);
             link->setMinimumWidth(350);
             link->setMaximumWidth(1024);
@@ -64,14 +68,14 @@ void ConnectionWidget::saveConnection(QString connectionString) {
     QSettings settings;
     settings.beginGroup("RecentConnections");
 
-    QStringList connections = settings.value(recentConnectionSpecifier_).toStringList();
+    QStringList connections = settings.value(objectName()).toStringList();
     connections.removeAll(connectionString);
     connections.prepend(connectionString);
     while (connections.size() > MAX_RECENT_CONNECTIONS) {
         connections.removeLast();
     }
 
-    settings.setValue(recentConnectionSpecifier_, connections);
+    settings.setValue(objectName(), connections);
 }
 
 

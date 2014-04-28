@@ -33,6 +33,7 @@ signals:
 public slots:
     void showContextMenu(const QPoint & pos);
 
+    // this slot is called by the controller when new data is available
     virtual void writeData(QByteArray data) = 0;
     virtual void clear(void) = 0;
     virtual bool saveOutput(QString file) = 0;

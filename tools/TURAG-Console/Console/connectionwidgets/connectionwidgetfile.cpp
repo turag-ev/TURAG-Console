@@ -10,21 +10,19 @@
 ConnectionWidgetFile::ConnectionWidgetFile(QWidget *parent) :
     ConnectionWidget("Letzte Dateien", parent)
 {
+    setObjectName("Datei");
+
     // button to open file
     file_button = new QPushButton(QIcon::fromTheme("document-open"), "Datei öffnen");
 
     // vertical layout including the button and a label
-    layout = new QVBoxLayout();
     layout->addWidget(file_button, 0, Qt::AlignLeft);
 
     layout->addSpacing(10);
     addRecentConnections();
 
-    setLayout(layout);
-
     connect(file_button, SIGNAL(clicked()), this, SLOT(onOpenFile()));
 
-    setObjectName("Datei");
 }
 
 

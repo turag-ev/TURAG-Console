@@ -57,13 +57,10 @@ ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
     port_layout->addStretch();
 
     // vertical layout including the button and a label
-    layout = new QVBoxLayout();
     layout->addLayout(port_layout);
 
     layout->addSpacing(10);
     addRecentConnections();
-
-    setLayout(layout);
 
     connect(&deviceUpdateTimer, SIGNAL(timeout()), this, SLOT(onDeviceUpdate()));
 }

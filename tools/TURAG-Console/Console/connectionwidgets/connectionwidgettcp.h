@@ -20,6 +20,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QListWidget>
+#include <QTimer>
 
 class QMenu;
 class QAction;
@@ -54,6 +55,9 @@ protected:
     virtual QMenu* getMenu() { return tcpMenu; }
 
 protected slots:
+    virtual void onOpenRecentConnection(int index);
+
+private slots:
     void connectToServer();
     void emergencyStop();
     void reset();
@@ -66,8 +70,18 @@ protected slots:
     void socketError(QAbstractSocket::SocketError error);
 
     void showContextMenu(const QPoint & pos);
+    void heartBeatTimerOccured(void);
 
 private:
+    void fillDeviceList(void);
+
+    void handleData();
+
+    //sendet einfach in den ControlChannel
+    void send(QByteArray data);
+    void send(QString string);
+
+    QTimer heartBeatTimer;
 
     device * selectedDevice;
     TcpBackend* associatedBackend;
@@ -76,12 +90,11 @@ private:
     QLineEdit * hostEdit;
     QPushButton * connect_button;
     QTcpSocket * socket;
-    QVBoxLayout * generalLayout;
 
     QListWidget * allDevicesWidget;
 
     //Infotext, der unter devices Box angezeigt wird
-    QLabel * bottomInfoText;
+    QLabel * timeText;
 
     QList<QByteArray> puffer;
     QList<device * > allDevices;
@@ -89,14 +102,6 @@ private:
     QMenu* contextMenu;
 
 
-    void fillDeviceList(void);
-
-    void handleData();
-    void receiveData(QByteArray * data);
-
-    //sendet einfach in den ControlChannel
-    void send(QByteArray data);
-    void send(QString string);
 
 };
 

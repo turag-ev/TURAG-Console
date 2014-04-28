@@ -36,7 +36,7 @@ protected:
     void saveConnection(QString connectionString);
 
 protected slots:
-    void onOpenRecentConnection(int index);
+   virtual void onOpenRecentConnection(int index);
 
 private:
     QSignalMapper* recent_files_map_;
