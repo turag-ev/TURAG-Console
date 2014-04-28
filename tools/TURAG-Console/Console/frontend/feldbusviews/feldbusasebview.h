@@ -72,6 +72,11 @@ protected:
     QPushButton* resetOutputs_;
     QPushButton* setOutputs_;
 
+    QLabel* syncBufferSize_;
+    QLabel* analogInputSize_;
+    QLabel* pwmOutputSize_;
+
+
     QTimer updateTimer_;
 
     bool deviceWasRead_;

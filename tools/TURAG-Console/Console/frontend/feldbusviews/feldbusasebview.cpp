@@ -10,7 +10,11 @@
 FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
     QWidget(parent), aseb_(aseb), deviceWasRead_(false)
 {
-    QHBoxLayout* layout = new QHBoxLayout;
+    QVBoxLayout* outer_layout = new QVBoxLayout;
+    QGridLayout* info_layout = new QGridLayout;
+    info_layout->setAlignment(Qt::AlignBottom);
+    QHBoxLayout* actual_layout = new QHBoxLayout;
+
     QVBoxLayout* left_layout = new QVBoxLayout;
     QVBoxLayout* right_layout = new QVBoxLayout;
     digital_in_layout_ = new QGridLayout;
@@ -19,9 +23,27 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
     pwm_out_layout_ = new QGridLayout;
     QVBoxLayout* button_layout = new QVBoxLayout;
 
-    setLayout(layout);
-    layout->addLayout(left_layout);
-    layout->addLayout(right_layout);
+    QLabel* label = new QLabel("Sync size:");
+    info_layout->addWidget(label, 0, 0);
+    syncBufferSize_ = new QLabel;
+    info_layout->addWidget(syncBufferSize_, 0, 1);
+
+    label = new QLabel("Analog input size:");
+    info_layout->addWidget(label, 1, 0);
+    analogInputSize_ = new QLabel;
+    info_layout->addWidget(analogInputSize_, 1, 1);
+
+    label = new QLabel("PWM output size:");
+    info_layout->addWidget(label, 2, 0);
+    pwmOutputSize_ = new QLabel;
+    info_layout->addWidget(pwmOutputSize_, 2, 1);
+
+
+    actual_layout->addLayout(left_layout);
+    actual_layout->addLayout(right_layout);
+    outer_layout->addLayout(actual_layout);
+    outer_layout->addLayout(info_layout);
+    setLayout(outer_layout);
 
     QLabel* input_label = new QLabel("Eingänge");
     left_layout->addWidget(input_label);
@@ -63,23 +85,33 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
 
 
 void FeldbusAsebView::onReadDevice(void) {
+    readDevice_->setEnabled(false);
+
     if (deviceWasRead_) {
         for (LabelCheckboxCombo& combo : digitalInputs_) {
             combo.checkbox->deleteLater();
             combo.label->deleteLater();
         }
+        digitalInputs_.clear();
+
         for (LabelCheckboxCombo& combo : digitalOutputs_) {
             combo.checkbox->deleteLater();
             combo.label->deleteLater();
         }
+        digitalOutputs_.clear();
+
         for (LabelLineeditCombo& combo : analogInputs_) {
             combo.label->deleteLater();
             combo.lineedit->deleteLater();
         }
+        analogInputs_.clear();
+
         for (LabelLineeditCombo& combo : pwmOutputs_) {
             combo.label->deleteLater();
             combo.lineedit->deleteLater();
         }
+        pwmOutputs_.clear();
+
         setOutputs_->setDisabled(true);
         resetOutputs_->setDisabled(true);
 
@@ -98,12 +130,19 @@ void FeldbusAsebView::onReadDevice(void) {
     unsigned analogResolution = 0;
 
 
-    if (!aseb_->getDigitalInputSize(&digInSize)) return;
-    if (!aseb_->getDigitalOutputSize(&digOutSize)) return;
-    if (!aseb_->getPwmOutputSize(&pwmOutSize)) return;
-    if (!aseb_->getAnalogInputSize(&analogInSize)) return;
-    if (!aseb_->getSyncSize(&syncSize)) return;
-    if (!aseb_->getAnalogResolution(&analogResolution)) return;
+    if (!aseb_->getDigitalInputSize(&digInSize) ||
+            !aseb_->getDigitalOutputSize(&digOutSize) ||
+            !aseb_->getPwmOutputSize(&pwmOutSize) ||
+            !aseb_->getAnalogInputSize(&analogInSize) ||
+            !aseb_->getSyncSize(&syncSize) ||
+            !aseb_->getAnalogResolution(&analogResolution)) {
+        readDevice_->setEnabled(true);
+        return;
+    }
+
+    syncBufferSize_->setText(QString("%1").arg(syncSize));
+    analogInputSize_->setText(QString("%1").arg(analogInSize));
+    pwmOutputSize_->setText(QString("%1").arg(pwmOutSize));
 
     asebAnalogInputSet_ = new Aseb::Analog_t[analogInSize];
     asebPwmOutputSet_ = new Aseb::Pwm_t[pwmOutSize];
@@ -193,6 +232,8 @@ void FeldbusAsebView::onReadDevice(void) {
         delete[] asebPwmOutputSet_;
         delete[] asebSyncBuffer_;
     }
+
+    readDevice_->setEnabled(true);
 }
 
 void FeldbusAsebView::onResetOutputs(void) {
