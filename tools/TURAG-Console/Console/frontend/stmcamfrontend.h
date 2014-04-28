@@ -7,6 +7,7 @@
 
 class TinaInterface;
 class PlainTextFrontend;
+class LogView;
 
 class STMCamFrontend : public BaseFrontend {
     Q_OBJECT
@@ -28,6 +29,7 @@ public slots:
 
 protected:
     TinaInterface* interface;
+    LogView* logview;
     PlainTextFrontend* cshell;
 
 };
