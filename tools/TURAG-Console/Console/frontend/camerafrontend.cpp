@@ -37,71 +37,35 @@ void TinaCameraFrontend::writeLine(QByteArray line) {
         line.remove(0, 2);
 
         if (level == 'B') {
-            bool ok = false;
-            int space_pos = line.indexOf(' ');
-            int index = line.left(space_pos).toInt(&ok);
-            (void)index;
-
-            if (ok) {
-                switch (type) {
-                case ':': {
-                    // TODO
-                    qDebug() << "image data arrived!";
-                    break;
-                }
-                }
+            switch (type) {
+            case ':': {
+                // TODO
+                qDebug() << "image data arrived!";
+                break;
+            }
             }
         }
     }
-}
-
-
-void TinaCameraFrontend::activateGraph(int index) {
-    int listindex = graphIndices.indexOf(index);
-    if (listindex != -1) {
-        activateGraphInternal(listindex);
-    }
-}
-
-void TinaCameraFrontend::activateGraphInternal(int index) {
-    stack->setCurrentIndex(index);
-    graphlist->setCurrentRow(index);
-    DataGraph* graph = static_cast<DataGraph*>(stack->currentWidget());
-    clearActions();
-    if (graph) addActions(graph->getActions());
 }
 
 void TinaCameraFrontend::onConnected(bool , bool, QIODevice*) {
     
 }
 
-
 void TinaCameraFrontend::onDisconnected(bool ) {
     
 }
 
 void TinaCameraFrontend::clear(void) {
-    QWidget* widget;
-    while ((widget = stack->currentWidget())) {
-        stack->removeWidget(widget);
-        widget->deleteLater();
-    }
-    graphIndices.clear();
-    graphlist->clear();
+
 }
 
 bool TinaCameraFrontend::saveOutput(QString file) {
-    if (stack->count()) {
-        DataGraph* graph = static_cast<DataGraph*>(stack->currentWidget());
-        return graph->saveOutput(file);
-    } else {
-        return false;
-    }
+    (void)file;
+    return false;
 }
 
 // needed for the interface
 void TinaCameraFrontend::writeData(QByteArray data) {
     (void)data;
 }
-
-
