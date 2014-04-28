@@ -144,15 +144,17 @@ void TinaCameraFrontend::writeData(QByteArray data) {
 
 void TinaCameraFrontend::updateImage(const QImage image)
 {
-    QImage ni = image.scaledToWidth(view->width()-2);
-    current_image = ni;
+    current_image = image;
     updateImageScaling();
 }
 
 void TinaCameraFrontend::updateImageScaling(void)
 {
-    scene->addPixmap(QPixmap::fromImage(current_image));
-    scene->setSceneRect(current_image.rect());
+    scene->clear();
+    QImage ni = current_image.scaledToWidth(view->width());
+    scene->addPixmap(QPixmap::fromImage(ni));
+    scene->setSceneRect(ni.rect());
+    view->fitInView(ni.rect(), Qt::KeepAspectRatio);
 }
 
 void TinaCameraFrontend::handleButtonDump(void)
