@@ -3,6 +3,7 @@
 
 #include <QStackedWidget>
 #include <QList>
+#include <QGraphicsScene>
 #include "basefrontend.h"
 
 class QAction;
@@ -25,6 +26,10 @@ public slots:
     void onDisconnected(bool reconnecting);
     void clear(void);
     bool saveOutput(QString file);
+
+private:
+    QGraphicsScene* scene;
+    QGraphicsView* view;
 };
 
 #endif // TINACAMERAVIEW_H

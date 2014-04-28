@@ -3,31 +3,21 @@
 #include <tina++/utils/base64.h>
 #include <QHBoxLayout>
 #include <QListWidget>
-#include <QCamera>
-#include <QCameraViewfinder>
-#include <QVideoWidget>
+#include <QGraphicsView>
+#include <QGraphicsScene>
 
 TinaCameraFrontend::TinaCameraFrontend(QWidget *parent) :
     BaseFrontend("TinaCameraFrontend", parent)
 {
     QHBoxLayout* layout = new QHBoxLayout;
 
-    QByteArray cameraDevice;
+    scene = new QGraphicsScene(this);
+    scene->addText("Waiting for camera image ...");
 
-    foreach (const QByteArray &deviceName, QCamera::availableDevices()) {
-        cameraDevice = deviceName;
-    }
-
-    QCamera* camera = new QCamera(cameraDevice);
-
-    QCameraViewfinder* viewfinder = new QCameraViewfinder;
-    camera->setViewfinder(viewfinder);
-    camera->setCaptureMode(QCamera::CaptureStillImage);
-    layout->addWidget(viewfinder);
+    view = new QGraphicsView(scene);
+    layout->addWidget(view);
 
     setLayout(layout);
-
-    camera->start();
 }
 
 void TinaCameraFrontend::writeLine(QByteArray line) {
@@ -110,6 +100,11 @@ void TinaCameraFrontend::writeLine(QByteArray line) {
                 }
 
                 qDebug() << "TinaCameraFrontend: decoded correctly";
+
+                QImage image(reinterpret_cast<const uchar*>(decoded_data.constData()), resolution_x, resolution_y, QImage::Format_RGB16);
+                image = image.scaledToWidth(view->width()-2);
+                scene->addPixmap(QPixmap::fromImage(image));
+                scene->setSceneRect(image.rect());
 
                 // TODO update system time
 
