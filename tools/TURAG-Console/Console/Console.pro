@@ -84,7 +84,7 @@ SOURCES +=\
     ../../../tina/tina/debug/graph.c \
     libs/keyboardenabledcombobox.cpp \
     frontend/stmcamfrontend.cpp \
-    frontend/camerafrontend.cpp
+    frontend/tinacamerafrontend.cpp
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -172,7 +172,7 @@ HEADERS  += mainwindow.h \
     ../../../tina/tina/debug/print.h \
     libs/keyboardenabledcombobox.h \
     frontend/stmcamfrontend.h \
-    frontend/camerafrontend.h
+    frontend/tinacamerafrontend.h
 
 INCLUDEPATH += \
     ../../../tina \

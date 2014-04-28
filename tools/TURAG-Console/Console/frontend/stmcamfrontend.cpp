@@ -4,7 +4,7 @@
 #include <QSplitter>
 #include <QDebug>
 
-#include "camerafrontend.h"
+#include "tinacamerafrontend.h"
 #include "logview.h"
 #include "plaintextfrontend.h"
 #include "util/tinainterface.h"
