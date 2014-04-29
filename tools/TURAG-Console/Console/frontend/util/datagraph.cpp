@@ -133,6 +133,9 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     } else {
         setZoomer();
     }
+
+    connect(&refreshTimer, SIGNAL(timeout()), this, SLOT(replot()));
+    refreshTimer.start(100);
 }
 
 DataGraph::~DataGraph() {
@@ -198,7 +201,6 @@ void DataGraph::removeChannel(int index) {
         channels.removeAt(index);
     }
     updateCurveColors();
-    replot();
 }
 
 void DataGraph::clear() {
@@ -207,7 +209,6 @@ void DataGraph::clear() {
         delete iter;
     }
     channels.clear();
-    replot();
 }
 
 void DataGraph::setZoomer(void) {
@@ -239,7 +240,6 @@ void DataGraph::onHighlightCurve(const QVariant &itemInfo) {
                     legendLabel->highlight();
                 }
             }
-            replot();
         }
     }
 }
@@ -262,7 +262,6 @@ void DataGraph::onUnhighlightCurve(const QVariant &itemInfo) {
                     legendLabel->unhighlight();
                 }
             }
-            replot();
         }
     }
 }
@@ -277,7 +276,6 @@ void DataGraph::addData(int channel, QPointF data) {
 
     setAxisAutoScale(xBottom, true);
     setAxisAutoScale(yLeft, true);
-    replot();
 }
 
 void DataGraph::doAutoZoom(void) {
@@ -288,7 +286,6 @@ void DataGraph::doAutoZoom(void) {
     }
     setAxisAutoScale(xBottom, true);
     setAxisAutoScale(yLeft, true);
-    replot();
 
     zoomer->setZoomBase();
 }
@@ -313,7 +310,6 @@ void DataGraph::showCurve(QwtPlotItem *item, bool on) {
             legendLabel->setChecked(on);
         }
     }
-    replot();
 }
 
 void DataGraph::showAllCurves(void) {

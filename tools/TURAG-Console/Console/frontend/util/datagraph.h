@@ -9,6 +9,7 @@
 #include <qwt_legend.h>
 #include <qwt_plot_curve.h>
 #include <QPalette>
+#include <QTimer>
 
 class QString;
 class QPointF;
@@ -151,7 +152,8 @@ protected slots:
     void showAllCurves(void);
     void hideAllCurves(void);
 
-
+private:
+    QTimer refreshTimer;
 };
 
 
