@@ -72,6 +72,8 @@ private slots:
     void showContextMenu(const QPoint & pos);
     void heartBeatTimerOccured(void);
 
+    void backendConnected();
+
 private:
     void fillDeviceList(void);
 

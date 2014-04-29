@@ -415,8 +415,14 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
     //Signal emitten mit dem connectionstring;
     //save connectionString hat hier keine Bedeutung
     BaseBackend* backend;
+    if (associatedBackend) {
+        disconnect(backend, SIGNAL(connected(bool,bool)), this, SLOT(backendConnected()));
+    }
     emit connectionChanged(connectionString, nullptr, &backend);
-    associatedBackend = dynamic_cast<TcpBackend*>(backend);
+    if (backend) {
+        associatedBackend = dynamic_cast<TcpBackend*>(backend);
+        connect(backend, SIGNAL(connected(bool,bool)), this, SLOT(backendConnected()));
+    }
 }
 
 
@@ -455,3 +461,8 @@ void ConnectionWidgetTcp::onOpenRecentConnection(int index) {
 }
 
 
+void ConnectionWidgetTcp::backendConnected() {
+    if (!socket->isOpen()) {
+        connectToServer();
+    }
+}
