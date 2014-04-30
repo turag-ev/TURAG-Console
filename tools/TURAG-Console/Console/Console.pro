@@ -178,8 +178,9 @@ INCLUDEPATH += \
     ../../../tina \
     ../../../tina/platform/desktop/public \
     tina-platform/public \
-    ../../Debug-Server
-    
+    ../../Debug-Server \
+    /usr/include/qwt
+
 DISTR_FILES += \
     images/ok.png \
     images/nok.png \
@@ -194,7 +195,7 @@ RESOURCES += \
 
 OTHER_FILES += \
     TODO.txt
-    
+
 # install
 target.path = $$PREFIX/bin
 sources.files = $$SOURCES $$HEADERS $$RESOURCES $$FORMS Console.pro
