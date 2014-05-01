@@ -22,6 +22,16 @@ class FeldbusAsebView : public QWidget
 {
     Q_OBJECT
 
+public:
+    explicit FeldbusAsebView(Aseb* aseb, QWidget *parent = 0);
+
+protected slots:
+    void onReadDevice(void);
+    void onResetOutputs(void);
+    void onSetOutputs(void);
+    void onUpdate(void);
+
+
 protected:
     struct LabelCheckboxCombo {
         QLabel* label;
@@ -65,17 +75,6 @@ protected:
     QTimer updateTimer_;
 
     bool deviceWasRead_;
-
-public:
-    explicit FeldbusAsebView(Aseb* aseb, QWidget *parent = 0);
-
-signals:
-
-protected slots:
-    void onReadDevice(void);
-    void onResetOutputs(void);
-    void onSetOutputs(void);
-    void onUpdate(void);
 
 };
 

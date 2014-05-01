@@ -3,6 +3,7 @@
 #include <tina/feldbus/protocol/turag_feldbus_fuer_stellantriebe.h>
 #include <tina/feldbus/protocol/turag_feldbus_fuer_lokalisierungssensoren.h>
 #include <tina/feldbus/protocol/turag_feldbus_fuer_aseb.h>
+#include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
 #include <tina++/feldbus/host/dcmotor.h>
 #include <tina++/feldbus/host/farbsensor.h>
 #include <tina++/feldbus/host/servo.h>
@@ -92,6 +93,32 @@ FeldbusDeviceWrapper FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfo
             break;
         }
         break;
+
+    case TURAG_FELDBUS_DEVICE_PROTOCOL_BOOTLOADER:
+        protocolIdString = "TinA Bootloader";
+
+        switch (device_info.device_info.deviceTypeId) {
+        case TURAG_FELDBUS_BOOTLOADER_GENERIC:
+            device = new Feldbus::Device(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
+            deviceTypeString = "generic bootloader";
+            break;
+
+        case TURAG_FELDBUS_BOOTLOADER_ATMEGA:
+            device = new Feldbus::Device(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
+            deviceTypeString = "AtMega Bootloader";
+            break;
+
+        case TURAG_FELDBUS_BOOTLOADER_XMEGA:
+            device = new Feldbus::Device(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
+            deviceTypeString = "XMEGA Bootloader";
+            break;
+
+        default:
+            deviceTypeString = "unbekannt";
+            break;
+        }
+        break;
+
 
     default:
         protocolIdString = "unbekannt";

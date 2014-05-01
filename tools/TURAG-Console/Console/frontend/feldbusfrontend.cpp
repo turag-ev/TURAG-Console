@@ -21,6 +21,7 @@
 #include "feldbusviews/dynamixelview.h"
 #include "feldbusviews/feldbusaktorview.h"
 #include "feldbusviews/feldbusasebview.h"
+#include "feldbusviews/feldbusbootloaderview.h"
 #include <debugprintclass.h>
 #include "plaintextfrontend.h"
 
@@ -364,6 +365,15 @@ void FeldbusFrontend::onDeviceSelected( int row) {
             return;
         }
 
+        // create Bootloader view
+        Feldbus::Device* dev = dynamic_cast<Feldbus::Device*>(dev_wrapper.device.get());
+        if (dev) {
+            feldbusWidget = new FeldbusBootloaderView(dev);
+            splitter->addWidget(feldbusWidget);
+            splitter->setStretchFactor(1,2);
+            return;
+        }
+
         // TODO: create more views
 
 
@@ -392,7 +402,7 @@ void FeldbusFrontend::onCheckDeviceAvailability(void) {
     int i = 0;
 
     for (FeldbusDeviceWrapper dev_wrapper_ : devices_) {
-        if (dev_wrapper_.device.get()->hasReachedTransmissionErrorLimit()) {
+        if (dev_wrapper_.device.get() && dev_wrapper_.device.get()->hasReachedTransmissionErrorLimit()) {
             deviceList_->item(i)->setText(dev_wrapper_.devInfo.toString() + " OFFLINE");
         }
     }
