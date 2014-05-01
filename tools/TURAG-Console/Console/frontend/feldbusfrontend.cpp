@@ -120,9 +120,9 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     dynamixelFromEdit_->setText(settings.value("dynamixelFromAddress", "1").toString());
     dynamixelToEdit_->setText(settings.value("dynamixelToAddress", "253").toString());
 
-/*#warning please remove me
-    feldbusWidget->hide();
-    splitter->addWidget(new DynamixelView(0));*/
+//#warning please remove me
+//    feldbusWidget->hide();
+//    splitter->addWidget(new FeldbusAktorView(0));
 
 }
 

@@ -6,14 +6,15 @@
 #include <QFont>
 #include <QPalette>
 #include <QColor>
+#include <QScrollArea>
 
 FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
-    QWidget(parent), aseb_(aseb), deviceWasRead_(false)
+    QWidget(parent), aseb_(aseb), asebAnalogInputSet_(nullptr),
+    asebPwmOutputSet_(nullptr), asebSyncBuffer_(nullptr)
 {
-    QVBoxLayout* outer_layout = new QVBoxLayout;
+    QHBoxLayout* actual_layout = new QHBoxLayout;
     QGridLayout* info_layout = new QGridLayout;
     info_layout->setAlignment(Qt::AlignBottom);
-    QHBoxLayout* actual_layout = new QHBoxLayout;
 
     QVBoxLayout* left_layout = new QVBoxLayout;
     QVBoxLayout* right_layout = new QVBoxLayout;
@@ -21,7 +22,7 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
     analog_in_layout_ = new QGridLayout;
     digital_out_layout_ = new QGridLayout;
     pwm_out_layout_ = new QGridLayout;
-    QVBoxLayout* button_layout = new QVBoxLayout;
+    QHBoxLayout* button_layout = new QHBoxLayout;
 
     QLabel* label = new QLabel("Sync size:");
     info_layout->addWidget(label, 0, 0);
@@ -38,31 +39,26 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
     pwmOutputSize_ = new QLabel;
     info_layout->addWidget(pwmOutputSize_, 2, 1);
 
-
+    QScrollArea* scrollarea = new QScrollArea;
+    QFrame* scrollchild = new QFrame;
+    scrollchild->setLayout(actual_layout);
     actual_layout->addLayout(left_layout);
     actual_layout->addLayout(right_layout);
-    outer_layout->addLayout(actual_layout);
-    outer_layout->addLayout(info_layout);
-    setLayout(outer_layout);
+    actual_layout->setAlignment(left_layout, Qt::AlignTop);
+    actual_layout->setAlignment(right_layout, Qt::AlignTop);
 
+    scrollarea->setWidgetResizable(true);
+    scrollarea->setWidget(scrollchild);
     QLabel* input_label = new QLabel("Eingänge");
     left_layout->addWidget(input_label);
     left_layout->addLayout(digital_in_layout_);
     left_layout->addLayout(analog_in_layout_);
     left_layout->setAlignment(input_label, Qt::AlignTop);
 
-    readDevice_ = new QPushButton("Gerät einlesen");
-    connect(readDevice_, SIGNAL(clicked()), this, SLOT(onReadDevice()));
-    left_layout->addWidget(readDevice_);
-    left_layout->setAlignment(readDevice_, Qt::AlignBottom);
-
     QLabel* output_label = new QLabel("Ausgänge");
     right_layout->addWidget(output_label);
     right_layout->addLayout(digital_out_layout_);
     right_layout->addLayout(pwm_out_layout_);
-    right_layout->addLayout(button_layout);
-    right_layout->setAlignment(output_label, Qt::AlignTop);
-    right_layout->setAlignment(button_layout, Qt::AlignBottom);
 
     resetOutputs_ = new QPushButton("Zurücksetzen");
     resetOutputs_->setDisabled(true);
@@ -80,48 +76,19 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
     input_label->setFont(label_font);
     output_label->setFont(label_font);
 
+    QVBoxLayout* outer_layout = new QVBoxLayout;
+    outer_layout->addWidget(scrollarea);
+    outer_layout->addLayout(button_layout);
+    outer_layout->addLayout(info_layout);
+    setLayout(outer_layout);
+
     connect(&updateTimer_, SIGNAL(timeout()), this, SLOT(onUpdate()));
-}
 
 
-void FeldbusAsebView::onReadDevice(void) {
-    readDevice_->setEnabled(false);
 
-    if (deviceWasRead_) {
-        for (LabelCheckboxCombo& combo : digitalInputs_) {
-            combo.checkbox->deleteLater();
-            combo.label->deleteLater();
-        }
-        digitalInputs_.clear();
-
-        for (LabelCheckboxCombo& combo : digitalOutputs_) {
-            combo.checkbox->deleteLater();
-            combo.label->deleteLater();
-        }
-        digitalOutputs_.clear();
-
-        for (LabelLineeditCombo& combo : analogInputs_) {
-            combo.label->deleteLater();
-            combo.lineedit->deleteLater();
-        }
-        analogInputs_.clear();
-
-        for (LabelLineeditCombo& combo : pwmOutputs_) {
-            combo.label->deleteLater();
-            combo.lineedit->deleteLater();
-        }
-        pwmOutputs_.clear();
-
-        setOutputs_->setDisabled(true);
-        resetOutputs_->setDisabled(true);
-
-        updateTimer_.stop();
-
-        delete[] asebAnalogInputSet_;
-        delete[] asebPwmOutputSet_;
-        delete[] asebSyncBuffer_;
-    }
-
+    /*
+     * read device
+     */
     int digInSize = 0;
     int digOutSize = 0;
     int analogInSize = 0;
@@ -136,7 +103,6 @@ void FeldbusAsebView::onReadDevice(void) {
             !aseb_->getAnalogInputSize(&analogInSize) ||
             !aseb_->getSyncSize(&syncSize) ||
             !aseb_->getAnalogResolution(&analogResolution)) {
-        readDevice_->setEnabled(true);
         return;
     }
 
@@ -175,6 +141,8 @@ void FeldbusAsebView::onReadDevice(void) {
             digitalOutputs_.push_back(LabelCheckboxCombo(label, checkbox));
             digital_out_layout_->addWidget(label, i, 0);
             digital_out_layout_->addWidget(checkbox, i, 1);
+
+            connect(checkbox, SIGNAL(toggled(bool)), this, SLOT(onUserInput()));
         }
 
         for (int i = 0; i < analogInSize; ++i) {
@@ -215,6 +183,8 @@ void FeldbusAsebView::onReadDevice(void) {
             }
 
             lineedit = new QLineEdit;
+            connect(lineedit, SIGNAL(textEdited(QString)), this, SLOT(onUserInput()));
+            connect(lineedit, SIGNAL(returnPressed()), this, SLOT(onSetOutputs()));
 
             pwmOutputs_.push_back(LabelLineeditCombo(label, lineedit));
             pwm_out_layout_->addWidget(label, i, 0);
@@ -222,29 +192,56 @@ void FeldbusAsebView::onReadDevice(void) {
         }
 
         updateTimer_.start(25);
-        deviceWasRead_ = true;
         setOutputs_->setDisabled(false);
         resetOutputs_->setDisabled(false);
 
         onResetOutputs();
-    } else {
-        delete[] asebAnalogInputSet_;
-        delete[] asebPwmOutputSet_;
-        delete[] asebSyncBuffer_;
+    }
+}
+
+
+FeldbusAsebView::~FeldbusAsebView(void) {
+    for (LabelCheckboxCombo& combo : digitalInputs_) {
+        combo.checkbox->deleteLater();
+        combo.label->deleteLater();
     }
 
-    readDevice_->setEnabled(true);
+    for (LabelCheckboxCombo& combo : digitalOutputs_) {
+        combo.checkbox->deleteLater();
+        combo.label->deleteLater();
+    }
+
+    for (LabelLineeditCombo& combo : analogInputs_) {
+        combo.label->deleteLater();
+        combo.lineedit->deleteLater();
+    }
+
+    for (LabelLineeditCombo& combo : pwmOutputs_) {
+        combo.label->deleteLater();
+        combo.lineedit->deleteLater();
+    }
+
+    if (asebAnalogInputSet_) delete[] asebAnalogInputSet_;
+    if (asebPwmOutputSet_)    delete[] asebPwmOutputSet_;
+    if (asebSyncBuffer_)   delete[] asebSyncBuffer_;
 }
+
 
 void FeldbusAsebView::onResetOutputs(void) {
     unsigned key = TURAG_FELDBUS_ASEB_INDEX_START_DIGITAL_OUTPUT;
     for (LabelCheckboxCombo& combo : digitalOutputs_) {
         combo.checkbox->setChecked(aseb_->getDigitalOutput(key));
+        QPalette pal = combo.checkbox->palette();
+        pal.setColor(QPalette::Active, QPalette::Base, Qt::white);
+        combo.checkbox->setPalette(pal);
         ++key;
     }
     key = TURAG_FELDBUS_ASEB_INDEX_START_PWM_OUTPUT;
     for (LabelLineeditCombo& combo : pwmOutputs_) {
         combo.lineedit->setText(QString("%1").arg(aseb_->getPwmOutput(key)));
+        QPalette pal = combo.lineedit->palette();
+        pal.setColor(QPalette::Active, QPalette::Base, Qt::white);
+        combo.lineedit->setPalette(pal);
         ++key;
     }
 }
@@ -253,11 +250,17 @@ void FeldbusAsebView::onSetOutputs(void) {
     unsigned key = TURAG_FELDBUS_ASEB_INDEX_START_DIGITAL_OUTPUT;
     for (LabelCheckboxCombo& combo : digitalOutputs_) {
         aseb_->setDigitalOutput(key, combo.checkbox->isChecked());
+        QPalette pal = combo.checkbox->palette();
+        pal.setColor(QPalette::Active, QPalette::Base, Qt::white);
+        combo.checkbox->setPalette(pal);
         ++key;
     }
     key = TURAG_FELDBUS_ASEB_INDEX_START_PWM_OUTPUT;
     for (LabelLineeditCombo& combo : pwmOutputs_) {
         aseb_->setPwmOutput(key, combo.lineedit->text().toFloat());
+        QPalette pal = combo.lineedit->palette();
+        pal.setColor(QPalette::Active, QPalette::Base, Qt::white);
+        combo.lineedit->setPalette(pal);
         ++key;
     }
 }
@@ -283,4 +286,12 @@ void FeldbusAsebView::onUpdate(void) {
             combo.lineedit->setText("ERROR");
         }
     }
+}
+
+void FeldbusAsebView::onUserInput(void) {
+    QWidget* widget = static_cast<QWidget*>(sender());
+
+    QPalette pal = widget->palette();
+    pal.setColor(QPalette::Active, QPalette::Base, Qt::red);
+    widget->setPalette(pal);
 }

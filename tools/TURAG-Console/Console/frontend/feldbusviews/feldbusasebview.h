@@ -24,12 +24,13 @@ class FeldbusAsebView : public QWidget
 
 public:
     explicit FeldbusAsebView(Aseb* aseb, QWidget *parent = 0);
+    ~FeldbusAsebView(void);
 
 protected slots:
-    void onReadDevice(void);
     void onResetOutputs(void);
     void onSetOutputs(void);
     void onUpdate(void);
+    void onUserInput(void);
 
 
 protected:
@@ -68,7 +69,6 @@ protected:
     Aseb::Pwm_t* asebPwmOutputSet_;
     uint8_t* asebSyncBuffer_;
 
-    QPushButton* readDevice_;
     QPushButton* resetOutputs_;
     QPushButton* setOutputs_;
 
@@ -78,8 +78,6 @@ protected:
 
 
     QTimer updateTimer_;
-
-    bool deviceWasRead_;
 
 };
 

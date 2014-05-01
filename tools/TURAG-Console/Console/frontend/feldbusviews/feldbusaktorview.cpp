@@ -14,6 +14,7 @@
 #include <QColor>
 #include <vector>
 #include <QDebug>
+#include <QScrollArea>
 
 
 FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
@@ -25,19 +26,28 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     QHBoxLayout* vlayout = new QHBoxLayout;
     QVBoxLayout* left_layout = new QVBoxLayout;
     QVBoxLayout* right_layout = new QVBoxLayout;
-    value_grid = new QGridLayout;
+    QGridLayout* value_grid = new QGridLayout;
     QVBoxLayout* settings_layout = new QVBoxLayout;
-    QHBoxLayout* button_layout = new QHBoxLayout;
 
     vlayout->addLayout(left_layout);
     vlayout->addLayout(right_layout);
     vlayout->setStretch(1,100);
     setLayout(vlayout);
 
-    left_layout->addLayout(value_grid);
+    updateDeviceValues = new QPushButton("Werte zurücksetzen");
+    connect(updateDeviceValues, SIGNAL(clicked()), this, SLOT(onUpdateDeviceValues()));
+
+    QFrame* scrollframe = new QFrame;
+    scrollframe->setLayout(value_grid);
+
+    QScrollArea* scrollarea = new QScrollArea;
+    scrollarea->setWidgetResizable(true);
+    scrollarea->setWidget(scrollframe);
+
+    left_layout->addWidget(scrollarea);
     QVBoxLayout* left_sub_layout = new QVBoxLayout;
     left_layout->addLayout(left_sub_layout);
-    left_sub_layout->addLayout(button_layout);
+    left_sub_layout->addWidget(updateDeviceValues);
     QLabel* descr = new QLabel("Markierte Werte werden in der Diagrammanzeige berücksichtigt");
     descr->setWordWrap(true);
     left_sub_layout->addWidget(descr);
@@ -47,15 +57,6 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     plot = new DataGraph;
     right_layout->addWidget(plot);
     right_layout->addLayout(settings_layout);
-
-    getCommandSet = new QPushButton("Commandset\nermitteln");
-    button_layout->addWidget(getCommandSet);
-    connect(getCommandSet, SIGNAL(clicked()), this, SLOT(onGetCommandSet()));
-
-    updateDeviceValues = new QPushButton("Werte\naktualisieren");
-    updateDeviceValues->setDisabled(true);
-    button_layout->addWidget(updateDeviceValues);
-    connect(updateDeviceValues, SIGNAL(clicked()), this, SLOT(onUpdateDeviceValues()));
 
     QHBoxLayout* startStopLayout = new QHBoxLayout;
     settings_layout->addLayout(startStopLayout);
@@ -100,10 +101,12 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     readSettings();
     onInputEdited();
 
-}
 
+    /*
+     * read command set
+     */
+    if (!actor) return;
 
-void FeldbusAktorView::onGetCommandSet(void) {
     if (commandset) {
         if (updateTimer->isActive()) {
             onStartStopDataUpdate();
@@ -161,6 +164,9 @@ void FeldbusAktorView::onGetCommandSet(void) {
                 entry.button = new QPushButton("Set");
                 connect(entry.button, SIGNAL(clicked()), setMapper, SLOT(map()));
                 setMapper->setMapping(entry.button, commandsetGrid.size());
+                connect(entry.value, SIGNAL(returnPressed()), setMapper, SLOT(map()));
+                setMapper->setMapping(entry.value, commandsetGrid.size());
+                connect(entry.value, SIGNAL(textEdited(QString)), this, SLOT(onUserInput()));
             }
 
             entry.checkbox = new QCheckBox;
@@ -176,10 +182,9 @@ void FeldbusAktorView::onGetCommandSet(void) {
             commandsetGrid.append(entry);
         }
     }
-    updateDeviceValues->setDisabled(false);
     onUpdateDeviceValues();
-
 }
+
 
 void FeldbusAktorView::onUpdateDeviceValues(void) {
     for (CommandsetEntry& entry : commandsetGrid) {
@@ -197,6 +202,12 @@ void FeldbusAktorView::onUpdateDeviceValues(void) {
             } else {
                 entry.value->setText(QString("%1").arg(value));
             }
+        }
+
+        if (commandset[entry.key-1].writeAccess == AktorCommandWriteAccess::write) {
+            QPalette pal = entry.value->palette();
+            pal.setColor(QPalette::Active, QPalette::Base, Qt::white);
+            entry.value->setPalette(pal);
         }
     }
 }
@@ -341,6 +352,11 @@ void FeldbusAktorView::onValueSet(int id) {
     if (oneShotDataUpdate->isChecked() && !updateTimer->isActive()) {
         onStartStopDataUpdate();
     }
+
+    QPalette pal = commandsetGrid.at(id).value->palette();
+    pal.setColor(QPalette::Active, QPalette::Base, Qt::white);
+    commandsetGrid.at(id).value->setPalette(pal);
+
 }
 
 void FeldbusAktorView::onCheckboxChanged(void) {
@@ -370,3 +386,10 @@ void FeldbusAktorView::disableCheckboxes(void) {
     }
 }
 
+void FeldbusAktorView::onUserInput(void) {
+    QWidget* widget = static_cast<QWidget*>(sender());
+
+    QPalette pal = widget->palette();
+    pal.setColor(QPalette::Active, QPalette::Base, Qt::red);
+    widget->setPalette(pal);
+}

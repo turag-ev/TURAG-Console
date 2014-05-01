@@ -180,28 +180,24 @@ void ConnectionWidgetTcp::handleData() {
          *  1)path
          *  2)port
          *  3)description
-         *  4)reset code
-         *  5)baudrate
          */
             if (puffer.size() > 1) {
                 bool ok;
                 int amount = puffer.at(1).toInt(&ok);
 
-                if (ok && puffer.size() > 1 + amount * 6) {
+                if (ok && puffer.size() > 1 + amount * 4) {
                     int i;
                     //int countDevice = 0; //ich muss mir merken, in welchem device ich bin
                     for (i = 0; i < amount; i++) {
                         device * newDevice = new device;
-                        newDevice->path = QString(puffer.at(2 + i * 5));
-                        newDevice->port = QString(puffer.at(3 + i * 5));
-                        newDevice->description = QString(puffer.at(4 + i * 5));
-                        newDevice->resetCode = QString(puffer.at(5 + i * 5));
-                        newDevice->baudRate = QString(puffer.at(6 + i * 5));
+                        newDevice->path = QString(puffer.at(2 + i * 3));
+                        newDevice->port = QString(puffer.at(3 + i * 3));
+                        newDevice->description = QString(puffer.at(4 + i * 3));
                         allDevices.append(newDevice);
                     }
                     QString online_status_line;
-                    //amount liegt auf puffer.at(1), dann kommen die devices, 5 * amount
-                    int offset = 1 + amount * 5 + 1;
+                    //amount liegt auf puffer.at(1), dann kommen die devices, 3 * amount
+                    int offset = 1 + amount * 3 + 1;
 
                     for (i = 0; i < amount; i++) {
                         online_status_line = puffer.at(i + offset);
@@ -416,12 +412,12 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
     //save connectionString hat hier keine Bedeutung
     BaseBackend* backend;
     if (associatedBackend) {
-        disconnect(backend, SIGNAL(connected(bool,bool)), this, SLOT(backendConnected()));
+        disconnect(associatedBackend, SIGNAL(connected(bool,bool)), this, SLOT(backendConnected()));
     }
     emit connectionChanged(connectionString, nullptr, &backend);
     if (backend) {
         associatedBackend = dynamic_cast<TcpBackend*>(backend);
-        connect(backend, SIGNAL(connected(bool,bool)), this, SLOT(backendConnected()));
+        connect(associatedBackend, SIGNAL(connected(bool,bool)), this, SLOT(backendConnected()));
     }
 }
 

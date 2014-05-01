@@ -61,7 +61,6 @@ protected:
     QTimer* updateTimer;
     QList<CommandsetEntry> commandsetGrid;
     AktorCommand_t* commandset;
-    QGridLayout* value_grid;
     QSignalMapper* setMapper;
     QTime updateStartTime;
 
@@ -73,13 +72,13 @@ protected:
     unsigned updateCounter;
 
 protected slots:
-    void onGetCommandSet(void);
     void onUpdateDeviceValues(void);
     void onStartStopDataUpdate(void);
     void onInputEdited(void);
     void onTimeout(void);
     void onValueSet(int id);
     void onCheckboxChanged(void);
+    void onUserInput(void);
 
 private:
     void validateInput(void);

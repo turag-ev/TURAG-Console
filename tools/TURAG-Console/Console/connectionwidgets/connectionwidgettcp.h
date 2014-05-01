@@ -34,8 +34,6 @@ public:
         QString path;
         QString port;
         QString description;
-        QString resetCode;
-        QString baudRate;
         bool       onlineStatus;
     };
 
