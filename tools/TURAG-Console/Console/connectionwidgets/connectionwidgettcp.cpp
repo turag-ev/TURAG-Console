@@ -294,7 +294,11 @@ void ConnectionWidgetTcp::send(QString string) {
  */
 void ConnectionWidgetTcp::heartBeatTimerOccured(void) {
     if (socket->isOpen()) {
-        connectToServer();
+        socket->close();
+        if (associatedBackend) {
+            associatedBackend->connectionWasLost();
+        }
+        heartBeatTimer.stop();
     }
 }
 
@@ -392,10 +396,6 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
     if (newSelectedDevice->onlineStatus == false) {
         return;
     }
-//    if (selectedDevice == newSelectedDevice) {
-//        return;
-//    }
-
     selectedDevice = newSelectedDevice;
     fillDeviceList();
 
@@ -406,6 +406,8 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
 
     connectionString.append(selectedDevice->port);
     connectionString.append("/");
+    connectionString.append(selectedDevice->path);
+    connectionString.append(":");
     connectionString.append(selectedDevice->description);
 
     //Signal emitten mit dem connectionstring;
@@ -437,7 +439,19 @@ void ConnectionWidgetTcp::showContextMenu(const QPoint & pos) {
 }
 
 void ConnectionWidgetTcp::checkData(QString path) {
-    if (selectedDevice && path == selectedDevice->description && socket->isOpen()) {
+    if (!selectedDevice && associatedBackend) {
+        QString path = associatedBackend->getDevicePath();
+
+        for (device* dev : allDevices) {
+            if (dev->path == path) {
+                selectedDevice = dev;
+                break;
+            }
+        }
+        fillDeviceList();
+    }
+
+    if (selectedDevice && path == selectedDevice->path && socket->isOpen()) {
         QByteArray data(PRINT_BUFFER);
         data.append(" ");
         data.append(selectedDevice->path);
@@ -456,7 +470,8 @@ void ConnectionWidgetTcp::onOpenRecentConnection(int index) {
     }
 }
 
-
+// this slot is important for the case that the datachannel is connected
+// before the control channel
 void ConnectionWidgetTcp::backendConnected() {
     if (!socket->isOpen()) {
         connectToServer();

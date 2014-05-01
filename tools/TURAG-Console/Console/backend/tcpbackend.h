@@ -18,6 +18,7 @@ public:
     virtual bool isReadOnly(void) const;
     virtual bool isBuffered(void) const { return true; }
     virtual QString getConnectionInfo();
+    QString getDevicePath(void) { return devicePath; }
 
 signals:
     void checkData(QString path);

@@ -28,8 +28,12 @@ bool TcpBackend::openConnection(QString connectionString) {
     //erstmal connectionPrefix wegwerfen:
     connectionString.remove(0, connectionPrefix.length());
 
-    //was ich jetzt noch hab: host:port/path
+    //was ich jetzt noch hab: host:port/path:description
     int index = connectionString.indexOf("/");
+    int index2 = connectionString.indexOf(":");
+    int index3 = connectionString.indexOf(":", index2 + 1);
+    devicePath = connectionString.mid(index + 1, index3 - index - 1);
+    qDebug() << devicePath;
     QString host = connectionString.left(index);
 
     QStringList addressAndPort = host.split(":");
@@ -104,8 +108,9 @@ QString TcpBackend::getConnectionInfo() {
 
     connectionString.remove(0, connectionPrefix.length());
 
-    int index = connectionString.indexOf("/");
-    QString path = connectionString.right(connectionString.size() - index - 1);
+    int index = connectionString.indexOf(":");
+    int index2 = connectionString.indexOf(":", index + 1);
+    QString path = connectionString.right(connectionString.size() - index2 - 1);
 
     return QString("Debug-Server: %1").arg(path);
 }
@@ -116,7 +121,9 @@ void TcpBackend::checkData(void) {
     connectionString.remove(0, connectionPrefix.length());
 
     int index = connectionString.indexOf("/");
-    QString path = connectionString.right(connectionString.size() - index - 1);
+    int index2 = connectionString.indexOf(":");
+    int index3 = connectionString.indexOf(":", index2 + 1);
+    QString path = connectionString.mid(index + 1, index3 - index - 1);
 
     emit checkData(path);
 }

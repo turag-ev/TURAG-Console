@@ -52,6 +52,9 @@ public slots:
     // closes a connection and emits `disconnected'-signal
     virtual void closeConnection(void);
 
+    // call this function as a response to a loss of connection rather than closeConnection()
+    virtual void connectionWasLost(void);
+
     // writes data to opened stream. Assumes that all data can be written. Emits error messages otherwise.
     virtual void writeData(QByteArray data);
 
@@ -62,9 +65,6 @@ public slots:
 protected slots:
     // class this function after successfully opening a connection
     void emitConnected(void);
-
-    // call this function as a response to a loss of connection rather than closeConnection()
-    void connectionWasLost(void);
 
     // you should rather use these functions as opposed to directly
     // emitting the associated signals as this would inhibit the message
