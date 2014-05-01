@@ -213,7 +213,8 @@ void PlainTextFrontend::onUpdate(void) {
 
 void PlainTextFrontend::keyPressEvent ( QKeyEvent * e ) {
   if (e->count() > 0) {
-    emit dataReady(e->text().toUtf8());
+      qDebug() << "PTF keyPressEvent: '" << e->text().toUtf8() << "'";
+      emit dataReady(e->text().toUtf8());
   } else {
       BaseFrontend::keyPressEvent(e);
   }
@@ -292,6 +293,7 @@ void PlainTextFrontend::onPaste() {
     QClipboard *clipboard = QApplication::clipboard();
     QString txt = clipboard->text();
 
+    qDebug() << "PTF paste clipboard: '" << txt.toUtf8() << "'";
     emit dataReady(txt.toUtf8());
 }
 

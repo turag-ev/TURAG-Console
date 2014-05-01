@@ -319,7 +319,8 @@ LogView::~LogView() {
 void LogView::onSendTimeout(void) {
     if (timedSendString.size()) {
         emit dataReady(timedSendString.left(1));
-        qDebug() << "timedSend" << QString("%1").arg(static_cast<int>(timedSendString.left(1).at(0)));
+        //qDebug() << "timedSend" << QString("%1").arg(static_cast<int>(timedSendString.left(1).at(0)));
+        qDebug() << "timedSend '" << timedSendString.left(1) << "'";
         timedSendString.remove(0,1);
     }
     if (timedSendString.size() == 0) {
