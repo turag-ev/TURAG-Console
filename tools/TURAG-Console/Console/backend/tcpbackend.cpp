@@ -15,6 +15,8 @@ bool TcpBackend::openConnection(QString connectionString) {
     }
 
     // prevent another connection attempt while already connecting
+    // that's required here because ot the asynchronous character of
+    // underlying tcp socket
     if (connecting) return false;
 
     connecting = true;

@@ -412,10 +412,14 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
 
     //Signal emitten mit dem connectionstring;
     //save connectionString hat hier keine Bedeutung
-    BaseBackend* backend;
     if (associatedBackend) {
         disconnect(associatedBackend, SIGNAL(connected(bool,bool)), this, SLOT(backendConnected()));
+
+        // tcp backend might be in auto reconnect mode - in that case we couldn't do a manual reconnect
+        // so we have to do a manual disconnect
+        associatedBackend->closeConnection();
     }
+    BaseBackend* backend;
     emit connectionChanged(connectionString, nullptr, &backend);
     if (backend) {
         associatedBackend = dynamic_cast<TcpBackend*>(backend);
