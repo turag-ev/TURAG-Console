@@ -405,6 +405,7 @@ void FeldbusFrontend::onCheckDeviceAvailability(void) {
         if (dev_wrapper_.device.get() && dev_wrapper_.device.get()->hasReachedTransmissionErrorLimit()) {
             deviceList_->item(i)->setText(dev_wrapper_.devInfo.toString() + " OFFLINE");
         }
+        ++i;
     }
 
     i = 0;
