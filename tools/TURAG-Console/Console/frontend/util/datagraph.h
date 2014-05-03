@@ -10,6 +10,7 @@
 #include <qwt_plot_curve.h>
 #include <QPalette>
 #include <QTimer>
+#include <QMouseEvent>
 
 class QString;
 class QPointF;
@@ -26,7 +27,8 @@ class HoverableQwtLegendLabel : public QwtLegendLabel {
     Q_OBJECT
 
 public:
-    explicit HoverableQwtLegendLabel(QWidget *parent = 0) : QwtLegendLabel(parent) {
+    explicit HoverableQwtLegendLabel(QWidget *parent = 0) :
+        QwtLegendLabel(parent), highlighted(false) {
         setAutoFillBackground(true);
         setBackgroundRole(QPalette::Base);
     }
@@ -39,10 +41,30 @@ public slots:
         p.setColor(QPalette::Base, Qt::black);
         p.setColor(QPalette::Text, Qt::white);
         setPalette(p);
+        highlighted = true;
     }
 
     void unhighlight(void) {
         setPalette(paletteBuffer);
+        highlighted = false;
+    }
+
+    void setRightSide(void) {
+        QPalette p = palette();
+        p.setColor(QPalette::Text, Qt::blue);
+        setPalette(p);
+        paletteBuffer.setColor(QPalette::Text, Qt::blue);
+    }
+
+    void setLeftSide(void) {
+        QPalette p = palette();
+        if (highlighted) {
+            p.setColor(QPalette::Text, Qt::white);
+        } else {
+            p.setColor(QPalette::Text, Qt::black);
+        }
+        setPalette(p);
+        paletteBuffer.setColor(QPalette::Text, Qt::black);
     }
 
 protected:
@@ -56,12 +78,22 @@ protected:
         emit leave();
     }
 
+    virtual void mousePressEvent(QMouseEvent * event) {
+        if (event->button() == Qt::MiddleButton || (event->button() == Qt::LeftButton && (event->modifiers() & Qt::ControlModifier) )) {
+            emit mouseMiddleClicked();
+        } else {
+            QwtLegendLabel::mousePressEvent(event);
+        }
+    }
+
 signals:
     void enter(void);
     void leave(void);
+    void mouseMiddleClicked(void);
 
 private:
     QPalette paletteBuffer;
+    bool highlighted;
 
 };
 
@@ -80,6 +112,7 @@ protected:
 
         connect(label, SIGNAL(enter()), this, SLOT(onLabelEnter()));
         connect(label, SIGNAL(leave()), this, SLOT(onLabelLeave()));
+        connect(label, SIGNAL(mouseMiddleClicked(void)), this, SLOT(onMouseMiddleClicked(void)));
         connect( label, SIGNAL( clicked() ), SLOT( itemClicked() ) );
         connect( label, SIGNAL( checked( bool ) ), SLOT( itemChecked( bool ) ) );
 
@@ -89,6 +122,7 @@ protected:
 signals:
     void enter(const QVariant &itemInfo);
     void leave(const QVariant &itemInfo);
+    void mouseMiddleClicked(const QVariant &itemInfo);
 
 private slots:
     void onLabelEnter(void) {
@@ -99,6 +133,11 @@ private slots:
     void onLabelLeave(void) {
         HoverableQwtLegendLabel* label = static_cast<HoverableQwtLegendLabel*>(sender());
         emit leave(itemInfo(label));
+    }
+
+    void onMouseMiddleClicked(void) {
+        HoverableQwtLegendLabel* label = static_cast<HoverableQwtLegendLabel*>(sender());
+        emit mouseMiddleClicked(itemInfo(label));
     }
 };
 
@@ -142,11 +181,13 @@ protected:
 
     virtual void updateCurveColors();
     virtual void addChannelGeneric(QString title, CurveDataBase* curveData);
+    void updateRightAxis(void);
 
 
 protected slots:
     void showCurve(QwtPlotItem *item, bool on);
     void legendChecked(const QVariant &itemInfo, bool on);
+    void legendMouseMiddleClicked(const QVariant &itemInfo);
     void onHighlightCurve(const QVariant &itemInfo);
     void onUnhighlightCurve(const QVariant &itemInfo);
     void showAllCurves(void);
@@ -154,6 +195,7 @@ protected slots:
 
 private:
     QTimer refreshTimer;
+    int curvesWithRightYAxis;
 };
 
 

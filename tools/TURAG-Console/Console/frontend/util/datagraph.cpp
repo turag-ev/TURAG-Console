@@ -26,6 +26,7 @@
 #include <QActionGroup>
 #include <QSettings>
 #include <qwt_legend_label.h>
+#include <qwt_scale_widget.h>
 
 class CurveDataBase;
 class CurveData;
@@ -41,7 +42,7 @@ class CurveData;
 // ------------------------------------------------------------------------------
 
 DataGraph::DataGraph(QString title, QWidget *parent) :
-    QwtPlot(title, parent)
+    QwtPlot(title, parent), curvesWithRightYAxis(0)
 {
     panner = new QwtPlotPanner( canvas() );
     zoomer = new QwtPlotZoomer(canvas());
@@ -57,12 +58,17 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     connect(legend, SIGNAL(enter(const QVariant&)), this, SLOT(onHighlightCurve(const QVariant&)));
     connect(legend, SIGNAL(leave(const QVariant&)), this, SLOT(onUnhighlightCurve(const QVariant)));
     connect(legend, SIGNAL(checked(const QVariant &, bool, int)), SLOT(legendChecked(const QVariant &, bool)));
+    connect(legend, SIGNAL(mouseMiddleClicked(QVariant)), this, SLOT(legendMouseMiddleClicked(QVariant)));
 
     QwtPlotPicker* d_picker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOn, canvas());
 //    d_picker->setStateMachine(new QwtPickerDragPointMachine());
     d_picker->setRubberBandPen(QColor(Qt::lightGray));
     d_picker->setRubberBand(QwtPicker::CrossRubberBand);
     d_picker->setTrackerPen(QColor(Qt::black));
+
+    QPalette p = axisWidget(QwtPlot::yRight)->palette();
+    p.setColor(QPalette::Text, Qt::blue);
+    axisWidget(QwtPlot::yRight)->setPalette(p);
 
 
 
@@ -196,6 +202,11 @@ void DataGraph::addChannel(QString title, qreal x, qreal width, qreal y, qreal h
 
 void DataGraph::removeChannel(int index) {
     if (index < channels.size()) {
+        if (channels.at(index)->yAxis() == QwtPlot::yRight) {
+            --curvesWithRightYAxis;
+            updateRightAxis();
+        }
+
         channels.at(index)->detach();
         delete channels.at(index);
         channels.removeAt(index);
@@ -209,6 +220,9 @@ void DataGraph::clear() {
         delete iter;
     }
     channels.clear();
+
+    curvesWithRightYAxis = 0;
+    updateRightAxis();
 }
 
 void DataGraph::setZoomer(void) {
@@ -324,6 +338,39 @@ void DataGraph::hideAllCurves(void) {
     }
 }
 
+void DataGraph::legendMouseMiddleClicked(const QVariant &itemInfo) {
+    QwtPlotItem *plotItem = infoToItem(itemInfo);
+
+    if (plotItem) {
+        QwtPlotCurve *curve = dynamic_cast<QwtPlotCurve *>(plotItem);
+
+        if (curve) {
+            if (curve->yAxis() == QwtPlot::yLeft) {
+                curve->setYAxis(QwtPlot::yRight);
+                ++curvesWithRightYAxis;
+            } else {
+                curve->setYAxis(QwtPlot::yLeft);
+                --curvesWithRightYAxis;
+            }
+
+            QwtLegend *lgd = qobject_cast<QwtLegend *>(legend());
+            QWidget * legendWidget = lgd->legendWidget(itemInfo);
+            if (legendWidget) {
+                HoverableQwtLegendLabel *legendLabel = qobject_cast<HoverableQwtLegendLabel *>(legendWidget);
+                if (legendLabel) {
+                    if (curve->yAxis() == QwtPlot::yLeft) {
+                        legendLabel->setLeftSide();
+                    } else {
+                        legendLabel->setRightSide();
+                    }
+                }
+            }
+
+            updateRightAxis();
+        }
+    }
+}
+
 
 void DataGraph::updateCurveColors() {
     ColorMapDiscrete2 colormap(channels.size());
@@ -369,7 +416,18 @@ bool DataGraph::saveOutput(void) {
     return saveOutput(fileName);
 }
 
-
+void DataGraph::updateRightAxis(void) {
+    if (curvesWithRightYAxis == 0) {
+        enableAxis(QwtPlot::yRight, false);
+    } else {
+        enableAxis(QwtPlot::yRight, true);
+    }
+    if (curvesWithRightYAxis == channels.size() && channels.size()) {
+        enableAxis(QwtPlot::yLeft, false);
+    } else {
+        enableAxis(QwtPlot::yLeft, true);
+    }
+}
 
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
