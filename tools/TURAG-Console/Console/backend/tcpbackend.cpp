@@ -73,18 +73,27 @@ void TcpBackend::socketDisconnected(void) {
 void TcpBackend::onTcpError(QAbstractSocket::SocketError error) {
     switch (error) {
     case QAbstractSocket::ConnectionRefusedError:
-        if (stream_->isOpen()) connectionWasLost();
+        if (stream_->isOpen() && !connecting) connectionWasLost();
         connecting = false;
+        stream_->close();
+        stream_->disconnect(this);
+
         emitErrorOccured("Connection refused");
         break;
     case QAbstractSocket::HostNotFoundError:
-        if (stream_->isOpen()) connectionWasLost();
+        if (stream_->isOpen() && !connecting) connectionWasLost();
         connecting = false;
+        stream_->close();
+        stream_->disconnect(this);
+
         emitErrorOccured("Host not found");
         break;
     case QAbstractSocket::RemoteHostClosedError:
-        if (stream_->isOpen()) connectionWasLost();
+        if (stream_->isOpen() && !connecting) connectionWasLost();
         connecting = false;
+        stream_->close();
+        stream_->disconnect(this);
+
         emitErrorOccured("Remote host closed");
         break;
     default:

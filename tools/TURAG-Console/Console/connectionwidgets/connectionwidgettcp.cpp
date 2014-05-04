@@ -296,7 +296,12 @@ void ConnectionWidgetTcp::heartBeatTimerOccured(void) {
     if (socket->isOpen()) {
         socket->close();
         if (associatedBackend) {
-            associatedBackend->connectionWasLost();
+            // if we would use connectionWasLost() here, we could make use of the
+            // autoReconnect-feature. The trouble with this is, that most likely the serer is offline
+            // which results in connections attempts that time out before failing.
+            // It then becomes nearly impossible to
+            // open a new connection. That's why just close the connection here.
+            associatedBackend->closeConnection();
         }
         heartBeatTimer.stop();
     }
