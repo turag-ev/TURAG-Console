@@ -22,6 +22,10 @@ extern "C" bool turag_rs485_init(uint32_t baud_rate, TuragSystemTime timeout) {
     return true;
 }
 
+extern "C" bool turag_rs485_ready(void) {
+    return true;
+}
+
 extern "C" bool turag_rs485_transceive(uint8_t *input, int input_length, uint8_t *output, int output_length) {
     if (!turag_rs485_io_device) {
         return false;
