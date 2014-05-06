@@ -146,6 +146,9 @@ public slots:
   bool saveOutput(QString file) override;
   void writeData(QByteArray data) override;
 
+protected:
+  void keyPressEvent ( QKeyEvent * e );
+
 private slots:
   void writeLine(QByteArray line);
   void scroll(int, int);

@@ -19,6 +19,7 @@
 #include <tina++/algorithm.h>
 #include <QList>
 #include <QDebug>
+#include <QKeyEvent>
 
 #include "util/tinainterface.h"
 
@@ -272,6 +273,7 @@ LogView::LogView(TinaInterface *interface, QWidget *parent) :
     log_->setFont(QFont("Consolas", 9));
     log_->setShowGrid(false);
     log_->setContextMenuPolicy(Qt::CustomContextMenu);
+    log_->setFocusPolicy(Qt::NoFocus);
 
     QHeaderView* hheader = log_->horizontalHeader();
     hheader->hide();
@@ -390,6 +392,7 @@ void LogView::scroll(int, int) {
 
 void LogView::activated(QModelIndex index) {
     log_->resizeRowToContents(index.row());
+    log_->resizeColumnsToContents();
 
     StreamModel::Row data = log_model_->rows()[index.row()];
     QString line = std::get<StreamModel::DataColumn::DATA_MESSAGE>(data);
@@ -600,4 +603,13 @@ bool LogView::saveOutput(QString filename) {
 void LogView::writeData(QByteArray data)
 {
     Q_UNUSED(data);
+}
+
+void LogView::keyPressEvent ( QKeyEvent * e ) {
+  if (e->count() > 0) {
+      qDebug() << "PTF keyPressEvent: '" << e->text().toUtf8() << "'";
+      emit dataReady(e->text().toUtf8());
+  } else {
+      BaseFrontend::keyPressEvent(e);
+  }
 }
