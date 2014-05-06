@@ -248,9 +248,6 @@ void ConnectionWidgetTcp::handleData() {
         }
         puffer.clear();
     }
-
-    // restart heartbeat timer because we received something
-    heartBeatTimer.start();
 }
 
 void ConnectionWidgetTcp::fillDeviceList(void) {
@@ -384,6 +381,9 @@ void ConnectionWidgetTcp::resetFromContextMenu() {
 }
 
 void ConnectionWidgetTcp::receive() {
+    // restart heartbeat timer because we received something
+    heartBeatTimer.start();
+
     while (socket->canReadLine()) {
         QByteArray data(socket->readLine(150));
         data.chop(1);
@@ -419,6 +419,7 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
     //save connectionString hat hier keine Bedeutung
     if (associatedBackend) {
         disconnect(associatedBackend, SIGNAL(connected(bool,bool)), this, SLOT(backendConnected()));
+        disconnect(associatedBackend, SIGNAL(dataReady(QByteArray)), &heartBeatTimer, SLOT(start()));
 
         // tcp backend might be in auto reconnect mode - in that case we couldn't do a manual reconnect
         // so we have to do a manual disconnect
@@ -429,6 +430,7 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
     if (backend) {
         associatedBackend = dynamic_cast<TcpBackend*>(backend);
         connect(associatedBackend, SIGNAL(connected(bool,bool)), this, SLOT(backendConnected()));
+        connect(associatedBackend, SIGNAL(dataReady(QByteArray)), &heartBeatTimer, SLOT(start()), Qt::UniqueConnection);
     }
 }
 

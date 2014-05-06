@@ -1,6 +1,7 @@
 #include "basebackend.h"
 #include <QByteArray>
 #include <QIODevice>
+#include <QDebug>
 
 BaseBackend::BaseBackend(QString connectionPrefix, QObject *parent) :
     QObject(parent), connectionPrefix_(connectionPrefix), deviceShouldBeConnectedString(""), deviceRecoveryActive(false)
@@ -75,6 +76,8 @@ void BaseBackend::writeData(QByteArray data) {
         } else if (result == -1) {
             emit errorOccured(QString("Fehler beim Schreiben: %1").arg(stream_->errorString()));
         }
+
+        qDebug() << "writeData:" << data;
     }
 }
 
