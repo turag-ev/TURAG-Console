@@ -36,6 +36,7 @@ public:
 public slots:
     void openNewConnection(void);
     void openConnection(void);
+    void openConnection(QString connectionString, bool* success, BaseBackend **openedBackend);
     void closeConnection(void);
     void setFrontend(int newFrontendIndex);
     void setFrontend(int newFrontendIndex, bool calledManually);
@@ -44,7 +45,6 @@ public slots:
     void setAutoSave(bool on) { autoSaveOn = on; }
 
 protected slots:
-    void openConnection(QString connectionString, bool* success, BaseBackend **openedBackend);
     void onCancelNewConnection();
     void onConnected(bool readOnly, bool isBuffered);
     void onDisconnected();

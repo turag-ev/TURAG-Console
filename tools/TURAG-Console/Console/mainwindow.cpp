@@ -17,6 +17,7 @@
 #include <QTreeWidget>
 #include <QDialog>
 #include <QHBoxLayout>
+#include <QDebug>
 #include "mainwindow.h"
 #include "controller.h"
 #include "connectionwidgets/connectionwidgetfile.h"
@@ -417,6 +418,22 @@ void MainWindow::closeEvent(QCloseEvent *event) {
   event->accept();
 }
 
+void MainWindow::openConnection(QString connection_string) {
+    if (!connection_string.isEmpty()) {
+        qDebug() << "got connection string" << connection_string;
+        bool success = false;
+        controller->openConnection(connection_string, &success, nullptr);
+        if (!success) {
+            qDebug() << "no suitable backend found -> trying file backend";
+            controller->openConnection("file://" + connection_string, &success, nullptr);
+            if (!success) {
+                printError("Couldn't open specified connection");
+                controller->openNewConnection();
+            }
+        }
+    }
+}
+
 int main(int argc, char *argv[]) {
   QApplication a(argc, argv);
 
@@ -429,20 +446,21 @@ int main(int argc, char *argv[]) {
 #endif
 
   QFont::insertSubstitution("Consolas", "Ubuntu Mono");
-  QFont::insertSubstitution("Consolas", "Monospace");
-  QFont::insertSubstitution("Consolas", "Courier New");
+    QFont::insertSubstitution("Consolas", "Monospace");
+    QFont::insertSubstitution("Consolas", "Courier New");
 
-//  QFont font;
-//  font.setFamily(font.defaultFamily());
-//  font.setPointSize(8);
-//  a.setFont(font);
+    QCoreApplication::setOrganizationName("TURAG");
+    QCoreApplication::setOrganizationDomain("turag.de");
+    QCoreApplication::setApplicationName("Console");
 
-  QCoreApplication::setOrganizationName("TURAG");
-  QCoreApplication::setOrganizationDomain("turag.de");
-  QCoreApplication::setApplicationName("Console");
+    QStringList args = a.arguments();
 
-  MainWindow w;
-  w.show();
+    MainWindow w;
+    w.show();
 
-  return a.exec();
+    if (args.size() > 1) {
+        w.openConnection(args.at(1));
+    }
+
+    return a.exec();
 }

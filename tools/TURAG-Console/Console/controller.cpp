@@ -226,9 +226,12 @@ void Controller::openConnection(QString connectionString, bool *success, BaseBac
         if (widgetMenu_ && menuBar_->actions().contains(widgetMenu_->menuAction())) {
             menuBar_->removeAction(widgetMenu_->menuAction());
         }
-        widgetMenu_ = static_cast<ConnectionWidget * >(sender())->getMenu();
-        if (widgetMenu_) {
-            menuBar_->addMenu(widgetMenu_);
+        ConnectionWidget * connectionWidget = static_cast<ConnectionWidget * >(sender());
+        if (connectionWidget) {
+            widgetMenu_ = connectionWidget->getMenu();
+            if (widgetMenu_) {
+                menuBar_->addMenu(widgetMenu_);
+            }
         }
     }
 

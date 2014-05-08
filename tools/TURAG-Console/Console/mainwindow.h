@@ -23,6 +23,8 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void openConnection(QString connection_string);
+
 private slots:
     void onNewWindow();
     void close();
