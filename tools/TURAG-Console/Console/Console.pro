@@ -174,7 +174,8 @@ HEADERS  += mainwindow.h \
     libs/keyboardenabledcombobox.h \
     frontend/stmcamfrontend.h \
     frontend/tinacamerafrontend.h \
-    frontend/feldbusviews/feldbusbootloaderview.h
+    frontend/feldbusviews/feldbusbootloaderview.h \
+    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h
 
 INCLUDEPATH += \
     ../../../tina \
