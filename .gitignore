@@ -12,6 +12,7 @@ bin
 # QtCreator
 *.pro.user
 *.pro.user.*
+*.autosave
 
 # Qt
 moc_*.cpp
