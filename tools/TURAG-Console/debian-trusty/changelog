@@ -1,20 +1,8 @@
-turag-console (2.5~git20140507-2) trusty; urgency=medium
+turag-console (2.5~git20140513-1) trusty; urgency=medium
 
   * new upstream release
 
- -- TURAG Developers <dev-team@turag.de>  Wed, 07 May 2014 21:03:54 +0200
-
-turag-console (2.5~git20140507-1) trusty; urgency=medium
-
-  * new upstream release
-
- -- TURAG Developers <dev-team@turag.de>  Wed, 07 May 2014 20:59:33 +0200
-
-turag-console (2.5~git20140505-1) trusty; urgency=medium
-
-  * new upstream release
-
- -- TURAG Developers <dev-team@turag.de>  Mon, 05 May 2014 19:36:56 +0200
+ -- TURAG Developers <dev-team@turag.de>  Tue, 13 May 2014 14:36:16 +0200
 
 turag-console (2.3~git20140423-1) trusty; urgency=medium
 

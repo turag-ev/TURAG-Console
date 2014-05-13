@@ -191,7 +191,8 @@ DISTR_FILES += \
     images/lock.png \
     images/warning-orange-16.png \
     images/error-orange-16.png \
-    images/error-red-16.png
+    images/error-red-16.png \
+    turag-console.desktop
 
 RESOURCES += \
     images.qrc
@@ -202,13 +203,20 @@ OTHER_FILES += \
 # install
 target.path = $$PREFIX/bin
 sources.files = $$SOURCES $$HEADERS $$RESOURCES $$FORMS Console.pro
-INSTALLS += target
+
+pixmaps.path = /usr/share/pixmaps
+pixmaps.files += images/turag-55.png
+
+desktop.path = /usr/share/applications
+desktop.files += turag-console.desktop
+
+INSTALLS += target pixmaps desktop
 
 # own make dist :P
 PACKAGE_STRING = $(TARGET)-$${VERSION}$${EXT_VERSION}
 TMP_DIR = .tmp
 DIST_DIR = $${TMP_DIR}/$${PACKAGE_STRING}
-DISTFILES = $${SOURCES} $${HEADERS} $${RESOURCES} $${FORMS} $${DISTR_FILES} Console.pro
+DISTFILES += $${SOURCES} $${HEADERS} $${RESOURCES} $${FORMS} $${DISTR_FILES} Console.pro
 
 distr.commands = (test -d $${DIST_DIR}/src || mkdir -p $${DIST_DIR}/src) && \
                  $(COPY_FILE) --parents $${DISTFILES} $${DIST_DIR}/src && \
