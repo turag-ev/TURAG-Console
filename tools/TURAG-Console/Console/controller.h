@@ -50,6 +50,7 @@ protected slots:
     void onDisconnected();
     void onErrorOccured(QString msg);
     void onInfoMessage(QString msg);
+    void onToolboxChangedCurrent(int index);
 
 signals:
     void connected(bool readOnly, bool isBuffered, QIODevice*);

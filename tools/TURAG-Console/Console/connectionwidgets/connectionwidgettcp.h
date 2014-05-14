@@ -57,6 +57,7 @@ protected slots:
 
 private slots:
     void connectToServer();
+    void cancel_connecting(void);
     void emergencyStop();
     void reset();
     void resetFromContextMenu();
@@ -89,6 +90,7 @@ private:
     QString recentHost;
     QLineEdit * hostEdit;
     QPushButton * connect_button;
+    QPushButton * connect_cancel_button;
     QTcpSocket * socket;
 
     QListWidget * allDevicesWidget;

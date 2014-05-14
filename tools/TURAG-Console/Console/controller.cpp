@@ -88,6 +88,7 @@ Controller::Controller(QWidget *parent) :
         connect(iter, SIGNAL(errorOccured(QString)), this, SLOT(onErrorOccured(QString)));
     }
     layout->addWidget(toolbox);
+    connect(toolbox, SIGNAL(currentChanged(int)), this, SLOT(onToolboxChangedCurrent(int)));
 
     if (toolbox->count() > 0) {
         QSettings settings;
@@ -116,11 +117,13 @@ Controller::Controller(QWidget *parent) :
 
 
 Controller::~Controller() {
-    if (toolbox->count() > 0) {
-        QSettings settings;
-        settings.beginGroup("Controller");
-        settings.setValue("currentIndex", toolbox->currentIndex());
-    }
+}
+
+
+void Controller::onToolboxChangedCurrent(int index) {
+    QSettings settings;
+    settings.beginGroup("Controller");
+    settings.setValue("currentIndex", index);
 }
 
 QList<QString> Controller::getAvailableFrontends(void) const {

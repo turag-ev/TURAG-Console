@@ -28,11 +28,14 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
 
     // create button to connect
     connect_button = new QPushButton("Verbinden");
+    connect_cancel_button = new QPushButton("Abbrechen");
+    connect_cancel_button->setVisible(false);
 
     QHBoxLayout * editLayout = new QHBoxLayout();
     editLayout->addWidget(hostLabel, 0);
     editLayout->addWidget(hostEdit, 1);
     editLayout->addWidget(connect_button, 0);
+    editLayout->addWidget(connect_cancel_button, 0);
     editLayout->addStretch();
 
     //editLayout in generalLayout einfügen
@@ -44,6 +47,7 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     //Signals abfangen
     connect(hostEdit, SIGNAL(returnPressed()), this, SLOT(connectToServer()));
     connect(connect_button, SIGNAL(clicked()), this, SLOT(connectToServer()));
+    connect(connect_cancel_button, SIGNAL(clicked()), this, SLOT(cancel_connecting()));
 
     //tcp menu erstellen
     tcpMenu = new QMenu("Debug-Server", this);
@@ -106,8 +110,9 @@ ConnectionWidgetTcp::~ConnectionWidgetTcp() {
 void ConnectionWidgetTcp::socketConnected(void) {
     connect_button->setText("Trennen");
     connect_button->setEnabled(true);
+    connect_button->setVisible(true);
+    connect_cancel_button->setVisible(false);
 
-    hostEdit->setEnabled(false);
     allDevicesWidget->setEnabled(true);
 
     tcpMenu->setEnabled(true);
@@ -145,6 +150,10 @@ void ConnectionWidgetTcp::socketDisconnected(void) {
 void ConnectionWidgetTcp::socketError(QAbstractSocket::SocketError error) {
     qDebug() << error << socket->errorString();
     connect_button->setEnabled(true);
+    connect_button->setVisible(true);
+    connect_cancel_button->setVisible(false);
+    recentConnectionsContainer->setEnabled(true);
+    hostEdit->setEnabled(true);
 
     switch (error) {
     case QAbstractSocket::ConnectionRefusedError:
@@ -294,10 +303,10 @@ void ConnectionWidgetTcp::heartBeatTimerOccured(void) {
         socket->close();
         if (associatedBackend) {
             // if we would use connectionWasLost() here, we could make use of the
-            // autoReconnect-feature. The trouble with this is, that most likely the serer is offline
+            // autoReconnect-feature. The trouble with this is, that most likely the server is offline
             // which results in connections attempts that time out before failing.
             // It then becomes nearly impossible to
-            // open a new connection. That's why just close the connection here.
+            // open a new connection. That's why we just close the connection here.
             associatedBackend->closeConnection();
         }
         heartBeatTimer.stop();
@@ -306,6 +315,10 @@ void ConnectionWidgetTcp::heartBeatTimerOccured(void) {
 
 void ConnectionWidgetTcp::connectToServer() {
     if (!socket->isOpen()) {
+        QSettings settings;
+        settings.beginGroup("ConnectionWidgetTcp");
+        settings.setValue("host", hostEdit->text());
+
         qint16 port;
         QString hostAddress;
         QString host = hostEdit->text().toCaseFolded();
@@ -331,20 +344,31 @@ void ConnectionWidgetTcp::connectToServer() {
             }
         }
 
-        QHostInfo hostinfo = QHostInfo::fromName(hostAddress);
+        connect_button->setEnabled(false);
+        connect_button->setVisible(false);
+        connect_cancel_button->setVisible(true);
+        hostEdit->setEnabled(false);
+        recentConnectionsContainer->setEnabled(false);
 
-        if (hostinfo.addresses().isEmpty()) {
-            socket->connectToHost(QHostAddress::Null, port);
-        } else {
-            socket->connectToHost(QHostAddress(hostinfo.addresses().at(0)), port);
-        }
-        connect_button->setDisabled(true);
+        socket->connectToHost(hostAddress, port);
     } else {
         socket->close();
         if (associatedBackend) {
             associatedBackend->closeConnection();
         }
         heartBeatTimer.stop();
+    }
+}
+
+void ConnectionWidgetTcp::cancel_connecting(void) {
+    if (socket) {
+        socket->abort();
+        connect_button->setEnabled(true);
+        connect_button->setVisible(true);
+        connect_cancel_button->setVisible(false);
+        hostEdit->setEnabled(true);
+        recentConnectionsContainer->setEnabled(true);
+
     }
 }
 
