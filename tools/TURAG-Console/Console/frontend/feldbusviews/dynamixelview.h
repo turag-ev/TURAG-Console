@@ -6,7 +6,7 @@
 
 class QLabel;
 class QTimer;
-class QLineEdit2;
+class LineEditExt;
 class QPushButton;
 class QCheckBox;
 
@@ -37,19 +37,19 @@ protected:
 
     QTimer* updateTimer;
 
-    QLineEdit2* desiredPosition;
-    QLineEdit2* desiredBaudRate;
-    QLineEdit2* setIdText;
-    QLineEdit2* cwAngleLimit;
-    QLineEdit2* ccwAngleLimit;
-    QLineEdit2* movingSpeed;
-    QLineEdit2* torqueLimit;
-    QLineEdit2* cwComplMargin;
-    QLineEdit2* ccwComplMargin;
-    QLineEdit2* cwComplSlope;
-    QLineEdit2* ccwComplSlope;
-    QLineEdit2* alarmShutdown;
-    QLineEdit2* returnDelayTime;
+    LineEditExt* desiredPosition;
+    LineEditExt* desiredBaudRate;
+    LineEditExt* setIdText;
+    LineEditExt* cwAngleLimit;
+    LineEditExt* ccwAngleLimit;
+    LineEditExt* movingSpeed;
+    LineEditExt* torqueLimit;
+    LineEditExt* cwComplMargin;
+    LineEditExt* ccwComplMargin;
+    LineEditExt* cwComplSlope;
+    LineEditExt* ccwComplSlope;
+    LineEditExt* alarmShutdown;
+    LineEditExt* returnDelayTime;
 
 
     QPushButton* setPosition;

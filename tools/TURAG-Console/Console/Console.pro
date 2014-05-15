@@ -77,7 +77,6 @@ SOURCES +=\
     ../../../tina/tina++/feldbus/host/servo_tina.cpp \
     ../../../tina/tina++/feldbus/host/aseb_tina.cpp \
     frontend/feldbusviews/feldbusasebview.cpp \
-    libs/qlineedit2.cpp \
     frontend/mcfrontend.cpp \
     frontend/tinagraphfrontend.cpp \
     ../../../tina/tina/utils/base64.c \
@@ -85,7 +84,8 @@ SOURCES +=\
     libs/keyboardenabledcombobox.cpp \
     frontend/stmcamfrontend.cpp \
     frontend/tinacamerafrontend.cpp \
-    frontend/feldbusviews/feldbusbootloaderview.cpp
+    frontend/feldbusviews/feldbusbootloaderview.cpp \
+    libs/lineeditext.cpp
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -163,7 +163,6 @@ HEADERS  += mainwindow.h \
     ../../../tina/tina++/crc/crc8.h \
     ../../../tina/tina/crc/xor_checksum.h \
     ../../../tina/tina/bytes.h \
-    libs/qlineedit2.h \
     frontend/mcfrontend.h \
     frontend/tinagraphfrontend.h \
     ../../../tina/tina/utils/base64.h \
@@ -175,7 +174,9 @@ HEADERS  += mainwindow.h \
     frontend/stmcamfrontend.h \
     frontend/tinacamerafrontend.h \
     frontend/feldbusviews/feldbusbootloaderview.h \
-    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h
+    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h \
+    libs/lineeditext.h \
+    libs/checkboxext.h
 
 INCLUDEPATH += \
     ../../../tina \

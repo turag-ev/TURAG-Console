@@ -71,7 +71,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //Desired Position
     QLabel* desiredPositionLabel = new QLabel("Desired Position [°]");
-    desiredPosition = new QLineEdit2;
+    desiredPosition = new LineEditExt;
     setPosition = new QPushButton("Set");
     gridLayout-> addWidget(desiredPositionLabel, 0, 0);
     gridLayout->addWidget(desiredPosition, 0, 1);
@@ -81,7 +81,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //Baudrate
     QLabel* desiredBaudRateLabel = new QLabel ("Baudrate");
-    desiredBaudRate= new QLineEdit2;
+    desiredBaudRate= new LineEditExt;
     setBaudRate = new QPushButton ("Set");
     gridLayout ->addWidget(desiredBaudRateLabel, 1, 0);
     gridLayout ->addWidget(desiredBaudRate, 1, 1);
@@ -91,7 +91,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //ID
     QLabel* idLabel = new QLabel ("ID/Adresse");
-    setIdText= new QLineEdit2;
+    setIdText= new LineEditExt;
     setIdButton = new QPushButton ("Set");
     gridLayout ->addWidget(idLabel, 2, 0);
     gridLayout ->addWidget(setIdText, 2, 1);
@@ -101,7 +101,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //CW AngleLimit
     QLabel* cwAngleLimitLabel = new QLabel ("CW Angle Limit [°]");
-    cwAngleLimit= new QLineEdit2;
+    cwAngleLimit= new LineEditExt;
     setCwAngleLimit = new QPushButton ("Set");
     gridLayout ->addWidget(cwAngleLimitLabel, 3, 0);
     gridLayout ->addWidget(cwAngleLimit, 3, 1);
@@ -111,7 +111,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //CcW AngleLimit
     QLabel* ccwAngleLimitLabel = new QLabel ("CCW Angle Limit [°]");
-    ccwAngleLimit= new QLineEdit2;
+    ccwAngleLimit= new LineEditExt;
     setCcwAngleLimit = new QPushButton ("Set");
     gridLayout ->addWidget(ccwAngleLimitLabel, 4, 0);
     gridLayout ->addWidget(ccwAngleLimit, 4, 1);
@@ -121,7 +121,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //MovingSpeed
     QLabel* movingSpeedLabel = new QLabel ("Moving Speed (0-1023)");
-    movingSpeed= new QLineEdit2;
+    movingSpeed= new LineEditExt;
     setMovingSpeed = new QPushButton ("Set");
     gridLayout ->addWidget(movingSpeedLabel, 5, 0);
     gridLayout ->addWidget(movingSpeed, 5, 1);
@@ -131,7 +131,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //TorqueLimit
     QLabel* torqueLimitLabel = new QLabel ("Torque Limit [%]");
-    torqueLimit= new QLineEdit2;
+    torqueLimit= new LineEditExt;
     setTorqueLimit= new QPushButton ("Set");
     gridLayout ->addWidget(torqueLimitLabel, 6, 0);
     gridLayout ->addWidget(torqueLimit, 6, 1);
@@ -141,7 +141,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //Cw Compl Margin
     QLabel* cwComplMarginLabel = new QLabel ("Cw Compl Margin");
-    cwComplMargin= new QLineEdit2;
+    cwComplMargin= new LineEditExt;
     setCwComplMargin= new QPushButton ("Set");
     gridLayout ->addWidget(cwComplMarginLabel, 7, 0);
     gridLayout ->addWidget(cwComplMargin, 7, 1);
@@ -151,7 +151,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //Ccw Compl Margin
     QLabel* ccwComplMarginLabel = new QLabel ("Ccw Compl Margin");
-    ccwComplMargin= new QLineEdit2;
+    ccwComplMargin= new LineEditExt;
     setCcwComplMargin= new QPushButton ("Set");
     gridLayout ->addWidget(ccwComplMarginLabel, 8, 0);
     gridLayout ->addWidget(ccwComplMargin, 8, 1);
@@ -161,7 +161,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //Cw Compl Slope
     QLabel* cwComplSlopeLabel = new QLabel ("Cw Compl Slope");
-    cwComplSlope= new QLineEdit2;
+    cwComplSlope= new LineEditExt;
     setCwComplSlope= new QPushButton ("Set");
     gridLayout ->addWidget(cwComplSlopeLabel, 9, 0);
     gridLayout ->addWidget(cwComplSlope, 9, 1);
@@ -171,7 +171,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //Ccw Compl Slope
     QLabel* ccwComplSlopeLabel = new QLabel ("Ccw Compl Slope");
-    ccwComplSlope= new QLineEdit2;
+    ccwComplSlope= new LineEditExt;
     setCcwComplSlope= new QPushButton ("Set");
     gridLayout ->addWidget(ccwComplSlopeLabel, 10, 0);
     gridLayout ->addWidget(ccwComplSlope, 10, 1);
@@ -181,7 +181,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //Alarm Shutdown
     QLabel* alarmShutdownLabel = new QLabel ("Alarm Shutdown");
-    alarmShutdown= new QLineEdit2;
+    alarmShutdown= new LineEditExt;
     setAlarmShutdown= new QPushButton ("Set");
     gridLayout ->addWidget(alarmShutdownLabel, 11, 0);
     gridLayout ->addWidget(alarmShutdown, 11, 1);
@@ -191,7 +191,7 @@ DynamixelView::DynamixelView(DynamixelDevice* dev, QWidget *parent) :
 
     //Return delay time
     QLabel* returnDelayLabel = new QLabel ("Return Delay Time (0 - 508) [us]");
-    returnDelayTime= new QLineEdit2;
+    returnDelayTime= new LineEditExt;
     setReturnDelayTime= new QPushButton ("Set");
     gridLayout ->addWidget(returnDelayLabel, 12, 0);
     gridLayout ->addWidget(returnDelayTime, 12, 1);

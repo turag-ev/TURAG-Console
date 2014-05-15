@@ -3,8 +3,8 @@
 #include <QTabWidget>
 #include <QGridLayout>
 #include <QLabel>
-#include <QLineEdit>
-#include <QCheckBox>
+#include <libs/lineeditext.h>
+#include <libs/checkboxext.h>
 #include <QWidget>
 #include <QFrame>
 #include <QSettings>
@@ -25,34 +25,34 @@ Oscilloscope::Oscilloscope(QWidget *parent) :
     QGridLayout* textlayout = new QGridLayout;
     QLabel* label = new QLabel("Kommazeichen");
     textlayout->addWidget(label, 0, 0, Qt::AlignTop);
-    comma_textbox = new QLineEdit;
+    comma_textbox = new LineEditExt("oscilloscope-comma_textbox", ".");
     textlayout->addWidget(comma_textbox, 0 , 1, Qt::AlignTop);
     connect(comma_textbox, SIGNAL(editingFinished()), this, SLOT(onTextSettingsChanged()));
 
     label = new QLabel("Kanaltrenner");
     textlayout->addWidget(label, 1, 0, Qt::AlignTop);
-    subdelim_textbox = new QLineEdit;
+    subdelim_textbox = new LineEditExt("oscilloscope-subdelim_textbox", ",");
     textlayout->addWidget(subdelim_textbox, 1, 1, Qt::AlignTop);
     connect(subdelim_textbox, SIGNAL(editingFinished()), this, SLOT(onTextSettingsChanged()));
 
-    subdelim_newline = new QCheckBox("Newline");
+    subdelim_newline = new CheckBoxExt("Newline", "oscilloscope-subdelim_newline");
     textlayout->addWidget(subdelim_newline, 2, 1);
     connect(subdelim_newline, SIGNAL(toggled(bool)), this, SLOT(onTextSettingsChanged()));
 
     label = new QLabel("Datensatz-Trenner");
     textlayout->addWidget(label, 3, 0, Qt::AlignTop);
-    delim_textbox = new QLineEdit;
+    delim_textbox = new LineEditExt("oscilloscope-delim_textbox", " ");
     textlayout->addWidget(delim_textbox, 3, 1, Qt::AlignTop);
     connect(delim_textbox, SIGNAL(editingFinished()), this, SLOT(onTextSettingsChanged()));
 
-    delim_newline = new QCheckBox("Newline");
+    delim_newline = new CheckBoxExt("Newline", "oscilloscope-delim_newline");
     textlayout->addWidget(delim_newline, 4, 1);
     connect(delim_newline, SIGNAL(toggled(bool)), this, SLOT(onTextSettingsDelimNewLineChanged(bool)));
-    delim_emptyline = new QCheckBox("Leere Zeile");
+    delim_emptyline = new CheckBoxExt("Leere Zeile", "oscilloscope-delim_emptyline");
     textlayout->addWidget(delim_emptyline, 5, 1);
     connect(delim_emptyline, SIGNAL(toggled(bool)), this, SLOT(onTextSettingsDelimEmptyLineChanged(bool)));
 
-    timechannel_checkbox = new QCheckBox("1. Kanal enthält Zeit");
+    timechannel_checkbox = new CheckBoxExt("1. Kanal enthält Zeit", "oscilloscope-timechannel_checkbox");
     textlayout->addWidget(timechannel_checkbox, 6, 0, 1, 2, Qt::AlignTop);
     connect(timechannel_checkbox, SIGNAL(toggled(bool)), this, SLOT(onTextSettingsChanged()));
 
@@ -80,7 +80,9 @@ Oscilloscope::Oscilloscope(QWidget *parent) :
 }
 
 Oscilloscope::~Oscilloscope() {
-    writeSettings();
+    QSettings settings;
+    settings.beginGroup(objectName());
+    settings.setValue("streamType", tab->currentIndex());
 }
 
 void Oscilloscope::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
@@ -139,27 +141,7 @@ void Oscilloscope::readSettings() {
     tab->setCurrentIndex(settings.value("streamType", 0).toInt());
     onStreamTypeChanged(settings.value("streamType", 0).toInt());
 
-    comma_textbox->setText(settings.value("decimalPoint", ".").toString());
-    delim_textbox->setText(settings.value("delim", " ").toString());
-    delim_newline->setChecked(settings.value("delimNewline", false).toBool());
-    delim_emptyline->setChecked(settings.value("delimEmptyLine", false).toBool());
-    subdelim_textbox->setText(settings.value("channelDelim", ",").toString());
-    subdelim_newline->setChecked(settings.value("channelDelimNewline", false).toBool());
-    timechannel_checkbox->setChecked(settings.value("firstChannelIsTime", false).toBool());
     onTextSettingsChanged();
-}
-
-void Oscilloscope::writeSettings() {
-    QSettings settings;
-    settings.beginGroup(objectName());
-    settings.setValue("streamType", tab->currentIndex());
-    settings.setValue("decimalPoint", comma_textbox->text());
-    settings.setValue("delim", delim_textbox->text());
-    settings.setValue("delimNewline", delim_newline->isChecked());
-    settings.setValue("delimEmptyLine", delim_emptyline->isChecked());
-    settings.setValue("channelDelim", subdelim_textbox->text());
-    settings.setValue("channelDelimNewline", subdelim_newline->isChecked());
-    settings.setValue("firstChannelIsTime", timechannel_checkbox->isChecked());
 }
 
 
