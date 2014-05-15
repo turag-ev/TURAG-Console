@@ -5,7 +5,7 @@
 #include <QGridLayout>
 #include <QTimer>
 #include <QPushButton>
-#include <libs/qlineedit2.h>
+#include <libs/lineeditext.h>
 #include <QCheckBox>
 #include <QDebug>
 
