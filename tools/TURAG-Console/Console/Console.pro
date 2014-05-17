@@ -176,7 +176,8 @@ HEADERS  += mainwindow.h \
     frontend/feldbusviews/feldbusbootloaderview.h \
     ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h \
     libs/lineeditext.h \
-    libs/checkboxext.h
+    libs/checkboxext.h \
+    libs/checkactionext.h
 
 INCLUDEPATH += \
     ../../../tina \
@@ -199,7 +200,8 @@ RESOURCES += \
     images.qrc
 
 OTHER_FILES += \
-    TODO.txt
+    TODO.txt \
+    images/turag-55.png
 
 # install
 target.path = $$PREFIX/bin

@@ -15,6 +15,7 @@ class ElidedButton;
 class QActionGroup;
 class QFont;
 class QImage;
+class QToolBar;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -25,12 +26,16 @@ public:
 
     void openConnection(QString connection_string);
 
+protected:
+    void closeEvent(QCloseEvent *event);
+
 private slots:
     void onNewWindow();
     void close();
 
     void onShowStatusbar(bool show);
     void onShowMenubar(bool show);
+    void onShowToolbar(bool show);
 
     void about();
     void resetStatusBar();
@@ -45,22 +50,13 @@ private slots:
         void dumpAllObjectTrees(void);
 #   endif
 
-protected:
-    void closeEvent(QCloseEvent *event);
-
 private:
     Controller* controller;
 
-    QAction *save_auto_action;
     QAction *connect_action;
     QAction *disconnect_action;
-    QAction* auto_reconnect_action;
-    QAction* show_statusbar;
-    QAction* show_menubar;
 
     QActionGroup* frontendOptions;
-
-    QAction* refreshAction;
 
     // status bar
     QLabel* status;
@@ -72,6 +68,8 @@ private:
     QImage* imgTick;
     QImage* imgCross;
     QImage* imgLock;
+
+    QToolBar* toolbar;
 
     void writeSettings();
     void readSettings();

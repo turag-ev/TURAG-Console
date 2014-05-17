@@ -125,9 +125,10 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     separator_action3->setSeparator(true);
     addAction(separator_action3);
 
-    QAction* save_action = new QAction("Save Graph", this);
-    addAction(save_action);
-    connect(save_action, SIGNAL(triggered()), this, SLOT(saveOutput()));
+    QAction* export_action = new QAction("Export Graph", this);
+    export_action->setIcon(QIcon(":/images/document-export.png"));
+    addAction(export_action);
+    connect(export_action, SIGNAL(triggered()), this, SLOT(exportOutput()));
 
     QSettings settings;
     settings.beginGroup(objectName());
@@ -381,27 +382,43 @@ void DataGraph::updateCurveColors() {
 }
 
 
-bool DataGraph::saveOutput(QString fileName) {
-    if ( !fileName.isEmpty() )
-    {
-        QwtPlotRenderer renderer;
+bool DataGraph::exportOutput(QString fileName) {
+    if ( !fileName.isEmpty() ) {
+        if (fileName.endsWith(".csv")) {
+            QFile data(fileName);
+            if (data.open(QFile::WriteOnly | QFile::Truncate)) {
+                QTextStream out(&data);
 
-        // flags to make the document look like the widget
-        renderer.setDiscardFlag(QwtPlotRenderer::DiscardBackground, true);
-        renderer.setLayoutFlag(QwtPlotRenderer::DefaultLayout, true);
 
-        renderer.renderDocument(this, fileName, QSizeF(300, 200), 85);
 
-        return true;
+                out << "Result: " << qSetFieldWidth(10) << left << 3.14 << 2.7;
+                // writes "Result: 3.14      2.7       "
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+
+            QwtPlotRenderer renderer;
+
+            // flags to make the document look like the widget
+            renderer.setDiscardFlag(QwtPlotRenderer::DiscardBackground, true);
+            renderer.setLayoutFlag(QwtPlotRenderer::DefaultLayout, true);
+
+            renderer.renderDocument(this, fileName, QSizeF(300, 200), 85);
+
+            return true;
+        }
     } else {
         return false;
     }
 }
 
-bool DataGraph::saveOutput(void) {
+bool DataGraph::exportOutput(void) {
     QString fileName = "plot.png";
 
     QStringList filter;
+    filter += "CSV-data (*.csv)";
     filter += "PNG-Images (*.png)";
     filter += "JPEG-Images (*.jpg)";
     filter += "PDF Documents (*.pdf)";
@@ -413,7 +430,7 @@ bool DataGraph::saveOutput(void) {
     fileName = QFileDialog::getSaveFileName(this, "Export File Name", fileName,
         filter.join(";;"), NULL);
 
-    return saveOutput(fileName);
+    return exportOutput(fileName);
 }
 
 void DataGraph::updateRightAxis(void) {

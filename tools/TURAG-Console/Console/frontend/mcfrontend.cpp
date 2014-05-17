@@ -60,8 +60,6 @@ void MCFrontend::clear(void) {
 }
 
 void MCFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
-    Q_UNUSED(dev);
-
     logview->onConnected(readOnly, isBuffered, dev);
     cmenu->onConnected(readOnly, isBuffered, dev);
     graphView->onConnected(readOnly, isBuffered, dev);

@@ -145,7 +145,8 @@ bool StreamModel::insertRow(char level, const char *data, std::size_t len, unsig
     Icon icon;
     switch (level) {
     case '-': icon = ICON_INFO;     break;
-    case '?': icon = ICON_WARNING;  break;
+    case '#': icon = ICON_WARNING;  break;
+    case '?': icon = ICON_CRITICAL;  break;
     case '!': icon = ICON_ERROR;    break;
     default:  icon = ICON_INFO;     break;
     }
@@ -522,6 +523,7 @@ void LogView::writeLine(QByteArray line) {
         case '-':
         case '!':
         case '?':
+        case '#':
         case 'T':
             insertRow(level, line.data(), line.size(), source);
             break;

@@ -1,5 +1,5 @@
 <RCC>
-    <qresource lang="de" prefix="/">
+    <qresource prefix="/" lang="de">
         <file>images/ok.png</file>
         <file>images/nok.png</file>
         <file>images/turag-55.png</file>
@@ -7,5 +7,14 @@
         <file>images/warning-orange-16.png</file>
         <file>images/error-orange-16.png</file>
         <file>images/error-red-16.png</file>
+        <file>images/document-save.png</file>
+        <file>images/application-exit.png</file>
+        <file>images/view-refresh.png</file>
+        <file>images/window-new.png</file>
+        <file>images/dialog-information.png</file>
+        <file>images/call-start.png</file>
+        <file>images/call-stop.png</file>
+        <file>images/document-open-remote.png</file>
+        <file>images/document-export.png</file>
     </qresource>
 </RCC>
