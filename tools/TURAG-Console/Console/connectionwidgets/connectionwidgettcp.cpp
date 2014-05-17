@@ -473,7 +473,7 @@ void ConnectionWidgetTcp::showContextMenu(const QPoint & pos) {
     }
 }
 
-void ConnectionWidgetTcp::checkData(QString path) {
+void ConnectionWidgetTcp::requestData(QString path) {
     if (!selectedDevice && associatedBackend) {
         QString path = associatedBackend->getDevicePath();
 

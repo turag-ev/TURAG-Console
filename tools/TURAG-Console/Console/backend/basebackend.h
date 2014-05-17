@@ -25,11 +25,16 @@ public:
     virtual QList<QAction*> getMenuEntries();
     QIODevice* getDevice() { return stream_.get(); }
 
-    // checks if backend is capable for this connection
-    // normally only checks url prefix
+    // Checks if backend is capable for this connection
+    // normally only checks url prefix. This function is thread-safe
+    // and so should be any redefinitions.
     virtual bool canHandleUrl(const QString& url) const;
 
     void setDeviceRecovery(bool on);
+
+    // Save the current contents of the data buffer to the given file.
+    // This function is thread-safe.
+    void saveBufferToFile(QString fileName);
 
 signals:
     // data was received from the backend
@@ -52,19 +57,22 @@ public slots:
     // closes a connection and emits `disconnected'-signal
     virtual void closeConnection(void);
 
-    // call this function as a response to a loss of connection rather than closeConnection()
+    // call this function as a response to a loss of connection rather than closeConnection().
+    // This will trigger the auto reconnect feature, if enabled.
     virtual void connectionWasLost(void);
 
     // writes data to opened stream. Assumes that all data can be written. Emits error messages otherwise.
     virtual void writeData(QByteArray data);
 
-    // checks for data and, if data is available, results in the emission of a dataReady-Signal.
-    // returns all data for buffered devices.
-    virtual void checkData(void);
+    // re-emits the contents of the data buffer
+    virtual void reloadData(void);
 
 protected slots:
     // class this function after successfully opening a connection
     void emitConnected(void);
+
+    // Connect this slot to the the readyRead-signal of your data source
+    void emitDataReady(void);
 
     // you should rather use these functions as opposed to directly
     // emitting the associated signals as this would inhibit the message
@@ -72,10 +80,13 @@ protected slots:
     void emitErrorOccured(QString msg);
     void emitInfoMessage(QString msg);
 
+    bool saveBufferToFileInternal(QString fileName);
+
 protected:
     std::unique_ptr<QIODevice> stream_;
     QString connectionString_;
     const QString connectionPrefix_;
+    QByteArray* buffer;
 
 private slots:
     void onRecoverDevice(void);
@@ -84,6 +95,7 @@ private:
     QTimer recoverDeviceTimer;
     QString deviceShouldBeConnectedString;
     bool deviceRecoveryActive;
+
 
 };
 

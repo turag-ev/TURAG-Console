@@ -161,11 +161,17 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     connect(frontendMapper, SIGNAL(mapped(int)), controller, SLOT(setFrontend(int)));
 
+    refreshAction = new QAction("Refresh", this);
+    refreshAction->setShortcut(QKeySequence(Qt::Key_F5));
+    connect(refreshAction, SIGNAL(triggered()), controller, SLOT(refresh()));
+
     QMenu* view_menu = menuBar()->addMenu("&Ansicht");
     view_menu->addAction(show_menubar);
     view_menu->addAction(show_statusbar);
     view_menu->addSeparator()->setText("Verfügbare Frontends");
     view_menu->addActions(frontendOptions->actions());
+    view_menu->addSeparator();
+    view_menu->addAction(refreshAction);
 
 
 

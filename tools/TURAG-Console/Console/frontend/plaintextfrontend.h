@@ -54,7 +54,6 @@ protected:
     QPlainTextEdit* textbox;
     bool scroll_on_output;
     bool auto_wrap;
-    bool hasBufferedConnection;
     STYLE selectedStyle;
 
     // menu actions

@@ -41,7 +41,7 @@ public:
     ~ConnectionWidgetTcp();
 
 public slots:
-    void checkData(QString path);
+    void requestData(QString path);
 
 protected:
     QMenu* tcpMenu;

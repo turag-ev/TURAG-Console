@@ -44,6 +44,7 @@ public slots:
     void saveOutput(void);
     void setAutoReconnect(bool on);
     void setAutoSave(bool on) { autoSaveOn = on; }
+    void refresh(void);
 
 protected slots:
     void onCancelNewConnection();
@@ -52,7 +53,6 @@ protected slots:
     void onErrorOccured(QString msg);
     void onInfoMessage(QString msg);
     void onToolboxChangedCurrent(int index);
-    void saveDataToBuffer(QByteArray data);
 
 signals:
     void connected(bool readOnly, bool isBuffered, QIODevice*);
@@ -77,11 +77,7 @@ protected:
     QToolBox* toolbox;
 
 private:
-    bool saveBufferToFile(QString fileName);
-
     bool autoSaveOn;
-    QByteArray* buffer;
-    
 };
 
 #endif // CONTROLLER_H

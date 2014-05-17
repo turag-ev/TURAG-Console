@@ -72,11 +72,7 @@ Controller::Controller(QWidget *parent) :
 
 
     // special feature for tcp connections
-    connect(tcpbackend, SIGNAL(checkData(QString)), connectionwidgettcp, SLOT(checkData(QString)));
-
-    // create intermediate data buffer which will hold all data received from the backend
-    // so we can save it later
-    buffer = new QByteArray;
+    connect(tcpbackend, SIGNAL(requestData(QString)), connectionwidgettcp, SLOT(requestData(QString)));
 
     // build welcome screen
     QVBoxLayout* layout = new QVBoxLayout();
@@ -122,7 +118,6 @@ Controller::Controller(QWidget *parent) :
 
 
 Controller::~Controller() {
-    delete buffer;
 }
 
 
@@ -170,14 +165,15 @@ void Controller::setFrontend(int newFrontendIndex, bool calledManually) {
         newFrontend->clear();
 
         if (currentBackend->isOpen()) {
-            connect(currentBackend, SIGNAL(dataReady(QByteArray)), newFrontend, SLOT(writeData(QByteArray)));
-            connect(currentBackend, SIGNAL(dataReady(QByteArray)), this, SLOT(saveDataToBuffer(QByteArray)));
-            connect(newFrontend, SIGNAL(dataReady(QByteArray)), currentBackend, SLOT(writeData(QByteArray)));
-            connect(newFrontend, SIGNAL(requestData()), currentBackend, SLOT(checkData()), Qt::QueuedConnection);
+            connect(currentBackend, SIGNAL(dataReady(QByteArray)), newFrontend, SLOT(writeData(QByteArray)), Qt::QueuedConnection);
+            connect(newFrontend, SIGNAL(dataReady(QByteArray)), currentBackend, SLOT(writeData(QByteArray)), Qt::QueuedConnection);
+            connect(newFrontend, SIGNAL(requestData()), this, SLOT(refresh()), Qt::QueuedConnection);
             connect(this,SIGNAL(connected(bool,bool,QIODevice*)),newFrontend,SLOT(onConnected(bool,bool,QIODevice*)));
             connect(this,SIGNAL(disconnected(bool)),newFrontend,SLOT(onDisconnected(bool)));
             if (calledManually) newFrontend->onConnected(currentBackend->isReadOnly(), currentBackend->isBuffered(), currentBackend->getDevice());
-            if (newFrontendIndex != currentFrontendIndex) currentBackend->checkData();
+            if (newFrontendIndex != currentFrontendIndex) {
+                refresh();
+            }
         }
 
         currentFrontendIndex = newFrontendIndex;
@@ -214,10 +210,9 @@ void Controller::openConnection(void) {
         closeConnection();
 
         // build signal-slot connection before opening stream
-        connect(currentBackend, SIGNAL(dataReady(QByteArray)), currentFrontend, SLOT(writeData(QByteArray)));
-        connect(currentBackend, SIGNAL(dataReady(QByteArray)), this, SLOT(saveDataToBuffer(QByteArray)));
-        connect(currentFrontend, SIGNAL(dataReady(QByteArray)), currentBackend, SLOT(writeData(QByteArray)));
-        connect(currentFrontend, SIGNAL(requestData()), currentBackend, SLOT(checkData()), Qt::QueuedConnection);
+        connect(currentBackend, SIGNAL(dataReady(QByteArray)), currentFrontend, SLOT(writeData(QByteArray)), Qt::QueuedConnection);
+        connect(currentFrontend, SIGNAL(dataReady(QByteArray)), currentBackend, SLOT(writeData(QByteArray)), Qt::QueuedConnection);
+        connect(currentFrontend, SIGNAL(requestData()), this, SLOT(refresh()), Qt::QueuedConnection);
 
         if (currentBackend->openConnection()) {
             cancelButton->show();
@@ -226,7 +221,6 @@ void Controller::openConnection(void) {
             // destroy signal-slot connection in case of failure
             currentBackend->disconnect(currentFrontend);
             currentFrontend->disconnect(currentBackend);
-            disconnect(currentBackend, SIGNAL(dataReady(QByteArray)), this, SLOT(saveDataToBuffer(QByteArray)));
         }
     }
 }
@@ -262,10 +256,9 @@ void Controller::openConnection(QString connectionString, bool *success, BaseBac
         BaseBackend* backend = *iter;
 
         // build signal-slot connection before opening stream
-        connect(backend, SIGNAL(dataReady(QByteArray)), currentFrontend, SLOT(writeData(QByteArray)));
-        connect(backend, SIGNAL(dataReady(QByteArray)), this, SLOT(saveDataToBuffer(QByteArray)));
-        connect(currentFrontend, SIGNAL(dataReady(QByteArray)), backend, SLOT(writeData(QByteArray)));
-        connect(currentFrontend, SIGNAL(requestData()), backend, SLOT(checkData()), Qt::QueuedConnection);
+        connect(backend, SIGNAL(dataReady(QByteArray)), currentFrontend, SLOT(writeData(QByteArray)), Qt::QueuedConnection);
+        connect(currentFrontend, SIGNAL(dataReady(QByteArray)), backend, SLOT(writeData(QByteArray)), Qt::QueuedConnection);
+        connect(currentFrontend, SIGNAL(requestData()), this, SLOT(refresh()), Qt::QueuedConnection);
 
         if (backend->openConnection(connectionString)) {
             currentBackend = backend;
@@ -279,7 +272,6 @@ void Controller::openConnection(QString connectionString, bool *success, BaseBac
         // destroy signal-slot connection if connecting failed
         backend->disconnect(currentFrontend);
         currentFrontend->disconnect(backend);
-        disconnect(backend, SIGNAL(dataReady(QByteArray)), this, SLOT(saveDataToBuffer(QByteArray)));
     }
 
     if (success) *success = false;
@@ -301,41 +293,13 @@ void Controller::closeConnection(void) {
 
 
 void Controller::saveOutput(void) {
-    QString filename = QFileDialog::getSaveFileName(this);
+    if (currentBackend) {
+        QString filename = QFileDialog::getSaveFileName(this);
 
-    if (filename.isEmpty()) return;
+        if (filename.isEmpty()) return;
 
-    saveBufferToFile(filename);
-}
-
-void Controller::saveDataToBuffer(QByteArray data) {
-    buffer->append(data);
-}
-
-bool Controller::saveBufferToFile(QString fileName) {
-    QFile savefile(std::move(fileName));
-
-    if (buffer->isEmpty()) {
-        return false;
+        currentBackend->saveBufferToFile(filename);
     }
-
-    if (!savefile.open(QIODevice::WriteOnly)) {
-        emit errorOccured("Saving output failed: couldn't open file.");
-        return false;
-    }
-
-    if (!savefile.isWritable()) {
-        emit errorOccured("Saving output failed: file is not writable.");
-        return false;
-    }
-
-    if (savefile.write(*buffer) == -1) {
-        emit errorOccured("Saving output failed: error while writing.");
-        return false;
-    }
-
-    emit infoMessage("Ausgabe erfolgreich geschrieben");
-    return true;
 }
 
 void Controller::openNewConnection(void) {
@@ -365,11 +329,7 @@ void Controller::onConnected(bool readOnly, bool isBuffered) {
         connectionMenu->addActions(currentBackend->getMenuEntries());
     }
 
-    BaseFrontend* currentFrontend = availableFrontends.at(currentFrontendIndex);
-
-    currentFrontend->clear();
-    currentBackend->checkData();
-
+    refresh();
 
     emit connected(readOnly, isBuffered, currentBackend->getDevice());
 }
@@ -377,15 +337,13 @@ void Controller::onConnected(bool readOnly, bool isBuffered) {
 void Controller::onDisconnected() {
     if (autoSaveOn) {
         QString file = QDir::toNativeSeparators(QDir::homePath() + "/turag-" + QDateTime::currentDateTime().toString(Qt::ISODate) + ".turag");
-        saveBufferToFile(file);
+        currentBackend->saveBufferToFile(file);
     }
     if (connectionMenu) {
         for (QAction* action : currentBackend->getMenuEntries()) {
             connectionMenu->removeAction(action);
         }
     }
-
-    buffer->clear();
 }
 
 void Controller::onErrorOccured(QString msg) {
@@ -396,3 +354,9 @@ void Controller::onInfoMessage(QString msg) {
     emit infoMessage(msg);
 }
 
+void Controller::refresh(void) {
+    availableFrontends.at(currentFrontendIndex)->clear();
+    if (currentBackend) {
+        currentBackend->reloadData();
+    }
+}

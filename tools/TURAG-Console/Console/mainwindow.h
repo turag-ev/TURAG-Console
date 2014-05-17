@@ -60,6 +60,8 @@ private:
 
     QActionGroup* frontendOptions;
 
+    QAction* refreshAction;
+
     // status bar
     QLabel* status;
     QLabel* permanentStatus;

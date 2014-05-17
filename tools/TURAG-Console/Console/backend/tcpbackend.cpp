@@ -45,7 +45,7 @@ bool TcpBackend::openConnection(QString connectionString) {
 
     //und jetzt den Socket erzeugen
     std::unique_ptr<QTcpSocket>  socket(new QTcpSocket);
-    connect(socket.get(), SIGNAL(readyRead()), this, SLOT(emitData()));
+    connect(socket.get(), SIGNAL(readyRead()), this, SLOT(emitDataReady()));
     connect(socket.get(), SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onTcpError(QAbstractSocket::SocketError)));
     connect(socket.get(), SIGNAL(connected()), this, SLOT(socketConnected()));
     connect(socket.get(), SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
@@ -64,6 +64,18 @@ bool TcpBackend::openConnection(QString connectionString) {
 void TcpBackend::socketConnected(void) {
     connecting = false;
     emitConnected();
+
+    QString connectionString = connectionString_;
+
+    connectionString.remove(0, connectionPrefix.length());
+
+    int index = connectionString.indexOf("/");
+    int index2 = connectionString.indexOf(":");
+    int index3 = connectionString.indexOf(":", index2 + 1);
+    QString path = connectionString.mid(index + 1, index3 - index - 1);
+
+    emit requestData(path);
+
 }
 
 void TcpBackend::socketDisconnected(void) {
@@ -124,22 +136,5 @@ QString TcpBackend::getConnectionInfo() {
     QString path = connectionString.right(connectionString.size() - index2 - 1);
 
     return QString("Debug-Server: %1").arg(path);
-}
-
-void TcpBackend::checkData(void) {
-    QString connectionString = connectionString_;
-
-    connectionString.remove(0, connectionPrefix.length());
-
-    int index = connectionString.indexOf("/");
-    int index2 = connectionString.indexOf(":");
-    int index3 = connectionString.indexOf(":", index2 + 1);
-    QString path = connectionString.mid(index + 1, index3 - index - 1);
-
-    emit checkData(path);
-}
-
-void TcpBackend::emitData(void) {
-    emit dataReady(stream_->readAll());
 }
 

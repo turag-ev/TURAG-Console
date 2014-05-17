@@ -41,6 +41,9 @@ bool FileBackend::openConnection(QString connectionString) {
 
     emitConnected();
 
+    buffer->append(stream_->readAll());
+    emitInfoMessage("Datei gelesen");
+
     return true;
 }
 
@@ -50,24 +53,6 @@ void FileBackend::closeConnection(void) {
     watcher->disconnect(this);
     if (!connectionString_.isEmpty()) {
         watcher->removePath(connectionString_.right(connectionString_.length() - connectionPrefix_.length()));
-    }
-}
-
-
-void FileBackend::checkData(void) {
-    if (stream_.get() && stream_->isReadable()) {
-
-        // process events caused the application to crash.
-//        emit infoMessage("Datei wird gelesen");
-//        QApplication::processEvents();
-
-        stream_->seek(0);
-
-        QByteArray data = stream_->readAll();
-
-        emit dataReady(data);
-
-        emitInfoMessage("Datei gelesen");
     }
 }
 

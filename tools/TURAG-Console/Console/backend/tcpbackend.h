@@ -21,17 +21,15 @@ public:
     QString getDevicePath(void) { return devicePath; }
 
 signals:
-    void checkData(QString path);
+    void requestData(QString path);
 
 public slots:
     virtual bool openConnection(QString connectionString);
-    virtual void checkData(void);
 
 private slots:
     void socketConnected(void);
     void socketDisconnected(void);
     void onTcpError(QAbstractSocket::SocketError err);
-    void emitData(void);
 
 private:
     QHostAddress * hostAddress;

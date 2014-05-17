@@ -2,17 +2,21 @@
 #include <QByteArray>
 #include <QIODevice>
 #include <QDebug>
+#include <QFile>
 
 BaseBackend::BaseBackend(QString connectionPrefix, QObject *parent) :
     QObject(parent), connectionPrefix_(connectionPrefix), deviceShouldBeConnectedString(""), deviceRecoveryActive(false)
 {
     recoverDeviceTimer.setInterval(500);
     connect(&recoverDeviceTimer, SIGNAL(timeout()), this, SLOT(onRecoverDevice()));
+
+    buffer = new QByteArray;
 }
 
 
 BaseBackend::~BaseBackend(void) {
     closeConnection();
+    delete buffer;
 }
 
 
@@ -82,14 +86,21 @@ void BaseBackend::writeData(QByteArray data) {
 }
 
 
-void BaseBackend::checkData(void) {
+void BaseBackend::emitDataReady(void) {
     if (stream_.get() && stream_->isReadable()) {
         if (!stream_->isSequential()) {
             stream_->seek(0);
         }
-        emit dataReady(stream_->readAll());
+        QByteArray data(stream_->readAll());
+        emit dataReady(data);
+        buffer->append(data);
     }
 }
+
+void BaseBackend::reloadData() {
+    emit dataReady(*buffer);
+}
+
 
 QString BaseBackend::getConnectionInfo() {
     return connectionString_;
@@ -104,6 +115,8 @@ bool BaseBackend::canHandleUrl(const QString& url) const {
 }
 
 void BaseBackend::emitConnected() {
+    buffer->clear();
+
     if (deviceShouldBeConnectedString == connectionString_ && deviceRecoveryActive && recoverDeviceTimer.isActive()) {
         emit infoMessage("Verbindung erfolgreich wiederaufgebaut");
     }
@@ -151,5 +164,35 @@ void BaseBackend::emitInfoMessage(QString msg) {
         emit infoMessage(msg);
     }
 
+}
+
+void BaseBackend::saveBufferToFile(QString fileName) {
+    QMetaObject::invokeMethod(this, "saveBufferToFileInternal", Q_ARG(QString, fileName));
+}
+
+bool BaseBackend::saveBufferToFileInternal(QString fileName) {
+    QFile savefile(std::move(fileName));
+
+    if (buffer->isEmpty()) {
+        return false;
+    }
+
+    if (!savefile.open(QIODevice::WriteOnly)) {
+        emit errorOccured("Saving output failed: couldn't open file.");
+        return false;
+    }
+
+    if (!savefile.isWritable()) {
+        emit errorOccured("Saving output failed: file is not writable.");
+        return false;
+    }
+
+    if (savefile.write(*buffer) == -1) {
+        emit errorOccured("Saving output failed: error while writing.");
+        return false;
+    }
+
+    emit infoMessage("Ausgabe erfolgreich geschrieben");
+    return true;
 }
 

@@ -15,7 +15,7 @@
 #include <QClipboard>
 
 PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
-    BaseFrontend("Standard-Konsole", parent), scroll_on_output(true), hasBufferedConnection(false), buffer_()
+    BaseFrontend("Standard-Konsole", parent), scroll_on_output(true), buffer_()
 {
     QVBoxLayout* layout = new QVBoxLayout();
 
@@ -240,7 +240,7 @@ void PlainTextFrontend::setAutoWrap(bool on) {
 }
 
 
-void PlainTextFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
+void PlainTextFrontend::onConnected(bool readOnly, bool, QIODevice* dev) {
 	Q_UNUSED(dev);
 
     if (readOnly) {
@@ -248,14 +248,6 @@ void PlainTextFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* d
     } else {
         paste_action->setEnabled(true);
     }
-
-    if (!isBuffered) {
-        clear_action->setEnabled(true);
-    } else {
-        clear_action->setEnabled(false);
-    }
-
-    hasBufferedConnection = isBuffered;
 }
 
 

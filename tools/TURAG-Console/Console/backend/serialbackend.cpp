@@ -77,7 +77,7 @@ bool SerialBackend::openConnection(QString connectionString) {
     connectionString_ = connectionString;
 
     stream_ = std::move(port);
-    connect(stream_.get(),SIGNAL(readyRead()),this,SLOT(checkData()));
+    connect(stream_.get(),SIGNAL(readyRead()),this,SLOT(emitDataReady()));
     connect(stream_.get(),SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(onError(QSerialPort::SerialPortError)));
 
     emitConnected();
