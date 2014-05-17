@@ -36,8 +36,6 @@ public slots:
     // this slot is called by the controller when new data is available
     virtual void writeData(QByteArray data) = 0;
     virtual void clear(void) = 0;
-    virtual bool saveOutput(QString file) = 0;
-
 
     // frontend was connected to stream, does nothing if not overloaded
     virtual void onConnected(bool readOnly, bool isBuffered, QIODevice*);

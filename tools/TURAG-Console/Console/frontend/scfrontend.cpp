@@ -46,10 +46,6 @@ void SCFrontend::clear(void) {
     interface->clear();
 }
 
-bool SCFrontend::saveOutput(QString file) {
-    return logview->saveOutput(file);
-}
-
 void SCFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
 	Q_UNUSED(dev);
 

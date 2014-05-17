@@ -143,7 +143,6 @@ public slots:
   void onConnected(bool readOnly, bool isBuffered, QIODevice*) override;
   void onDisconnected(bool reconnecting) override;
   void clear() override;
-  bool saveOutput(QString file) override;
   void writeData(QByteArray data) override;
 
 protected:

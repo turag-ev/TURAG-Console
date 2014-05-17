@@ -132,11 +132,6 @@ void TinaCameraFrontend::clear(void) {
     scene->clear();
 }
 
-bool TinaCameraFrontend::saveOutput(QString file) {
-    (void)file;
-    return false;
-}
-
 // needed for the interface
 void TinaCameraFrontend::writeData(QByteArray data) {
     (void)data;

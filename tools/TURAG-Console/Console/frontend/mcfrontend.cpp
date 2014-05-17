@@ -59,10 +59,6 @@ void MCFrontend::clear(void) {
     interface->clear();
 }
 
-bool MCFrontend::saveOutput(QString file) {
-    return logview->saveOutput(file);
-}
-
 void MCFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
     Q_UNUSED(dev);
 

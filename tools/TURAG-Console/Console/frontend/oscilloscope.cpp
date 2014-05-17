@@ -130,10 +130,6 @@ void Oscilloscope::clear(void) {
     channel_label->setText("0");
 }
 
-bool Oscilloscope::saveOutput(QString file) {
-    return plot->saveOutput(file);
-}
-
 void Oscilloscope::readSettings() {
     QSettings settings;
     settings.beginGroup(objectName());

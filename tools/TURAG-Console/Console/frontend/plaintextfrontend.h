@@ -36,8 +36,6 @@ public slots:
     virtual void onDisconnected(bool reconnecting);
 
 
-    virtual bool saveOutput(QString file);
-
     virtual void setScrollOnOutput(bool on);
     virtual void setStyle(STYLE style);
     virtual void setAutoWrap(bool on);

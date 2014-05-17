@@ -165,10 +165,6 @@ void FeldbusFrontend::clear(void) {
     busLog_->clear();
 }
 
-bool FeldbusFrontend::saveOutput(QString) {
-    return false;
-}
-
 void FeldbusFrontend::validateAdressFields() {
     if (!fromEdit_->hasAcceptableInput()) {
         fromEdit_->setText("0");

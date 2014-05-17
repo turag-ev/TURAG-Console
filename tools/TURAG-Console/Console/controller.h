@@ -5,6 +5,7 @@
 #include <QList>
 #include <QString>
 #include <QStackedWidget>
+#include <QByteArray>
 
 class BaseFrontend;
 class BaseBackend;
@@ -51,6 +52,7 @@ protected slots:
     void onErrorOccured(QString msg);
     void onInfoMessage(QString msg);
     void onToolboxChangedCurrent(int index);
+    void saveDataToBuffer(QByteArray data);
 
 signals:
     void connected(bool readOnly, bool isBuffered, QIODevice*);
@@ -75,7 +77,10 @@ protected:
     QToolBox* toolbox;
 
 private:
+    bool saveBufferToFile(QString fileName);
+
     bool autoSaveOn;
+    QByteArray* buffer;
     
 };
 

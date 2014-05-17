@@ -27,7 +27,6 @@ public slots:
     // frontend was disconnected from stream
     void onDisconnected(bool reconnecting);
     void clear(void);
-    bool saveOutput(QString file);
 
 private slots:
     void activateGraphInternal(int index);

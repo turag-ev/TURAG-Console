@@ -240,28 +240,6 @@ void PlainTextFrontend::setAutoWrap(bool on) {
 }
 
 
-bool PlainTextFrontend::saveOutput(QString filename) {
-    if (filename.isEmpty()) {
-        return false;
-    }
-
-	QFile savefile(std::move(filename));
-
-	if (!savefile.open(QIODevice::WriteOnly)) {
-		return false;
-	}
-
-	if (!savefile.isWritable()) {
-        return false;
-    }
-
-	if (savefile.write(textbox->toPlainText().toUtf8()) == -1) {
-        return false;
-    }
-
-    return true;
-}
-
 void PlainTextFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
 	Q_UNUSED(dev);
 

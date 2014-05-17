@@ -68,10 +68,6 @@ void STMCamFrontend::clear(void) {
     interface->clear();
 }
 
-bool STMCamFrontend::saveOutput(QString file) {
-    return logview->saveOutput(file);
-}
-
 void STMCamFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
     Q_UNUSED(dev);
 

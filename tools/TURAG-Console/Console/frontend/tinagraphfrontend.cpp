@@ -138,15 +138,6 @@ void TinaGraphFrontend::clear(void) {
     graphlist->clear();
 }
 
-bool TinaGraphFrontend::saveOutput(QString file) {
-    if (stack->count()) {
-        DataGraph* graph = static_cast<DataGraph*>(stack->currentWidget());
-        return graph->saveOutput(file);
-    } else {
-        return false;
-    }
-}
-
 // needed for the interface
 void TinaGraphFrontend::writeData(QByteArray data) {
     (void)data;

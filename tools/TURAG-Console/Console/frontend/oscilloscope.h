@@ -51,7 +51,6 @@ public:
 public slots:
     virtual void writeData(QByteArray data);
     virtual void clear(void);
-    virtual bool saveOutput(QString file);
     virtual void onConnected(bool readOnly, bool isBuffered, QIODevice*);
 };
 

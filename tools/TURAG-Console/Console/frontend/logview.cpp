@@ -1,3 +1,5 @@
+#include <tina/debug/print.h>
+
 #include "logview.h"
 
 #include <QTableView>
@@ -148,20 +150,15 @@ bool StreamModel::insertRow(char level, const char *data, std::size_t len, unsig
     default:  icon = ICON_INFO;     break;
     }
 
-    if (source == ';' && len > 10 &&
-        strncmp(data, "SPIELZEIT:", 10) == 0)
-    {
-        QTextStream stream(QByteArray(data, len));
-        stream.seek(10); // "SPIELZEIT:"
+    if (level == TURAG_DEBUG_GAMETIME_PREFIX[0]) {
+        int hex_time;
 
-        int sec = 0, msec = 0;
-        stream >> sec;
-        if (!stream.atEnd()) {
-            stream.seek(stream.pos() + 1); // ,
-            stream >> msec;
+        if (sscanf(data, "%x", &hex_time) == 1) {
+            logtime_ = static_cast<float>(hex_time) / 1000.0f;
+            return true;
+        } else {
+            return false;
         }
-        logtime_ = sec + msec / 1000.f;
-        return true;
     }
 
     if (log_sources_[source].isNull()) {
@@ -525,6 +522,7 @@ void LogView::writeLine(QByteArray line) {
         case '-':
         case '!':
         case '?':
+        case 'T':
             insertRow(level, line.data(), line.size(), source);
             break;
 
@@ -555,45 +553,6 @@ void LogView::writeLine(QByteArray line) {
 
 void LogView::clear(void) {
     log_model_->clear();
-}
-
-bool LogView::saveOutput(QString filename) {
-    if (filename.isEmpty()) {
-        return true;
-    }
-
-    QFile savefile(std::move(filename));
-    if (!savefile.open(QIODevice::WriteOnly)) {
-        return false;
-    }
-
-    if (!savefile.isWritable()) {
-        return false;
-    }
-
-    for (const auto& row : log_model_->rows()) {
-        char c = '\x02';
-        savefile.write(&c, 1);
-
-        c = static_cast<char>(std::get<StreamModel::DATA_SOURCE>(row));
-        savefile.write(&c, 1);
-
-        switch (std::get<StreamModel::DATA_ICON>(row)) {
-        case StreamModel::ICON_INFO:     c = '-'; break;
-        case StreamModel::ICON_WARNING:  c = '?'; break;
-        case StreamModel::ICON_CRITICAL: c = '!'; break;
-        case StreamModel::ICON_ERROR:    c = '!'; break;
-        default:                         c = '!'; break;
-        }
-        savefile.write(&c, 1);
-
-        savefile.write(std::get<StreamModel::DATA_MESSAGE>(row).toUtf8());
-
-        c = '\n';
-        savefile.write(&c, 1);
-    }
-
-    return true;
 }
 
 // we need to implement this function as part of the base classes interface
