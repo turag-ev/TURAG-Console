@@ -27,7 +27,10 @@ PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
 
     // this option effectively leaves the context menu handling to the BaseFrontend.
     textbox->setContextMenuPolicy(Qt::NoContextMenu);
-    textbox->setFont(QFont("Consolas", 9));
+
+    QFont font("Monospace", 9);
+    font.setStyleHint(QFont::Monospace);
+    textbox->setFont(font);
 
     layout->addWidget(textbox);
 	layout->setMargin(0);

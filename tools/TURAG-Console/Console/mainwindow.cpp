@@ -492,10 +492,6 @@ int main(int argc, char *argv[]) {
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 #endif
 
-    QFont::insertSubstitution("Consolas", "Ubuntu Mono");
-    QFont::insertSubstitution("Consolas", "Monospace");
-    QFont::insertSubstitution("Consolas", "Courier New");
-
     QCoreApplication::setOrganizationName("TURAG");
     QCoreApplication::setOrganizationDomain("turag.de");
     QCoreApplication::setApplicationName("Console");
