@@ -125,6 +125,7 @@ void SerialBackend::onError(QSerialPort::SerialPortError error) {
     case QSerialPort::ReadError:
         errormsg = "An I/O error occurred while reading the data.";
         emitErrorOccured("Fehler: " + errormsg);
+        connectionWasLost();
         break;
     case QSerialPort::ResourceError:
         errormsg = "An I/O error occurred when a resource becomes unavailable, e.g. when the device is unexpectedly removed from the system.";

@@ -33,6 +33,11 @@ DEFINES *= QT_USE_QSTRINGBUILDER
 # Version für Quelldateien
 DEFINES += PACKAGE_VERSION=$$VERSION
 
+# don't use broken -mms-bitfields flag for windows
+QMAKE_CFLAGS_DEBUG += -mno-ms-bitfields
+QMAKE_CFLAGS_RELEASE += -mno-ms-bitfields
+QMAKE_CXXFLAGS += -mno-ms-bitfields
+
 QMAKE_CXXFLAGS         += -std=gnu++0x
 QMAKE_LFLAGS           += -std=gnu++0x
 

@@ -126,7 +126,7 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     addAction(separator_action3);
 
     QAction* export_action = new QAction("Export Graph", this);
-    export_action->setIcon(QIcon(":/images/document-export.png"));
+    export_action->setIcon(QIcon::fromTheme("document-export", QIcon(":/images/document-export.png")));
     addAction(export_action);
     connect(export_action, SIGNAL(triggered()), this, SLOT(exportOutput()));
 

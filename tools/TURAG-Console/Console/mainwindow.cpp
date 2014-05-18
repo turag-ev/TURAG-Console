@@ -77,13 +77,13 @@ MainWindow::MainWindow(QWidget *parent) :
     new_window->setShortcut(QKeySequence::New);
     new_window->setShortcutContext(Qt::ApplicationShortcut);
     new_window->setStatusTip("Neues Konsolen-Fenster öffnen");
-    new_window->setIcon(QIcon(":/images/window-new.png"));
+    new_window->setIcon(QIcon::fromTheme("window-new", QIcon(":/images/window-new.png")));
     connect(new_window, SIGNAL(triggered()), this, SLOT(onNewWindow()));
 
     QAction *save_action = new QAction("&Speichern...", this);
     save_action->setShortcuts(QKeySequence::Save);
-    save_action->setStatusTip("Ausgabe speicheren");
-    save_action->setIcon(QIcon(":/images/document-save.png"));
+    save_action->setStatusTip("Ausgabe speichern");
+    save_action->setIcon(QIcon::fromTheme("document-save", QIcon(":/images/document-save.png")));
     connect(save_action, SIGNAL(triggered()), controller, SLOT(saveOutput()));
 
     QAction* save_auto_action = new CheckActionExt("Automatisches Speichern", "Automatisches Speichern", false, this);
@@ -92,7 +92,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QAction *exit_action = new QAction("&Beenden", this);
     exit_action->setShortcuts(QKeySequence::Quit);
     exit_action->setStatusTip("Programm verlassen");
-    exit_action->setIcon(QIcon(":/images/application-exit.png"));
+    //exit_action->setIcon(QIcon::fromTheme("application-exit", QIcon(":/images/application-exit.png")));
     connect(exit_action, SIGNAL(triggered()), this, SLOT(close()));
 
     QMenu *file_menu = menuBar()->addMenu("&Datei");
@@ -107,24 +107,26 @@ MainWindow::MainWindow(QWidget *parent) :
     connect_action = new QAction("&Verbinden", this);
     connect_action->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Y));
     connect_action->setStatusTip("Letzte Verbindung wiederaufbauen");
-    connect_action->setIcon(QIcon(":/images/call-start.png"));
+    connect_action->setIcon(QIcon::fromTheme("call-start", QIcon(":/images/call-start.png")));
     connect(connect_action, SIGNAL(triggered()), controller, SLOT(openConnection()));
 
     disconnect_action = new QAction("&Trennen", this);
     disconnect_action->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
     disconnect_action->setStatusTip("Aktive Verbindung trennen");
-    disconnect_action->setIcon(QIcon(":/images/call-stop.png"));
+    disconnect_action->setIcon(QIcon::fromTheme("call-stop", QIcon(":/images/call-stop.png")));
     connect(disconnect_action, SIGNAL(triggered()), controller, SLOT(closeConnection()));
 
     QAction* auto_reconnect_action = new CheckActionExt("Verbindung offen halten", "Verbindung offen halten", true, this);
     auto_reconnect_action->setStatusTip("Versucht automatisch, verlorene Verbindungen wiederaufzubauen");
     connect(auto_reconnect_action, SIGNAL(triggered(bool)), controller, SLOT(setAutoReconnect(bool)));
 
-    QAction *new_connection_action = new QAction("&Neue Sitzung...", this);
+    new_connection_action = new QAction("&Neue Sitzung...", this);
     new_connection_action->setStatusTip("Neue Sitzung öffnen");
-    new_connection_action->setShortcut(QKeySequence::Open);
-    new_connection_action->setIcon(QIcon(":/images/document-open-remote.png"));
-    connect(new_connection_action, SIGNAL(triggered()), controller, SLOT(openNewConnection()));
+    new_connection_action->setShortcuts( QList<QKeySequence>{Qt::Key_F2, QKeySequence::Open});
+    new_connection_action->setIcon(QIcon::fromTheme("document-open-remote", QIcon(":/images/document-open-remote.png")));
+    new_connection_action->setCheckable(true);
+    connect(new_connection_action, SIGNAL(triggered(bool)), this, SLOT(handleNewConnectionAction(bool)));
+    connect(controller, SIGNAL(newConnectionDialogStateChanged(bool)), new_connection_action, SLOT(setChecked(bool)));
 
     QMenu *connection_menu = menuBar()->addMenu("&Verbindung");
     connection_menu->addAction(new_connection_action);
@@ -172,7 +174,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QAction* refreshAction = new QAction("Refresh", this);
     refreshAction->setShortcut(QKeySequence(Qt::Key_F5));
-    refreshAction->setIcon(QIcon(":/images/view-refresh.png"));
+    refreshAction->setIcon(QIcon::fromTheme("view-refresh", QIcon(":/images/view-refresh.png")));
+    refreshAction->setStatusTip("Daten aus Puffer neu laden");
     connect(refreshAction, SIGNAL(triggered()), controller, SLOT(refresh()));
 
     QMenu* view_menu = menuBar()->addMenu("&Ansicht");
@@ -199,7 +202,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QAction* about_action = new QAction("&Über", this);
     about_action->setStatusTip("Informationen über TURAG Console");
-    about_action->setIcon(QIcon(":/images/dialog-information.png"));
+    about_action->setIcon(QIcon::fromTheme("dialog-information", QIcon(":/images/dialog-information.png")));
     connect(about_action, SIGNAL(triggered()), this, SLOT(about()));
     help_menu->addAction(about_action);
 
@@ -257,9 +260,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 void MainWindow::about() {
-  QMessageBox::about(this, QString::fromUtf8("Über TURAG-Console"),
+    QMessageBox::about(this, QString::fromUtf8("Über TURAG-Console"),
                      QString::fromUtf8("<b>TURAG-Console v" TO_STRING(PACKAGE_VERSION) "</b><br />"
-                                       "compiled on " __DATE__ " " __TIME__ "<br /><br />"
+                                       "compiled on " __DATE__ " " __TIME__
+                                   #ifdef __GNUC__
+                                       "<br />gcc " __VERSION__
+                                   #endif
+                                       "<br /><br />"
                                        "Entwickelt von/für die <a href=\"http://www.turag.de\">TURAG e.V.</a>"
                                        "<br />"
                                        "insbesondere von:<br/><br />"
@@ -345,13 +352,19 @@ void MainWindow::onConnected(bool readOnly) {
     }
 }
 
+void MainWindow::handleNewConnectionAction(bool triggered) {
+    if (triggered) {
+        controller->openNewConnection();
+    } else {
+        controller->cancelNewConnection();
+    }
+}
+
 void MainWindow::onDisconnected(bool reconnecting) {
     if (!reconnecting) {
         connect_action->setEnabled(true);
         disconnect_action->setEnabled(false);
     }
-    frontendOptions->setEnabled(false);
-
     status->setText("");
     permanentStatus->setText("Getrennt");
 
@@ -469,17 +482,17 @@ void MainWindow::openConnection(QString connection_string) {
 }
 
 int main(int argc, char *argv[]) {
-  QApplication a(argc, argv);
+    QApplication a(argc, argv);
 
-  QLocale curLocale(QLocale("de_DE"));
-  QLocale::setDefault(curLocale);
-  setlocale(LC_ALL, "de");
+    QLocale curLocale(QLocale("de_DE"));
+     QLocale::setDefault(curLocale);
+    setlocale(LC_ALL, "de");
 
 #if QT_VERSION < 0x050000
-  QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
+    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
 #endif
 
-  QFont::insertSubstitution("Consolas", "Ubuntu Mono");
+    QFont::insertSubstitution("Consolas", "Ubuntu Mono");
     QFont::insertSubstitution("Consolas", "Monospace");
     QFont::insertSubstitution("Consolas", "Courier New");
 

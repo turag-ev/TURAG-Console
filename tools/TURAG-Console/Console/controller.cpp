@@ -100,8 +100,7 @@ Controller::Controller(QWidget *parent) :
     cancelButton = new QPushButton("Abbrechen");
     layout->addSpacing(15);
     layout->addWidget(cancelButton, 0, Qt::AlignLeft);
-    connect(cancelButton, SIGNAL(clicked()), this, SLOT(onCancelNewConnection()));
-    cancelButton->hide();
+    connect(cancelButton, SIGNAL(clicked()), this, SLOT(cancelNewConnection()));
 
     layout->addStretch(100);
     welcome_screen->setLayout(layout);
@@ -164,16 +163,18 @@ void Controller::setFrontend(int newFrontendIndex, bool calledManually) {
         if (calledManually) currentFrontend->onDisconnected(false);
         newFrontend->clear();
 
+        connect(currentBackend, SIGNAL(dataReady(QByteArray)), newFrontend, SLOT(writeData(QByteArray)));
+        connect(newFrontend, SIGNAL(dataReady(QByteArray)), currentBackend, SLOT(writeData(QByteArray)));
+        connect(newFrontend, SIGNAL(requestData()), this, SLOT(refresh()), Qt::QueuedConnection);
+        connect(this,SIGNAL(connected(bool,bool,QIODevice*)),newFrontend,SLOT(onConnected(bool,bool,QIODevice*)));
+        connect(this,SIGNAL(disconnected(bool)),newFrontend,SLOT(onDisconnected(bool)));
         if (currentBackend->isOpen()) {
-            connect(currentBackend, SIGNAL(dataReady(QByteArray)), newFrontend, SLOT(writeData(QByteArray)));
-            connect(newFrontend, SIGNAL(dataReady(QByteArray)), currentBackend, SLOT(writeData(QByteArray)));
-            connect(newFrontend, SIGNAL(requestData()), this, SLOT(refresh()), Qt::QueuedConnection);
-            connect(this,SIGNAL(connected(bool,bool,QIODevice*)),newFrontend,SLOT(onConnected(bool,bool,QIODevice*)));
-            connect(this,SIGNAL(disconnected(bool)),newFrontend,SLOT(onDisconnected(bool)));
             if (calledManually) newFrontend->onConnected(currentBackend->isReadOnly(), currentBackend->isBuffered(), currentBackend->getDevice());
-            if (newFrontendIndex != currentFrontendIndex) {
-                refresh();
-            }
+        } else {
+            if (calledManually) newFrontend->onDisconnected(false);
+        }
+        if (newFrontendIndex != currentFrontendIndex) {
+            refresh();
         }
 
         currentFrontendIndex = newFrontendIndex;
@@ -182,6 +183,7 @@ void Controller::setFrontend(int newFrontendIndex, bool calledManually) {
     }
 
     setCurrentIndex(currentFrontendIndex);
+    emit newConnectionDialogStateChanged(false);
 }
 
 
@@ -214,10 +216,7 @@ void Controller::openConnection(void) {
         connect(currentFrontend, SIGNAL(dataReady(QByteArray)), currentBackend, SLOT(writeData(QByteArray)));
         connect(currentFrontend, SIGNAL(requestData()), this, SLOT(refresh()), Qt::QueuedConnection);
 
-        if (currentBackend->openConnection()) {
-            cancelButton->show();
-
-        } else {
+        if (!currentBackend->openConnection()) {
             // destroy signal-slot connection in case of failure
             currentBackend->disconnect(currentFrontend);
             currentFrontend->disconnect(currentBackend);
@@ -262,7 +261,6 @@ void Controller::openConnection(QString connectionString, bool *success, BaseBac
 
         if (backend->openConnection(connectionString)) {
             currentBackend = backend;
-            cancelButton->show();
             setFrontend(currentFrontendIndex, false);
             if (success) *success = true;
             if (openedBackend) *openedBackend = currentBackend;
@@ -304,10 +302,12 @@ void Controller::saveOutput(void) {
 
 void Controller::openNewConnection(void) {
     setCurrentIndex(availableFrontends.size());
+    emit newConnectionDialogStateChanged(true);
 }
 
-void Controller::onCancelNewConnection() {
+void Controller::cancelNewConnection() {
     setCurrentIndex(currentFrontendIndex);
+    emit newConnectionDialogStateChanged(false);
 }
 
 

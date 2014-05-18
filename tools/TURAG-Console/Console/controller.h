@@ -39,6 +39,7 @@ public slots:
     void openConnection(void);
     void openConnection(QString connectionString, bool* success, BaseBackend **openedBackend);
     void closeConnection(void);
+    void cancelNewConnection();
     void setFrontend(int newFrontendIndex);
     void setFrontend(int newFrontendIndex, bool calledManually);
     void saveOutput(void);
@@ -47,7 +48,6 @@ public slots:
     void refresh(void);
 
 protected slots:
-    void onCancelNewConnection();
     void onConnected(bool readOnly, bool isBuffered);
     void onDisconnected();
     void onErrorOccured(QString msg);
@@ -55,6 +55,7 @@ protected slots:
     void onToolboxChangedCurrent(int index);
 
 signals:
+    void newConnectionDialogStateChanged(bool visible);
     void connected(bool readOnly, bool isBuffered, QIODevice*);
     void disconnected(bool reconnecting);
     void errorOccured(QString msg);

@@ -46,6 +46,8 @@ private slots:
     void onConnected(bool readOnly);
     void onDisconnected(bool reconnecting);
 
+    void handleNewConnectionAction(bool triggered);
+
 #   ifdef QT_DEBUG
         void dumpAllObjectTrees(void);
 #   endif
@@ -55,6 +57,7 @@ private:
 
     QAction *connect_action;
     QAction *disconnect_action;
+    QAction *new_connection_action;
 
     QActionGroup* frontendOptions;
 
