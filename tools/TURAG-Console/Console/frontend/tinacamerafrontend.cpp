@@ -17,19 +17,31 @@ TinaCameraFrontend::TinaCameraFrontend(QWidget *parent) :
 
     view = new QGraphicsView(scene);
 
-    QHBoxLayout *buttonBox = new QHBoxLayout;
+    QHBoxLayout *buttonBoxA = new QHBoxLayout;
 
     QPushButton* b_dump = new QPushButton(style()->standardIcon(QStyle::SP_BrowserReload), "Dump &one");
     connect(b_dump, SIGNAL(pressed()), this, SLOT(handleButtonDumpOne()));
-    buttonBox->addWidget(b_dump);
+    buttonBoxA->addWidget(b_dump);
 
     QPushButton* b_dumpa = new QPushButton(style()->standardIcon(QStyle::SP_MediaPlay), "Dump &images");
     b_dumpa->setCheckable(true);
     connect(b_dumpa, SIGNAL(toggled(bool)), this, SLOT(handleButtonDumpAll(bool)));
-    buttonBox->addWidget(b_dumpa);
+    buttonBoxA->addWidget(b_dumpa);
+
+    QHBoxLayout *buttonBoxB = new QHBoxLayout;
+
+    QPushButton* b_roi = new QPushButton(style()->standardIcon(QStyle::SP_TrashIcon), "&Show ROIs");
+    b_roi->setCheckable(true);
+    connect(b_roi, SIGNAL(toggled(bool)), this, SLOT(handleButtonROIs(bool)));
+    buttonBoxB->addWidget(b_roi);
+
+    QPushButton* b_fs = new QPushButton(style()->standardIcon(QStyle::SP_MessageBoxInformation), "&Farbsensor info");
+    connect(b_fs, SIGNAL(pressed()), this, SLOT(handleButtonFarbsensorInfo()));
+    buttonBoxB->addWidget(b_fs);
 
     layout->addWidget(view);
-    layout->addLayout(buttonBox);
+    layout->addLayout(buttonBoxA);
+    layout->addLayout(buttonBoxB);
 
     setLayout(layout);
 }
@@ -167,4 +179,17 @@ void TinaCameraFrontend::handleButtonDumpAll(bool checked)
 {
     qDebug() << "dump all button pressed" << checked;
     emit dataReady(QString("\r\ndump_all %1\r\n").arg(checked).toUtf8());
+}
+
+void TinaCameraFrontend::handleButtonFarbsensorInfo(void)
+{
+    qDebug() << "handleButtonFarbsensorInfo pressed";
+    emit dataReady("\r\nroi d\r\n");
+    emit dataReady("color d\r\n");
+}
+
+void TinaCameraFrontend::handleButtonROIs(bool checked)
+{
+    qDebug() << "dhandleButtonROIs pressed" << checked;
+    emit dataReady(QString("\r\nfarbsensor_display %1\r\n").arg(checked).toUtf8());
 }

@@ -29,6 +29,8 @@ public slots:
     // ui handler
     void handleButtonDumpOne(void);
     void handleButtonDumpAll(bool);
+    void handleButtonFarbsensorInfo(void);
+    void handleButtonROIs(bool checked);
 
 private:
     void updateImage(const QImage image);
