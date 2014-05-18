@@ -165,8 +165,8 @@ void Controller::setFrontend(int newFrontendIndex, bool calledManually) {
         newFrontend->clear();
 
         if (currentBackend->isOpen()) {
-            connect(currentBackend, SIGNAL(dataReady(QByteArray)), newFrontend, SLOT(writeData(QByteArray)), Qt::QueuedConnection);
-            connect(newFrontend, SIGNAL(dataReady(QByteArray)), currentBackend, SLOT(writeData(QByteArray)), Qt::QueuedConnection);
+            connect(currentBackend, SIGNAL(dataReady(QByteArray)), newFrontend, SLOT(writeData(QByteArray)));
+            connect(newFrontend, SIGNAL(dataReady(QByteArray)), currentBackend, SLOT(writeData(QByteArray)));
             connect(newFrontend, SIGNAL(requestData()), this, SLOT(refresh()), Qt::QueuedConnection);
             connect(this,SIGNAL(connected(bool,bool,QIODevice*)),newFrontend,SLOT(onConnected(bool,bool,QIODevice*)));
             connect(this,SIGNAL(disconnected(bool)),newFrontend,SLOT(onDisconnected(bool)));
@@ -210,8 +210,8 @@ void Controller::openConnection(void) {
         closeConnection();
 
         // build signal-slot connection before opening stream
-        connect(currentBackend, SIGNAL(dataReady(QByteArray)), currentFrontend, SLOT(writeData(QByteArray)), Qt::QueuedConnection);
-        connect(currentFrontend, SIGNAL(dataReady(QByteArray)), currentBackend, SLOT(writeData(QByteArray)), Qt::QueuedConnection);
+        connect(currentBackend, SIGNAL(dataReady(QByteArray)), currentFrontend, SLOT(writeData(QByteArray)));
+        connect(currentFrontend, SIGNAL(dataReady(QByteArray)), currentBackend, SLOT(writeData(QByteArray)));
         connect(currentFrontend, SIGNAL(requestData()), this, SLOT(refresh()), Qt::QueuedConnection);
 
         if (currentBackend->openConnection()) {
@@ -256,8 +256,8 @@ void Controller::openConnection(QString connectionString, bool *success, BaseBac
         BaseBackend* backend = *iter;
 
         // build signal-slot connection before opening stream
-        connect(backend, SIGNAL(dataReady(QByteArray)), currentFrontend, SLOT(writeData(QByteArray)), Qt::QueuedConnection);
-        connect(currentFrontend, SIGNAL(dataReady(QByteArray)), backend, SLOT(writeData(QByteArray)), Qt::QueuedConnection);
+        connect(backend, SIGNAL(dataReady(QByteArray)), currentFrontend, SLOT(writeData(QByteArray)));
+        connect(currentFrontend, SIGNAL(dataReady(QByteArray)), backend, SLOT(writeData(QByteArray)));
         connect(currentFrontend, SIGNAL(requestData()), this, SLOT(refresh()), Qt::QueuedConnection);
 
         if (backend->openConnection(connectionString)) {
