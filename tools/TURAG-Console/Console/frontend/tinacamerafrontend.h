@@ -27,7 +27,8 @@ public slots:
     void clear(void);
 
     // ui handler
-    void handleButtonDump(void);
+    void handleButtonDumpOne(void);
+    void handleButtonDumpAll(bool);
 
 private:
     void updateImage(const QImage image);

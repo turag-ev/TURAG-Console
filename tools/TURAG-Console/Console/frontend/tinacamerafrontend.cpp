@@ -19,9 +19,14 @@ TinaCameraFrontend::TinaCameraFrontend(QWidget *parent) :
 
     QHBoxLayout *buttonBox = new QHBoxLayout;
 
-    QPushButton* b_dump = new QPushButton(style()->standardIcon(QStyle::SP_BrowserReload), "Dump &image");
-    connect(b_dump, SIGNAL(pressed()), this, SLOT(handleButtonDump()));
+    QPushButton* b_dump = new QPushButton(style()->standardIcon(QStyle::SP_BrowserReload), "Dump &one");
+    connect(b_dump, SIGNAL(pressed()), this, SLOT(handleButtonDumpOne()));
     buttonBox->addWidget(b_dump);
+
+    QPushButton* b_dumpa = new QPushButton(style()->standardIcon(QStyle::SP_MediaPlay), "Dump &images");
+    b_dumpa->setCheckable(true);
+    connect(b_dumpa, SIGNAL(toggled(bool)), this, SLOT(handleButtonDumpAll(bool)));
+    buttonBox->addWidget(b_dumpa);
 
     layout->addWidget(view);
     layout->addLayout(buttonBox);
@@ -152,8 +157,14 @@ void TinaCameraFrontend::updateImageScaling(void)
     view->fitInView(ni.rect(), Qt::KeepAspectRatio);
 }
 
-void TinaCameraFrontend::handleButtonDump(void)
+void TinaCameraFrontend::handleButtonDumpOne(void)
 {
-    qDebug() << "dump button pressed";
-    emit dataReady("\r\ndump\r\n");
+    qDebug() << "dump one button pressed";
+    emit dataReady("\r\ndump_one\r\n");
+}
+
+void TinaCameraFrontend::handleButtonDumpAll(bool checked)
+{
+    qDebug() << "dump all button pressed" << checked;
+    emit dataReady(QString("\r\ndump_all %1\r\n").arg(checked).toUtf8());
 }
