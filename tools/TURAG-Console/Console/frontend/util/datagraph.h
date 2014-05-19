@@ -11,6 +11,7 @@
 #include <QPalette>
 #include <QTimer>
 #include <QMouseEvent>
+#include <QSignalMapper>
 
 class QString;
 class QPointF;
@@ -148,6 +149,14 @@ class DataGraph : public QwtPlot
     Q_OBJECT
 
 public:
+    enum class Style {
+        symbols,
+        interpolated_line,
+        stepped_line,
+        interpolated_line_and_symbols,
+        stepped_line_and_symbols,
+    };
+
     explicit DataGraph(QWidget *parent = 0) : DataGraph(QString(""), parent) { }
     explicit DataGraph(QString title, QWidget* parent = 0);
     ~DataGraph(void);
@@ -182,6 +191,7 @@ protected:
     virtual void updateCurveColors();
     virtual void addChannelGeneric(QString title, CurveDataBase* curveData);
     void updateRightAxis(void);
+    void applyCurveStyleToCurve(QwtPlotCurve* curve);
 
 
 protected slots:
@@ -192,10 +202,14 @@ protected slots:
     void onUnhighlightCurve(const QVariant &itemInfo);
     void showAllCurves(void);
     void hideAllCurves(void);
+    void setCurveStyle(int styleIndex);
 
 private:
     QTimer refreshTimer;
     int curvesWithRightYAxis;
+
+    QSignalMapper styleMapper;
+    int selectedStyle;
 };
 
 

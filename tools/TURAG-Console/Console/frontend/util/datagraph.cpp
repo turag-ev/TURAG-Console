@@ -27,6 +27,9 @@
 #include <QSettings>
 #include <qwt_legend_label.h>
 #include <qwt_scale_widget.h>
+#include <libs/checkactionext.h>
+#include <QMenu>
+#include <qwt_symbol.h>
 
 class CurveDataBase;
 class CurveData;
@@ -94,6 +97,47 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     QAction* zoom_fit_action = new QAction("Apply automatic zoom", this);
     addAction(zoom_fit_action);
     connect(zoom_fit_action, SIGNAL(triggered()), this, SLOT(doAutoZoom()));
+
+    QActionGroup* style_group = new QActionGroup(this);
+
+    CheckActionExt* style_symbols = new CheckActionExt("DatagraphStyleKreuze", "Kreuze", false, this);
+    style_symbols->setActionGroup(style_group);
+    styleMapper.setMapping(style_symbols, static_cast<int>(Style::symbols));
+    connect(style_symbols, SIGNAL(triggered()), &styleMapper, SLOT(map()));
+
+    CheckActionExt* style_stepped = new CheckActionExt("DatagraphStyleGestuft", "Linie", false, this);
+    style_stepped->setActionGroup(style_group);
+    styleMapper.setMapping(style_stepped, static_cast<int>(Style::stepped_line));
+    connect(style_stepped, SIGNAL(triggered()), &styleMapper, SLOT(map()));
+
+    CheckActionExt* style_stepped_line_and_symbols = new CheckActionExt("DatagraphStyleSteppedLinieUndSymbol", "Linie + Kreuze", false, this);
+    style_stepped_line_and_symbols->setActionGroup(style_group);
+    styleMapper.setMapping(style_stepped_line_and_symbols, static_cast<int>(Style::stepped_line_and_symbols));
+    connect(style_stepped_line_and_symbols, SIGNAL(triggered()), &styleMapper, SLOT(map()));
+
+    CheckActionExt* style_interpolated = new CheckActionExt("DatagraphStyleInterpoliert", "Linie, interpoliert", false, this);
+    style_interpolated->setActionGroup(style_group);
+    styleMapper.setMapping(style_interpolated, static_cast<int>(Style::interpolated_line));
+    connect(style_interpolated, SIGNAL(triggered()), &styleMapper, SLOT(map()));
+
+    CheckActionExt* style_interpolated_line_and_symbols = new CheckActionExt("DatagraphStyleInterpoliertLinieUndSymbol", "Linie, interpoliert + Kreuze", true, this);
+    style_interpolated_line_and_symbols->setActionGroup(style_group);
+    styleMapper.setMapping(style_interpolated_line_and_symbols, static_cast<int>(Style::interpolated_line_and_symbols));
+    connect(style_interpolated_line_and_symbols, SIGNAL(triggered()), &styleMapper, SLOT(map()));
+
+    QAction* style_parent_action = new QAction("Curve style", this);
+    style_parent_action->setMenu(new QMenu);
+    style_parent_action->menu()->addActions(style_group->actions());
+    connect(&styleMapper, SIGNAL(mapped(int)), this, SLOT(setCurveStyle(int)));
+
+    for (QAction* action : style_group->actions()) {
+        if (action->isChecked()) {
+            action->trigger();
+            break;
+        }
+    }
+
+    addAction(style_parent_action);
 
     QActionGroup* zoom_group = new QActionGroup(this);
 
@@ -173,6 +217,7 @@ void DataGraph::addChannelGeneric(QString title, CurveDataBase* curveData) {
 
     channels.append(curve);
     updateCurveColors();
+    applyCurveStyleToCurve(curve);
     showCurve(curve, true);
 }
 
@@ -336,6 +381,45 @@ void DataGraph::showAllCurves(void) {
 void DataGraph::hideAllCurves(void) {
     for (QwtPlotCurve* curve : channels) {
         showCurve(curve, false);
+    }
+}
+
+void DataGraph::setCurveStyle(int styleIndex) {
+    selectedStyle = styleIndex;
+
+    for (QwtPlotCurve* curve : channels) {
+        applyCurveStyleToCurve(curve);
+    }
+}
+
+void DataGraph::applyCurveStyleToCurve(QwtPlotCurve* curve) {
+    switch (static_cast<DataGraph::Style>(selectedStyle)) {
+    case Style::symbols:
+        curve->setStyle( QwtPlotCurve::Dots );
+        curve->setSymbol(new QwtSymbol( QwtSymbol::Cross, Qt::NoBrush, curve->pen(), QSize( 8, 8 ) ));
+        break;
+
+    case Style::interpolated_line:
+        curve->setStyle( QwtPlotCurve::Lines );
+        curve->setSymbol(nullptr);
+        break;
+
+    case Style::stepped_line:
+        curve->setStyle( QwtPlotCurve::Steps );
+        curve->setSymbol(nullptr);
+        curve->setCurveAttribute( QwtPlotCurve::Inverted, true);
+        break;
+
+    case Style::interpolated_line_and_symbols:
+        curve->setStyle( QwtPlotCurve::Lines );
+        curve->setSymbol(new QwtSymbol( QwtSymbol::Cross, Qt::NoBrush, curve->pen(), QSize( 8, 8 ) ));
+        break;
+
+    case Style::stepped_line_and_symbols:
+        curve->setStyle( QwtPlotCurve::Steps );
+        curve->setSymbol(new QwtSymbol( QwtSymbol::Cross, Qt::NoBrush, curve->pen(), QSize( 8, 8 ) ));
+        curve->setCurveAttribute( QwtPlotCurve::Inverted, true);
+        break;
     }
 }
 

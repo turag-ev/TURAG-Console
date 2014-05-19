@@ -20,6 +20,10 @@ class BaseFrontend : public QWidget
 public:
     explicit BaseFrontend(QString name, QWidget *parent = 0);
 
+    // This function is called from the parent widget. Its purpose
+    // to provide the context entries from parent widgets in child
+    // widgets as well. If you override this fucntion you should always
+    // call the base implementation.
     virtual void setExternalContextActions(QList<QAction*> actions);
 
 signals:
@@ -31,8 +35,6 @@ signals:
 
 
 public slots:
-    void showContextMenu(const QPoint & pos);
-
     // this slot is called by the controller when new data is available
     virtual void writeData(QByteArray data) = 0;
     virtual void clear(void) = 0;
@@ -43,13 +45,15 @@ public slots:
     // frontend was disconnected from stream, does nothing if not overloaded
     virtual void onDisconnected(bool reconnecting);
 
+protected slots:
+    void showContextMenu(const QPoint & pos);
+
 
 protected:
-    QList<QAction*> externalContextActions;
-    QMenu* contextMenu;
-
     void rebuildContextMenu();
 
+    // Use these functions to add menu actions. They will be automatically
+    // shown in the right places.
     void addAction(QAction * action);
     void addActions(QList<QAction *> actions);
     void insertAction(QAction * before, QAction * action);
@@ -57,6 +61,9 @@ protected:
     void removeAction(QAction * action);
     void clearActions(void);
 
+
+    QList<QAction*> externalContextActions;
+    QMenu* contextMenu;
 
 };
 

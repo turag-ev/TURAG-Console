@@ -30,8 +30,9 @@ public:
     QString getConnectionInfo();
 
     void setExternalContextActions(QList<QAction*> actions);
-    void setExternalMenuBar(QMenuBar* menubar) {menuBar_ = menubar; }
-    void setExternalConnectionMenu(QMenu* menu) {connectionMenu = menu; }
+    void setExternalMenuBar(QMenuBar* menubar) { menuBar_ = menubar; }
+    void setExternalConnectionMenu(QMenu* menu) { connectionMenu = menu; }
+    void setExternalFrontendMenu(QMenu* menu) { frontendMenu = menu; }
 
     
 public slots:
@@ -75,6 +76,7 @@ protected:
     QMenuBar* menuBar_;
     QMenu* widgetMenu_;
     QMenu* connectionMenu;
+    QMenu* frontendMenu;
     QToolBox* toolbox;
 
 private:

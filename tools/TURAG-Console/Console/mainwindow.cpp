@@ -188,6 +188,9 @@ MainWindow::MainWindow(QWidget *parent) :
     view_menu->addAction(refreshAction);
 
 
+    // frontend menu
+    //QMenu* frontend_menu = menuBar()->addMenu("frontend");
+    //frontend_menu->hide();
 
     // Hilfe
     QMenu* help_menu = menuBar()->addMenu("&Hilfe");
@@ -202,7 +205,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QAction* about_action = new QAction("&Über", this);
     about_action->setStatusTip("Informationen über TURAG Console");
-    about_action->setIcon(QIcon::fromTheme("dialog-information", QIcon(":/images/dialog-information.png")));
+    //about_action->setIcon(QIcon::fromTheme("dialog-information", QIcon(":/images/dialog-information.png")));
     connect(about_action, SIGNAL(triggered()), this, SLOT(about()));
     help_menu->addAction(about_action);
 
@@ -239,6 +242,7 @@ MainWindow::MainWindow(QWidget *parent) :
     controller->setExternalContextActions(actions());
     controller->setExternalMenuBar(menuBar());
     controller->setExternalConnectionMenu(connection_menu);
+    //controller->setExternalFrontendMenu(frontend_menu);
 
     controller->setAutoSave(save_auto_action->isChecked());
     controller->setAutoReconnect(auto_reconnect_action->isChecked());
