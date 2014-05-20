@@ -152,7 +152,7 @@ void ConnectionWidgetTcp::socketError(QAbstractSocket::SocketError error) {
     connect_button->setEnabled(true);
     connect_button->setVisible(true);
     connect_cancel_button->setVisible(false);
-    recentConnectionsContainer->setEnabled(true);
+    if (recentConnectionsContainer) recentConnectionsContainer->setEnabled(true);
     hostEdit->setEnabled(true);
 
     switch (error) {
@@ -348,7 +348,7 @@ void ConnectionWidgetTcp::connectToServer() {
         connect_button->setVisible(false);
         connect_cancel_button->setVisible(true);
         hostEdit->setEnabled(false);
-        recentConnectionsContainer->setEnabled(false);
+        if(recentConnectionsContainer) recentConnectionsContainer->setEnabled(false);
 
         socket->connectToHost(hostAddress, port);
     } else {
