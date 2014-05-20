@@ -138,3 +138,7 @@ QString TcpBackend::getConnectionInfo() {
     return QString("Debug-Server: %1").arg(path);
 }
 
+void TcpBackend::closeConnection(void) {
+    connecting = false;
+    BaseBackend::closeConnection();
+}

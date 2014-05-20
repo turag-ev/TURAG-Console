@@ -199,6 +199,11 @@ void StreamModel::clear() {
     logtime_ = 0;
     row_buffer_.clear();
     insertTimer.stop();
+
+    for (unsigned i = 0; i < sizeof(log_sources_) / sizeof(log_sources_[0]); ++i) {
+        log_sources_[i] = QString();
+    }
+    log_sources_[';'] = "System";
 }
 
 void StreamModel::setLogSource(char source, const QString&& name) {
@@ -268,7 +273,10 @@ LogView::LogView(TinaInterface *interface, QWidget *parent) :
     log_->setSelectionMode(QAbstractItemView::ExtendedSelection);
     log_->setWordWrap(true);
     log_->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    log_->setFont(QFont("Consolas", 9));
+    QFont font;
+    font.setStyleHint(QFont::System);
+    font.setPointSize(8);
+    log_->setFont(font);
     log_->setShowGrid(false);
     log_->setContextMenuPolicy(Qt::CustomContextMenu);
     log_->setFocusPolicy(Qt::NoFocus);
@@ -428,15 +436,15 @@ void LogView::contextMenu(QPoint point) {
                                                       ? QString(static_cast<char>(i))
                                                       : sources[i]);
             action->setCheckable(true);
-            action->setChecked(TURAG::any_of_value(filter, i));
+            action->setChecked(!TURAG::any_of_value(filter, i));
             connect(action, SIGNAL(triggered()), filter_mapper_, SLOT(map()));
             //      connect(action, SIGNAL(triggered()), this, SLOT(hideMsgsFromSource()));
             filter_mapper_->setMapping(action, i);
         }
     }
     menu.addMenu(filter_menu);
-    menu.addAction("&nichts filtern", this, SLOT(deactivateFilter()));
-    menu.addAction("&alles filtern", this, SLOT(activateFilter()));
+    menu.addAction("&alles anzeigen", this, SLOT(deactivateFilter()));
+    menu.addAction("&nichts anzeigen", this, SLOT(activateFilter()));
 
     menu.exec(log_->mapToGlobal(point));
 }

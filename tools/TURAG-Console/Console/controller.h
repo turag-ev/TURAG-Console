@@ -14,7 +14,7 @@ class QPushButton;
 class QAction;
 class QMenuBar;
 class QMenu;
-class QToolBox;
+class QTabWidget;
 
 
 class Controller : public QStackedWidget
@@ -77,7 +77,7 @@ protected:
     QMenu* widgetMenu_;
     QMenu* connectionMenu;
     QMenu* frontendMenu;
-    QToolBox* toolbox;
+    QTabWidget* tabwidget;
 
 private:
     bool autoSaveOn;

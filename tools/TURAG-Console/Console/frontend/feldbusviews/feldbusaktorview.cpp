@@ -15,13 +15,14 @@
 #include <vector>
 #include <QDebug>
 #include <QScrollArea>
+#include <libs/lineeditext.h>
 
 
 FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     QWidget(parent), actor(aktor), commandset(nullptr)
 {
-    intervalValidator = new QIntValidator(1, 100000, this);
-    lengthValidator = new QIntValidator(1, 100000, this);
+    QIntValidator* intervalValidator = new QIntValidator(1, 100000, this);
+    QIntValidator* lengthValidator = new QIntValidator(1, 100000, this);
 
     QHBoxLayout* vlayout = new QHBoxLayout;
     QVBoxLayout* left_layout = new QVBoxLayout;
@@ -83,10 +84,10 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     settings_layout->addLayout(settings_form);
     QLabel* label1 = new QLabel("Abfrage-Intervall [ms]");
     QLabel* label2 = new QLabel("Aufzeichnungsdauer [Samples]");
-    updateInterval = new QLineEdit;
+    updateInterval = new LineEditExt("FeldbusAktorViewUpdateInterval", "10");
     updateInterval->setValidator(intervalValidator);
     connect(updateInterval, SIGNAL(textEdited(QString)), this, SLOT(onInputEdited()));
-    updateLength = new QLineEdit;
+    updateLength = new LineEditExt("FeldbusAktorViewUpdateLength", "100");
     updateLength->setValidator(lengthValidator);
     connect(updateLength, SIGNAL(textEdited(QString)), this, SLOT(onInputEdited()));
     settings_form->addRow(label1, updateInterval);
@@ -252,9 +253,6 @@ void FeldbusAktorView::readSettings() {
     QSettings settings;
     settings.beginGroup("FeldbusAktorView");
 
-    updateInterval->setText(settings.value("updateInterval", "10").toString());
-    updateLength->setText(settings.value("updateLength", "100").toString());
-
     if (settings.value("cyclicDataUpdate", true).toBool()) {
         cyclicDataUpdate->setChecked(true);
     } else {
@@ -268,8 +266,6 @@ void FeldbusAktorView::writeSettings() {
     QSettings settings;
     settings.beginGroup("FeldbusAktorView");
 
-    settings.setValue("updateInterval", updateInterval->text());
-    settings.setValue("updateLength", updateLength->text());
     settings.setValue("cyclicDataUpdate", cyclicDataUpdate->isChecked());
 }
 

@@ -8,10 +8,14 @@
 #include <QLabel>
 #include <QCheckBox>
 #include <QLineEdit>
+#include <QTime>
+#include <frontend/util/datagraph.h>
 
 class QLabel;
 class QPushButton;
 class QGridLayout;
+class DataGraph;
+class LineEditExt;
 
 
 using namespace TURAG::Feldbus;
@@ -25,31 +29,37 @@ class FeldbusAsebView : public QWidget
 public:
     explicit FeldbusAsebView(Aseb* aseb, QWidget *parent = 0);
     ~FeldbusAsebView(void);
+    QList<QAction *> getActions(void) { return plot->getActions(); }
 
 protected slots:
     void onResetOutputs(void);
     void onSetOutputs(void);
     void onUpdate(void);
     void onUserInput(void);
+    void onInputEdited(void);
+    void updateGraph(void);
 
 
 protected:
     struct LabelCheckboxCombo {
         QLabel* label;
         QCheckBox* checkbox;
+        QCheckBox* select_checkbox;
 
-        LabelCheckboxCombo() : label(nullptr), checkbox(nullptr) {}
-        LabelCheckboxCombo(QLabel* label_, QCheckBox* checkbox_) :
-            label(label_), checkbox(checkbox_) {}
+
+        LabelCheckboxCombo() : label(nullptr), checkbox(nullptr), select_checkbox(nullptr) {}
+        LabelCheckboxCombo(QLabel* label_, QCheckBox* checkbox_, QCheckBox* select_checkbox_) :
+            label(label_), checkbox(checkbox_), select_checkbox(select_checkbox_) {}
     };
 
     struct LabelLineeditCombo {
         QLabel* label;
         QLineEdit* lineedit;
+        QCheckBox* select_checkbox;
 
-        LabelLineeditCombo() : label(nullptr), lineedit(nullptr) {}
-        LabelLineeditCombo(QLabel* label_, QLineEdit* lineedit_) :
-            label(label_), lineedit(lineedit_) {}
+        LabelLineeditCombo() : label(nullptr), lineedit(nullptr), select_checkbox(nullptr) {}
+        LabelLineeditCombo(QLabel* label_, QLineEdit* lineedit_, QCheckBox* select_checkbox_) :
+            label(label_), lineedit(lineedit_), select_checkbox(select_checkbox_) {}
     };
 
 
@@ -57,12 +67,6 @@ protected:
     QList<LabelCheckboxCombo> digitalOutputs_;
     QList<LabelLineeditCombo> analogInputs_;
     QList<LabelLineeditCombo> pwmOutputs_;
-
-    QGridLayout* digital_in_layout_;
-    QGridLayout* analog_in_layout_;
-    QGridLayout* digital_out_layout_;
-    QGridLayout* pwm_out_layout_;
-
 
     Aseb* aseb_;
     Aseb::Analog_t* asebAnalogInputSet_;
@@ -78,6 +82,13 @@ protected:
 
 
     QTimer updateTimer_;
+    QTime updateStartTime;
+
+    DataGraph* plot;
+    LineEditExt* updateInterval;
+    LineEditExt* updateLength;
+    QLabel* updateDuration;
+
 
 };
 

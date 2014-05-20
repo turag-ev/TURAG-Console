@@ -25,6 +25,7 @@ signals:
 
 public slots:
     virtual bool openConnection(QString connectionString);
+    virtual void closeConnection(void);
 
 private slots:
     void socketConnected(void);

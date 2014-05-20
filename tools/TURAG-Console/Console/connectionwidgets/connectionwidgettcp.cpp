@@ -120,10 +120,11 @@ void ConnectionWidgetTcp::socketConnected(void) {
     startBootloaderAction->setEnabled(true);
 
     heartBeatTimer.start();
+    timeText->setText("Serverzeit: ");
 
     saveConnection(hostEdit->text());
     addRecentConnections();
-    recentConnectionsContainer->setEnabled(false);
+    if (recentConnectionsContainer) recentConnectionsContainer->setEnabled(false);
 }
 
 void ConnectionWidgetTcp::socketDisconnected(void) {
@@ -144,7 +145,7 @@ void ConnectionWidgetTcp::socketDisconnected(void) {
     allDevices.clear();
     allDevicesWidget->clear();
 
-    recentConnectionsContainer->setEnabled(true);
+    if (recentConnectionsContainer) recentConnectionsContainer->setEnabled(true);
 }
 
 void ConnectionWidgetTcp::socketError(QAbstractSocket::SocketError error) {
@@ -282,6 +283,11 @@ void ConnectionWidgetTcp::fillDeviceList(void) {
 
         allDevicesWidget->addItem(item);
     }
+    int size = 0;
+    for (int i = 0; i < allDevicesWidget->count(); ++i) {
+        size += allDevicesWidget->sizeHintForRow(i);
+    }
+    allDevicesWidget->setMinimumHeight(size + allDevicesWidget->sizeHintForRow(0));
 }
 
 void ConnectionWidgetTcp::send(QByteArray data) {
@@ -348,7 +354,7 @@ void ConnectionWidgetTcp::connectToServer() {
         connect_button->setVisible(false);
         connect_cancel_button->setVisible(true);
         hostEdit->setEnabled(false);
-        if(recentConnectionsContainer) recentConnectionsContainer->setEnabled(false);
+        if (recentConnectionsContainer) recentConnectionsContainer->setEnabled(false);
 
         socket->connectToHost(hostAddress, port);
     } else {
@@ -367,7 +373,7 @@ void ConnectionWidgetTcp::cancel_connecting(void) {
         connect_button->setVisible(true);
         connect_cancel_button->setVisible(false);
         hostEdit->setEnabled(true);
-        recentConnectionsContainer->setEnabled(true);
+        if (recentConnectionsContainer) recentConnectionsContainer->setEnabled(true);
 
     }
 }

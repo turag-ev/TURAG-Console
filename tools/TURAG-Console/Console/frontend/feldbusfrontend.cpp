@@ -358,6 +358,8 @@ void FeldbusFrontend::onDeviceSelected( int row) {
             feldbusWidget = new FeldbusAsebView(aseb);
             splitter->addWidget(feldbusWidget);
             splitter->setStretchFactor(1,2);
+            clearActions();
+            addActions(static_cast<FeldbusAsebView*>(feldbusWidget)->getActions());
             return;
         }
 

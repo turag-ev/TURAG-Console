@@ -19,7 +19,7 @@
 #include <QFrame>
 #include <QPushButton>
 #include <QMenu>
-#include <QToolBox>
+#include <QTabWidget>
 #include <QLabel>
 #include <QSettings>
 #include <QMenuBar>
@@ -28,6 +28,8 @@
 #include <QDir>
 #include <QFile>
 #include <QByteArray>
+#include <QFrame>
+#include <QScrollArea>
 
 
 Controller::Controller(QWidget *parent) :
@@ -42,7 +44,7 @@ Controller::Controller(QWidget *parent) :
 
     // add all available Frontends to list without a parent
     availableFrontends.append(new PlainTextFrontend);
-    availableFrontends.append(new SCFrontend);
+    //availableFrontends.append(new SCFrontend);
     availableFrontends.append(new MCFrontend);
     availableFrontends.append(new Oscilloscope);
     availableFrontends.append(new FeldbusFrontend);
@@ -78,31 +80,32 @@ Controller::Controller(QWidget *parent) :
     QVBoxLayout* layout = new QVBoxLayout();
     QWidget* welcome_screen = new QWidget();
 
-    QLabel* title = new QLabel("<b>Datenquelle wählen:</b>");
-    layout->addWidget(title);
-
-    toolbox = new QToolBox();
+    tabwidget = new QTabWidget;
 
     for (ConnectionWidget* iter : availableConnectionWidgets) {
-        toolbox->addItem(iter, iter->objectName());
+        QScrollArea* scrollarea = new QScrollArea;
+        scrollarea->setWidgetResizable(true);
+        scrollarea->setWidget(iter);
+        scrollarea->setFrameShape(QFrame::NoFrame);
+
+        tabwidget->addTab(scrollarea, iter->objectName());
         connect(iter,SIGNAL(connectionChanged(QString, bool*,BaseBackend**)),this,SLOT(openConnection(QString, bool*,BaseBackend**)));
         connect(iter, SIGNAL(errorOccured(QString)), this, SLOT(onErrorOccured(QString)));
     }
-    layout->addWidget(toolbox);
-    connect(toolbox, SIGNAL(currentChanged(int)), this, SLOT(onToolboxChangedCurrent(int)));
+    layout->addWidget(tabwidget);
+    connect(tabwidget, SIGNAL(currentChanged(int)), this, SLOT(onToolboxChangedCurrent(int)));
 
-    if (toolbox->count() > 0) {
+    if (tabwidget->count() > 0) {
         QSettings settings;
         settings.beginGroup("Controller");
-        toolbox->setCurrentIndex(settings.value("currentIndex", 0).toInt());
+        tabwidget->setCurrentIndex(settings.value("currentIndex", 0).toInt());
     }
 
     cancelButton = new QPushButton("Abbrechen");
-    layout->addSpacing(15);
+    layout->addSpacing(5);
     layout->addWidget(cancelButton, 0, Qt::AlignLeft);
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(cancelNewConnection()));
 
-    layout->addStretch(100);
     welcome_screen->setLayout(layout);
 
 

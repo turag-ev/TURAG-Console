@@ -38,7 +38,6 @@ void ConnectionWidget::addRecentConnections() {
 
         for (int i = 0; i < recent_connections.length(); i++) {
             ElidedButton* link = new ElidedButton(" " + recent_connections[i]);
-            //link->setFlat(true);
             link->setElideMode(Qt::ElideMiddle);
             link->setMinimumWidth(350);
             link->setMaximumWidth(1024);
@@ -52,6 +51,7 @@ void ConnectionWidget::addRecentConnections() {
         recentConnectionsContainer->setLayout(innerLayout);
         layout->addWidget(recentConnectionsContainer);
     }
+    layout->addStretch();
 }
 
 void ConnectionWidget::onOpenRecentConnection(int index) {

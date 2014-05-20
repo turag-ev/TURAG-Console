@@ -17,6 +17,7 @@ class QIntValidator;
 class QTimer;
 class QGridLayout;
 class QSignalMapper;
+class LineEditExt;
 
 
 using namespace TURAG::Feldbus;
@@ -53,10 +54,8 @@ protected:
     QRadioButton* cyclicDataUpdate;
     QRadioButton* oneShotDataUpdate;
     QPushButton* startStopDataUpdate;
-    QLineEdit* updateInterval;
-    QLineEdit* updateLength;
-    QIntValidator* intervalValidator;
-    QIntValidator* lengthValidator;
+    LineEditExt* updateInterval;
+    LineEditExt* updateLength;
     QLabel* updateDuration;
     QTimer* updateTimer;
     QList<CommandsetEntry> commandsetGrid;

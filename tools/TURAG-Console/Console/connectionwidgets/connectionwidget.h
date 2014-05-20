@@ -15,7 +15,7 @@ class ConnectionWidget : public QWidget {
     Q_OBJECT
 
 public:
-    static const int MAX_RECENT_CONNECTIONS = 5;
+    static const int MAX_RECENT_CONNECTIONS = 10;
 
     explicit ConnectionWidget(QString recentConnectionSpecifier, QWidget *parent = 0);
     virtual QMenu* getMenu();
