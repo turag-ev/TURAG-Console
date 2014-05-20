@@ -88,7 +88,7 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
                                 float value;
                                 TURAG::Base64::decode(data, 6, reinterpret_cast<uint8_t*>(&value));
                                 graph->addData(channel, QPointF(time, value));
-                                graph->doAutoZoom();
+                                //graph->doAutoZoom();
 
                                 ++channel;
                                 data += 6;

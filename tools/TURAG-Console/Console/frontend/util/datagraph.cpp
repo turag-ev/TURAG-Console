@@ -213,7 +213,6 @@ void DataGraph::addChannelGeneric(QString title, CurveDataBase* curveData) {
     curve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
     curve->attach(this);
     curve->setData(curveData);
-    curve->setRenderHint(QwtPlotItem::RenderHint::RenderAntialiased, true);
 
     channels.append(curve);
     updateCurveColors();
@@ -396,29 +395,34 @@ void DataGraph::applyCurveStyleToCurve(QwtPlotCurve* curve) {
     switch (static_cast<DataGraph::Style>(selectedStyle)) {
     case Style::symbols:
         curve->setStyle( QwtPlotCurve::Dots );
-        curve->setSymbol(new QwtSymbol( QwtSymbol::Cross, Qt::NoBrush, curve->pen(), QSize( 8, 8 ) ));
+        curve->setSymbol(new QwtSymbol( QwtSymbol::XCross, Qt::NoBrush, curve->pen(), QSize( 8, 8 ) ));
+        curve->setRenderHint(QwtPlotItem::RenderHint::RenderAntialiased, false);
         break;
 
     case Style::interpolated_line:
         curve->setStyle( QwtPlotCurve::Lines );
         curve->setSymbol(nullptr);
+        curve->setRenderHint(QwtPlotItem::RenderHint::RenderAntialiased, true);
         break;
 
     case Style::stepped_line:
         curve->setStyle( QwtPlotCurve::Steps );
         curve->setSymbol(nullptr);
         curve->setCurveAttribute( QwtPlotCurve::Inverted, true);
+        curve->setRenderHint(QwtPlotItem::RenderHint::RenderAntialiased, false);
         break;
 
     case Style::interpolated_line_and_symbols:
         curve->setStyle( QwtPlotCurve::Lines );
         curve->setSymbol(new QwtSymbol( QwtSymbol::Cross, Qt::NoBrush, curve->pen(), QSize( 8, 8 ) ));
+        curve->setRenderHint(QwtPlotItem::RenderHint::RenderAntialiased, true);
         break;
 
     case Style::stepped_line_and_symbols:
         curve->setStyle( QwtPlotCurve::Steps );
-        curve->setSymbol(new QwtSymbol( QwtSymbol::Cross, Qt::NoBrush, curve->pen(), QSize( 8, 8 ) ));
+        curve->setSymbol(new QwtSymbol( QwtSymbol::XCross, Qt::NoBrush, curve->pen(), QSize( 8, 8 ) ));
         curve->setCurveAttribute( QwtPlotCurve::Inverted, true);
+        curve->setRenderHint(QwtPlotItem::RenderHint::RenderAntialiased, false);
         break;
     }
 }
