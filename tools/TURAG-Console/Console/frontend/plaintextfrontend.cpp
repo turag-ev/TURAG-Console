@@ -194,7 +194,7 @@ void PlainTextFrontend::onUpdate(void) {
         // clean input stream
         const char* data = buffer_->constBegin();
         while (data != buffer_->constEnd()) {
-            if ((*data >= 0x20 && *data <= 0x7E) || *data == 0x0A || *data < 0) {
+            if ((*data >= 0x20 && *data <= 0x7E) || *data == '\n' || *data == '\t' || *data < 0) {
                 // printable characters, utf-8 characters and newlines are piped through
                 cleanedBuffer_->append(*data);
             } else if (*data == 0x08 || *data == 0x7F) {
@@ -204,7 +204,7 @@ void PlainTextFrontend::onUpdate(void) {
                 } else {
                     cursor.deletePreviousChar();
                 }
-            } else if (*data != 0x0D) {
+            } else if (*data != '\r') {
                 // ignore carriage return, empty place holder for anything else
                 cleanedBuffer_->append("�");
             }
@@ -212,15 +212,15 @@ void PlainTextFrontend::onUpdate(void) {
             ++data;
         }
 
+        QScrollBar* scrollbar = textbox->verticalScrollBar();
+        bool scroll_to_max = scroll_on_output && scrollbar->value() == scrollbar->maximum();
+
         // insert data
         cursor.insertText(QString::fromUtf8(*cleanedBuffer_));
 
         // handle auto scroll feature
-        if (scroll_on_output) {
-            QScrollBar* scrollbar = textbox->verticalScrollBar();
-            if (scrollbar->value() == scrollbar->maximum()) {
-                scrollbar->setValue(scrollbar->maximum());
-            }
+        if (scroll_to_max) {
+            scrollbar->setValue(scrollbar->maximum());
         }
 
         buffer_->clear();

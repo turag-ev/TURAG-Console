@@ -1,8 +1,10 @@
 #include "tinagraphfrontend.h"
 #include "graphutils/datagraph.h"
 #include <tina++/utils/base64.h>
+#include <tina/debug/graph.h>
 #include <QHBoxLayout>
 #include <QListWidget>
+#include <QTextStream>
 
 TinaGraphFrontend::TinaGraphFrontend(QWidget *parent) :
     BaseFrontend("TinaGraphFrontend", parent)
@@ -26,14 +28,14 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
         unsigned type = line.at(0);
         line.remove(0, 2);
 
-        if (level == 'D') {
+        if (level == TURAG_DEBUG_GRAPH_PREFIX[0]) {
             bool ok = false;
             int space_pos = line.indexOf(' ');
             int index = line.left(space_pos).toInt(&ok);
 
             if (ok) {
                 switch (type) {
-                case 'n': {
+                case TURAG_DEBUG_GRAPH_CREATE[0]: {
                     QString title = line.right(line.size() - space_pos - 1);
                     int oldIndex = graphIndices.indexOf(index);
                     if (oldIndex != -1) {
@@ -49,7 +51,7 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
 
                     break;
                 }
-                case 'b': {
+                case TURAG_DEBUG_GRAPH_CHANNEL[0]: {
                     int listindex = graphIndices.indexOf(index);
                     if (listindex != -1) {
                         int secondSpacePos = line.indexOf(' ', space_pos + 1);
@@ -60,7 +62,6 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
                             if (timesize == 0) {
                                 static_cast<DataGraph*>(stack->widget(listindex))->addChannel(title);
                             } else {
-                                qDebug() << timesize;
                                 static_cast<DataGraph*>(stack->widget(listindex))->addChannel(title, static_cast<qreal>(timesize), false);
                             }
                         }
@@ -68,7 +69,29 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
                     }
                     break;
                 }
-                case 'd': {
+                case TURAG_DEBUG_GRAPH_CHANNEL_FIXED[0]: {
+                    int listindex = graphIndices.indexOf(index);
+                    if (listindex != -1) {
+                        QTextStream stream(line);
+
+                        int x_left, y_bottom;
+                        unsigned width, height;
+
+                        stream >> x_left;  // consume the index, which e don't need here
+                        stream >> x_left;
+                        stream >> y_bottom;
+                        stream >> width;
+                        stream >> height;
+
+                        qDebug() << x_left << y_bottom << width << height;
+
+                        QString title(stream.readLine());
+
+                        static_cast<DataGraph*>(stack->widget(listindex))->addChannel(title, static_cast<qreal>(x_left), static_cast<qreal>(width), static_cast<qreal>(y_bottom), static_cast<qreal>(height));
+                    }
+                    break;
+                }
+                case TURAG_DEBUG_GRAPH_DATA[0]: {
                     int listindex = graphIndices.indexOf(index);
                     if (listindex != -1) {
                         QString encoded = line.right(line.size() - space_pos - 1);
