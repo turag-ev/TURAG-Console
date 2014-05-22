@@ -42,11 +42,11 @@ QColor ColorMapDiscrete2::getColor(int index) {
         base_blue = base + 1;
         base_green = base;
         base_red = base;
-    } else if (numberOfColors_ + 1 <= base * (base +1) * (base + 1)) {
+    } else if (numberOfColors_ + 1 <= base * (base + 1) * (base + 1)) {
         base_blue = base + 1;
         base_green = base + 1;
         base_red = base;
-    } else if (numberOfColors_ + 1 <= (base +1) * (base +1) * (base + 1)) {
+    } else if (numberOfColors_ + 1 <= (base + 1) * (base + 1) * (base + 1)) {
         base_blue = base + 1;
         base_green = base + 1;
         base_red = base + 1;

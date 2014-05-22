@@ -15,7 +15,7 @@
 #include <QClipboard>
 
 PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
-    BaseFrontend("Standard-Konsole", parent), scroll_on_output(true), buffer_()
+    BaseFrontend("Standard-Konsole", parent), scroll_on_output(true), buffer_(new QByteArray), cleanedBuffer_(new QByteArray)
 {
     QVBoxLayout* layout = new QVBoxLayout();
 
@@ -175,40 +175,56 @@ void PlainTextFrontend::setStyle(STYLE style) {
 
 
 void PlainTextFrontend::writeData(QByteArray data) {
-    buffer_.append(data);
+    buffer_->append(data);
     if (!updateTimer.isActive()) {
         updateTimer.start();
     }
 }
 
 void PlainTextFrontend::onUpdate(void) {
-    if (buffer_.size()) {
-        QScrollBar* scrollbar = textbox->verticalScrollBar();
-        bool scroll_to_max = scroll_on_output && scrollbar->value() == scrollbar->maximum();
-
+    if (buffer_->size()) {
+        // make sure we insert text at the end
         QTextCursor cursor = textbox->textCursor();
         cursor.movePosition(QTextCursor::End);
 
-        // inspect the data stream for backspace characters and act appropriately
-        char backspace_chars[] = {'\x08', '\x7f'};
-
-        const char* begin = buffer_.constBegin();
-        const char* end = std::find_first_of(begin, buffer_.constEnd(), std::begin(backspace_chars), std::end(backspace_chars));
-
-        while (end != buffer_.constEnd()) {
-            cursor.insertText(QString::fromUtf8(QByteArray(begin, end - begin)).remove('\r'));
-            cursor.deletePreviousChar();
-            begin = end + 1;
-            end = std::find_first_of(begin, buffer_.constEnd(), std::begin(backspace_chars), std::end(backspace_chars));
-        }
-        cursor.insertText(QString::fromUtf8(QByteArray(begin, end - begin)).remove('\r'));
-
-
-        if (scroll_to_max) {
-            scrollbar->setValue(scrollbar->maximum());
+        if (cleanedBuffer_->capacity() < buffer_->size()) {
+            cleanedBuffer_->reserve(buffer_->size());
         }
 
-        buffer_.clear();
+        // clean input stream
+        const char* data = buffer_->constBegin();
+        while (data != buffer_->constEnd()) {
+            if ((*data >= 0x20 && *data <= 0x7E) || *data == 0x0A || *data < 0) {
+                // printable characters, utf-8 characters and newlines are piped through
+                cleanedBuffer_->append(*data);
+            } else if (*data == 0x08 || *data == 0x7F) {
+                // special handling for backspace and delete characters
+                if (cleanedBuffer_->size()) {
+                    cleanedBuffer_->chop(1);
+                } else {
+                    cursor.deletePreviousChar();
+                }
+            } else if (*data != 0x0D) {
+                // ignore carriage return, empty place holder for anything else
+                cleanedBuffer_->append("�");
+            }
+
+            ++data;
+        }
+
+        // insert data
+        cursor.insertText(QString::fromUtf8(*cleanedBuffer_));
+
+        // handle auto scroll feature
+        if (scroll_on_output) {
+            QScrollBar* scrollbar = textbox->verticalScrollBar();
+            if (scrollbar->value() == scrollbar->maximum()) {
+                scrollbar->setValue(scrollbar->maximum());
+            }
+        }
+
+        buffer_->clear();
+        cleanedBuffer_->clear();
         updateTimer.stop();
     }
 }

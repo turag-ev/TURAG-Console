@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-VERSION = 2.7
+VERSION = 2.8
 
 CONFIG +=  qwt
 QT     += core gui
@@ -55,9 +55,9 @@ SOURCES +=\
     frontend/plaintextfrontend.cpp \
     frontend/logview.cpp \
     frontend/scfrontend.cpp \
-    frontend/util/datagraph.cpp \
+    frontend/graphutils/datagraph.cpp \
     frontend/oscilloscope.cpp \
-    frontend/util/colormap.cpp \
+    frontend/graphutils/colormap.cpp \
     frontend/util/tinainterface.cpp \
     ../../../tina/platform/desktop/thread.cpp \
     tina-platform/rs485.cpp \
@@ -90,7 +90,8 @@ SOURCES +=\
     frontend/stmcamfrontend.cpp \
     frontend/tinacamerafrontend.cpp \
     frontend/feldbusviews/feldbusbootloaderview.cpp \
-    libs/lineeditext.cpp
+    libs/lineeditext.cpp \
+    frontend/graphutils/canvaspicker.cpp
 
 HEADERS  += mainwindow.h \
     libs/elidedbutton.h \
@@ -105,9 +106,9 @@ HEADERS  += mainwindow.h \
     frontend/plaintextfrontend.h \
     frontend/logview.h \
     frontend/scfrontend.h \
-    frontend/util/datagraph.h \
+    frontend/graphutils/datagraph.h \
     frontend/oscilloscope.h \
-    frontend/util/colormap.h \
+    frontend/graphutils/colormap.h \
     frontend/util/tinainterface.h \
     tina-platform/public/tina/rs485.h \
     frontend/feldbusfrontend.h \
@@ -182,7 +183,11 @@ HEADERS  += mainwindow.h \
     ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h \
     libs/lineeditext.h \
     libs/checkboxext.h \
-    libs/checkactionext.h
+    libs/checkactionext.h \
+    frontend/graphutils/hoverableqwtlegendlabel.h \
+    frontend/graphutils/hoverableqwtlegend.h \
+    frontend/graphutils/canvaspicker.h \
+    libs/splitterext.h
 
 INCLUDEPATH += \
     ../../../tina \

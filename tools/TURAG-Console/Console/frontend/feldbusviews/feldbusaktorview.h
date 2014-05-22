@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <tina++/feldbus/host/aktor.h>
-#include <frontend/util/datagraph.h>
+#include <frontend/graphutils/datagraph.h>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>

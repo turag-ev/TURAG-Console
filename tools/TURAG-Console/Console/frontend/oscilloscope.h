@@ -2,7 +2,7 @@
 #define OSCILLOSCOPE_H
 
 #include "basefrontend.h"
-#include "util/datagraph.h"
+#include "graphutils/datagraph.h"
 #include <QList>
 #include "util/datapointinterface.h"
 

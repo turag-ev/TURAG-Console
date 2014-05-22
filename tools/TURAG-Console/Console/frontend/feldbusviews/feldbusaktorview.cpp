@@ -2,7 +2,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QGridLayout>
-#include <frontend/util/datagraph.h>
+#include "frontend/graphutils/datagraph.h"
 #include <QRadioButton>
 #include <QCheckBox>
 #include <QFormLayout>

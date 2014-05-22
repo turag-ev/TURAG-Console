@@ -73,7 +73,8 @@ protected:
 
 private:
     QTimer updateTimer;
-    QByteArray buffer_;
+    QByteArray* buffer_;
+    QByteArray* cleanedBuffer_;
 
 };
 

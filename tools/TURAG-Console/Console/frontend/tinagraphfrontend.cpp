@@ -1,5 +1,5 @@
 #include "tinagraphfrontend.h"
-#include "util/datagraph.h"
+#include "graphutils/datagraph.h"
 #include <tina++/utils/base64.h>
 #include <QHBoxLayout>
 #include <QListWidget>

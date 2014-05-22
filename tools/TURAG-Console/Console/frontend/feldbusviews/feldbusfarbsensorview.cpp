@@ -2,7 +2,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <frontend/util/datagraph.h>
+#include "frontend/graphutils/datagraph.h"
 #include <QTimer>
 #include <QTime>
 #include <QDebug>

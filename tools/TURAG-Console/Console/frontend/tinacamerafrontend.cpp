@@ -1,11 +1,11 @@
 #include "tinacamerafrontend.h"
-#include "util/datagraph.h"
 #include <tina++/utils/base64.h>
 #include <QHBoxLayout>
 #include <QListWidget>
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QPushButton>
+#include <QDebug>
 
 TinaCameraFrontend::TinaCameraFrontend(QWidget *parent) :
     BaseFrontend("TinaCameraFrontend", parent)

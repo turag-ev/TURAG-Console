@@ -9,7 +9,7 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QTime>
-#include <frontend/util/datagraph.h>
+#include <frontend/graphutils/datagraph.h>
 
 class QLabel;
 class QPushButton;

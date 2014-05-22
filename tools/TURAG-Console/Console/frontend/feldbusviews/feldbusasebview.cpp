@@ -11,7 +11,7 @@
 #include <QColor>
 #include <QScrollArea>
 #include <QIntValidator>
-#include <frontend/util/datagraph.h>
+#include "frontend/graphutils/datagraph.h"
 
 FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
     QWidget(parent), aseb_(aseb), asebAnalogInputSet_(nullptr),

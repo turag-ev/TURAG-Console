@@ -1,17 +1,15 @@
 #ifndef DATAGRAPH_H
 #define DATAGRAPH_H
 
-#include <qwt_plot.h>
 #include <QWidget>
 #include <QList>
 #include <qwt_series_data.h>
-#include <qwt_legend_label.h>
-#include <qwt_legend.h>
 #include <qwt_plot_curve.h>
 #include <QPalette>
 #include <QTimer>
-#include <QMouseEvent>
 #include <QSignalMapper>
+#include <libs/splitterext.h>
+#include <qwt_plot.h>
 
 class QString;
 class QPointF;
@@ -21,130 +19,15 @@ class QwtPlotItem;
 class CurveDataBase;
 class QwtPlotPanner;
 class QSignalMapper;
-class QAction;
-
-
-class HoverableQwtLegendLabel : public QwtLegendLabel {
-    Q_OBJECT
-
-public:
-    explicit HoverableQwtLegendLabel(QWidget *parent = 0) :
-        QwtLegendLabel(parent), highlighted(false) {
-        setAutoFillBackground(true);
-        setBackgroundRole(QPalette::Base);
-    }
-
-public slots:
-    void highlight(void) {
-        paletteBuffer = palette();
-        QPalette p = palette();
-        p.setColor(QPalette::Button, Qt::white);
-        p.setColor(QPalette::Base, Qt::black);
-        p.setColor(QPalette::Text, Qt::white);
-        setPalette(p);
-        highlighted = true;
-    }
-
-    void unhighlight(void) {
-        setPalette(paletteBuffer);
-        highlighted = false;
-    }
-
-    void setRightSide(void) {
-        QPalette p = palette();
-        p.setColor(QPalette::Text, Qt::blue);
-        setPalette(p);
-        paletteBuffer.setColor(QPalette::Text, Qt::blue);
-    }
-
-    void setLeftSide(void) {
-        QPalette p = palette();
-        if (highlighted) {
-            p.setColor(QPalette::Text, Qt::white);
-        } else {
-            p.setColor(QPalette::Text, Qt::black);
-        }
-        setPalette(p);
-        paletteBuffer.setColor(QPalette::Text, Qt::black);
-    }
-
-protected:
-    virtual void enterEvent ( QEvent * event ) {
-        QWidget::enterEvent(event);
-        emit enter();
-    }
-
-    virtual void leaveEvent ( QEvent * event ) {
-        QWidget::leaveEvent(event);
-        emit leave();
-    }
-
-    virtual void mousePressEvent(QMouseEvent * event) {
-        if (event->button() == Qt::MiddleButton || (event->button() == Qt::LeftButton && (event->modifiers() & Qt::ControlModifier) )) {
-            emit mouseMiddleClicked();
-        } else {
-            QwtLegendLabel::mousePressEvent(event);
-        }
-    }
-
-signals:
-    void enter(void);
-    void leave(void);
-    void mouseMiddleClicked(void);
-
-private:
-    QPalette paletteBuffer;
-    bool highlighted;
-
-};
-
-
-class HoverableQwtLegend : public QwtLegend {
-    Q_OBJECT
-
-public:
-    explicit HoverableQwtLegend(QWidget *parent=0) : QwtLegend(parent) {}
-
-protected:
-    virtual QWidget* createWidget(const QwtLegendData& data) const {
-        Q_UNUSED( data );
-        HoverableQwtLegendLabel* label = new HoverableQwtLegendLabel;
-        label->setItemMode( defaultItemMode() );
-
-        connect(label, SIGNAL(enter()), this, SLOT(onLabelEnter()));
-        connect(label, SIGNAL(leave()), this, SLOT(onLabelLeave()));
-        connect(label, SIGNAL(mouseMiddleClicked(void)), this, SLOT(onMouseMiddleClicked(void)));
-        connect( label, SIGNAL( clicked() ), SLOT( itemClicked() ) );
-        connect( label, SIGNAL( checked( bool ) ), SLOT( itemChecked( bool ) ) );
-
-        return label;
-    }
-
-signals:
-    void enter(const QVariant &itemInfo);
-    void leave(const QVariant &itemInfo);
-    void mouseMiddleClicked(const QVariant &itemInfo);
-
-private slots:
-    void onLabelEnter(void) {
-        HoverableQwtLegendLabel* label = static_cast<HoverableQwtLegendLabel*>(sender());
-        emit enter(itemInfo(label));
-    }
-
-    void onLabelLeave(void) {
-        HoverableQwtLegendLabel* label = static_cast<HoverableQwtLegendLabel*>(sender());
-        emit leave(itemInfo(label));
-    }
-
-    void onMouseMiddleClicked(void) {
-        HoverableQwtLegendLabel* label = static_cast<HoverableQwtLegendLabel*>(sender());
-        emit mouseMiddleClicked(itemInfo(label));
-    }
-};
+class CheckActionExt;
+class QTableWidget;
+class CanvasPicker;
+class QComboBox;
 
 
 
-class DataGraph : public QwtPlot
+
+class DataGraph : public SplitterExt
 {
     Q_OBJECT
 
@@ -164,6 +47,9 @@ public:
     int getNumberOfChannels() const;
     QString getChannelTitle(int index) const;
     QList<QAction *> getActions(void) { return actions(); }
+    void setTitle (const QString & title) {
+        plot->setTitle(title);
+    }
 
 public slots:
     virtual void clear();
@@ -177,16 +63,13 @@ public slots:
     virtual bool exportOutput(QString file);
     virtual bool exportOutput(void);
     virtual void doAutoZoom(void);
-    void setZoomer(void);
-    void setPanner(void);
+    void setUserInputMode(int index);
 
 protected:
     QList<QwtPlotCurve*> channels;
     QwtPlotZoomer* zoomer;
     QwtPlotPanner* panner;
-
-    QAction* zoom_box_zoom_action;
-    QAction* zoom_drag_action;
+    CanvasPicker* picker;
 
     virtual void updateCurveColors();
     virtual void addChannelGeneric(QString title, CurveDataBase* curveData);
@@ -203,13 +86,26 @@ protected slots:
     void showAllCurves(void);
     void hideAllCurves(void);
     void setCurveStyle(int styleIndex);
+    void showDataTable(bool show);
+    void generateDataTableForChannel(int index);
+    void showEntryInDatatable(int index);
+    void selectNextPlotCurve(void);
+    void selectPreviousPlotCurve(void);
 
 private:
+    void addEntryToDataTable(QPointF data, int row = -1);
+
+    QAction* show_datatable_action;
     QTimer refreshTimer;
     int curvesWithRightYAxis;
 
     QSignalMapper styleMapper;
+    QSignalMapper userInputModeMapper;
     int selectedStyle;
+
+    QTableWidget* dataTable;
+    QwtPlot* plot;
+    QComboBox* dataTableChannelList;
 };
 
 

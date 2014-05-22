@@ -31,8 +31,8 @@ using namespace TURAG;
 FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     BaseFrontend("TURAG Feldbus", parent)
 {
-    fromValidator_ = new QIntValidator(1, 126, this);
-    toValidator_ = new QIntValidator(2, 127, this);
+    fromValidator_ = new QIntValidator(1, 127, this);
+    toValidator_ = new QIntValidator(1, 127, this);
 
     QHBoxLayout* layout = new QHBoxLayout;
     splitter = new QSplitter;

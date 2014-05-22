@@ -24,12 +24,20 @@
 #include <QVector>
 #include <QAction>
 #include <QActionGroup>
-#include <QSettings>
 #include <qwt_legend_label.h>
 #include <qwt_scale_widget.h>
 #include <libs/checkactionext.h>
 #include <QMenu>
 #include <qwt_symbol.h>
+#include <QTableWidget>
+#include "hoverableqwtlegend.h"
+#include "canvaspicker.h"
+#include <QComboBox>
+#include <QVBoxLayout>
+#include <QFont>
+#include <QHeaderView>
+
+
 
 class CurveDataBase;
 class CurveData;
@@ -45,56 +53,92 @@ class CurveData;
 // ------------------------------------------------------------------------------
 
 DataGraph::DataGraph(QString title, QWidget *parent) :
-    QwtPlot(title, parent), curvesWithRightYAxis(0)
+    SplitterExt("genericDatagraphidentifier", parent), curvesWithRightYAxis(0)
 {
-    panner = new QwtPlotPanner( canvas() );
-    zoomer = new QwtPlotZoomer(canvas());
+    setChildrenCollapsible(false);
+
+    plot = new QwtPlot(title);
+
+    dataTableChannelList = new QComboBox;
+    dataTable = new QTableWidget;
+    dataTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    dataTable->setSelectionMode(QAbstractItemView::SingleSelection);
+    dataTable->setFocusPolicy(Qt::NoFocus);
+    QFont font;
+    font.setStyleHint(QFont::System);
+    font.setPointSize(8);
+    dataTable->setFont(font);
+    dataTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    dataTable->verticalHeader()->hide();
+    dataTable->setColumnCount(2);
+    dataTable->setHorizontalHeaderLabels(QStringList{"x", "y"});
+
+    QVBoxLayout* layout = new QVBoxLayout;
+    layout->addWidget(dataTableChannelList);
+    layout->addWidget(dataTable);
+
+    QWidget* containerWidget = new QWidget;
+    containerWidget->setLayout(layout);
+
+    addWidget(plot);
+    addWidget(containerWidget);
+    restoreState();
+
+
+    panner = new QwtPlotPanner( plot->canvas() );
+    zoomer = new QwtPlotZoomer(plot->canvas());
+
+    picker = new CanvasPicker( plot );
+    connect(picker, SIGNAL(dataPointSuggested(int)), this, SLOT(showEntryInDatatable(int)));
+    connect(picker, SIGNAL(nextPlotCurveSuggested()), this, SLOT(selectNextPlotCurve()));
+    connect(picker, SIGNAL(previuosPlotCurveSuggested()), this, SLOT(selectPreviousPlotCurve()));
+    connect(dataTable, SIGNAL(currentCellChanged(int,int,int,int)), picker, SLOT(selectPlotPoint(int)));
+
 
     // zoom in/out with the wheel
-    QwtPlotMagnifier* magnifier = new QwtPlotMagnifier( canvas() );
+    QwtPlotMagnifier* magnifier = new QwtPlotMagnifier( plot->canvas() );
     magnifier->setWheelFactor(1.2);
     magnifier->setMouseButton(Qt::NoButton);
 
     HoverableQwtLegend *legend = new HoverableQwtLegend;
-    insertLegend(legend, QwtPlot::BottomLegend);
+    plot->insertLegend(legend, QwtPlot::BottomLegend);
     legend->setDefaultItemMode( QwtLegendData::Checkable );
     connect(legend, SIGNAL(enter(const QVariant&)), this, SLOT(onHighlightCurve(const QVariant&)));
     connect(legend, SIGNAL(leave(const QVariant&)), this, SLOT(onUnhighlightCurve(const QVariant)));
     connect(legend, SIGNAL(checked(const QVariant &, bool, int)), SLOT(legendChecked(const QVariant &, bool)));
     connect(legend, SIGNAL(mouseMiddleClicked(QVariant)), this, SLOT(legendMouseMiddleClicked(QVariant)));
 
-    QwtPlotPicker* d_picker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOn, canvas());
+    QwtPlotPicker* d_picker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOn, plot->canvas());
 //    d_picker->setStateMachine(new QwtPickerDragPointMachine());
     d_picker->setRubberBandPen(QColor(Qt::lightGray));
     d_picker->setRubberBand(QwtPicker::CrossRubberBand);
     d_picker->setTrackerPen(QColor(Qt::black));
 
-    QPalette p = axisWidget(QwtPlot::yRight)->palette();
+    QPalette p = plot->axisWidget(QwtPlot::yRight)->palette();
     p.setColor(QPalette::Text, Qt::blue);
-    axisWidget(QwtPlot::yRight)->setPalette(p);
-
-
-
-    // axes
-//    setAxisTitle(xBottom, "x -->" );
-//    setAxisScale(xBottom, 0.0, 10.0);
-
-//    setAxisTitle(yLeft, "y -->");
-//    setAxisScale(yLeft, -1.0, 1.0);
+    plot->axisWidget(QwtPlot::yRight)->setPalette(p);
 
     // canvas
-    static_cast<QwtPlotCanvas*>(canvas())->setLineWidth(0);
+    static_cast<QwtPlotCanvas*>(plot->canvas())->setLineWidth(0);
 
 
     QPalette canvasPalette( Qt::white );
     canvasPalette.setColor( QPalette::Foreground, QColor( 133, 190, 232 ) );
-    canvas()->setPalette( canvasPalette );
+    plot->canvas()->setPalette( canvasPalette );
 
     QAction* separator_action2 = new QAction(this);
     separator_action2->setSeparator(true);
     addAction(separator_action2);
 
+    show_datatable_action = new QAction("Show data table", this);
+    show_datatable_action->setIcon(QIcon::fromTheme("view-form-table", QIcon(":/images/view-form-table.png")));
+    addAction(show_datatable_action);
+    connect(show_datatable_action, SIGNAL(triggered(bool)), this, SLOT(showDataTable(bool)));
+    show_datatable_action->setCheckable(true);
+
+
     QAction* zoom_fit_action = new QAction("Apply automatic zoom", this);
+    zoom_fit_action->setIcon(QIcon::fromTheme("zoom-original", QIcon(":/images/zoom-original.png")));
     addAction(zoom_fit_action);
     connect(zoom_fit_action, SIGNAL(triggered()), this, SLOT(doAutoZoom()));
 
@@ -141,19 +185,41 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
 
     QActionGroup* zoom_group = new QActionGroup(this);
 
-    zoom_box_zoom_action = new QAction("Activate box zoom", this);
+    CheckActionExt* zoom_box_zoom_action = new CheckActionExt("Datagraphzoom_box_zoom_action", "Activate box zoom", false, this);
     zoom_box_zoom_action->setActionGroup(zoom_group);
-    connect(zoom_box_zoom_action, SIGNAL(triggered()), this, SLOT(setZoomer()));
-    zoom_box_zoom_action->setCheckable(true);
+    zoom_box_zoom_action->setIcon(QIcon::fromTheme("zoom-select", QIcon(":/images/zoom-select.png")));
+    connect(zoom_box_zoom_action, SIGNAL(triggered()), &userInputModeMapper, SLOT(map()));
+    userInputModeMapper.setMapping(zoom_box_zoom_action, 0);
 
-    zoom_drag_action = new QAction("Activate graph panner", this);
-    connect(zoom_drag_action, SIGNAL(triggered()), this, SLOT(setPanner()));
+    CheckActionExt* zoom_drag_action = new CheckActionExt("Datagraphzoom_drag_action", "Activate graph panner", true, this);
     zoom_drag_action->setActionGroup(zoom_group);
-    zoom_drag_action->setCheckable(true);
+    zoom_drag_action->setIcon(QIcon::fromTheme("transform-move", QIcon(":/images/transform-move.png")));
+    connect(zoom_drag_action, SIGNAL(triggered()), &userInputModeMapper, SLOT(map()));
+    userInputModeMapper.setMapping(zoom_drag_action, 1);
 
-    addActions(zoom_group->actions());
+    QAction* canvas_pick_action = new QAction("Activate plot picker", this);
+    canvas_pick_action->setActionGroup(zoom_group);
+    canvas_pick_action->setCheckable(true);
+    canvas_pick_action->setIcon(QIcon::fromTheme("edit-node", QIcon(":/images/edit-node.png")));
+    connect(canvas_pick_action, SIGNAL(triggered()), &userInputModeMapper, SLOT(map()));
+    userInputModeMapper.setMapping(canvas_pick_action, 2);
 
     QAction* separator_action = new QAction(this);
+    separator_action->setSeparator(true);
+    addAction(separator_action);
+
+    addActions(zoom_group->actions());
+    connect(&userInputModeMapper, SIGNAL(mapped(int)), this, SLOT(setUserInputMode(int)));
+
+    for (QAction* action : zoom_group->actions()) {
+        if (action->isChecked()) {
+            action->trigger();
+            break;
+        }
+    }
+
+
+    separator_action = new QAction(this);
     separator_action->setSeparator(true);
     addAction(separator_action);
 
@@ -174,25 +240,11 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     addAction(export_action);
     connect(export_action, SIGNAL(triggered()), this, SLOT(exportOutput()));
 
-    QSettings settings;
-    settings.beginGroup(objectName());
-    zoom_drag_action->setChecked(settings.value("zoom_drag_action", true).toBool());
-    zoom_box_zoom_action->setChecked(!(settings.value("zoom_drag_action", true).toBool()));
-
-    if (zoom_drag_action->isChecked()) {
-        setPanner();
-    } else {
-        setZoomer();
-    }
-
-    connect(&refreshTimer, SIGNAL(timeout()), this, SLOT(replot()));
+    connect(&refreshTimer, SIGNAL(timeout()), plot, SLOT(replot()));
     refreshTimer.start(100);
 }
 
 DataGraph::~DataGraph() {
-    QSettings settings;
-    settings.beginGroup(objectName());
-    settings.setValue("zoom_drag_action", zoom_drag_action->isChecked());
 }
 
 
@@ -211,13 +263,15 @@ QString DataGraph::getChannelTitle(int index) const {
 void DataGraph::addChannelGeneric(QString title, CurveDataBase* curveData) {
     QwtPlotCurve *curve = new QwtPlotCurve(title);
     curve->setLegendAttribute(QwtPlotCurve::LegendShowLine, true);
-    curve->attach(this);
+    curve->attach(plot);
     curve->setData(curveData);
 
     channels.append(curve);
     updateCurveColors();
     applyCurveStyleToCurve(curve);
     showCurve(curve, true);
+
+    dataTableChannelList->addItem(title);
 }
 
 void DataGraph::addChannel(QString title) {
@@ -255,6 +309,8 @@ void DataGraph::removeChannel(int index) {
         channels.at(index)->detach();
         delete channels.at(index);
         channels.removeAt(index);
+
+        dataTableChannelList->removeItem(index);
     }
     updateCurveColors();
 }
@@ -268,21 +324,39 @@ void DataGraph::clear() {
 
     curvesWithRightYAxis = 0;
     updateRightAxis();
+
+    dataTableChannelList->clear();
+    dataTable->clearContents();
 }
 
-void DataGraph::setZoomer(void) {
-   zoomer->setEnabled(true);
-   panner->setEnabled(false);
-   zoomer->setZoomBase();
-}
 
-void DataGraph::setPanner(void) {
-    zoomer->setEnabled(false);
-    panner->setEnabled(true);
+void DataGraph::setUserInputMode(int index) {
+    switch (index) {
+    case 0:
+        zoomer->setEnabled(true);
+        panner->setEnabled(false);
+        picker->setEnabled(false);
+        zoomer->setZoomBase();
+        break;
+
+    case 1:
+        zoomer->setEnabled(false);
+        panner->setEnabled(true);
+        picker->setEnabled(false);
+        break;
+
+    case 2:
+        zoomer->setEnabled(false);
+        panner->setEnabled(false);
+        picker->setEnabled(true);
+        showDataTable(true);
+        show_datatable_action->setChecked(true);
+        break;
+    }
 }
 
 void DataGraph::onHighlightCurve(const QVariant &itemInfo) {
-    QwtPlotItem *plotItem = infoToItem(itemInfo);
+    QwtPlotItem *plotItem = plot->infoToItem(itemInfo);
     if (plotItem) {
         QwtPlotCurve *curve = dynamic_cast<QwtPlotCurve *>(plotItem);
 
@@ -291,7 +365,7 @@ void DataGraph::onHighlightCurve(const QVariant &itemInfo) {
             pen.setWidth(pen.width() * 5);
             curve->setPen(pen);
 
-            QwtLegend *lgd = qobject_cast<QwtLegend *>(legend());
+            QwtLegend *lgd = qobject_cast<QwtLegend *>(plot->legend());
             QWidget * legendWidget = lgd->legendWidget(itemInfo);
             if (legendWidget) {
                 HoverableQwtLegendLabel *legendLabel = qobject_cast<HoverableQwtLegendLabel *>(legendWidget);
@@ -304,7 +378,7 @@ void DataGraph::onHighlightCurve(const QVariant &itemInfo) {
 }
 
 void DataGraph::onUnhighlightCurve(const QVariant &itemInfo) {
-    QwtPlotItem *plotItem = infoToItem(itemInfo);
+    QwtPlotItem *plotItem = plot->infoToItem(itemInfo);
     if (plotItem) {
         QwtPlotCurve *curve = dynamic_cast<QwtPlotCurve *>(plotItem);
 
@@ -313,7 +387,7 @@ void DataGraph::onUnhighlightCurve(const QVariant &itemInfo) {
             pen.setWidth(pen.width() / 5);
             curve->setPen(pen);
 
-            QwtLegend *lgd = qobject_cast<QwtLegend *>(legend());
+            QwtLegend *lgd = qobject_cast<QwtLegend *>(plot->legend());
             QWidget * legendWidget = lgd->legendWidget(itemInfo);
             if (legendWidget) {
                 HoverableQwtLegendLabel *legendLabel = qobject_cast<HoverableQwtLegendLabel *>(legendWidget);
@@ -329,28 +403,30 @@ void DataGraph::addData(int channel, QPointF data) {
     if (channel < channels.size()) {
         CurveDataBase *curvedata = static_cast<CurveData *>( channels.at(channel)->data() );
         curvedata->append(data);
+
+        plot->setAxisAutoScale(QwtPlot::xBottom, true);
+        plot->setAxisAutoScale(QwtPlot::yLeft, true);
+
+        show_datatable_action->setChecked(false);
+        showDataTable(false);
     } else {
         (void) data;
     }
-
-    setAxisAutoScale(xBottom, true);
-    setAxisAutoScale(yLeft, true);
 }
 
 void DataGraph::doAutoZoom(void) {
-
     for (QwtPlotCurve* channel : channels) {
         CurveDataBase *curvedata = static_cast<CurveData *>( channel->data() );
         curvedata->resetBoundingRect();
     }
-    setAxisAutoScale(xBottom, true);
-    setAxisAutoScale(yLeft, true);
+    plot->setAxisAutoScale(QwtPlot::xBottom, true);
+    plot->setAxisAutoScale(QwtPlot::yLeft, true);
 
     zoomer->setZoomBase();
 }
 
 void DataGraph::legendChecked(const QVariant &itemInfo, bool on) {
-    QwtPlotItem *plotItem = infoToItem(itemInfo);
+    QwtPlotItem *plotItem = plot->infoToItem(itemInfo);
     if (plotItem) {
         showCurve(plotItem, on);
     }
@@ -359,8 +435,8 @@ void DataGraph::legendChecked(const QVariant &itemInfo, bool on) {
 void DataGraph::showCurve(QwtPlotItem *item, bool on) {
     item->setVisible(on);
 
-    QwtLegend *lgd = qobject_cast<QwtLegend *>(legend());
-    QList<QWidget *> legendWidgets = lgd->legendWidgets(itemToInfo(item));
+    QwtLegend *lgd = qobject_cast<QwtLegend *>(plot->legend());
+    QList<QWidget *> legendWidgets = lgd->legendWidgets(plot->itemToInfo(item));
 
     if (legendWidgets.size() == 1) {
         QwtLegendLabel *legendLabel = qobject_cast<QwtLegendLabel *>(legendWidgets[0]);
@@ -428,7 +504,7 @@ void DataGraph::applyCurveStyleToCurve(QwtPlotCurve* curve) {
 }
 
 void DataGraph::legendMouseMiddleClicked(const QVariant &itemInfo) {
-    QwtPlotItem *plotItem = infoToItem(itemInfo);
+    QwtPlotItem *plotItem = plot->infoToItem(itemInfo);
 
     if (plotItem) {
         QwtPlotCurve *curve = dynamic_cast<QwtPlotCurve *>(plotItem);
@@ -442,7 +518,7 @@ void DataGraph::legendMouseMiddleClicked(const QVariant &itemInfo) {
                 --curvesWithRightYAxis;
             }
 
-            QwtLegend *lgd = qobject_cast<QwtLegend *>(legend());
+            QwtLegend *lgd = qobject_cast<QwtLegend *>(plot->legend());
             QWidget * legendWidget = lgd->legendWidget(itemInfo);
             if (legendWidget) {
                 HoverableQwtLegendLabel *legendLabel = qobject_cast<HoverableQwtLegendLabel *>(legendWidget);
@@ -493,7 +569,7 @@ bool DataGraph::exportOutput(QString fileName) {
             renderer.setDiscardFlag(QwtPlotRenderer::DiscardBackground, true);
             renderer.setLayoutFlag(QwtPlotRenderer::DefaultLayout, true);
 
-            renderer.renderDocument(this, fileName, QSizeF(300, 200), 85);
+            renderer.renderDocument(plot, fileName, QSizeF(300, 200), 85);
 
             return true;
         }
@@ -523,16 +599,85 @@ bool DataGraph::exportOutput(void) {
 
 void DataGraph::updateRightAxis(void) {
     if (curvesWithRightYAxis == 0) {
-        enableAxis(QwtPlot::yRight, false);
+        plot->enableAxis(QwtPlot::yRight, false);
     } else {
-        enableAxis(QwtPlot::yRight, true);
+        plot->enableAxis(QwtPlot::yRight, true);
     }
     if (curvesWithRightYAxis == channels.size() && channels.size()) {
-        enableAxis(QwtPlot::yLeft, false);
+        plot->enableAxis(QwtPlot::yLeft, false);
     } else {
-        enableAxis(QwtPlot::yLeft, true);
+        plot->enableAxis(QwtPlot::yLeft, true);
     }
 }
+
+void DataGraph::showDataTable(bool show) {
+    if (show) {
+        widget(1)->show();
+        connect(dataTableChannelList, SIGNAL(currentIndexChanged(int)), this, SLOT(generateDataTableForChannel(int)));
+        generateDataTableForChannel(dataTableChannelList->currentIndex());
+    } else {
+        widget(1)->hide();
+        disconnect(dataTableChannelList, SIGNAL(currentIndexChanged(int)), this, SLOT(generateDataTableForChannel(int)));
+    }
+}
+
+void DataGraph::generateDataTableForChannel(int index) {
+    if (index >= 0 && index < channels.at(index)->data()->size()) {
+        dataTable->clearContents();
+        dataTable->setRowCount(channels.at(index)->data()->size());
+
+        CurveDataBase *curvedata = static_cast<CurveData *>( channels.at(index)->data() );
+
+        for (unsigned i = 0; i < channels.at(index)->data()->size(); ++i) {
+            addEntryToDataTable(curvedata->sample(i), i);
+        }
+        dataTable->resizeRowsToContents();
+
+        picker->selectPlotCurve(channels.at(index));
+
+    }
+}
+
+void DataGraph::addEntryToDataTable(QPointF data, int row) {
+    if (row == -1) {
+        row = dataTable->rowCount();
+        dataTable->setRowCount(row + 1);
+    }
+
+    QTableWidgetItem *newItem = new QTableWidgetItem(QString("%1").arg(data.x()));
+    dataTable->setItem(row, 0, newItem);
+    newItem = new QTableWidgetItem(QString("%1").arg(data.y()));
+    dataTable->setItem(row, 1, newItem);
+}
+
+void DataGraph::showEntryInDatatable(int index) {
+    dataTable->scrollToItem(dataTable->item(index, 0), QAbstractItemView::PositionAtCenter);
+    dataTable->selectRow(index);
+}
+
+void DataGraph::selectNextPlotCurve(void) {
+    if (dataTableChannelList->count()) {
+        if (dataTableChannelList->currentIndex() == -1 || dataTableChannelList->currentIndex() == dataTableChannelList->count()  - 1) {
+            dataTableChannelList->setCurrentIndex(0);
+        } else {
+            dataTableChannelList->setCurrentIndex(dataTableChannelList->currentIndex() + 1);
+        }
+    }
+    generateDataTableForChannel(dataTableChannelList->currentIndex());
+}
+
+void DataGraph::selectPreviousPlotCurve(void) {
+    if (dataTableChannelList->count()) {
+        if (dataTableChannelList->currentIndex() == -1 || dataTableChannelList->currentIndex() == 0) {
+            dataTableChannelList->setCurrentIndex(dataTableChannelList->count() - 1);
+        } else {
+            dataTableChannelList->setCurrentIndex(dataTableChannelList->currentIndex() - 1);
+        }
+    }
+    generateDataTableForChannel(dataTableChannelList->currentIndex());
+}
+
+
 
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
