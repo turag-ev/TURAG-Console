@@ -192,7 +192,7 @@ void CanvasPicker::shiftPointCursor(int amount ) {
 }
 
 void CanvasPicker::setEnabled(bool enabled) {
-    QwtPlotCanvas *canvas = qobject_cast<QwtPlotCanvas *>( plot()->canvas() );
+    QObject *canvas = qobject_cast<QObject *>( plot()->canvas() );
 
     if (enabled) {
         canvas->installEventFilter( this );

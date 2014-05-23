@@ -64,6 +64,7 @@ public slots:
     virtual bool exportOutput(void);
     virtual void doAutoZoom(void);
     void setUserInputMode(int index);
+    void replot(void);
 
 protected:
     QList<QwtPlotCurve*> channels;

@@ -36,6 +36,7 @@
 #include <QVBoxLayout>
 #include <QFont>
 #include <QHeaderView>
+#include <qwt_plot_glcanvas.h>
 
 
 
@@ -58,6 +59,8 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     setChildrenCollapsible(false);
 
     plot = new QwtPlot(title);
+//    plot->setCanvas(new QwtPlotGLCanvas);
+
 
     dataTableChannelList = new QComboBox;
     dataTable = new QTableWidget;
@@ -242,12 +245,16 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     connect(export_action, SIGNAL(triggered()), this, SLOT(exportOutput()));
 
     connect(&refreshTimer, SIGNAL(timeout()), plot, SLOT(replot()));
-    refreshTimer.start(100);
 }
 
 DataGraph::~DataGraph() {
 }
 
+void DataGraph::replot(void) {
+    if (!refreshTimer.isActive()) {
+        refreshTimer.start(100);
+    }
+}
 
 int DataGraph::getNumberOfChannels() const {
     return channels.size();
@@ -409,6 +416,8 @@ void DataGraph::addData(int channel, QPointF data) {
 
         show_datatable_action->setChecked(false);
         showDataTable(false);
+
+        replot();
     } else {
         (void) data;
     }
@@ -423,7 +432,7 @@ void DataGraph::doAutoZoom(void) {
     plot->setAxisAutoScale(QwtPlot::yLeft, true);
     plot->setAxisAutoScale(QwtPlot::yRight, true);
 
-    plot->replot();
+    replot();
 
     zoomer->setZoomBase();
 }
