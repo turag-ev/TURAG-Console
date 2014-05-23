@@ -23,11 +23,10 @@ protected:
     virtual void drawOverlay(QPainter *painter) const;
 
 private:
+    bool show;
     QPointF pos;
     QwtSymbol* symbol;
     QwtSymbol* shadow;
-
-
 };
 
 
@@ -51,12 +50,8 @@ signals:
 
 private:
     void selectManually( const QPoint & );
-    void move( const QPoint & );
-    void moveBy( int dx, int dy );
 
-    void release();
-
-    void showCursor( bool enable );
+    void showCursor(bool show );
     void shiftPointCursor(int amount );
 
     QwtPlot *plot();

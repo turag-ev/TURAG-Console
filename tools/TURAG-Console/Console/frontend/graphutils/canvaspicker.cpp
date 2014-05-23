@@ -51,37 +51,36 @@ const QwtPlot *CanvasPicker::plot() const {
 
 
 bool CanvasPicker::eventFilter( QObject *object, QEvent *event ) {
-    if ( plot() == NULL || object != plot()->canvas() )
+    if ( plot() == NULL || object != plot()->canvas() ) {
         return false;
+    }
 
     switch( event->type() ) {
-    case QEvent::MouseButtonPress:
-    {
+    case QEvent::MouseButtonPress: {
         const QMouseEvent *mouseEvent = static_cast<QMouseEvent *>( event );
         if (mouseEvent->button() == Qt::LeftButton) {
             selectManually( mouseEvent->pos() );
         }
         return true;
+        break;
     }
-    case QEvent::KeyPress:
-    {
+
+    case QEvent::KeyPress: {
         const QKeyEvent *keyEvent = static_cast<QKeyEvent *>( event );
 
-        switch( keyEvent->key() )
-        {
+        switch ( keyEvent->key() ) {
         case Qt::Key_Up:
-        {
             emit nextPlotCurveSuggested();
             return true;
-        }
+            break;
+
         case Qt::Key_Down:
-        {
             emit previuosPlotCurveSuggested();
             return true;
-        }
+            break;
+
         case Qt::Key_Right:
         case Qt::Key_Plus:
-        {
             if ( d_selectedCurve ) {
                 int amount = 0;
                 if (keyEvent->modifiers() & Qt::ShiftModifier) {
@@ -99,10 +98,10 @@ bool CanvasPicker::eventFilter( QObject *object, QEvent *event ) {
                 emit previuosPlotCurveSuggested();
             }
             return true;
-        }
+            break;
+
         case Qt::Key_Left:
         case Qt::Key_Minus:
-        {
             if ( d_selectedCurve ) {
                 int amount = 0;
                 if (keyEvent->modifiers() & Qt::ShiftModifier) {
@@ -119,12 +118,13 @@ bool CanvasPicker::eventFilter( QObject *object, QEvent *event ) {
                 emit nextPlotCurveSuggested();
             }
             return true;
-        }
+            break;
 
         default:
             break;
         }
-    }
+        }
+
     default:
         break;
     }
@@ -158,19 +158,19 @@ void CanvasPicker::selectManually( const QPoint &pos ) {
 }
 
 // Hightlight the selected point
-void CanvasPicker::showCursor( bool showIt ) {
-    if ( !d_selectedCurve || d_selectedPoint == -1 )
+void CanvasPicker::showCursor( bool show ) {
+    if ( !d_selectedCurve || d_selectedPoint == -1 || d_selectedPoint >= static_cast<int>(d_selectedCurve->dataSize())) {
+        overlay->hide();
         return;
+    }
 
-    if ( showIt ) {
+    if ( show ) {
         QwtArraySeriesData<QPointF>* data = static_cast<QwtArraySeriesData<QPointF>*>(d_selectedCurve->data());
+
         QPointF point(data->sample(d_selectedPoint));
-        //qDebug() << point;
 
         point.setX(plot()->transform(d_selectedCurve->xAxis(), point.x()));
         point.setY(plot()->transform(d_selectedCurve->yAxis(), point.y()));
-
-        //qDebug() << point;
 
         overlay->showSymbol(point);
     } else {
@@ -205,7 +205,7 @@ void CanvasPicker::setEnabled(bool enabled) {
 
 
 SymbolOverlay::SymbolOverlay(int size, QWidget *widget) :
-    QwtWidgetOverlay(widget)
+    QwtWidgetOverlay(widget), show(false)
 {
     QPen pen;
     pen.setColor(Qt::black);
@@ -217,22 +217,25 @@ SymbolOverlay::SymbolOverlay(int size, QWidget *widget) :
 
 void SymbolOverlay::showSymbol(const QPointF & pos_) {
     pos = pos_;
+    show = true;
     updateOverlay();
 }
 
 void SymbolOverlay::hideSymbol(void) {
-
+    show = false;
+    updateOverlay();
 }
 
 QRegion SymbolOverlay::maskHint() const {
     QRect rect(shadow->boundingRect());
     rect.adjust(pos.x(), pos.y(), pos.x(), pos.y());
 
-    //    return qwtMaskRegion(rect , symbol->pen().width());
     return QRegion(rect);
 }
 
 void SymbolOverlay::drawOverlay(QPainter *painter) const {
-    shadow->drawSymbol(painter, pos);
-    symbol->drawSymbol(painter, pos);
+    if (show) {
+        shadow->drawSymbol(painter, pos);
+        symbol->drawSymbol(painter, pos);
+    }
 }

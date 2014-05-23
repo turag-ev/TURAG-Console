@@ -83,6 +83,7 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     addWidget(plot);
     addWidget(containerWidget);
     restoreState();
+    widget(1)->hide();
 
 
     panner = new QwtPlotPanner( plot->canvas() );
@@ -327,6 +328,8 @@ void DataGraph::clear() {
 
     dataTableChannelList->clear();
     dataTable->clearContents();
+
+    doAutoZoom();
 }
 
 
@@ -404,9 +407,6 @@ void DataGraph::addData(int channel, QPointF data) {
         CurveDataBase *curvedata = static_cast<CurveData *>( channels.at(channel)->data() );
         curvedata->append(data);
 
-        plot->setAxisAutoScale(QwtPlot::xBottom, true);
-        plot->setAxisAutoScale(QwtPlot::yLeft, true);
-
         show_datatable_action->setChecked(false);
         showDataTable(false);
     } else {
@@ -421,6 +421,9 @@ void DataGraph::doAutoZoom(void) {
     }
     plot->setAxisAutoScale(QwtPlot::xBottom, true);
     plot->setAxisAutoScale(QwtPlot::yLeft, true);
+    plot->setAxisAutoScale(QwtPlot::yRight, true);
+
+    plot->replot();
 
     zoomer->setZoomBase();
 }
@@ -622,7 +625,9 @@ void DataGraph::showDataTable(bool show) {
 }
 
 void DataGraph::generateDataTableForChannel(int index) {
-    if (index >= 0 && index < channels.at(index)->data()->size()) {
+    if (index >= 0 && index < static_cast<int>(channels.at(index)->data()->size())) {
+        int oldIndex = dataTable->currentRow();
+
         dataTable->clearContents();
         dataTable->setRowCount(channels.at(index)->data()->size());
 
@@ -635,6 +640,7 @@ void DataGraph::generateDataTableForChannel(int index) {
 
         picker->selectPlotCurve(channels.at(index));
 
+        showEntryInDatatable(oldIndex);
     }
 }
 
