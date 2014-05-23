@@ -27,8 +27,6 @@
 
 #include <stdint.h>
 
-typedef unsigned size_t;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -44,7 +42,7 @@ extern "C" {
  * @param[in] len Length of data that is to be encoded
  * @return length of base64 encoded data
  */
-size_t turag_base64_encode_len(size_t len);
+unsigned turag_base64_encode_len(unsigned len);
 
 /**
  * @brief Encodes data to base64 encoded data.
@@ -53,7 +51,7 @@ size_t turag_base64_encode_len(size_t len);
  * @param[out] encoded buffer holding base64 encoded data
  * @return length of base64 encoded data
  */
-int turag_base64_encode(const uint8_t *data, size_t len, uint8_t *encoded);
+int turag_base64_encode(const uint8_t *data, unsigned len, uint8_t *encoded);
 
 
 /**
@@ -61,7 +59,7 @@ int turag_base64_encode(const uint8_t *data, size_t len, uint8_t *encoded);
  * @param[in] len length of base64 encoded data
  * @return length of decoded data
  */
-size_t turag_base64_decode_len(size_t len);
+unsigned turag_base64_decode_len(unsigned len);
 
 /**
  * @brief Decodes base64 encoded data.
@@ -70,7 +68,7 @@ size_t turag_base64_decode_len(size_t len);
  * @param[out] data buffer holding decoded data
  * @return Length of decoded data
  */
-int turag_base64_decode(const uint8_t *encoded, size_t len, uint8_t *data);
+int turag_base64_decode(const uint8_t *encoded, unsigned len, uint8_t *data);
 
 /**
  * @}

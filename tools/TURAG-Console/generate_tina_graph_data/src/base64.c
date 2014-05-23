@@ -23,11 +23,11 @@ static const uint8_t pr2six[256] =
     64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64
 };
 
-size_t turag_base64_decode_len(size_t len) {
+unsigned turag_base64_decode_len(unsigned len) {
     return len * 3 / 4;
 }
 
-int turag_base64_decode(const uint8_t *bufin, size_t nprbytes, uint8_t *bufplain) {
+int turag_base64_decode(const uint8_t *bufin, unsigned nprbytes, uint8_t *bufplain) {
     uint8_t* bufout = bufplain;
 
     while (nprbytes > 4) {
@@ -61,12 +61,12 @@ int turag_base64_decode(const uint8_t *bufin, size_t nprbytes, uint8_t *bufplain
 static const char basis_64[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-size_t turag_base64_encode_len(size_t len) {
+unsigned turag_base64_encode_len(unsigned len) {
     return (len * 4 + 2) / 3;
 }
 
-int turag_base64_encode(const uint8_t *data, size_t len, uint8_t *encoded) {
-    size_t i;
+int turag_base64_encode(const uint8_t *data, unsigned len, uint8_t *encoded) {
+    unsigned i;
     uint8_t *p;
 
     p = encoded;

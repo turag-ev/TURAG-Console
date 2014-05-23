@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
 	float angle = 0.0f;
 	int time = 0;
 	
-	while(time < 30) {
+	while(time < 30000) {
 		angle += 3.14f / 50;
 		++time;
 			

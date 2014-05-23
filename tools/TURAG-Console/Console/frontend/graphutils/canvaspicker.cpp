@@ -25,9 +25,9 @@ CanvasPicker::CanvasPicker( QwtPlot *plot ):
     // We want the focus, but no focus rect. The
     // selected point will be highlighted instead.
 
-    QwtPlotCanvas *canvas = qobject_cast<QwtPlotCanvas *>( plot->canvas() );
+    QWidget *canvas = qobject_cast<QWidget *>( plot->canvas() );
     canvas->setFocusPolicy( Qt::StrongFocus );
-    canvas->setFocusIndicator( QwtPlotCanvas::ItemFocusIndicator );
+//    canvas->setFocusIndicator( QwtPlotCanvas::ItemFocusIndicator );
     canvas->setFocus();
 
     //    const char *text =

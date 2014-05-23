@@ -7,7 +7,7 @@
 VERSION = 2.8
 
 CONFIG +=  qwt
-QT     += core gui opengl
+QT     += core gui
 QT     += network
 
 greaterThan(QT_MAJOR_VERSION, 4) {

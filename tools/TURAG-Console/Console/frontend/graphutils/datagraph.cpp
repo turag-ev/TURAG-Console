@@ -36,7 +36,6 @@
 #include <QVBoxLayout>
 #include <QFont>
 #include <QHeaderView>
-#include <qwt_plot_glcanvas.h>
 
 
 
@@ -59,8 +58,6 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     setChildrenCollapsible(false);
 
     plot = new QwtPlot(title);
-//    plot->setCanvas(new QwtPlotGLCanvas);
-
 
     dataTableChannelList = new QComboBox;
     dataTable = new QTableWidget;
@@ -244,13 +241,20 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     addAction(export_action);
     connect(export_action, SIGNAL(triggered()), this, SLOT(exportOutput()));
 
-    connect(&refreshTimer, SIGNAL(timeout()), plot, SLOT(replot()));
+    connect(&refreshTimer, SIGNAL(timeout()), this, SLOT(execReplot()));
 }
 
 DataGraph::~DataGraph() {
 }
 
-void DataGraph::replot(void) {
+void DataGraph::execReplot(void) {
+    plot->replot();
+    refreshTimer.stop();
+
+    qDebug() << "joo";
+}
+
+void DataGraph::requestReplot(void) {
     if (!refreshTimer.isActive()) {
         refreshTimer.start(100);
     }
@@ -381,6 +385,7 @@ void DataGraph::onHighlightCurve(const QVariant &itemInfo) {
                 HoverableQwtLegendLabel *legendLabel = qobject_cast<HoverableQwtLegendLabel *>(legendWidget);
                 if (legendLabel) {
                     legendLabel->highlight();
+                    requestReplot();
                 }
             }
         }
@@ -403,6 +408,7 @@ void DataGraph::onUnhighlightCurve(const QVariant &itemInfo) {
                 HoverableQwtLegendLabel *legendLabel = qobject_cast<HoverableQwtLegendLabel *>(legendWidget);
                 if (legendLabel) {
                     legendLabel->unhighlight();
+                    requestReplot();
                 }
             }
         }
@@ -417,7 +423,7 @@ void DataGraph::addData(int channel, QPointF data) {
         show_datatable_action->setChecked(false);
         showDataTable(false);
 
-        replot();
+        requestReplot();
     } else {
         (void) data;
     }
@@ -432,7 +438,7 @@ void DataGraph::doAutoZoom(void) {
     plot->setAxisAutoScale(QwtPlot::yLeft, true);
     plot->setAxisAutoScale(QwtPlot::yRight, true);
 
-    replot();
+    requestReplot();
 
     zoomer->setZoomBase();
 }
@@ -544,6 +550,7 @@ void DataGraph::legendMouseMiddleClicked(const QVariant &itemInfo) {
             }
 
             updateRightAxis();
+            requestReplot();
         }
     }
 }
