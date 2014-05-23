@@ -13,6 +13,8 @@ bin
 *.pro.user
 *.pro.user.*
 *.autosave
+*.creator.user
+*.creator.user.*
 
 # Qt
 moc_*.cpp
