@@ -68,6 +68,11 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
     pwmOutputSize_ = new QLabel;
     info_layout->addWidget(pwmOutputSize_, 2, 1);
 
+    label = new QLabel("Uptime [sec]:");
+    info_layout->addWidget(label, 3, 0);
+    upTime_ = new QLabel;
+    info_layout->addWidget(upTime_, 3, 1);
+
     // datagraph area on the right
     // -----------------------------------------
     QVBoxLayout* right_layout = new QVBoxLayout;
@@ -110,6 +115,10 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
     layout->setStretch(1, 100);
     setLayout(layout);
 
+
+    if (!aseb_) return;
+
+
     connect(&updateTimer_, SIGNAL(timeout()), this, SLOT(onUpdate()));
     onInputEdited();
 
@@ -117,6 +126,7 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
     /*
      * read device
      */
+
     int digInSize = 0;
     int digOutSize = 0;
     int analogInSize = 0;
@@ -354,6 +364,13 @@ void FeldbusAsebView::onUpdate(void) {
         for (LabelLineeditCombo& combo : analogInputs_) {
             combo.lineedit->setText("ERROR");
         }
+    }
+
+    float uptime;
+    if (aseb_->getUpTime(&uptime)) {
+        upTime_->setText(QString("%1").arg(uptime));
+    } else {
+        upTime_->setText("ERROR");
     }
 }
 

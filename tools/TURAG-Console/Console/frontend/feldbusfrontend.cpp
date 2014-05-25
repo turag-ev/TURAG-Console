@@ -122,7 +122,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 
 //#warning please remove me
 //    feldbusWidget->hide();
-//    splitter->addWidget(new FeldbusAktorView(0));
+//    splitter->addWidget(new FeldbusAsebView(0));
 
 }
 
