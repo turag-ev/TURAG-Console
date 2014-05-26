@@ -36,6 +36,7 @@
 #include <QVBoxLayout>
 #include <QFont>
 #include <QHeaderView>
+#include <qwt_plot_marker.h>
 
 
 
@@ -250,8 +251,6 @@ DataGraph::~DataGraph() {
 void DataGraph::execReplot(void) {
     plot->replot();
     refreshTimer.stop();
-
-    qDebug() << "joo";
 }
 
 void DataGraph::requestReplot(void) {
@@ -429,6 +428,26 @@ void DataGraph::addData(int channel, QPointF data) {
     }
 }
 
+void DataGraph::addVerticalMarker(float time) {
+    QwtPlotMarker* marker = new QwtPlotMarker;
+    marker->setLineStyle(QwtPlotMarker::VLine);
+    marker->attach(plot);
+    marker->setXValue(time);
+
+    QPen pen;
+    pen.setStyle(Qt::DotLine);
+    pen.setColor(Qt::black);
+    pen.setWidth(1);
+    marker->setLinePen(pen);
+
+    vMarkers.append(marker);
+    requestReplot();
+}
+
+void DataGraph::focusVerticalMarker(unsigned index) {
+
+}
+
 void DataGraph::doAutoZoom(void) {
     for (QwtPlotCurve* channel : channels) {
         CurveDataBase *curvedata = static_cast<CurveData *>( channel->data() );
@@ -519,6 +538,8 @@ void DataGraph::applyCurveStyleToCurve(QwtPlotCurve* curve) {
         curve->setRenderHint(QwtPlotItem::RenderHint::RenderAntialiased, false);
         break;
     }
+
+    requestReplot();
 }
 
 void DataGraph::legendMouseMiddleClicked(const QVariant &itemInfo) {

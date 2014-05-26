@@ -23,6 +23,7 @@ class CheckActionExt;
 class QTableWidget;
 class CanvasPicker;
 class QComboBox;
+class QwtPlotMarker;
 
 
 
@@ -63,12 +64,15 @@ public slots:
     virtual bool exportOutput(QString file);
     virtual bool exportOutput(void);
     virtual void doAutoZoom(void);
+    virtual void addVerticalMarker(float time);
+    virtual void focusVerticalMarker(unsigned index);
     void setUserInputMode(int index);
     void requestReplot(void);
     void execReplot(void);
 
 protected:
     QList<QwtPlotCurve*> channels;
+    QList<QwtPlotMarker*> vMarkers;
     QwtPlotZoomer* zoomer;
     QwtPlotPanner* panner;
     CanvasPicker* picker;

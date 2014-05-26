@@ -77,13 +77,11 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
                         int x_left, y_bottom;
                         unsigned width, height;
 
-                        stream >> x_left;  // consume the index, which e don't need here
+                        stream >> x_left;  // consume the index, which we don't need here
                         stream >> x_left;
                         stream >> y_bottom;
                         stream >> width;
                         stream >> height;
-
-                        qDebug() << x_left << y_bottom << width << height;
 
                         QString title(stream.readLine());
 
@@ -111,7 +109,6 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
                                 float value;
                                 TURAG::Base64::decode(data, 6, reinterpret_cast<uint8_t*>(&value));
                                 graph->addData(channel, QPointF(time, value));
-                                //graph->doAutoZoom();
 
                                 ++channel;
                                 data += 6;
@@ -120,6 +117,36 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
                     }
                     break;
                 }
+
+                case TURAG_DEBUG_GRAPH_VERTICAL_MARKER[0]: {
+                    int listindex = graphIndices.indexOf(index);
+                    if (listindex != -1) {
+                        QTextStream stream(line);
+
+                        QByteArray encoded;
+                        int index;
+
+                        stream >> index;  // consume the index, which we don't need here
+                        stream >> encoded;
+
+                        float time;
+                        if (encoded.size() != TURAG::Base64::encodeLength(sizeof(time))) {
+                            qDebug() << "Error: couldn't decode time";
+                            return;
+                        }
+
+                        const uint8_t* data = reinterpret_cast<const uint8_t*>(encoded.constData());
+                        TURAG::Base64::decode(data, 6, reinterpret_cast<uint8_t*>(&time));
+
+                        qDebug() << "vMarker time:" << time;
+
+                        QString title(stream.readLine());
+
+                        static_cast<DataGraph*>(stack->widget(listindex))->addVerticalMarker(time);
+                    }
+                    break;
+                }
+
                 }
             }
         }
