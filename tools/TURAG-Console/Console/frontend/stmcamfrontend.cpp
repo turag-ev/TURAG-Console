@@ -74,14 +74,12 @@ void STMCamFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev)
     logview->onConnected(readOnly, isBuffered, dev);
     cshell->onConnected(readOnly, isBuffered, dev);
     camview->onConnected(readOnly, isBuffered, dev);
-    qDebug() << objectName() << " connected";
 }
 
 void STMCamFrontend::onDisconnected(bool reconnecting) {
     logview->onDisconnected(reconnecting);
     cshell->onDisconnected(reconnecting);
     camview->onDisconnected(reconnecting);
-    qDebug() << objectName() << " disconnected";
 }
 
 void STMCamFrontend::setExternalContextActions(QList<QAction*> actions) {

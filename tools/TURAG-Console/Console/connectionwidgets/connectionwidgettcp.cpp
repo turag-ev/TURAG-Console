@@ -2,6 +2,7 @@
 #include <QSettings>
 #include <QHostInfo>
 #include <QGroupBox>
+#include <QSplitter>
 
 ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     ConnectionWidget("Letzte Verbindungen", parent),
@@ -9,27 +10,34 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     associatedBackend(nullptr)
 {
     setObjectName("Debug Server");
-    setToolTip("Mit Doppelklick oder <Enter> Gerät öffnen");
+
+    socket = new  QTcpSocket(this);
+    connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
+    connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
+    connect(socket, SIGNAL(readyRead()), this, SLOT(receive()));
 
 
     QSettings settings;
     settings.beginGroup("ConnectionWidgetTcp");
     recentHost = settings.value("host", QString("%1:%2").arg(DEFAULTHOST).arg(CONTROLSERVER_PORT)).toString();
 
-    //Bezeichner (Label) für den hostedit
+    // Eingabemaske für Host
+    // --------------------------------------------------
     QLabel * hostLabel = new QLabel("Host: ");
-
-    //Bezeichner für channel box
-    QLabel * channelBoxLabel = new QLabel("Channel: ");
 
     //Eingabefeld für host
     hostEdit = new QLineEdit();
     hostEdit->setText(recentHost);
+    connect(hostEdit, SIGNAL(returnPressed()), this, SLOT(connectToServer()));
 
     // create button to connect
     connect_button = new QPushButton("Verbinden");
+    connect(connect_button, SIGNAL(clicked()), this, SLOT(connectToServer()));
+
     connect_cancel_button = new QPushButton("Abbrechen");
     connect_cancel_button->setVisible(false);
+    connect(connect_cancel_button, SIGNAL(clicked()), this, SLOT(cancel_connecting()));
 
     QHBoxLayout * editLayout = new QHBoxLayout();
     editLayout->addWidget(hostLabel, 0);
@@ -38,16 +46,54 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     editLayout->addWidget(connect_cancel_button, 0);
     editLayout->addStretch();
 
-    //editLayout in generalLayout einfügen
+
+
+    // Channel Box
+    // ----------------------------------------
+    QLabel * channelBoxLabel = new QLabel("Channel: ");
+
+    //das QListWidget anlegen
+    allDevicesWidget = new QListWidget(this);
+    allDevicesWidget->setEnabled(false);
+    allDevicesWidget->setToolTip("Mit Doppelklick oder <Enter> Gerät öffnen");
+    connect(allDevicesWidget, SIGNAL(itemActivated(QListWidgetItem*)), this, SLOT(startDataChannel(QListWidgetItem*)));
+
+    //für usability:
+    timeText = new QLabel;
+
+    QVBoxLayout* channelBoxLayout = new QVBoxLayout;
+    channelBoxLayout->addWidget(channelBoxLabel);
+    channelBoxLayout->addWidget(allDevicesWidget);
+    channelBoxLayout->addWidget(timeText);
+
+
+    // Server log
+    // ----------------------------------------
+    QLabel * serverLogLabel = new QLabel("Serverlog:");
+    serverLog = new QListWidget;
+    serverLog->setEnabled(false);
+    serverLog->setSelectionMode(QAbstractItemView::NoSelection);
+
+    QVBoxLayout* serverLogLayout = new QVBoxLayout;
+    serverLogLayout->addWidget(serverLogLabel);
+    serverLogLayout->addWidget(serverLog);
+
+
+    // add stuff to layout
+    // ----------------------------------------
+    QWidget* leftWidget = new QWidget;
+    leftWidget->setLayout(channelBoxLayout);
+    QWidget* rightWidget = new QWidget;
+    rightWidget->setLayout(serverLogLayout);
+
+    QSplitter* splitter = new QSplitter;
+    splitter->addWidget(leftWidget);
+    splitter->addWidget(rightWidget);
+    splitter->setStretchFactor(1, 2);
+
     layout->addLayout(editLayout);
+    layout->addWidget(splitter);
 
-    //channelBoxLabel in generalLayout einfügen
-    layout->addWidget(channelBoxLabel);
-
-    //Signals abfangen
-    connect(hostEdit, SIGNAL(returnPressed()), this, SLOT(connectToServer()));
-    connect(connect_button, SIGNAL(clicked()), this, SLOT(connectToServer()));
-    connect(connect_cancel_button, SIGNAL(clicked()), this, SLOT(cancel_connecting()));
 
     //tcp menu erstellen
     tcpMenu = new QMenu("Debug-Server", this);
@@ -64,23 +110,6 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     tcpMenu->addAction(emergencyStopAction);
     tcpMenu->addAction(startBootloaderAction);
 
-    //das QListWidget anlegen
-    allDevicesWidget = new QListWidget(this);
-    allDevicesWidget->setEnabled(false);
-    connect(allDevicesWidget, SIGNAL(itemActivated(QListWidgetItem*)), this, SLOT(startDataChannel(QListWidgetItem*)));
-
-
-    layout->addWidget(allDevicesWidget);
-
-    //für usability:
-    timeText = new QLabel;
-    layout->addWidget(timeText);
-
-    socket = new  QTcpSocket(this);
-    connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
-    connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
-    connect(socket, SIGNAL(readyRead()), this, SLOT(receive()));
 
     setContextMenuPolicy(Qt::CustomContextMenu);
     contextMenu = new QMenu(this);
@@ -125,6 +154,9 @@ void ConnectionWidgetTcp::socketConnected(void) {
     saveConnection(hostEdit->text());
     addRecentConnections();
     if (recentConnectionsContainer) recentConnectionsContainer->setEnabled(false);
+
+    serverLog->clear();
+    serverLog->setEnabled(true);
 }
 
 void ConnectionWidgetTcp::socketDisconnected(void) {
@@ -146,6 +178,7 @@ void ConnectionWidgetTcp::socketDisconnected(void) {
     allDevicesWidget->clear();
 
     if (recentConnectionsContainer) recentConnectionsContainer->setEnabled(true);
+    serverLog->setEnabled(false);
 }
 
 void ConnectionWidgetTcp::socketError(QAbstractSocket::SocketError error) {
@@ -247,6 +280,13 @@ void ConnectionWidgetTcp::handleData() {
         }
         else if (puffer.at(0) == QByteArray(CONTROL_TIME) && puffer.size() > 1) {
             timeText->setText(QString("Serverzeit: ").append(puffer.at(1)));
+        }
+        else if (puffer.at(0) == QByteArray(STATUS_MESSAGE) && puffer.size() > 1) {
+            for (int i = 1; i < puffer.size(); ++i) {
+                QListWidgetItem * item = new QListWidgetItem();
+                item->setText(puffer.at(i));
+                serverLog->addItem(item);
+            }
         }
         else {
             //dont know what to do

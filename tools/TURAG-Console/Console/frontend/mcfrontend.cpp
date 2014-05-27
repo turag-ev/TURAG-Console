@@ -63,14 +63,12 @@ void MCFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
     logview->onConnected(readOnly, isBuffered, dev);
     cmenu->onConnected(readOnly, isBuffered, dev);
     graphView->onConnected(readOnly, isBuffered, dev);
-    qDebug() << objectName() << " connected";
 }
 
 void MCFrontend::onDisconnected(bool reconnecting) {
     logview->onDisconnected(reconnecting);
     cmenu->onDisconnected(reconnecting);
     graphView->onDisconnected(reconnecting);
-    qDebug() << objectName() << " disconnected";
 }
 
 void MCFrontend::setExternalContextActions(QList<QAction*> actions) {

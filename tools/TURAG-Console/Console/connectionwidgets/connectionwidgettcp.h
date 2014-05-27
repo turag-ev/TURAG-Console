@@ -95,6 +95,8 @@ private:
 
     QListWidget * allDevicesWidget;
 
+    QListWidget* serverLog;
+
     //Infotext, der unter devices Box angezeigt wird
     QLabel * timeText;
 

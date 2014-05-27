@@ -51,13 +51,11 @@ void SCFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
 
     logview->onConnected(readOnly, isBuffered, dev);
     cmenu->onConnected(readOnly, isBuffered, dev);
-    qDebug() << objectName() << " connected";
 }
 
 void SCFrontend::onDisconnected(bool reconnecting) {
     logview->onDisconnected(reconnecting);
     cmenu->onDisconnected(reconnecting);
-    qDebug() << objectName() << " disconnected";
 }
 
 void SCFrontend::setExternalContextActions(QList<QAction*> actions) {

@@ -35,7 +35,6 @@ bool TcpBackend::openConnection(QString connectionString) {
     int index2 = connectionString.indexOf(":");
     int index3 = connectionString.indexOf(":", index2 + 1);
     devicePath = connectionString.mid(index + 1, index3 - index - 1);
-    qDebug() << devicePath;
     QString host = connectionString.left(index);
 
     QStringList addressAndPort = host.split(":");
