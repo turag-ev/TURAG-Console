@@ -187,7 +187,8 @@ HEADERS  += mainwindow.h \
     frontend/graphutils/hoverableqwtlegendlabel.h \
     frontend/graphutils/hoverableqwtlegend.h \
     frontend/graphutils/canvaspicker.h \
-    libs/splitterext.h
+    libs/splitterext.h \
+    libs/fastlistwidget.h
 
 INCLUDEPATH += \
     ../../../tina \

@@ -25,6 +25,7 @@
 class QMenu;
 class QAction;
 class ConnectionWidget;
+class FastListWidget;
 
 class ConnectionWidgetTcp: public ConnectionWidget {
     Q_OBJECT
@@ -95,7 +96,7 @@ private:
 
     QListWidget * allDevicesWidget;
 
-    QListWidget* serverLog;
+    FastListWidget* serverLog;
 
     //Infotext, der unter devices Box angezeigt wird
     QLabel * timeText;

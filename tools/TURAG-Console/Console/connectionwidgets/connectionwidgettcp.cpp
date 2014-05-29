@@ -3,6 +3,7 @@
 #include <QHostInfo>
 #include <QGroupBox>
 #include <QSplitter>
+#include <libs/fastlistwidget.h>
 
 ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     ConnectionWidget("Letzte Verbindungen", parent),
@@ -70,7 +71,7 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     // Server log
     // ----------------------------------------
     QLabel * serverLogLabel = new QLabel("Serverlog:");
-    serverLog = new QListWidget;
+    serverLog = new FastListWidget;
     serverLog->setEnabled(false);
     serverLog->setSelectionMode(QAbstractItemView::NoSelection);
 
