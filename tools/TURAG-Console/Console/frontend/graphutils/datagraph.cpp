@@ -339,6 +339,8 @@ void DataGraph::clear() {
     dataTableChannelList->clear();
     dataTable->clearContents();
 
+    channelGroups.clear();
+
     doAutoZoom();
 }
 
@@ -470,7 +472,15 @@ void DataGraph::legendChecked(const QVariant &itemInfo, bool on) {
 }
 
 void DataGraph::showCurve(QwtPlotItem *item, bool on) {
-    item->setVisible(on);
+    showCurve(item, on, true);
+}
+
+void DataGraph::showCurve(QwtPlotItem *item, bool on, bool visible) {
+    if (visible) {
+        item->setVisible(on);
+    } else {
+        item->setVisible(false);
+    }
 
     QwtLegend *lgd = qobject_cast<QwtLegend *>(plot->legend());
     QList<QWidget *> legendWidgets = lgd->legendWidgets(plot->itemToInfo(item));
@@ -479,9 +489,16 @@ void DataGraph::showCurve(QwtPlotItem *item, bool on) {
         QwtLegendLabel *legendLabel = qobject_cast<QwtLegendLabel *>(legendWidgets[0]);
 
         if (legendLabel) {
-            legendLabel->setChecked(on);
+            if (visible) {
+                legendLabel->setChecked(on);
+                legendLabel->setVisible(true);
+            } else {
+                legendLabel->setVisible(false);
+            }
         }
     }
+
+    requestReplot();
 }
 
 void DataGraph::showAllCurves(void) {
@@ -720,6 +737,24 @@ void DataGraph::selectPreviousPlotCurve(void) {
     generateDataTableForChannel(dataTableChannelList->currentIndex());
 }
 
+
+void DataGraph::addChannelGroup(const QList<int>& channelGroup) {
+    channelGroups.append(channelGroup);
+}
+
+void DataGraph::applyChannelGrouping(int index) {
+    for (int i = 0; i < channels.size(); ++i) {
+        if (channelGroups.at(index).contains(i)) {
+            showCurve(channels.at(i), true);
+        } else {
+            showCurve(channels.at(i), false, false);
+        }
+    }
+}
+
+void DataGraph::resetChannelGrouping(void) {
+    showAllCurves();
+}
 
 
 // ------------------------------------------------------------------------------

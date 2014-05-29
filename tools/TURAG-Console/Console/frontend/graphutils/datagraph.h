@@ -51,6 +51,9 @@ public:
     void setTitle (const QString & title) {
         plot->setTitle(title);
     }
+    void addChannelGroup(const QList<int>& channelGroup);
+    void applyChannelGrouping(int index);
+    void resetChannelGrouping(void);
 
 public slots:
     virtual void clear();
@@ -76,6 +79,7 @@ protected:
     QwtPlotZoomer* zoomer;
     QwtPlotPanner* panner;
     CanvasPicker* picker;
+    QList< QList<int> > channelGroups;
 
     virtual void updateCurveColors();
     virtual void addChannelGeneric(QString title, CurveDataBase* curveData);
@@ -85,6 +89,7 @@ protected:
 
 protected slots:
     void showCurve(QwtPlotItem *item, bool on);
+    void showCurve(QwtPlotItem *item, bool on, bool visible);
     void legendChecked(const QVariant &itemInfo, bool on);
     void legendMouseMiddleClicked(const QVariant &itemInfo);
     void onHighlightCurve(const QVariant &itemInfo);

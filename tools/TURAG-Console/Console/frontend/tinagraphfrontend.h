@@ -6,7 +6,8 @@
 #include "basefrontend.h"
 
 class QAction;
-class QListWidget;
+class QTreeWidget;
+class QTreeWidgetItem;
 
 class TinaGraphFrontend : public BaseFrontend
 {
@@ -29,12 +30,15 @@ public slots:
     void clear(void);
 
 private slots:
-    void activateGraphInternal(int index);
+    void activateItem(QTreeWidgetItem*);
 
 private:
+   QTreeWidgetItem* createGraphEntry(int index, const QString& title);
+
+
     QList<int> graphIndices;
     QStackedWidget* stack;
-    QListWidget* graphlist;
+    QTreeWidget* graphList;
 };
 
 #endif // TINAGRAPHVIEW_H

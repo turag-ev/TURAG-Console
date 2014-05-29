@@ -3,17 +3,19 @@
 #include <tina++/utils/base64.h>
 #include <tina/debug/graph.h>
 #include <QHBoxLayout>
-#include <QListWidget>
+#include <QTreeWidget>
 #include <QTextStream>
+#include <QTreeWidgetItem>
 
 TinaGraphFrontend::TinaGraphFrontend(QWidget *parent) :
     BaseFrontend("TinaGraphFrontend", parent)
 {
     QHBoxLayout* layout = new QHBoxLayout;
 
-    graphlist = new QListWidget;
-    layout->addWidget(graphlist);
-    connect(graphlist, SIGNAL(currentRowChanged(int)), this, SLOT(activateGraphInternal(int)));
+    graphList = new QTreeWidget;
+    graphList->setColumnCount(1);
+    layout->addWidget(graphList);
+    connect(graphList, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(activateItem(QTreeWidgetItem*)));
 
     stack = new QStackedWidget;
     layout->addWidget(stack);
@@ -41,11 +43,16 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
                     if (oldIndex != -1) {
                         static_cast<DataGraph*>(stack->widget(oldIndex))->clear();
                         static_cast<DataGraph*>(stack->widget(oldIndex))->setTitle(title);
-                        graphlist->item(oldIndex)->setText(QString("%1 - ").arg(index) + title);
+
+                        delete graphList->takeTopLevelItem(oldIndex);
+                        QTreeWidgetItem* item = createGraphEntry(index, title);
+                        graphList->insertTopLevelItem(oldIndex, item);
                     } else {
                         stack->addWidget(new DataGraph(title));
                         graphIndices.append(index);
-                        graphlist->addItem(QString("%1 - ").arg(index) + title);
+
+                        QTreeWidgetItem* item = createGraphEntry(index, title);
+                        graphList->addTopLevelItem(item);
                     }
                     emit newGraph(index);
 
@@ -138,11 +145,43 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
                         const uint8_t* data = reinterpret_cast<const uint8_t*>(encoded.constData());
                         TURAG::Base64::decode(data, 6, reinterpret_cast<uint8_t*>(&time));
 
-                        qDebug() << "vMarker time:" << time;
-
                         QString title(stream.readLine());
 
                         static_cast<DataGraph*>(stack->widget(listindex))->addVerticalMarker(time);
+
+                        QTreeWidgetItem* item = graphList->topLevelItem(listindex);
+                        item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+                        QTreeWidgetItem* markerItem = new QTreeWidgetItem(item->child(1));
+                        markerItem->setText(0, title);
+                    }
+                    break;
+                }
+
+                case TURAG_DEBUG_GRAPH_CHANNELGROUP[0]: {
+                    int listindex = graphIndices.indexOf(index);
+                    if (listindex != -1) {
+                        QTextStream stream(line);
+
+                        int index, count;
+
+                        stream >> index;  // consume the index, which we don't need here
+                        stream >> count;
+
+                        QList<int> indices;
+
+                        for (int i = 0; i < count; ++i) {
+                            stream >> index;
+                            indices.append(index);
+                        }
+                        QString title(stream.readLine());
+
+                        static_cast<DataGraph*>(stack->widget(listindex))->addChannelGroup(indices);
+
+                        QTreeWidgetItem* item = graphList->topLevelItem(listindex);
+                        item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+                        QTreeWidgetItem* groupItem = new QTreeWidgetItem(item->child(0));
+                        groupItem->setText(0, title);
+
                     }
                     break;
                 }
@@ -153,24 +192,70 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
     }
 }
 
+QTreeWidgetItem* TinaGraphFrontend::createGraphEntry(int index, const QString& title) {
+    QTreeWidgetItem* item = new QTreeWidgetItem;
+    item->setText(0, QString("%1 - ").arg(index) + title);
+    item->setChildIndicatorPolicy(QTreeWidgetItem::DontShowIndicator);
 
-void TinaGraphFrontend::activateGraph(int index) {
-    int listindex = graphIndices.indexOf(index);
-    if (listindex != -1) {
-        activateGraphInternal(listindex);
+    QTreeWidgetItem* viewItem = new QTreeWidgetItem(item);
+    viewItem->setText(0, "Ansichten");
+
+    QTreeWidgetItem* viewAllItem = new QTreeWidgetItem(viewItem);
+    viewAllItem->setText(0, "Alle Kanäle anzeigen");
+
+    QTreeWidgetItem* markerItem = new QTreeWidgetItem(item);
+    markerItem->setText(0, "Marker");
+
+    return item;
+}
+
+// maps tina graph indices on the QList-indices
+void TinaGraphFrontend::activateGraph(int tina_index) {
+    int listindex = graphIndices.indexOf(tina_index);
+    if (listindex != -1 && listindex < graphList->topLevelItemCount()) {
+        QTreeWidgetItem* item = graphList->topLevelItem(listindex);
+        graphList->setCurrentItem(item);
+        activateItem(item);
     }
 }
 
-void TinaGraphFrontend::activateGraphInternal(int index) {
-    stack->setCurrentIndex(index);
-    graphlist->setCurrentRow(index);
+
+void TinaGraphFrontend::activateItem(QTreeWidgetItem* item) {
+    if (!item) return;
+
+    int graphIndex = -1;
+    if (!item->parent()) {
+        graphIndex = item->treeWidget()->indexOfTopLevelItem(item);
+    } else {
+        if (item->parent()->parent()) {
+            graphIndex = item->treeWidget()->indexOfTopLevelItem(item->parent()->parent());
+        }
+    }
+    if (graphIndex == -1) {
+        return;
+    }
+
+    stack->setCurrentIndex(graphIndex);
     DataGraph* graph = static_cast<DataGraph*>(stack->currentWidget());
     clearActions();
     if (graph) addActions(graph->getActions());
+
+    if (item->parent() && item->parent()->parent()) {
+        if (item->parent() == item->parent()->parent()->child(0)) {
+            if (item->parent()->indexOfChild(item) == 0) {
+                graph->resetChannelGrouping();
+            } else {
+                graph->applyChannelGrouping(item->parent()->indexOfChild(item) - 1);
+            }
+        } else if (item->parent() == item->parent()->parent()->child(0)) {
+
+        }
+    }
+
 }
 
 void TinaGraphFrontend::onConnected(bool , bool, QIODevice*) {
-    
+
 }
 
 
@@ -185,7 +270,7 @@ void TinaGraphFrontend::clear(void) {
         widget->deleteLater();
     }
     graphIndices.clear();
-    graphlist->clear();
+    graphList->clear();
 }
 
 // needed for the interface
