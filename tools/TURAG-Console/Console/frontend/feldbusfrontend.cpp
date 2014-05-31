@@ -241,7 +241,7 @@ void FeldbusFrontend::onStartInquiry(void) {
         }
         if (dev_info.address == i) {
             QByteArray name_buffer(dev_info.device_info.nameLength + 2, '0');
-            Feldbus::Device* dev = new TURAG::Feldbus::Device("", dev_info.address, (Feldbus::Device::ChecksumType)dev_info.device_info.crcType, 5, 1);
+            Feldbus::Device* dev = new TURAG::Feldbus::Device("", dev_info.address, (Feldbus::Device::ChecksumType)dev_info.device_info.crcType, 5, 30);
             if (dev->receiveDeviceRealName(name_buffer.data())) {
                 dev_info.device_name = name_buffer;
                 deviceList_->addItem(dev_info.toString());
