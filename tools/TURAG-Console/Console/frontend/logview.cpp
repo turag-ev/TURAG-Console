@@ -1,4 +1,5 @@
 #include <tina/debug/print.h>
+#include <tina/debug/graph.h>
 
 #include "logview.h"
 
@@ -144,11 +145,11 @@ bool StreamModel::insertRow(char level, const char *data, std::size_t len, unsig
     // icon
     Icon icon;
     switch (level) {
-    case '-': icon = ICON_INFO;     break;
-    case '#': icon = ICON_WARNING;  break;
-    case '?': icon = ICON_CRITICAL;  break;
-    case '!': icon = ICON_ERROR;    break;
-    default:  icon = ICON_INFO;     break;
+    case TURAG_DEBUG_INFO_PREFIX[0]:        icon = ICON_INFO;     break;
+    case TURAG_DEBUG_WARN_PREFIX[0]:        icon = ICON_WARNING;  break;
+    case TURAG_DEBUG_CRITICAL_PREFIX[0]:    icon = ICON_CRITICAL;  break;
+    case TURAG_DEBUG_ERROR_PREFIX[0]:       icon = ICON_ERROR;    break;
+    default:                                icon = ICON_INFO;     break;
     }
 
     if (level == TURAG_DEBUG_GAMETIME_PREFIX[0]) {
@@ -528,15 +529,16 @@ void LogView::writeLine(QByteArray line) {
         line.remove(0, 2);
 
         switch (level) {
-        case '-':
-        case '!':
-        case '?':
-        case '#':
-        case 'T':
+        case TURAG_DEBUG_ERROR_PREFIX[0]:
+        case TURAG_DEBUG_CRITICAL_PREFIX[0]:
+        case TURAG_DEBUG_WARN_PREFIX[0]:
+        case TURAG_DEBUG_INFO_PREFIX[0]:
+        case TURAG_DEBUG_DEBUG_PREFIX[0]:
+        case TURAG_DEBUG_GAMETIME_PREFIX[0]:
             insertRow(level, line.data(), line.size(), source);
             break;
 
-        case 'D':
+        case TURAG_DEBUG_GRAPH_PREFIX[0]:
             if (source == 'n') {
                 QTextStream stream(line);
                 int index = 0;
@@ -546,7 +548,7 @@ void LogView::writeLine(QByteArray line) {
             }
             break;
 
-        case '>':
+        case TURAG_DEBUG_REPORT_LOG_SOURCE_PREFIX[0]:
             if (std::isprint(source)) {
                 setLogSource(source, QString::fromUtf8(line));
             }
