@@ -65,8 +65,6 @@ Controller::Controller(QWidget *parent) :
 
     // receive all error and infomessages and connection signals from all available backends
     for (BaseBackend* iter : availableBackends) {
-        connect(iter, SIGNAL(errorOccured(QString)), this, SLOT(onErrorOccured(QString)));
-        connect(iter, SIGNAL(infoMessage(QString)), this, SLOT(onInfoMessage(QString)));
         connect(iter,SIGNAL(connected(bool,bool)),this,SLOT(onConnected(bool,bool)), Qt::QueuedConnection);
         connect(iter,SIGNAL(disconnected(bool)),this,SLOT(onDisconnected()), Qt::QueuedConnection);
         connect(iter,SIGNAL(disconnected(bool)),this,SIGNAL(disconnected(bool)), Qt::QueuedConnection);
@@ -90,7 +88,6 @@ Controller::Controller(QWidget *parent) :
 
         tabwidget->addTab(scrollarea, iter->objectName());
         connect(iter,SIGNAL(connectionChanged(QString, bool*,BaseBackend**)),this,SLOT(openConnection(QString, bool*,BaseBackend**)));
-        connect(iter, SIGNAL(errorOccured(QString)), this, SLOT(onErrorOccured(QString)));
     }
     layout->addWidget(tabwidget);
     connect(tabwidget, SIGNAL(currentChanged(int)), this, SLOT(onToolboxChangedCurrent(int)));
@@ -347,14 +344,6 @@ void Controller::onDisconnected() {
             connectionMenu->removeAction(action);
         }
     }
-}
-
-void Controller::onErrorOccured(QString msg) {
-    emit errorOccured(msg);
-}
-
-void Controller::onInfoMessage(QString msg) {
-    emit infoMessage(msg);
 }
 
 void Controller::refresh(void) {

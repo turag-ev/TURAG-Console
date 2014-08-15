@@ -22,6 +22,8 @@
 #include "mainwindow.h"
 #include "controller.h"
 #include <libs/checkactionext.h>
+#include <libs/loggerwidget.h>
+#include <libs/log.h>
 #include "connectionwidgets/connectionwidgetfile.h"
 #include "connectionwidgets/connectionwidgetserial.h"
 
@@ -40,8 +42,10 @@ MainWindow::MainWindow(QWidget *parent) :
     // central class that connects backend with frontend and controls
     // information flow
     controller = new Controller(this);
-    connect(controller, SIGNAL(errorOccured(QString)), this, SLOT(printError(QString)));
-    connect(controller, SIGNAL(infoMessage(QString)), this, SLOT(printMessage(QString)));
+    connect(Log::get(), SIGNAL(fatalMsgAvailable(QString)), this, SLOT(printError(QString)));
+    connect(Log::get(), SIGNAL(criticalMsgAvailable(QString)), this, SLOT(printError(QString)));
+    connect(Log::get(), SIGNAL(warningMsgAvailable(QString)), this, SLOT(printError(QString)));
+    connect(Log::get(), SIGNAL(infoMsgAvailable(QString)), this, SLOT(printMessage(QString)));
     connect(controller, SIGNAL(connected(bool,bool,QIODevice*)), this, SLOT(onConnected(bool)));
     connect(controller, SIGNAL(disconnected(bool)), this, SLOT(onDisconnected(bool)));
 
@@ -152,6 +156,11 @@ MainWindow::MainWindow(QWidget *parent) :
     show_toolbar->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_T));
     connect(show_toolbar, SIGNAL(triggered(bool)), this, SLOT(onShowToolbar(bool)));
 
+    QAction* show_logger = new QAction("Logmeldungen...", this);
+    show_logger->setIcon(QIcon::fromTheme("utilities-log-viewer", QIcon(":/images/utilities-log-viewer.png")));
+    show_logger->setCheckable(true);
+    show_logger->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_L));
+
     frontendOptions = new QActionGroup(this);
     QSignalMapper* frontendMapper = new QSignalMapper(this);
 
@@ -182,6 +191,7 @@ MainWindow::MainWindow(QWidget *parent) :
     view_menu->addAction(show_menubar);
     view_menu->addAction(show_statusbar);
     view_menu->addAction(show_toolbar);
+    view_menu->addAction(show_logger);
     view_menu->addSeparator()->setText("Verfügbare Frontends");
     view_menu->addActions(frontendOptions->actions());
     view_menu->addSeparator();
@@ -196,10 +206,11 @@ MainWindow::MainWindow(QWidget *parent) :
     QMenu* help_menu = menuBar()->addMenu("&Hilfe");
 
 #   ifdef QT_DEBUG
+        QMenu* debug_menu = menuBar()->addMenu("&Debug");
         QAction* objecttree_action = new QAction("Print Objecttree", this);
         objecttree_action->setStatusTip("QT-Objecttree anzeigen");
         connect(objecttree_action, SIGNAL(triggered()), this, SLOT(dumpAllObjectTrees()));
-        help_menu->addAction(objecttree_action);
+        debug_menu->addAction(objecttree_action);
 #   endif
 
 
@@ -256,9 +267,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
     onDisconnected(false);
     connect_action->setEnabled(false);
-    setCentralWidget(controller);
-    readSettings();
 
+    logger = new LoggerWidget;
+    connect(show_logger, SIGNAL(triggered(bool)), logger, SLOT(setVisible(bool)));
+
+    QWidget* central_widget = new QWidget;
+    QHBoxLayout* mainLayout = new QHBoxLayout;
+    mainLayout->addWidget(controller);
+    mainLayout->addWidget(logger);
+    logger->hide();
+    central_widget->setLayout(mainLayout);
+    setCentralWidget(central_widget);
+
+
+
+    readSettings();
     controller->openNewConnection();
 }
 
@@ -486,6 +509,8 @@ void MainWindow::openConnection(QString connection_string) {
 }
 
 int main(int argc, char *argv[]) {
+    Log::captureQtDebugMessages(true);
+
     QApplication a(argc, argv);
 
     QLocale curLocale(QLocale("de_DE"));

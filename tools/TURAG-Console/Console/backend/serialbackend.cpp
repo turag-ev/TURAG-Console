@@ -35,41 +35,41 @@ bool SerialBackend::openConnection(QString connectionString) {
 
     bool success = port->open(QIODevice::ReadWrite);
     if (!success) {
-        emitErrorOccured(QString("Fehler beim Öffnen der seriellen Konsole: %1").arg(port->errorString()));
+        logFilteredErrorMsg(QString("Fehler beim Öffnen der seriellen Konsole: %1").arg(port->errorString()));
         return false;
     }
 
     success = port->setBaudRate(baudrate.toInt());
     if (!success) {
-        emitErrorOccured(QString("Fehler beim Setzen der Baudrate: %1").arg(port->errorString()));
+        logFilteredErrorMsg(QString("Fehler beim Setzen der Baudrate: %1").arg(port->errorString()));
         port->close();
         return false;
     }
 
     success = port->setDataBits(QSerialPort::Data8);
     if (!success) {
-        emitErrorOccured(QString("Fehler beim Setzen der Framelänge: %1").arg(port->errorString()));
+        logFilteredErrorMsg(QString("Fehler beim Setzen der Framelänge: %1").arg(port->errorString()));
         port->close();
         return false;
     }
 
     success = port->setParity(QSerialPort::NoParity);
     if (!success) {
-        emitErrorOccured(QString("Fehler beim Setzen der Parität: %1").arg(port->errorString()));
+        logFilteredErrorMsg(QString("Fehler beim Setzen der Parität: %1").arg(port->errorString()));
         port->close();
         return false;
     }
 
     success = port->setStopBits(QSerialPort::OneStop);
     if (!success) {
-        emitErrorOccured(QString("Fehler beim Setzen der Stopp-Bits: %1").arg(port->errorString()));
+        logFilteredErrorMsg(QString("Fehler beim Setzen der Stopp-Bits: %1").arg(port->errorString()));
         port->close();
         return false;
     }
 
     success = port->setFlowControl(QSerialPort::NoFlowControl);
     if (!success) {
-        emitErrorOccured(QString("Fehler beim Setzen der Flow-Control: %1").arg(port->errorString()));
+        logFilteredErrorMsg(QString("Fehler beim Setzen der Flow-Control: %1").arg(port->errorString()));
         port->close();
         return false;
     }
@@ -120,21 +120,21 @@ void SerialBackend::onError(QSerialPort::SerialPortError error) {
         errormsg = "Break condition detected by the hardware on the input line."; break;
     case QSerialPort::WriteError:
         errormsg = "An I/O error occurred while writing the data.";
-        emitErrorOccured("Fehler: " + errormsg);
+        logFilteredErrorMsg("Fehler: " + errormsg);
         break;
     case QSerialPort::ReadError:
         errormsg = "An I/O error occurred while reading the data.";
-        emitErrorOccured("Fehler: " + errormsg);
+        logFilteredErrorMsg("Fehler: " + errormsg);
         connectionWasLost();
         break;
     case QSerialPort::ResourceError:
         errormsg = "An I/O error occurred when a resource becomes unavailable, e.g. when the device is unexpectedly removed from the system.";
-        emitErrorOccured("Fehler: " + errormsg);
+        logFilteredErrorMsg("Fehler: " + errormsg);
         connectionWasLost();
         break;
     case QSerialPort::UnsupportedOperationError:
         errormsg = "The requested device operation is not supported or prohibited by the running operating system.";
-        emitErrorOccured("Fehler: " + errormsg);
+        logFilteredErrorMsg("Fehler: " + errormsg);
         break;
     case QSerialPort::UnknownError:
         errormsg = "An unidentified error occurred."; break;

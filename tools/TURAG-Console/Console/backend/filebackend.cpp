@@ -30,7 +30,7 @@ bool FileBackend::openConnection(QString connectionString) {
 
     bool success = stream_->open(QIODevice::ReadOnly);
     if (!success) {
-      emitErrorOccured(QString("Fehler beim Öffnen von Datei: %1").arg(stream_->errorString()));
+      logFilteredErrorMsg(QString("Fehler beim Öffnen von Datei: %1").arg(stream_->errorString()));
       return false;
     }
 
@@ -42,7 +42,7 @@ bool FileBackend::openConnection(QString connectionString) {
     emitConnected();
 
     buffer->append(stream_->readAll());
-    emitInfoMessage("Datei gelesen");
+    logFilteredInfoMessage("Datei gelesen");
 
     return true;
 }
@@ -59,7 +59,7 @@ void FileBackend::closeConnection(void) {
 
 void FileBackend::onFileChanged() {
     if (!static_cast<QFile*>(stream_.get())->exists()) {
-        emitErrorOccured("Datei existiert nicht mehr");
+        logFilteredErrorMsg("Datei existiert nicht mehr");
         connectionWasLost();
     } else {
         BaseBackend::openConnection();

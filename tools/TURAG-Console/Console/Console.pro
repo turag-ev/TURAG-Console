@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-VERSION = 2.8
+VERSION = 2.9
 
 CONFIG +=  qwt
 QT     += core gui
@@ -43,152 +43,157 @@ QMAKE_LFLAGS           += -std=gnu++0x
 
 SOURCES +=\
         mainwindow.cpp \
-    libs/elidedbutton.cpp \
-    frontend/basefrontend.cpp \
+    ../../../tina/platform/desktop/thread.cpp \
+    ../../../tina/tina/crc/crc8_icode/crc8_icode.c \
+    ../../../tina/tina/debug/graph.c \
+    ../../../tina/tina/feldbus/dynamixel/dxl_hal.c \
+    ../../../tina/tina/feldbus/dynamixel/dynamixel.c \
+    ../../../tina/tina/utils/base64.c \
+    ../../../tina/tina++/feldbus/dynamixel/dynamixeldevice.cpp \
+    ../../../tina/tina++/feldbus/host/aktor_tina.cpp \
+    ../../../tina/tina++/feldbus/host/aseb_tina.cpp \
+    ../../../tina/tina++/feldbus/host/dcmotor_tina.cpp \
+    ../../../tina/tina++/feldbus/host/device_tina.cpp \
+    ../../../tina/tina++/feldbus/host/farbsensor_tina.cpp \
+    ../../../tina/tina++/feldbus/host/servo_tina.cpp \
     backend/basebackend.cpp \
     backend/filebackend.cpp \
     backend/serialbackend.cpp \
+    backend/tcpbackend.cpp \
     connectionwidgets/connectionwidget.cpp \
     connectionwidgets/connectionwidgetfile.cpp \
     connectionwidgets/connectionwidgetserial.cpp \
-    controller.cpp \
-    frontend/plaintextfrontend.cpp \
-    frontend/logview.cpp \
-    frontend/scfrontend.cpp \
-    frontend/graphutils/datagraph.cpp \
-    frontend/oscilloscope.cpp \
-    frontend/graphutils/colormap.cpp \
-    frontend/util/tinainterface.cpp \
-    ../../../tina/platform/desktop/thread.cpp \
-    tina-platform/rs485.cpp \
-    frontend/feldbusfrontend.cpp \
-    ../../../tina/tina++/feldbus/host/device_tina.cpp \
-    ../../../tina/tina/crc/crc8_icode/crc8_icode.c \
-    tina-platform/debug_printf.cpp \
-    frontend/util/feldbusdevicefactory.cpp \
-    ../../../tina/tina++/feldbus/host/farbsensor_tina.cpp \
-    ../../../tina/tina++/feldbus/host/aktor_tina.cpp \
-    frontend/feldbusviews/feldbusfarbsensorview.cpp \
-    frontend/util/datapointinterface.cpp \
     connectionwidgets/connectionwidgettcp.cpp \
+    controller.cpp \
     debugprintclass.cpp \
-    ../../../tina/tina++/feldbus/dynamixel/dynamixeldevice.cpp \
-    ../../../tina/tina/feldbus/dynamixel/dynamixel.c \
-    ../../../tina/tina/feldbus/dynamixel/dxl_hal.c \
+    frontend/basefrontend.cpp \
+    frontend/feldbusfrontend.cpp \
     frontend/feldbusviews/dynamixelview.cpp \
-    backend/tcpbackend.cpp \
     frontend/feldbusviews/feldbusaktorview.cpp \
-    ../../../tina/tina++/feldbus/host/dcmotor_tina.cpp \
-    ../../../tina/tina++/feldbus/host/servo_tina.cpp \
-    ../../../tina/tina++/feldbus/host/aseb_tina.cpp \
     frontend/feldbusviews/feldbusasebview.cpp \
+    frontend/feldbusviews/feldbusbootloaderview.cpp \
+    frontend/feldbusviews/feldbusfarbsensorview.cpp \
+    frontend/graphutils/canvaspicker.cpp \
+    frontend/graphutils/colormap.cpp \
+    frontend/graphutils/datagraph.cpp \
+    frontend/logview.cpp \
     frontend/mcfrontend.cpp \
-    frontend/tinagraphfrontend.cpp \
-    ../../../tina/tina/utils/base64.c \
-    ../../../tina/tina/debug/graph.c \
-    libs/keyboardenabledcombobox.cpp \
+    frontend/oscilloscope.cpp \
+    frontend/plaintextfrontend.cpp \
+    frontend/scfrontend.cpp \
     frontend/stmcamfrontend.cpp \
     frontend/tinacamerafrontend.cpp \
-    frontend/feldbusviews/feldbusbootloaderview.cpp \
+    frontend/tinagraphfrontend.cpp \
+    frontend/util/datapointinterface.cpp \
+    frontend/util/feldbusdevicefactory.cpp \
+    frontend/util/tinainterface.cpp \
+    libs/elidedbutton.cpp \
+    libs/keyboardenabledcombobox.cpp \
     libs/lineeditext.cpp \
-    frontend/graphutils/canvaspicker.cpp
+    tina-platform/debug_printf.cpp \
+    tina-platform/rs485.cpp \
+    libs/loggerwidget.cpp \
+    libs/log.cpp
 
-HEADERS  += mainwindow.h \
-    libs/elidedbutton.h \
-    frontend/basefrontend.h \
-    backend/basebackend.h \
-    backend/filebackend.h \
-    backend/serialbackend.h \
-    connectionwidgets/connectionwidget.h \
-    connectionwidgets/connectionwidgetfile.h \
-    connectionwidgets/connectionwidgetserial.h \
-    controller.h \
-    frontend/plaintextfrontend.h \
-    frontend/logview.h \
-    frontend/scfrontend.h \
-    frontend/graphutils/datagraph.h \
-    frontend/oscilloscope.h \
-    frontend/graphutils/colormap.h \
-    frontend/util/tinainterface.h \
-    tina-platform/public/tina/rs485.h \
-    frontend/feldbusfrontend.h \
-    frontend/util/feldbusdevicefactory.h \
-    frontend/feldbusviews/feldbusfarbsensorview.h \
-    frontend/util/datapointinterface.h \
-    connectionwidgets/connectionwidgettcp.h \
-    debugprintclass.h \
-    ../../../tina/tina++/feldbus/dynamixel/dynamixeldevice.h \
-    frontend/feldbusviews/dynamixelview.h \
-    ../../Debug-Server/Debug_Server/debugserver_protocol.h \
-    backend/tcpbackend.h \
-    frontend/feldbusviews/feldbusaktorview.h \
-    ../../../tina/tina++/feldbus/host/device.h \
-    ../../../tina/tina++/feldbus/host/aktor.h \
-    ../../../tina/tina++/feldbus/host/aseb.h \
-    ../../../tina/tina++/feldbus/host/servo.h \
-    ../../../tina/tina++/feldbus/host/dcmotor.h \
-    ../../../tina/tina++/feldbus/host/farbsensor.h \
-    frontend/feldbusviews/feldbusasebview.h \
-    ../../../tina/tina++/tina.h \
-    ../../../tina/tina++/math.h \
-    ../../../tina/tina++/debug.h \
-    ../../../tina/tina++/algorithm.h \
-    ../../../tina/tina/tina.h \
-    ../../../tina/tina/math.h \
-    ../../../tina/tina/debug.h \
-    ../../../tina/platform/desktop/public/tina/timetype.h \
-    ../../../tina/platform/desktop/public/tina/time.h \
-    ../../../tina/platform/desktop/public/tina/debugprint.h \
-    ../../../tina/platform/desktop/public/tina/config.h \
-    ../../../tina/tina++/time.h \
-    ../../../tina/tina/helper/types.h \
-    ../../../tina/tina/helper/normalize.h \
-    ../../../tina/tina/helper/macros.h \
-    ../../../tina/tina++/helper/normalize.h \
-    ../../../tina/tina++/helper/macros.h \
-    ../../../tina/platform/desktop/public/tina/thread.h \
-    ../../../tina/platform/desktop/public/tina++/thread.h \
+HEADERS  += \
+    mainwindow.h \
     ../../../tina/platform/desktop/public/tina/can.h \
+    ../../../tina/platform/desktop/public/tina/config.h \
+    ../../../tina/platform/desktop/public/tina/debugprint.h \
+    ../../../tina/platform/desktop/public/tina/thread.h \
+    ../../../tina/platform/desktop/public/tina/time.h \
+    ../../../tina/platform/desktop/public/tina/timetype.h \
     ../../../tina/platform/desktop/public/tina++/can.h \
-    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_stellantriebe.h \
-    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_lokalisierungssensoren.h \
-    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_aseb.h \
-    ../../../tina/tina/feldbus/protocol/turag_feldbus_bus_protokoll.h \
-    ../../../tina/tina++/helper/scoped_lock.h \
-    ../../../tina/tina++/helper/packed.h \
-    ../../../tina/tina++/helper/integer.h \
-    ../../../tina/tina++/helper/init.h \
-    ../../../tina/tina++/helper/construct.h \
-    ../../../tina/tina/feldbus/dynamixel/dynamixel.h \
-    ../../../tina/tina/feldbus/dynamixel/dxl_hal.h \
-    ../../../tina/tina/crc/crc8_icode/crc8_icode.h \
-    ../../../tina/tina++/feldbus/host/sensor.h \
-    ../../../tina/tina++/range/algorithm.h \
-    ../../../tina/tina++/crc/xor.h \
-    ../../../tina/tina++/crc/crc16.h \
-    ../../../tina/tina++/crc/crc8.h \
-    ../../../tina/tina/crc/xor_checksum.h \
+    ../../../tina/platform/desktop/public/tina++/thread.h \
     ../../../tina/tina/bytes.h \
-    frontend/mcfrontend.h \
-    frontend/tinagraphfrontend.h \
-    ../../../tina/tina/utils/base64.h \
-    ../../../tina/tina++/utils/base64.h \
+    ../../../tina/tina/crc/crc8_icode/crc8_icode.h \
+    ../../../tina/tina/crc/xor_checksum.h \
+    ../../../tina/tina/debug.h \
     ../../../tina/tina/debug/defines.h \
     ../../../tina/tina/debug/graph.h \
     ../../../tina/tina/debug/print.h \
-    libs/keyboardenabledcombobox.h \
+    ../../../tina/tina/feldbus/dynamixel/dxl_hal.h \
+    ../../../tina/tina/feldbus/dynamixel/dynamixel.h \
+    ../../../tina/tina/feldbus/protocol/turag_feldbus_bus_protokoll.h \
+    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_aseb.h \
+    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h \
+    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_lokalisierungssensoren.h \
+    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_stellantriebe.h \
+    ../../../tina/tina/helper/macros.h \
+    ../../../tina/tina/helper/normalize.h \
+    ../../../tina/tina/helper/types.h \
+    ../../../tina/tina/math.h \
+    ../../../tina/tina/tina.h \
+    ../../../tina/tina/utils/base64.h \
+    ../../../tina/tina++/algorithm.h \
+    ../../../tina/tina++/crc/crc16.h \
+    ../../../tina/tina++/crc/crc8.h \
+    ../../../tina/tina++/crc/xor.h \
+    ../../../tina/tina++/debug.h \
+    ../../../tina/tina++/feldbus/dynamixel/dynamixeldevice.h \
+    ../../../tina/tina++/feldbus/host/aktor.h \
+    ../../../tina/tina++/feldbus/host/aseb.h \
+    ../../../tina/tina++/feldbus/host/dcmotor.h \
+    ../../../tina/tina++/feldbus/host/device.h \
+    ../../../tina/tina++/feldbus/host/farbsensor.h \
+    ../../../tina/tina++/feldbus/host/sensor.h \
+    ../../../tina/tina++/feldbus/host/servo.h \
+    ../../../tina/tina++/helper/construct.h \
+    ../../../tina/tina++/helper/init.h \
+    ../../../tina/tina++/helper/integer.h \
+    ../../../tina/tina++/helper/macros.h \
+    ../../../tina/tina++/helper/normalize.h \
+    ../../../tina/tina++/helper/packed.h \
+    ../../../tina/tina++/helper/scoped_lock.h \
+    ../../../tina/tina++/math.h \
+    ../../../tina/tina++/range/algorithm.h \
+    ../../../tina/tina++/time.h \
+    ../../../tina/tina++/tina.h \
+    ../../../tina/tina++/utils/base64.h \
+    ../../Debug-Server/Debug_Server/debugserver_protocol.h \
+    backend/basebackend.h \
+    backend/filebackend.h \
+    backend/serialbackend.h \
+    backend/tcpbackend.h \
+    connectionwidgets/connectionwidget.h \
+    connectionwidgets/connectionwidgetfile.h \
+    connectionwidgets/connectionwidgetserial.h \
+    connectionwidgets/connectionwidgettcp.h \
+    controller.h \
+    debugprintclass.h \
+    frontend/basefrontend.h \
+    frontend/feldbusfrontend.h \
+    frontend/feldbusviews/dynamixelview.h \
+    frontend/feldbusviews/feldbusaktorview.h \
+    frontend/feldbusviews/feldbusasebview.h \
+    frontend/feldbusviews/feldbusbootloaderview.h \
+    frontend/feldbusviews/feldbusfarbsensorview.h \
+    frontend/graphutils/canvaspicker.h \
+    frontend/graphutils/colormap.h \
+    frontend/graphutils/datagraph.h \
+    frontend/graphutils/hoverableqwtlegend.h \
+    frontend/graphutils/hoverableqwtlegendlabel.h \
+    frontend/logview.h \
+    frontend/mcfrontend.h \
+    frontend/oscilloscope.h \
+    frontend/plaintextfrontend.h \
+    frontend/scfrontend.h \
     frontend/stmcamfrontend.h \
     frontend/tinacamerafrontend.h \
-    frontend/feldbusviews/feldbusbootloaderview.h \
-    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h \
-    libs/lineeditext.h \
-    libs/checkboxext.h \
+    frontend/tinagraphfrontend.h \
+    frontend/util/datapointinterface.h \
+    frontend/util/feldbusdevicefactory.h \
+    frontend/util/tinainterface.h \
     libs/checkactionext.h \
-    frontend/graphutils/hoverableqwtlegendlabel.h \
-    frontend/graphutils/hoverableqwtlegend.h \
-    frontend/graphutils/canvaspicker.h \
+    libs/checkboxext.h \
+    libs/elidedbutton.h \
+    libs/fastlistwidget.h \
+    libs/keyboardenabledcombobox.h \
+    libs/lineeditext.h \
     libs/splitterext.h \
-    libs/fastlistwidget.h
+    tina-platform/public/tina/rs485.h \
+    libs/loggerwidget.h \
+    libs/log.h
 
 INCLUDEPATH += \
     ../../../tina \

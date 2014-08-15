@@ -41,8 +41,6 @@ signals:
     void dataReady(QByteArray data);
     void connected(bool readOnly, bool isBuffered);
     void disconnected(bool reconnecting);
-    void errorOccured(QString msg);
-    void infoMessage(QString msg);
 
 
 public slots:
@@ -75,10 +73,10 @@ protected slots:
     void emitDataReady(void);
 
     // you should rather use these functions as opposed to directly
-    // emitting the associated signals as this would inhibit the message
+    // printing output messages as this would inhibit the message
     // filtering of the base class
-    void emitErrorOccured(QString msg);
-    void emitInfoMessage(QString msg);
+    void logFilteredErrorMsg(QString msg);
+    void logFilteredInfoMessage(QString msg);
 
     bool saveBufferToFileInternal(QString fileName);
 

@@ -21,5 +21,6 @@
         <file>images/zoom-select.png</file>
         <file>images/zoom-original.png</file>
         <file>images/view-form-table.png</file>
+        <file>images/utilities-log-viewer.png</file>
     </qresource>
 </RCC>

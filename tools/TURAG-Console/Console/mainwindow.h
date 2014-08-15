@@ -16,6 +16,7 @@ class QActionGroup;
 class QFont;
 class QImage;
 class QToolBar;
+class LoggerWidget;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -73,6 +74,8 @@ private:
     QImage* imgLock;
 
     QToolBar* toolbar;
+
+    LoggerWidget* logger;
 
     void writeSettings();
     void readSettings();

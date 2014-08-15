@@ -1,4 +1,5 @@
 #include "basebackend.h"
+#include <libs/log.h>
 #include <QByteArray>
 #include <QIODevice>
 #include <QDebug>
@@ -76,9 +77,9 @@ void BaseBackend::writeData(QByteArray data) {
         int result =  stream_->write(data);
 
         if (result < data.size()) {
-            emit errorOccured("Es wurden weniger Bytes geschrieben als angefordert");
+            Log::warning("Es wurden weniger Bytes geschrieben als angefordert");
         } else if (result == -1) {
-            emit errorOccured(QString("Fehler beim Schreiben: %1").arg(stream_->errorString()));
+            Log::critical(QString("Fehler beim Schreiben: %1").arg(stream_->errorString()));
         }
 
         qDebug() << "writeData:" << data;
@@ -118,7 +119,7 @@ void BaseBackend::emitConnected() {
     buffer->clear();
 
     if (deviceShouldBeConnectedString == connectionString_ && deviceRecoveryActive && recoverDeviceTimer.isActive()) {
-        emit infoMessage("Verbindung erfolgreich wiederaufgebaut");
+        Log::info("Verbindung erfolgreich wiederaufgebaut");
     }
 
     deviceShouldBeConnectedString = connectionString_;
@@ -139,7 +140,7 @@ void BaseBackend::connectionWasLost(void) {
 }
 
 void BaseBackend::onRecoverDevice(void) {
-    emit infoMessage("Versuche wiederzuverbinden...");
+    Log::info("Versuche wiederzuverbinden...");
     openConnection();
 }
 
@@ -153,15 +154,15 @@ void BaseBackend::setDeviceRecovery(bool on) {
     deviceRecoveryActive = on;
 }
 
-void BaseBackend::emitErrorOccured(QString msg) {
+void BaseBackend::logFilteredErrorMsg(QString msg) {
     if (!recoverDeviceTimer.isActive()) {
-        emit errorOccured(msg);
+        Log::critical(msg);
     }
 }
 
-void BaseBackend::emitInfoMessage(QString msg) {
+void BaseBackend::logFilteredInfoMessage(QString msg) {
     if (!recoverDeviceTimer.isActive()) {
-        emit infoMessage(msg);
+        Log::info(msg);
     }
 
 }
@@ -178,21 +179,21 @@ bool BaseBackend::saveBufferToFileInternal(QString fileName) {
     }
 
     if (!savefile.open(QIODevice::WriteOnly)) {
-        emit errorOccured("Saving output failed: couldn't open file.");
+        Log::critical("Saving output failed: couldn't open file.");
         return false;
     }
 
     if (!savefile.isWritable()) {
-        emit errorOccured("Saving output failed: file is not writable.");
+        Log::critical("Saving output failed: file is not writable.");
         return false;
     }
 
     if (savefile.write(*buffer) == -1) {
-        emit errorOccured("Saving output failed: error while writing.");
+        Log::critical("Saving output failed: error while writing.");
         return false;
     }
 
-    emit infoMessage("Ausgabe erfolgreich geschrieben");
+    Log::info("Ausgabe erfolgreich geschrieben");
     return true;
 }
 

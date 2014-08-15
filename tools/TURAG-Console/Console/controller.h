@@ -51,16 +51,12 @@ public slots:
 protected slots:
     void onConnected(bool readOnly, bool isBuffered);
     void onDisconnected();
-    void onErrorOccured(QString msg);
-    void onInfoMessage(QString msg);
     void onToolboxChangedCurrent(int index);
 
 signals:
     void newConnectionDialogStateChanged(bool visible);
     void connected(bool readOnly, bool isBuffered, QIODevice*);
     void disconnected(bool reconnecting);
-    void errorOccured(QString msg);
-    void infoMessage(QString msg);
 
 
 protected:

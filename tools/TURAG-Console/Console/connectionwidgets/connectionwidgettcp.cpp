@@ -4,6 +4,7 @@
 #include <QGroupBox>
 #include <QSplitter>
 #include <libs/fastlistwidget.h>
+#include <libs/log.h>
 
 ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     ConnectionWidget("Letzte Verbindungen", parent),
@@ -193,19 +194,19 @@ void ConnectionWidgetTcp::socketError(QAbstractSocket::SocketError error) {
     switch (error) {
     case QAbstractSocket::ConnectionRefusedError:
         if (socket->isOpen()) socket->close();
-        emit errorOccured("Connection refused");
+        Log::critical("Connection refused");
         break;
     case QAbstractSocket::HostNotFoundError:
         if (socket->isOpen()) socket->close();
-        emit errorOccured("Host not found");
+        Log::critical("Host not found");
         break;
     case QAbstractSocket::RemoteHostClosedError:
         if (socket->isOpen()) socket->close();
-        emit errorOccured("Remote host closed");
+        Log::critical("Remote host closed");
         break;
     case QAbstractSocket::NetworkError:
         if (socket->isOpen()) socket->close();
-        emit errorOccured("Host unreachebale");
+        Log::critical("Host unreachebale");
         break;
     default:
         break;
