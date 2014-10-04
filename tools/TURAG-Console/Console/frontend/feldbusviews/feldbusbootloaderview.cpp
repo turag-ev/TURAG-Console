@@ -8,6 +8,8 @@
 FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Device *dev_, QWidget *parent) :
     QWidget(parent), dev(dev_)
 {
+    QString deviceName;
+
     QVBoxLayout* layout = new QVBoxLayout;
     QHBoxLayout* hlayout = new QHBoxLayout;
     QLabel* label = new QLabel("Gerätetyp");
@@ -27,7 +29,39 @@ FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Device *dev_, QWidg
         TURAG::Feldbus::Response<uint8_t> response;
 
         if (dev->transceive(request, &response)) {
-            text->setText(QString("%1").arg(response.data));
+
+            switch(response.data){
+
+                case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA8:
+                    deviceName = "AtMega8";
+                    break;
+
+                case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA88:
+                    deviceName = "AtMega88";
+                    break;
+
+                case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA48:
+                    deviceName = "AtMega48";
+                    break;
+
+                case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA168:
+                    deviceName = "AtMega168";
+                    break;
+
+                case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA32:
+                    deviceName = "AtMega32";
+                    break;
+
+                case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA644:
+                    deviceName = "AtMega644";
+                    break;
+
+                default:
+                    deviceName = QString("%1").arg(response.data);
+                    break;
+            }
+
+            text->setText(deviceName);
         } else {
             text->setText("ERROR");
         }
