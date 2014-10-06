@@ -4,23 +4,38 @@
 #include <QLineEdit>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QPushButton>
 
 FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Device *dev_, QWidget *parent) :
     QWidget(parent), dev(dev_)
 {
     QString deviceName;
 
+    QWidget *window = new QWidget;
     QVBoxLayout* layout = new QVBoxLayout;
     QHBoxLayout* hlayout = new QHBoxLayout;
-    QLabel* label = new QLabel("Gerätetyp");
-    hlayout->addWidget(label);
+    QHBoxLayout* hlayout2 = new QHBoxLayout;
 
-    QLineEdit* text = new QLineEdit;
-    text->setReadOnly(true);
-    hlayout->addWidget(text);
+    QLabel* DeviceType = new QLabel("Gerätetyp");
+    QLineEdit* textDeviceType = new QLineEdit;
+    //QPushButton *button_leaveBootloader = new QPushButton("Dieses Gerät aus Bootloader aufwecken");
+    QPushButton *button_transferToMC = new QPushButton("Firmware auf Gerät überspielen");
 
+
+    textDeviceType->setReadOnly(true);
+
+    hlayout->addWidget(DeviceType);
+    hlayout->addWidget(textDeviceType);
     layout->addLayout(hlayout);
+
+    hlayout2->addWidget(button_transferToMC);
+    //hlayout2->addWidget(button_leaveBootloader);
+    layout->addLayout(hlayout2);
+
     setLayout(layout);
+
+
+
 
     if (dev) {
         TURAG::Feldbus::Request<uint8_t> request;
@@ -61,9 +76,9 @@ FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Device *dev_, QWidg
                     break;
             }
 
-            text->setText(deviceName);
+            textDeviceType->setText(deviceName);
         } else {
-            text->setText("ERROR");
+            textDeviceType->setText("ERROR");
         }
     }
 }
