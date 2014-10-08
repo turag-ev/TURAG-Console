@@ -54,6 +54,20 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     startInquiry_ = new QPushButton("Geräte suchen");
     layoutTop->addWidget(startInquiry_);
 
+    QHBoxLayout* bootloadertools_layoutTop = new QHBoxLayout;
+    QLabel* fromLabel_Boot = new QLabel("Von:");
+    bootloadertools_layoutTop->addWidget(fromLabel_Boot);
+    bootFromEdit_ = new QLineEdit;
+    bootFromEdit_->setValidator(fromValidator_);
+    bootloadertools_layoutTop->addWidget(bootFromEdit_);
+    QLabel* topLabel_Boot = new QLabel("bis:");
+    bootloadertools_layoutTop->addWidget(topLabel_Boot);
+    bootToEdit_ = new QLineEdit;
+    bootToEdit_->setValidator(toValidator_);
+    bootloadertools_layoutTop->addWidget(bootToEdit_);
+    bootloadertoolsStartInquiry_ = new QPushButton("Geräte suchen");
+    bootloadertools_layoutTop->addWidget(bootloadertoolsStartInquiry_);
+
     dynamixelFromValidator_ = new QIntValidator(0, 252, this);
     dynamixelToValidator_ = new QIntValidator(1, 253, this);
 
@@ -78,13 +92,25 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     deviceInfo_ = new QTextEdit;
     deviceInfo_->setReadOnly(true);
     deviceLayout->addWidget(deviceInfo_);
+
+    QHBoxLayout* testLayout = new QHBoxLayout;
+    QLabel* test_Boot = new QLabel("Test");
+    testLayout->addWidget(test_Boot);
+
+    QVBoxLayout* bootloaderLayout = new QVBoxLayout;
+    bootloaderLayout->addLayout(bootloadertools_layoutTop);
+    bootloaderLayout->addLayout(testLayout);
+
     QWidget* leftDeviceWidget = new QWidget;
     leftDeviceWidget->setLayout(deviceLayout);
+    QWidget* leftBootloaderWidget = new QWidget;
+    leftBootloaderWidget->setLayout(bootloaderLayout);
     busLog_ = new PlainTextFrontend;
 
     QTabWidget* tabwidget = new QTabWidget;
     tabwidget->addTab(leftDeviceWidget, "Geräte");
     tabwidget->addTab(busLog_, "Log");
+    tabwidget->addTab(leftBootloaderWidget, "Bootloadertools");
     connect(&rs485Debug, SIGNAL(debugMsg(QString)), this, SLOT(onRs485DebugMsg(QString)));
 
 
@@ -101,6 +127,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     setLayout(layout);
 
     connect(startInquiry_, SIGNAL(clicked()), this, SLOT(onStartInquiry()));
+    connect(bootloadertoolsStartInquiry_, SIGNAL(clicked()), this, SLOT(onStartBootInquiry()));
     connect(dynamixelStartInquiry_, SIGNAL(clicked()), SLOT(onStartDynamixelInquiry()));
     setEnabled(false);
 
@@ -117,6 +144,8 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     settings.beginGroup(objectName());
     fromEdit_->setText(settings.value("fromAddress", "1").toString());
     toEdit_->setText(settings.value("toAddress", "127").toString());
+    bootFromEdit_->setText(settings.value("bootFromAddress", "1").toString());
+    bootToEdit_->setText(settings.value("bootToAddress", "127").toString());
     dynamixelFromEdit_->setText(settings.value("dynamixelFromAddress", "1").toString());
     dynamixelToEdit_->setText(settings.value("dynamixelToAddress", "253").toString());
 
@@ -135,6 +164,8 @@ FeldbusFrontend::~FeldbusFrontend() {
     settings.beginGroup(objectName());
     settings.setValue("fromAddress", fromEdit_->text());
     settings.setValue("toAddress", toEdit_->text());
+    settings.setValue("bootFromAddress", bootFromEdit_->text());
+    settings.setValue("bootToAddress", bootToEdit_->text());
     settings.setValue("dynamixelFromAddress", dynamixelFromEdit_->text());
     settings.setValue("dynamixelToAddress", dynamixelToEdit_->text());
 }
@@ -169,14 +200,25 @@ void FeldbusFrontend::validateAdressFields() {
     if (!fromEdit_->hasAcceptableInput()) {
         fromEdit_->setText("0");
     }
+    if (!bootFromEdit_->hasAcceptableInput()) {
+        bootFromEdit_->setText("0");
+    }
     if (!toEdit_->hasAcceptableInput()) {
         toEdit_->setText(QString("%1").arg(fromEdit_->text().toInt()+1));
     }
+    if (!bootToEdit_->hasAcceptableInput()) {
+        bootToEdit_->setText(QString("%1").arg(bootFromEdit_->text().toInt()+1));
+    }
     int fromAddress = fromEdit_->text().toInt();
     int toAddress = toEdit_->text().toInt();
+    int bootFromAddress = bootFromEdit_->text().toInt();
+    int bootToAddress = bootToEdit_->text().toInt();
 
     if (fromAddress > toAddress) {
         fromEdit_->setText(QString("%1").arg(toAddress - 1));
+    }
+    if (bootFromAddress > bootToAddress) {
+        bootFromEdit_->setText(QString("%1").arg(bootToAddress - 1));
     }
 }
 
@@ -195,14 +237,20 @@ void FeldbusFrontend::dynamixelValidateAdressFields() {
     }
 }
 
-void FeldbusFrontend::onStartInquiry(void) {
+void FeldbusFrontend::onInquiry(bool boot) {
     startInquiry_->setEnabled(false);
+    bootloadertoolsStartInquiry_->setEnabled(false);
     availabilityChecker_.stop();
 
     validateAdressFields();
 
     int fromAddress = fromEdit_->text().toInt();
     int toAddress = toEdit_->text().toInt();
+
+    if(boot){
+        fromAddress = bootFromEdit_->text().toInt();
+        toAddress = bootToEdit_->text().toInt();
+    }
 
     deviceList_->clearSelection();
     deviceList_->clear();
@@ -214,7 +262,11 @@ void FeldbusFrontend::onStartInquiry(void) {
     dev_info.address = 0;
 
     for (int i = fromAddress; i <= toAddress; i++) {
-        startInquiry_->setText(QString("Geräte suchen: %1 %").arg(i * 100 / (toAddress - fromAddress + 1)));
+        if(boot){
+            bootloadertoolsStartInquiry_->setText(QString("Geräte suchen: %1 %").arg(i * 100 / (toAddress - fromAddress + 1)));
+        }else{
+            startInquiry_->setText(QString("Geräte suchen: %1 %").arg(i * 100 / (toAddress - fromAddress + 1)));
+        }
         for (int j = 0; j < 2; j++) {
             Feldbus::Device::ChecksumType chksum_type = Feldbus::Device::ChecksumType::xor_based;
 
@@ -260,8 +312,18 @@ void FeldbusFrontend::onStartInquiry(void) {
 
     startInquiry_->setEnabled(true);
     startInquiry_->setText("Geräte suchen");
+    bootloadertoolsStartInquiry_->setEnabled(true);
+    bootloadertoolsStartInquiry_->setText("Geräte suchen");
 
     availabilityChecker_.start(250);
+}
+
+void FeldbusFrontend::onStartInquiry(void) {
+    onInquiry(false);
+}
+
+void FeldbusFrontend::onStartBootInquiry(void) {
+    onInquiry(true);
 }
 
 void FeldbusFrontend::onStartDynamixelInquiry(void) {

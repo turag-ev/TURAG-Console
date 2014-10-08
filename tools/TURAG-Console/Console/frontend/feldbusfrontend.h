@@ -33,8 +33,11 @@ protected:
     QTextEdit* deviceInfo_;
     QList<FeldbusDeviceWrapper> devices_;
     QPushButton* startInquiry_;
+    QPushButton* bootloadertoolsStartInquiry_;
     QLineEdit* fromEdit_;
     QLineEdit* toEdit_;
+    QLineEdit* bootFromEdit_;
+    QLineEdit* bootToEdit_;
     QIntValidator* fromValidator_;
     QIntValidator* toValidator_;
 
@@ -51,8 +54,12 @@ protected:
     QTimer availabilityChecker_;
 
 protected slots:
+    void onInquiry(bool boot);
+
     void onStartInquiry(void);
     void onDeviceSelected(int row);
+
+    void onStartBootInquiry(void);
 
     void onStartDynamixelInquiry(void);
     void onRs485DebugMsg(QString msg);
