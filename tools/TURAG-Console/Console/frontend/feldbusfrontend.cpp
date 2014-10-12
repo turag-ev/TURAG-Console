@@ -480,7 +480,7 @@ void FeldbusFrontend::onCheckDeviceAvailability(void) {
     }
 }
 
-/*
+
 void FeldbusFrontend::requestStartBootBroad(void){
 
     TURAG::Feldbus::Broadcast<uint8_t> request;
@@ -490,7 +490,7 @@ void FeldbusFrontend::requestStartBootBroad(void){
 
     dev->transceive(request);
 }
-*/
+
 
 void FeldbusFrontend::onStartBoot(void){
     // Counter berechnen
