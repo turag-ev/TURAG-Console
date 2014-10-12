@@ -128,8 +128,6 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     splitter->setStretchFactor(1,2);
     setLayout(layout);
 
-    sendBroadcastTimer_ = new QTimer(this);
-
     connect(startInquiry_, SIGNAL(clicked()), this, SLOT(onStartInquiry()));
     connect(bootloadertoolsStartInquiry_, SIGNAL(clicked()), this, SLOT(onStartBootInquiry()));
     connect(dynamixelStartInquiry_, SIGNAL(clicked()), SLOT(onStartDynamixelInquiry()));
@@ -137,7 +135,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     setEnabled(false);
 
     connect(&availabilityChecker_, SIGNAL(timeout()), this, SLOT(onCheckDeviceAvailability()));
-    connect(sendBroadcastTimer_, SIGNAL(timeout()), this, SLOT(requestStartBootBroad()));
+    connect(&sendBroadcastTimer_, SIGNAL(timeout()), this, SLOT(requestStartBootBroad()));
 
 #ifdef Q_OS_WIN32
     // windows is a bit slower :D
@@ -494,12 +492,12 @@ void FeldbusFrontend::requestStartBootBroad(void){
 
     dev->transceive(request);
 
-    int percent = (sendBroadcastsBoot / requiredBroadcastsBoot);
+    //int percent = (sendBroadcastsBoot / requiredBroadcastsBoot);
 
     startBootloader_->setText(QString("Gesendet: %1 ").arg(sendBroadcastsBoot));
 
     if(sendBroadcastsBoot >= requiredBroadcastsBoot){
-        sendBroadcastTimer_->stop();
+        sendBroadcastTimer_.stop();
         startBootloader_->setEnabled(true);
         startBootloader_->setText(QString("Bootloader erneut starten"));
     }
@@ -516,9 +514,9 @@ void FeldbusFrontend::onStartBoot(void){
 
     sendBroadcastsBoot = 0;
     startBootloader_->setEnabled(false);
-    sendBroadcastTimer_->start(10);
+    sendBroadcastTimer_.start(10);
 
-    if(sendBroadcastTimer_->isActive()){
+    if(sendBroadcastTimer_.isActive()){
         startBootloader_->setText(QString("Broadcast-Timer gestartet"));
     }
 

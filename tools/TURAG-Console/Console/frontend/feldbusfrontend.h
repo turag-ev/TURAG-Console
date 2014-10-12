@@ -54,7 +54,7 @@ protected:
     PlainTextFrontend* busLog_;
 
     QTimer availabilityChecker_;
-    QTimer *sendBroadcastTimer_;
+    QTimer sendBroadcastTimer_;
 
 protected slots:
     void onInquiry(bool boot);
