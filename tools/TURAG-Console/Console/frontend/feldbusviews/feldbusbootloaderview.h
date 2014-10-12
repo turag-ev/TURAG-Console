@@ -17,6 +17,7 @@ public slots:
 private:
     TURAG::Feldbus::Device* dev;
 
+    QString deviceName;
 };
 
 #endif // FELDBUSBOOTLOADERVIEW_H

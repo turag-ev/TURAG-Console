@@ -6,7 +6,9 @@
 #include <QList>
 #include "util/feldbusdevicefactory.h"
 #include <tina++/feldbus/dynamixel/dynamixeldevice.h>
+#include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
 #include <QTimer>
+#include <QThread>
 
 
 
@@ -34,6 +36,7 @@ protected:
     QList<FeldbusDeviceWrapper> devices_;
     QPushButton* startInquiry_;
     QPushButton* bootloadertoolsStartInquiry_;
+    QPushButton* startBootloader_;
     QLineEdit* fromEdit_;
     QLineEdit* toEdit_;
     QLineEdit* bootFromEdit_;
@@ -66,6 +69,9 @@ protected slots:
 
     void onCheckDeviceAvailability(void);
 
+    void onStartBoot(void);
+
+
 public:
     FeldbusFrontend(QWidget *parent = 0);
     ~FeldbusFrontend();
@@ -79,9 +85,9 @@ public slots:
 private:
     void validateAdressFields();
     void dynamixelValidateAdressFields();
+    void requestStartBootBroad(void);
+    TURAG::Feldbus::Device* dev;
 
 };
-
-
 
 #endif // FELDBUSFRONTEND_H

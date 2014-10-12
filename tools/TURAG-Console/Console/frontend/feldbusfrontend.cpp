@@ -17,6 +17,7 @@
 #include <tina++/feldbus/host/dcmotor.h>
 #include <tina++/feldbus/host/servo.h>
 #include <tina++/feldbus/dynamixel/dynamixeldevice.h>
+#include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
 #include "feldbusviews/feldbusfarbsensorview.h"
 #include "feldbusviews/dynamixelview.h"
 #include "feldbusviews/feldbusaktorview.h"
@@ -24,7 +25,6 @@
 #include "feldbusviews/feldbusbootloaderview.h"
 #include <debugprintclass.h>
 #include "plaintextfrontend.h"
-
 
 using namespace TURAG;
 
@@ -95,6 +95,8 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 
     QHBoxLayout* testLayout = new QHBoxLayout;
     QLabel* test_Boot = new QLabel("Test");
+    startBootloader_ = new QPushButton("Bootloader starten");
+    testLayout->addWidget(startBootloader_);
     testLayout->addWidget(test_Boot);
 
     QVBoxLayout* bootloaderLayout = new QVBoxLayout;
@@ -129,6 +131,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     connect(startInquiry_, SIGNAL(clicked()), this, SLOT(onStartInquiry()));
     connect(bootloadertoolsStartInquiry_, SIGNAL(clicked()), this, SLOT(onStartBootInquiry()));
     connect(dynamixelStartInquiry_, SIGNAL(clicked()), SLOT(onStartDynamixelInquiry()));
+    connect(startBootloader_, SIGNAL(clicked()), this, SLOT(onStartBoot()));
     setEnabled(false);
 
     connect(&availabilityChecker_, SIGNAL(timeout()), this, SLOT(onCheckDeviceAvailability()));
@@ -475,4 +478,32 @@ void FeldbusFrontend::onCheckDeviceAvailability(void) {
         }
         ++i;
     }
+}
+
+/*
+void FeldbusFrontend::requestStartBootBroad(void){
+
+    TURAG::Feldbus::Broadcast<uint8_t> request;
+    request.address = 0x00;
+    request.id = TURAG_FELDBUS_DEVICE_PROTOCOL_BOOTLOADER;
+    request.data = TURAG_FELDBUS_BOOTLOADER_COMMAND_ENTER_BOOTLOADER;
+
+    dev->transceive(request);
+}
+*/
+
+void FeldbusFrontend::onStartBoot(void){
+    // Counter berechnen
+    int timer = 10 * 50; //startup * 50
+
+    startBootloader_->setEnabled(false);
+
+    for(int i = 1; i <= timer; i++){
+        //requestStartBootBroad();
+
+        startBootloader_->setText(QString("Time: %1").arg(i));
+
+    }
+
+    startBootloader_->setEnabled(true);
 }

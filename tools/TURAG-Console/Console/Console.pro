@@ -93,7 +93,8 @@ SOURCES +=\
     tina-platform/debug_printf.cpp \
     tina-platform/rs485.cpp \
     libs/loggerwidget.cpp \
-    libs/log.cpp
+    libs/log.cpp \
+    frontend/hex2bin/hex2bin.c
 
 HEADERS  += \
     mainwindow.h \
@@ -193,7 +194,8 @@ HEADERS  += \
     libs/splitterext.h \
     tina-platform/public/tina/rs485.h \
     libs/loggerwidget.h \
-    libs/log.h
+    libs/log.h \
+    frontend/hex2bin/hex2bin.h
 
 INCLUDEPATH += \
     ../../../tina \

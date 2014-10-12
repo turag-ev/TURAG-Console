@@ -9,32 +9,33 @@
 FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Device *dev_, QWidget *parent) :
     QWidget(parent), dev(dev_)
 {
-    QString deviceName;
 
-    QWidget *window = new QWidget;
+    //QWidget *window = new QWidget;
     QVBoxLayout* layout = new QVBoxLayout;
     QHBoxLayout* hlayout = new QHBoxLayout;
     QHBoxLayout* hlayout2 = new QHBoxLayout;
 
-    QLabel* DeviceType = new QLabel("Gerätetyp");
+    QLabel* labelDeviceType = new QLabel("Gerätetyp");
+    QLabel* labelFilePath = new QLabel("Firmwaredatei");
     QLineEdit* textDeviceType = new QLineEdit;
-    //QPushButton *button_leaveBootloader = new QPushButton("Dieses Gerät aus Bootloader aufwecken");
+    QLineEdit* textFilePath = new QLineEdit;
     QPushButton *button_transferToMC = new QPushButton("Firmware auf Gerät überspielen");
 
 
     textDeviceType->setReadOnly(true);
 
-    hlayout->addWidget(DeviceType);
+    hlayout->addWidget(labelDeviceType);
     hlayout->addWidget(textDeviceType);
     layout->addLayout(hlayout);
 
+    hlayout2->addWidget(labelFilePath);
+    hlayout2->addWidget(textFilePath);
+    layout->addLayout(hlayout2);
+
     hlayout2->addWidget(button_transferToMC);
-    //hlayout2->addWidget(button_leaveBootloader);
     layout->addLayout(hlayout2);
 
     setLayout(layout);
-
-
 
 
     if (dev) {
@@ -81,4 +82,6 @@ FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Device *dev_, QWidg
             textDeviceType->setText("ERROR");
         }
     }
+
+    //void FeldbusBootloaderView::
 }
