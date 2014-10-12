@@ -128,6 +128,8 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     splitter->setStretchFactor(1,2);
     setLayout(layout);
 
+    sendBroadcastTimer_ = new QTimer(this);
+
     connect(startInquiry_, SIGNAL(clicked()), this, SLOT(onStartInquiry()));
     connect(bootloadertoolsStartInquiry_, SIGNAL(clicked()), this, SLOT(onStartBootInquiry()));
     connect(dynamixelStartInquiry_, SIGNAL(clicked()), SLOT(onStartDynamixelInquiry()));
@@ -135,6 +137,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     setEnabled(false);
 
     connect(&availabilityChecker_, SIGNAL(timeout()), this, SLOT(onCheckDeviceAvailability()));
+    connect(sendBroadcastTimer_, SIGNAL(timeout()), this, SLOT(requestStartBootBroad()));
 
 #ifdef Q_OS_WIN32
     // windows is a bit slower :D
@@ -484,26 +487,39 @@ void FeldbusFrontend::onCheckDeviceAvailability(void) {
 void FeldbusFrontend::requestStartBootBroad(void){
 
     TURAG::Feldbus::Broadcast<uint8_t> request;
-    request.address = 0x00;
+    dev = new Device("test",0x00);
+
     request.id = TURAG_FELDBUS_DEVICE_PROTOCOL_BOOTLOADER;
     request.data = TURAG_FELDBUS_BOOTLOADER_COMMAND_ENTER_BOOTLOADER;
 
     dev->transceive(request);
+
+    int percent = (sendBroadcastsBoot / requiredBroadcastsBoot);
+
+    startBootloader_->setText(QString("Gesendet: %1 ").arg(sendBroadcastsBoot));
+
+    if(sendBroadcastsBoot >= requiredBroadcastsBoot){
+        sendBroadcastTimer_->stop();
+        startBootloader_->setEnabled(true);
+        startBootloader_->setText(QString("Bootloader erneut starten"));
+    }
+
+    sendBroadcastsBoot++;
+
 }
 
 
 void FeldbusFrontend::onStartBoot(void){
-    // Counter berechnen
-    int timer = 10 * 50; //startup * 50
 
+    // calculate required Broadcasts
+    requiredBroadcastsBoot = 5 * 100;
+
+    sendBroadcastsBoot = 0;
     startBootloader_->setEnabled(false);
+    sendBroadcastTimer_->start(10);
 
-    for(int i = 1; i <= timer; i++){
-        //requestStartBootBroad();
-
-        startBootloader_->setText(QString("Time: %1").arg(i));
-
+    if(sendBroadcastTimer_->isActive()){
+        startBootloader_->setText(QString("Broadcast-Timer gestartet"));
     }
 
-    startBootloader_->setEnabled(true);
 }

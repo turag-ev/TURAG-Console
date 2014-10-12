@@ -8,7 +8,6 @@
 #include <tina++/feldbus/dynamixel/dynamixeldevice.h>
 #include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
 #include <QTimer>
-#include <QThread>
 
 
 
@@ -55,6 +54,7 @@ protected:
     PlainTextFrontend* busLog_;
 
     QTimer availabilityChecker_;
+    QTimer *sendBroadcastTimer_;
 
 protected slots:
     void onInquiry(bool boot);
@@ -70,7 +70,7 @@ protected slots:
     void onCheckDeviceAvailability(void);
 
     void onStartBoot(void);
-
+    void requestStartBootBroad(void);
 
 public:
     FeldbusFrontend(QWidget *parent = 0);
@@ -85,7 +85,9 @@ public slots:
 private:
     void validateAdressFields();
     void dynamixelValidateAdressFields();
-    void requestStartBootBroad(void);
+    int  sendBroadcastsBoot;
+    int  requiredBroadcastsBoot;
+
     TURAG::Feldbus::Device* dev;
 
 };
