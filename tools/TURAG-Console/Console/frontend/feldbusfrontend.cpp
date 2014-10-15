@@ -93,15 +93,34 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     deviceInfo_->setReadOnly(true);
     deviceLayout->addWidget(deviceInfo_);
 
-    QHBoxLayout* testLayout = new QHBoxLayout;
-    QLabel* test_Boot = new QLabel("Test");
+    QHBoxLayout* bootloadertools_knowWhatImDoing = new QHBoxLayout;
+    QLabel* iKnowLabel_Boot = new QLabel("Ich weiß, was ich mache.");
+    iKnowWhatImDoingBoot_ = new QCheckBox;
+    bootloadertools_knowWhatImDoing->addWidget(iKnowWhatImDoingBoot_);
+    bootloadertools_knowWhatImDoing->addWidget(iKnowLabel_Boot);
+    bootloadertools_knowWhatImDoing->addStretch();
+
+    QHBoxLayout* bootloadertools_setupLayout = new QHBoxLayout;
+    QLabel* secondsLabel_Boot = new QLabel("Startdauer:");
+    QLabel* sLabel_Boot = new QLabel("Sekunden");
+    broadcastTime_ = new QLineEdit;
+    broadcastTime_->setEnabled(false);
+    bootloadertools_setupLayout->addWidget(secondsLabel_Boot);
+    bootloadertools_setupLayout->addWidget(broadcastTime_);
+    bootloadertools_setupLayout->addWidget(sLabel_Boot);
+
+    QHBoxLayout* bootloadertools_startLayout = new QHBoxLayout;
     startBootloader_ = new QPushButton("Bootloader starten");
-    testLayout->addWidget(startBootloader_);
-    testLayout->addWidget(test_Boot);
+    bootloadertools_startLayout->addWidget(startBootloader_);
+    startBootloader_->setEnabled(false);
 
     QVBoxLayout* bootloaderLayout = new QVBoxLayout;
     bootloaderLayout->addLayout(bootloadertools_layoutTop);
-    bootloaderLayout->addLayout(testLayout);
+    bootloaderLayout->addSpacing(40);
+    bootloaderLayout->addLayout(bootloadertools_knowWhatImDoing);
+    bootloaderLayout->addLayout(bootloadertools_setupLayout);
+    bootloaderLayout->addLayout(bootloadertools_startLayout);
+    bootloaderLayout->addStretch();
 
     QWidget* leftDeviceWidget = new QWidget;
     leftDeviceWidget->setLayout(deviceLayout);
@@ -132,6 +151,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     connect(bootloadertoolsStartInquiry_, SIGNAL(clicked()), this, SLOT(onStartBootInquiry()));
     connect(dynamixelStartInquiry_, SIGNAL(clicked()), SLOT(onStartDynamixelInquiry()));
     connect(startBootloader_, SIGNAL(clicked()), this, SLOT(onStartBoot()));
+    connect(iKnowWhatImDoingBoot_, SIGNAL(toggled(bool)), this, SLOT(onIKnowWhatImDoingBoot()));
     setEnabled(false);
 
     connect(&availabilityChecker_, SIGNAL(timeout()), this, SLOT(onCheckDeviceAvailability()));
@@ -152,6 +172,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     bootToEdit_->setText(settings.value("bootToAddress", "127").toString());
     dynamixelFromEdit_->setText(settings.value("dynamixelFromAddress", "1").toString());
     dynamixelToEdit_->setText(settings.value("dynamixelToAddress", "253").toString());
+    broadcastTime_->setText(settings.value("broadcastTime", "5").toString());
 
 //#warning please remove me
 //    feldbusWidget->hide();
@@ -172,6 +193,7 @@ FeldbusFrontend::~FeldbusFrontend() {
     settings.setValue("bootToAddress", bootToEdit_->text());
     settings.setValue("dynamixelFromAddress", dynamixelFromEdit_->text());
     settings.setValue("dynamixelToAddress", dynamixelToEdit_->text());
+    settings.setValue("broadcastTime", broadcastTime_->text());
 }
 
 void FeldbusFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
@@ -492,9 +514,9 @@ void FeldbusFrontend::requestStartBootBroad(void){
 
     dev->transceive(request);
 
-    //int percent = (sendBroadcastsBoot / requiredBroadcastsBoot);
+    int percent = 100 * sendBroadcastsBoot / requiredBroadcastsBoot;
 
-    startBootloader_->setText(QString("Gesendet: %1 ").arg(sendBroadcastsBoot));
+    startBootloader_->setText(QString("Gesendet: %1 % ").arg(percent));
 
     if(sendBroadcastsBoot >= requiredBroadcastsBoot){
         sendBroadcastTimer_.stop();
@@ -509,8 +531,10 @@ void FeldbusFrontend::requestStartBootBroad(void){
 
 void FeldbusFrontend::onStartBoot(void){
 
+    int seconds = broadcastTime_->text().toInt();
+
     // calculate required Broadcasts
-    requiredBroadcastsBoot = 5 * 100;
+    requiredBroadcastsBoot = seconds * 100;
 
     sendBroadcastsBoot = 0;
     startBootloader_->setEnabled(false);
@@ -520,4 +544,16 @@ void FeldbusFrontend::onStartBoot(void){
         startBootloader_->setText(QString("Broadcast-Timer gestartet"));
     }
 
+}
+
+void FeldbusFrontend::onIKnowWhatImDoingBoot(void){
+
+    if(iKnowWhatImDoingBoot_->isChecked()){
+        startBootloader_->setEnabled(true);
+        broadcastTime_->setEnabled(true);
+    }
+    else{
+        startBootloader_->setEnabled(false);
+        broadcastTime_->setEnabled(false);
+    }
 }

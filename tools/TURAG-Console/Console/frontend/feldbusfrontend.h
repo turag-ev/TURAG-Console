@@ -8,6 +8,7 @@
 #include <tina++/feldbus/dynamixel/dynamixeldevice.h>
 #include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
 #include <QTimer>
+#include <QCheckBox>
 
 
 
@@ -36,10 +37,12 @@ protected:
     QPushButton* startInquiry_;
     QPushButton* bootloadertoolsStartInquiry_;
     QPushButton* startBootloader_;
+    QCheckBox* iKnowWhatImDoingBoot_;
     QLineEdit* fromEdit_;
     QLineEdit* toEdit_;
     QLineEdit* bootFromEdit_;
     QLineEdit* bootToEdit_;
+    QLineEdit* broadcastTime_;
     QIntValidator* fromValidator_;
     QIntValidator* toValidator_;
 
@@ -70,6 +73,7 @@ protected slots:
     void onCheckDeviceAvailability(void);
 
     void onStartBoot(void);
+    void onIKnowWhatImDoingBoot(void);
     void requestStartBootBroad(void);
 
 public:

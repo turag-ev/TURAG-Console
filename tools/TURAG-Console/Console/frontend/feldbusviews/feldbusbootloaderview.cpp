@@ -10,31 +10,35 @@ FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Device *dev_, QWidg
     QWidget(parent), dev(dev_)
 {
 
-    //QWidget *window = new QWidget;
-    QVBoxLayout* layout = new QVBoxLayout;
-    QHBoxLayout* hlayout = new QHBoxLayout;
-    QHBoxLayout* hlayout2 = new QHBoxLayout;
-
-    QLabel* labelDeviceType = new QLabel("Gerätetyp");
-    QLabel* labelFilePath = new QLabel("Firmwaredatei");
+    QHBoxLayout* deviceType = new QHBoxLayout;
+    QLabel* labelDeviceType = new QLabel("Gerätetyp:");
     QLineEdit* textDeviceType = new QLineEdit;
-    QLineEdit* textFilePath = new QLineEdit;
-    QPushButton *button_transferToMC = new QPushButton("Firmware auf Gerät überspielen");
-
-
     textDeviceType->setReadOnly(true);
+    deviceType->addWidget(labelDeviceType);
+    deviceType->addWidget(textDeviceType);
 
-    hlayout->addWidget(labelDeviceType);
-    hlayout->addWidget(textDeviceType);
-    layout->addLayout(hlayout);
+    QHBoxLayout* firmwareOptions = new QHBoxLayout;
+    QLabel* labelFilePath = new QLabel("Firmwaredatei:");
 
-    hlayout2->addWidget(labelFilePath);
-    hlayout2->addWidget(textFilePath);
-    layout->addLayout(hlayout2);
+    QLineEdit* textFilePath = new QLineEdit;
+    QPushButton *button_getFilePath = new QPushButton("Dateipfad öffnen");
+    firmwareOptions->addWidget(labelFilePath);
+    firmwareOptions->addWidget(textFilePath);
+    firmwareOptions->addWidget(button_getFilePath);
 
-    hlayout2->addWidget(button_transferToMC);
-    layout->addLayout(hlayout2);
+    QHBoxLayout* firmwareUpload = new QHBoxLayout;
+    QPushButton *button_transferToMC = new QPushButton("Firmware auf Gerät überspielen");
+    firmwareUpload->addStretch();
+    firmwareUpload->addWidget(button_transferToMC);
+    firmwareUpload->addStretch();
 
+    QVBoxLayout* layout = new QVBoxLayout;
+    layout->addStretch();
+    layout->addLayout(deviceType);
+    layout->addLayout(firmwareOptions);
+    layout->addSpacing(40);
+    layout->addLayout(firmwareUpload);
+    layout->addStretch();
     setLayout(layout);
 
 
