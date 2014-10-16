@@ -7,6 +7,8 @@
 #include <QPushButton>
 #include <tina++/feldbus/host/device.h>
 
+#include "../hex2bin/hex2bin.h"
+
 class FeldbusBootloaderView : public QWidget
 {
     Q_OBJECT
@@ -17,6 +19,7 @@ protected:
     QLabel *labelFilePath;
     QLineEdit *textFilePath;
     QPushButton *buttonGetFilePath_ ;
+    char *input_filename;
 
 signals:
 
@@ -27,7 +30,7 @@ protected slots:
 
 private:
     TURAG::Feldbus::Device* dev;
-
+    void onCreateBinary();
     QString deviceName;
 };
 

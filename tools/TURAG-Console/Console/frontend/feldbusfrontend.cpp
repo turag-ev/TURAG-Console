@@ -94,7 +94,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     deviceLayout->addWidget(deviceInfo_);
 
     QHBoxLayout* bootloadertools_knowWhatImDoing = new QHBoxLayout;
-    QLabel* iKnowLabel_Boot = new QLabel("Ich weiß, was ich mache.");
+    QLabel* iKnowLabel_Boot = new QLabel("Ich weiß, was ich hier mache.");
     iKnowWhatImDoingBoot_ = new QCheckBox;
     bootloadertools_knowWhatImDoing->addWidget(iKnowWhatImDoingBoot_);
     bootloadertools_knowWhatImDoing->addWidget(iKnowLabel_Boot);
