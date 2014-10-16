@@ -95,22 +95,22 @@ FeldbusDeviceWrapper FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfo
         break;
 
     case TURAG_FELDBUS_DEVICE_PROTOCOL_BOOTLOADER:
-        protocolIdString = "TinA Bootloader";
+        protocolIdString = "TinA BMaX-Bootloader";
 
         switch (device_info.device_info.deviceTypeId) {
         case TURAG_FELDBUS_BOOTLOADER_GENERIC:
             device = new Feldbus::Device(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
-            deviceTypeString = "generic bootloader";
+            deviceTypeString = "generic - BMaX";
             break;
 
         case TURAG_FELDBUS_BOOTLOADER_ATMEGA:
             device = new Feldbus::Device(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
-            deviceTypeString = "AtMega Bootloader";
+            deviceTypeString = "AtMega - BMaX";
             break;
 
         case TURAG_FELDBUS_BOOTLOADER_XMEGA:
             device = new Feldbus::Device(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
-            deviceTypeString = "XMEGA Bootloader";
+            deviceTypeString = "XMEGA - BMaX";
             break;
 
         default:

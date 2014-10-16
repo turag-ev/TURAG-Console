@@ -96,10 +96,21 @@ void FeldbusBootloaderView::onOpenFile() {
     dialog.setNameFilter(tr("Intel Hex-file (*.hex)"));
     if (dialog.exec() == QDialog::Accepted) {
       QStringList files = dialog.selectedFiles();
-
       textFilePath->setText(QString("%1").arg(files[0]));
-      //textFilePath->setText(files);
 
+      input_filename = (char*)textFilePath->text().toStdString().c_str();
+
+      //Test!!!
+      //onCreateBinary();
     }
+}
 
+void FeldbusBootloaderView::onCreateBinary(){
+    // modified Arguments for hex2bin_convert; was to lazy to modify hex2bin_convert itself
+    int argc_CB = 2;
+    char *argv_CB[30];
+
+    argv_CB[1] = input_filename;
+
+    hex2bin_convert(argc_CB,argv_CB);
 }
