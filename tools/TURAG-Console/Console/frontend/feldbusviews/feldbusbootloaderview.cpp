@@ -1,10 +1,9 @@
 #include "feldbusbootloaderview.h"
 #include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
 #include <QLabel>
-#include <QLineEdit>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QPushButton>
+#include <QFileDialog>
 
 FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Device *dev_, QWidget *parent) :
     QWidget(parent), dev(dev_)
@@ -18,13 +17,12 @@ FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Device *dev_, QWidg
     deviceType->addWidget(textDeviceType);
 
     QHBoxLayout* firmwareOptions = new QHBoxLayout;
-    QLabel* labelFilePath = new QLabel("Firmwaredatei:");
-
-    QLineEdit* textFilePath = new QLineEdit;
-    QPushButton *button_getFilePath = new QPushButton("Dateipfad öffnen");
+    labelFilePath = new QLabel("Firmwaredatei:");
+    textFilePath = new QLineEdit;
+    buttonGetFilePath_ = new QPushButton("Dateipfad öffnen");
     firmwareOptions->addWidget(labelFilePath);
     firmwareOptions->addWidget(textFilePath);
-    firmwareOptions->addWidget(button_getFilePath);
+    firmwareOptions->addWidget(buttonGetFilePath_);
 
     QHBoxLayout* firmwareUpload = new QHBoxLayout;
     QPushButton *button_transferToMC = new QPushButton("Firmware auf Gerät überspielen");
@@ -40,6 +38,9 @@ FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Device *dev_, QWidg
     layout->addLayout(firmwareUpload);
     layout->addStretch();
     setLayout(layout);
+
+
+    connect(buttonGetFilePath_, SIGNAL(clicked()), this, SLOT(onOpenFile()));
 
 
     if (dev) {
@@ -87,5 +88,18 @@ FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Device *dev_, QWidg
         }
     }
 
-    //void FeldbusBootloaderView::
+}
+
+void FeldbusBootloaderView::onOpenFile() {
+    QFileDialog dialog(this, "Firmwaredatei auswählen", "");
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setNameFilter(tr("Intel Hex-file (*.hex)"));
+    if (dialog.exec() == QDialog::Accepted) {
+      QStringList files = dialog.selectedFiles();
+
+      textFilePath->setText(QString("%1").arg(files[0]));
+      //textFilePath->setText(files);
+
+    }
+
 }
