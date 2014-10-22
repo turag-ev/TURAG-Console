@@ -10,7 +10,7 @@
 
 #include "../hex2bin/hex2bin.h"
 
-class FeldbusBootloaderView : public QWidget, public TURAG::Feldbus::Device
+class FeldbusBootloaderView : public QWidget//, public TURAG::Feldbus::Device
 {
     Q_OBJECT
 public:
