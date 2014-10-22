@@ -196,7 +196,7 @@ void FeldbusBootloaderView::onTransferFirmware(void){
             for(int i = 0; i < page_size; i++){
                 buffer_Command[i+3] = memblock[i];
             }
-
+/**
             if (dev->transceive(buffer_Command, page_size + 4, output, output_length)) {
 
                 switch(response.data){
@@ -208,7 +208,7 @@ void FeldbusBootloaderView::onTransferFirmware(void){
                         break;
                 }
             }
-
+**/
             memblock += page_size;
         }
 
