@@ -25,7 +25,7 @@ TARGET = turag-console
 TEMPLATE = app
 
 # Schneller als die Standardimplementierung wenn Strings mit + verbunden werden
-DEFINES *= QT_USE_QSTRINGBUILDER
+DEFINES *= QT_USE_QSTRINGBUILDER TURAG_NO_PROJECT_CONFIG
 
 # causes segfaults in qwt ?!?!?!?!
 #DEFINES += QT_COORD_TYPE=float
@@ -99,7 +99,6 @@ SOURCES +=\
 HEADERS  += \
     mainwindow.h \
     ../../../tina/platform/desktop/public/tina/can.h \
-    ../../../tina/platform/desktop/public/tina/config.h \
     ../../../tina/platform/desktop/public/tina/debugprint.h \
     ../../../tina/platform/desktop/public/tina/thread.h \
     ../../../tina/platform/desktop/public/tina/time.h \
