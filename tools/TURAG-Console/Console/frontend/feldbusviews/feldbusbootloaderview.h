@@ -8,7 +8,7 @@
 #include <fstream>
 #include <tina++/feldbus/host/device.h>
 
-#include "../hex2bin/hex2bin.h"
+#include "../bootloader/hex2bin.h"
 
 class FeldbusBootloaderView : public QWidget//, public TURAG::Feldbus::Device
 {
