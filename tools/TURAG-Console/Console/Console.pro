@@ -25,7 +25,10 @@ TARGET = turag-console
 TEMPLATE = app
 
 # Schneller als die Standardimplementierung wenn Strings mit + verbunden werden
-DEFINES *= QT_USE_QSTRINGBUILDER TURAG_NO_PROJECT_CONFIG
+DEFINES *= QT_USE_QSTRINGBUILDER
+
+# Tina config
+DEFINES *= TURAG_NO_PROJECT_CONFIG
 
 # causes segfaults in qwt ?!?!?!?!
 #DEFINES += QT_COORD_TYPE=float
@@ -94,7 +97,10 @@ SOURCES +=\
     tina-platform/rs485.cpp \
     libs/loggerwidget.cpp \
     libs/log.cpp \
-    frontend/hex2bin/hex2bin.c
+    frontend/hex2bin/hex2bin.c \
+    ../../../tina/tina/debug/image.c \
+    ../../../tina/tina/debug/print.c \
+    ../../../tina/tina/crc/crc16_mcrf4/crc16_mcrf4.c
 
 HEADERS  += \
     mainwindow.h \
@@ -194,7 +200,16 @@ HEADERS  += \
     tina-platform/public/tina/rs485.h \
     libs/loggerwidget.h \
     libs/log.h \
-    frontend/hex2bin/hex2bin.h
+    frontend/hex2bin/hex2bin.h \
+    ../../../tina/platform/desktop/public/tina/config_tina_platform.h \
+    ../../../tina/tina/helper/config_tina_default.h \
+    ../../../tina/tina/helper/locked_type.h \
+    ../../../tina/tina/debug/image.h \
+    ../../../tina/tina/crc/crc16_mcrf4/crc16_mcrf4.h \
+    ../../../tina/tina/utils/bit_macros.h \
+    ../../../tina/tina++/crc.h \
+    ../../../tina/tina++/geometry.h \
+    ../../../tina/tina++/statemachine.h
 
 INCLUDEPATH += \
     ../../../tina \
@@ -204,13 +219,7 @@ INCLUDEPATH += \
     /usr/include/qwt
 
 DISTR_FILES += \
-    images/ok.png \
-    images/nok.png \
-    images/turag-55.png \
-    images/lock.png \
-    images/warning-orange-16.png \
-    images/error-orange-16.png \
-    images/error-red-16.png \
+    $$files(images/*.png) \
     turag-console.desktop
 
 RESOURCES += \
