@@ -4,11 +4,11 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFileDialog>
-#include <tina/rs485.h>
 
 
-FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Device *dev_, QWidget *parent) :
-    QWidget(parent), dev(dev_)
+FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Bootloader *bootloader_, QWidget *parent) :
+      QWidget(parent), bootloader(bootloader_)
+
 {
 
     QHBoxLayout* deviceType = new QHBoxLayout;
@@ -44,13 +44,13 @@ FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Device *dev_, QWidg
     setLayout(layout);
 
 
-    if (dev) {
+    if (bootloader) {
         TURAG::Feldbus::Request<uint8_t> request;
         request.data = TURAG_FELDBUS_BOOTLOADER_COMMAND_GET_MCUID;
 
         TURAG::Feldbus::Response<uint8_t> response;
 
-        if (dev->transceive(request, &response)) {
+        if (bootloader->transceive(request, &response)) {
 
             switch(response.data){
 
@@ -156,13 +156,13 @@ void FeldbusBootloaderView::onTransferFirmware(void){
     pages_max = (int)fsize / page_size;
     if( ((int)fsize % page_size) != 0) pages_max++;
 
-    if (dev) {
+    if (bootloader) {
         TURAG::Feldbus::Request<uint8_t> request;
         request.data = TURAG_FELDBUS_BOOTLOADER_COMMAND_TEST;
 
         TURAG::Feldbus::Response<uint8_t> response;
 
-        if (dev->transceive(request, &response)) {
+        if (bootloader->transceive(request, &response)) {
 
             switch(response.data){
                 case TURAG_FELDBUS_BOOTLOADER_COMMAND_TEST:
@@ -196,8 +196,8 @@ void FeldbusBootloaderView::onTransferFirmware(void){
             for(int i = 0; i < page_size; i++){
                 buffer_Command[i+3] = memblock[i];
             }
-/**
-            if (dev->transceive(buffer_Command, page_size + 4, output, output_length)) {
+
+            if (bootloader->transceiveBoot(buffer_Command, page_size + 4, output, output_length)) {
 
                 switch(response.data){
                     case TURAG_FELDBUS_BOOTLOADER_RESPONSE_PAGE_CORRECT_SIZE:
@@ -208,7 +208,7 @@ void FeldbusBootloaderView::onTransferFirmware(void){
                         break;
                 }
             }
-**/
+
             memblock += page_size;
         }
 

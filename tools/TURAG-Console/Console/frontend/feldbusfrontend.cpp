@@ -452,7 +452,7 @@ void FeldbusFrontend::onDeviceSelected( int row) {
         }
 
         // create Bootloader view
-        Feldbus::Device* dev = dynamic_cast<Feldbus::Device*>(dev_wrapper.device.get());
+        Feldbus::Bootloader* dev = dynamic_cast<Feldbus::Bootloader*>(dev_wrapper.device.get());
         if (dev) {
             feldbusWidget = new FeldbusBootloaderView(dev);
             splitter->addWidget(feldbusWidget);
