@@ -8,6 +8,7 @@
 #include <tina++/feldbus/host/farbsensor.h>
 #include <tina++/feldbus/host/servo.h>
 #include <tina++/feldbus/host/aseb.h>
+#include <tina++/feldbus/host/bootloader.h>
 
 
 FeldbusDeviceWrapper FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfoExt &device_info) {
@@ -99,17 +100,17 @@ FeldbusDeviceWrapper FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfo
 
         switch (device_info.device_info.deviceTypeId) {
         case TURAG_FELDBUS_BOOTLOADER_GENERIC:
-            device = new Feldbus::Device(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
+            device = new Feldbus::Bootloader(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
             deviceTypeString = "generic - BMaX";
             break;
 
         case TURAG_FELDBUS_BOOTLOADER_ATMEGA:
-            device = new Feldbus::Device(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
+            device = new Feldbus::Bootloader(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
             deviceTypeString = "AtMega - BMaX";
             break;
 
         case TURAG_FELDBUS_BOOTLOADER_XMEGA:
-            device = new Feldbus::Device(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
+            device = new Feldbus::Bootloader(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
             deviceTypeString = "XMEGA - BMaX";
             break;
 
