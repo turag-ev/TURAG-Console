@@ -9,18 +9,13 @@ VERSION = 2.9
 CONFIG +=  qwt
 QT     += core gui
 QT     += network
-
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += printsupport
-    QT += serialport
-    QT += widgets
-    # camera stuff
-    QT += multimedia
-    QT += multimediawidgets
-} else {
-    CONFIG += serialport
-}
-
+QT     += printsupport
+QT     += serialport
+QT     += widgets
+# camera stuff
+QT     += multimedia
+QT     += multimediawidgets
+    
 TARGET = turag-console
 TEMPLATE = app
 
@@ -30,16 +25,24 @@ DEFINES *= QT_USE_QSTRINGBUILDER
 # Tina config
 DEFINES *= TURAG_NO_PROJECT_CONFIG
 
+# non-const Iteratoren nicht in const-Iteratoren umwandeln
+# damit kann entdeckt werden, wenn fälschlicher weise ein non-const Iterator erstellt wurde,
+# was langsam sein kann.
+DEFINES += QT_STRICT_ITERATORS
+
 # causes segfaults in qwt ?!?!?!?!
 #DEFINES += QT_COORD_TYPE=float
 
 # Version für Quelldateien
 DEFINES += PACKAGE_VERSION=$$VERSION
+DEFINES += PACKAGE_NAME=$$TARGET
 
-# don't use broken -mms-bitfields flag for windows
-QMAKE_CFLAGS_DEBUG += -mno-ms-bitfields
-QMAKE_CFLAGS_RELEASE += -mno-ms-bitfields
-QMAKE_CXXFLAGS += -mno-ms-bitfields
+win32: {
+  # don't use broken -mms-bitfields flag for windows
+  QMAKE_CFLAGS_DEBUG += -mno-ms-bitfields
+  QMAKE_CFLAGS_RELEASE += -mno-ms-bitfields
+  QMAKE_CXXFLAGS += -mno-ms-bitfields
+}
 
 QMAKE_CXXFLAGS         += -std=gnu++0x
 QMAKE_LFLAGS           += -std=gnu++0x
@@ -230,29 +233,38 @@ OTHER_FILES += \
     images/turag-55.png
 
 # install
-target.path = $$PREFIX/bin
-sources.files = $$SOURCES $$HEADERS $$RESOURCES $$FORMS Console.pro
+unix:!mac {
+  isEmpty(PREFIX):PREFIX = /usr
+  
+  BINDIR = $$PREFIX/bin
+  DATADIR = $$PREFIX/share
+  PKGDATADIR = $$DATADIR/minitube
+    
+  target.path = $$PREFIX/bin
+  
+  sources.files = $$SOURCES $$HEADERS $$RESOURCES $$FORMS Console.pro
 
-pixmaps.path = /usr/share/pixmaps
-pixmaps.files += images/turag-55.png
+  pixmaps.path = $$DATADIR/pixmaps
+  pixmaps.files += images/turag-55.png
 
-desktop.path = /usr/share/applications
-desktop.files += turag-console.desktop
+  desktop.path = $$DATADIR/applications
+  desktop.files += turag-console.desktop
 
-INSTALLS += target pixmaps desktop
+  INSTALLS += target pixmaps desktop
 
-# own make dist :P
-PACKAGE_STRING = $(TARGET)-$${VERSION}$${EXT_VERSION}
-TMP_DIR = .tmp
-DIST_DIR = $${TMP_DIR}/$${PACKAGE_STRING}
-DISTFILES += $${SOURCES} $${HEADERS} $${RESOURCES} $${FORMS} $${DISTR_FILES} Console.pro
+  # own make dist :P -> make distr
+  PACKAGE_STRING = $(TARGET)-$${VERSION}$${EXT_VERSION}
+  TMP_DIR = .tmp
+  DIST_DIR = $${TMP_DIR}/$${PACKAGE_STRING}
+  DISTFILES += $${SOURCES} $${HEADERS} $${RESOURCES} $${FORMS} $${DISTR_FILES} Console.pro
 
-distr.commands = (test -d $${DIST_DIR}/src || mkdir -p $${DIST_DIR}/src) && \
-                 $(COPY_FILE) --parents $${DISTFILES} $${DIST_DIR}/src && \
-                 (cd $${TMP_DIR} && \
-                  $(TAR) $${PACKAGE_STRING}.tar $${PACKAGE_STRING} && \
-                  $(COMPRESS) $${PACKAGE_STRING}.tar) && \
-                 $(MOVE) $${TMP_DIR}/$${PACKAGE_STRING}.tar.gz . && \
-                 $(DEL_FILE) -r $${DIST_DIR}
+  distr.commands = (test -d $${DIST_DIR}/src || mkdir -p $${DIST_DIR}/src) && \
+                   $(COPY_FILE) --parents $${DISTFILES} $${DIST_DIR}/src && \
+                   (cd $${TMP_DIR} && \
+                    $(TAR) $${PACKAGE_STRING}.tar $${PACKAGE_STRING} && \
+                    $(COMPRESS) $${PACKAGE_STRING}.tar) && \
+                   $(MOVE) $${TMP_DIR}/$${PACKAGE_STRING}.tar.gz . && \
+                   $(DEL_FILE) -r $${DIST_DIR}
 
-QMAKE_EXTRA_TARGETS += distr
+  QMAKE_EXTRA_TARGETS += distr
+}
