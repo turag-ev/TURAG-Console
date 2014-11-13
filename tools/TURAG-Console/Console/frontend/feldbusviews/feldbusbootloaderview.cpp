@@ -6,8 +6,8 @@
 #include <QFileDialog>
 
 
-FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Bootloader *bootloader_, QWidget *parent) :
-      QWidget(parent), bootloader(bootloader_)
+FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Bootloader *bootloader, QWidget *parent) :
+      QWidget(parent), bootloader_(bootloader)
 
 {
 
@@ -133,11 +133,10 @@ bool FeldbusBootloaderView::onReadBinary(void){
 
     //button_transferToMC_->setText(QString("%1").arg(input_filename_bin));
 
-
     QFile file (input_filename_bin);
     if (file.open(QIODevice::ReadOnly)){
-        fsize = file.size();
         memblock = file.readAll();
+        fsize = file.size();
         file.close();
 
         return true;
@@ -149,39 +148,45 @@ bool FeldbusBootloaderView::onReadBinary(void){
 }
 
 void FeldbusBootloaderView::onTransferFirmware(void){
+    int page_cur;
+    int output_length = 0;
+    uint8_t buffer_Command[512];
+    uint8_t output_data;
+    uint8_t *output = (uint8_t*)(&output_data);
+
     onCreateBinary();
-    onReadBinary();
+
+    if(!onReadBinary()){
+        button_transferToMC_->setText(QString("Lesen aus Datei fehlgeschlagen! Erneut versuchen?"));
+        return;
+    }
 
     // Calculate pages count
     pages_max = (int)fsize / page_size;
     if( ((int)fsize % page_size) != 0) pages_max++;
 
-    if (bootloader) {
+    if (bootloader_) {
         TURAG::Feldbus::Request<uint8_t> request;
         request.data = TURAG_FELDBUS_BOOTLOADER_COMMAND_TEST;
 
         TURAG::Feldbus::Response<uint8_t> response;
 
-        if (bootloader->transceive(request, &response)) {
+        if (bootloader_->transceive(request, &response)) {
 
             switch(response.data){
                 case TURAG_FELDBUS_BOOTLOADER_COMMAND_TEST:
                     button_transferToMC_->setText(QString("Test erfolgreich"));
                     break;
                 default:
-                    button_transferToMC_->setText(QString("Erste Kommunikation fehlgeschlagen!"));
+                    button_transferToMC_->setText(QString("Erste Kommunikation fehlgeschlagen (Antwort)!"));
             }
         }
+        else button_transferToMC_->setText(QString("Erste Kommunikation fehlgeschlagen!"));
 
-        int page_cur;
-        int output_length;
-        uint8_t buffer_Command[512];
-        uint8_t output_data;
-        uint8_t *output = (uint8_t*)(&output_data);
 
-        for(page_cur = 0; page_cur < pages_max; page_cur++){ //ÜBERPRÜFEN, ANZAHL != Page_size
+        for(page_cur = 1; page_cur <= pages_max; page_cur++){ //ÜBERPRÜFEN, ANZAHL != Page_size
 
-            int percent = 100 * (page_cur+1) / pages_max;
+            int percent = 100 * (page_cur) / pages_max;
             button_transferToMC_->setText(QString("Gesendet: %1 % ").arg(percent));
 
             int page_addr = page_cur * page_size;
@@ -197,7 +202,7 @@ void FeldbusBootloaderView::onTransferFirmware(void){
                 buffer_Command[i+3] = memblock[i];
             }
 
-            if (bootloader->transceiveBoot(buffer_Command, page_size + 4, output, output_length)) {
+            if (bootloader_->transceiveBoot(buffer_Command, page_size + 3, output, output_length)) {
 
                 switch(response.data){
                     case TURAG_FELDBUS_BOOTLOADER_RESPONSE_PAGE_CORRECT_SIZE:

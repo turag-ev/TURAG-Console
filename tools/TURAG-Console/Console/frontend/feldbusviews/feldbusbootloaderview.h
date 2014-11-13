@@ -36,7 +36,7 @@ protected slots:
     bool onReadBinary(void);
 
 private:
-    TURAG::Feldbus::Bootloader* bootloader;
+    TURAG::Feldbus::Bootloader* bootloader_;
     QString deviceName;
     int page_size;
     int pages_max;
