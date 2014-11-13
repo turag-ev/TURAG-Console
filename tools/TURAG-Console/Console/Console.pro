@@ -100,7 +100,8 @@ SOURCES +=\
     frontend/hex2bin/hex2bin.c \
     ../../../tina/tina/debug/image.c \
     ../../../tina/tina/debug/print.c \
-    ../../../tina/tina/crc/crc16_mcrf4/crc16_mcrf4.c
+    ../../../tina/tina/crc/crc16_mcrf4/crc16_mcrf4.c \
+    ../../../tina/tina++/feldbus/host/bootloader_tina.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -208,7 +209,8 @@ HEADERS  += \
     ../../../tina/tina/utils/bit_macros.h \
     ../../../tina/tina++/crc.h \
     ../../../tina/tina++/geometry.h \
-    ../../../tina/tina++/statemachine.h
+    ../../../tina/tina++/statemachine.h \
+    ../../../tina/tina++/feldbus/host/bootloader.h
 
 INCLUDEPATH += \
     ../../../tina \

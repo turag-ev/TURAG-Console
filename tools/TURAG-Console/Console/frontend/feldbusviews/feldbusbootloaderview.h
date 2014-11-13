@@ -7,14 +7,15 @@
 #include <QPushButton>
 #include <fstream>
 #include <tina++/feldbus/host/device.h>
+#include <tina++/feldbus/host/bootloader.h>
 
 #include "../hex2bin/hex2bin.h"
 
-class FeldbusBootloaderView : public QWidget//, public TURAG::Feldbus::Device
+class FeldbusBootloaderView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit FeldbusBootloaderView(TURAG::Feldbus::Device* dev, QWidget *parent = 0);
+    explicit FeldbusBootloaderView(TURAG::Feldbus::Bootloader* bootloader_, QWidget *parent = 0);
 
 protected:
     QLabel *labelFilePath;
@@ -35,7 +36,7 @@ protected slots:
     bool onReadBinary(void);
 
 private:
-    TURAG::Feldbus::Device* dev;
+    TURAG::Feldbus::Bootloader* bootloader;
     QString deviceName;
     int page_size;
     int pages_max;
