@@ -4,6 +4,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFileDialog>
+#include <tina++/crc/crc8.h>
 
 
 FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Bootloader *bootloader, QWidget *parent) :
@@ -191,18 +192,21 @@ void FeldbusBootloaderView::onTransferFirmware(void){
 
             int page_addr = page_cur * page_size;
 
-            buffer_Command[0] = TURAG_FELDBUS_BOOTLOADER_COMMAND_PAGE_WRITE;
+            buffer_Command[0] = 0x05;
+            buffer_Command[1] = TURAG_FELDBUS_BOOTLOADER_COMMAND_PAGE_WRITE;
 
             // Page-Number
-            buffer_Command[1] = ((page_addr >> 8) & 0xFF);
-            buffer_Command[2] = (page_addr & 0xFF);
+            buffer_Command[2] = ((page_addr >> 8) & 0xFF);
+            buffer_Command[3] = (page_addr & 0xFF);
 
             // Data
             for(int i = 0; i < page_size; i++){
-                buffer_Command[i+3] = memblock[i];
+                buffer_Command[i+4] = memblock[i];
             }
 
-            if (bootloader_->transceiveBoot(buffer_Command, page_size + 3, output, output_length)) {
+            buffer_Command[page_size + 4] = TURAG::CRC8::calculate(buffer_Command, page_size + 4);
+
+            if (bootloader_->transceiveBoot(buffer_Command, page_size + 5, output, output_length)) {
 
                 switch(response.data){
                     case TURAG_FELDBUS_BOOTLOADER_RESPONSE_PAGE_CORRECT_SIZE:
