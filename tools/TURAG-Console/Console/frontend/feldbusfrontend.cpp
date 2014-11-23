@@ -507,7 +507,7 @@ void FeldbusFrontend::onCheckDeviceAvailability(void) {
 void FeldbusFrontend::requestStartBootBroad(void){
 
     TURAG::Feldbus::Broadcast<uint8_t> request;
-    dev = new Device("test",0x00);
+    dev = new Device("dummy",0x00);
 
     request.id = TURAG_FELDBUS_DEVICE_PROTOCOL_BOOTLOADER;
     request.data = TURAG_FELDBUS_BOOTLOADER_COMMAND_ENTER_BOOTLOADER;
