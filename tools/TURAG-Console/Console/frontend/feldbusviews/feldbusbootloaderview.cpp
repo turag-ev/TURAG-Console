@@ -46,13 +46,13 @@ FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Bootloader *bootloa
 
     connect(&sendPageTimer_, SIGNAL(timeout()), this, SLOT(onWritePages()));
 
-    if (bootloader) {
+    if (bootloader_) {
         TURAG::Feldbus::Device::Request<uint8_t> request;
         request.data = TURAG_FELDBUS_BOOTLOADER_COMMAND_GET_MCUID;
 
         TURAG::Feldbus::Device::Response<uint8_t> response;
 
-        if (bootloader->transceive(request, &response)) {
+        if (bootloader_->transceive(request, &response)) {
 
             switch(response.data){
 
@@ -104,18 +104,15 @@ void FeldbusBootloaderView::onOpenFile(void) {
     dialog.setFileMode(QFileDialog::ExistingFile);
     dialog.setNameFilter(tr("Intel Hex-file (*.hex)"));
     if (dialog.exec() == QDialog::Accepted) {
-      QStringList files = dialog.selectedFiles();
-      textFilePath->setText(QString("%1").arg(files[0]));
-
-      //Test!!!
-      //onCreateBinary();
+        QStringList files = dialog.selectedFiles();
+        textFilePath->setText(QString("%1").arg(files[0]));
     }
 }
 
 void FeldbusBootloaderView::onCreateBinary(void){
     // modified Arguments for hex2bin_convert; was to lazy to modify hex2bin_convert itself
     int argc_CB = 2;
-    char *argv_CB[30];
+    char *argv_CB[1024];
 
     input_filename = (char*)textFilePath->text().toStdString().c_str();
 
@@ -184,63 +181,64 @@ void FeldbusBootloaderView::onTransferFirmware(void){
         else button_transferToMC_->setText(QString("Erste Kommunikation fehlgeschlagen!"));
     }
 
-    sendPageTimer_.start(200);
+    sendPageTimer_.start(80);
 }
 
 void FeldbusBootloaderView::onWritePages(void){
     int output_length = 0;
+    //int tries = 0;
     uint8_t buffer_Command[512];
     uint8_t output_data;
     uint8_t *output = (uint8_t*)(&output_data);
 
     if (bootloader_ && !transmitError) {
         if(page_cur <= pages_max){
-            int percent = 100 * (page_cur) / pages_max;
-            button_transferToMC_->setText(QString("Gesendet: %1 % ").arg(percent));
+                int percent = 100 * (page_cur) / pages_max;
+                button_transferToMC_->setText(QString("Gesendet: %1 % ").arg(percent));
 
-            int page_addr = page_cur * page_size;
+                int page_addr = page_cur * page_size;
 
-            //buffer_Command[0] = 0x05;
-            buffer_Command[0] = TURAG_FELDBUS_BOOTLOADER_COMMAND_PAGE_WRITE;
+                //buffer_Command[0] = 0x05;
+                buffer_Command[0] = TURAG_FELDBUS_BOOTLOADER_COMMAND_PAGE_WRITE;
 
-            // Page-Number
-            buffer_Command[1] = ((page_addr >> 8) & 0xFF);
-            buffer_Command[2] = (page_addr & 0xFF);
+                // Page-Number
+                buffer_Command[1] = ((page_addr >> 8) & 0xFF);
+                buffer_Command[2] = (page_addr & 0xFF);
 
-            // Data
-            for(int i = 0; i < page_size; i++){
-                buffer_Command[i+3] = memblock[i];
-            }
-
-            //buffer_Command[page_size + 4] = TURAG::CRC8::calculate(buffer_Command, page_size + 4);
-
-            //Add one extra byte at the end for lenght
-            if (bootloader_->transceiveBoot(buffer_Command, page_size + 4, output, output_length)) {
-
-                switch(output[0]){
-                    case TURAG_FELDBUS_BOOTLOADER_RESPONSE_PAGE_CORRECT_SIZE:
-                        button_transferToMC_->setText(QString("Größe korrekt"));
-                        break;
-                    case TURAG_FELDBUS_BOOTLOADER_RESPONSE_PAGE_CORRECT_CONTENT:
-                        button_transferToMC_->setText(QString("Inhalt korrekt"));
-                        break;
-                    case TURAG_FELDBUS_BOOTLOADER_RESPONSE_PAGE_FAIL_END:
-                        button_transferToMC_->setText(QString("STOP: Unbekannter Fehler. #PAGE_FAIL_END"));
-                        transmitError = true;
-                        break;
-                    case TURAG_FELDBUS_BOOTLOADER_RESPONSE_PAGE_FAIL_SIZE:
-                        button_transferToMC_->setText(QString("STOP: Falsche Page-Größe"));
-                        transmitError = true;
-                        break;
-                    default:
-                        button_transferToMC_->setText(QString("STOP: Response-Error"));
-                        transmitError = true;
-                        break;
+                // Data
+                for(int i = 0; i < page_size; i++){
+                    buffer_Command[i+3] = memblock[i];
                 }
-            }
 
-            memblock += page_size;
-            page_cur++;
+                //buffer_Command[page_size + 4] = TURAG::CRC8::calculate(buffer_Command, page_size + 4);
+
+                //Add one extra byte at the end for lenght
+                if (bootloader_->transceiveBoot(buffer_Command, page_size + 4, output, output_length)) {
+
+                    switch(output[0]){
+                        case TURAG_FELDBUS_BOOTLOADER_RESPONSE_PAGE_CORRECT_SIZE:
+                            button_transferToMC_->setText(QString("Größe korrekt"));
+                            break;
+                        case TURAG_FELDBUS_BOOTLOADER_RESPONSE_PAGE_CORRECT_CONTENT:
+                            button_transferToMC_->setText(QString("Inhalt korrekt"));
+                            break;
+                        case TURAG_FELDBUS_BOOTLOADER_RESPONSE_PAGE_FAIL_END:
+                            button_transferToMC_->setText(QString("STOP: Unbekannter Fehler. #PAGE_FAIL_END"));
+                            transmitError = true;
+                            break;
+                        case TURAG_FELDBUS_BOOTLOADER_RESPONSE_PAGE_FAIL_SIZE:
+                            button_transferToMC_->setText(QString("STOP: Falsche Page-Größe"));
+                            transmitError = true;
+                            break;
+                        default:
+                            button_transferToMC_->setText(QString("STOP: Response-Error"));
+                            //transmitError = true;
+                            break;
+                    }
+                }
+
+                memblock += page_size;
+                page_cur++;
         }
         else button_transferToMC_->setText(QString("Firmware erfolgreich geschrieben!"));
     }

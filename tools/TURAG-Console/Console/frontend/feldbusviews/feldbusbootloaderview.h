@@ -46,6 +46,7 @@ private:
     int pages_max;
     int page_cur;
     int fsize;
+    int tries_max = 5;
     bool transmitError;
 };
 
