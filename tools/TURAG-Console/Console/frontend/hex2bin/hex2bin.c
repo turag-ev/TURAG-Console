@@ -70,7 +70,7 @@
 #endif
 
 /* FIXME how to get it from the system/OS? */
-#define MAX_FILE_NAME_SIZE 81
+#define MAX_FILE_NAME_SIZE 81 //81
 
 #ifdef DOS
 #define MAX_EXTENSION_SIZE 4
