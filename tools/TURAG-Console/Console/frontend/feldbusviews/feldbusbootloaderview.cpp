@@ -20,7 +20,7 @@ FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Bootloader *bootloa
     deviceType->addWidget(textDeviceType);
 
     QHBoxLayout* firmwareOptions = new QHBoxLayout;
-    labelFilePath = new QLabel("Firmwaredatei:");
+    labelFilePath = new QLabel("Firmwaredatei (Es gibt bekannte Bugs mit zu langen Dateipfaden!):");
     textFilePath = new QLineEdit;
     buttonGetFilePath_ = new QPushButton("Dateipfad öffnen");
     firmwareOptions->addWidget(labelFilePath);
@@ -184,7 +184,7 @@ void FeldbusBootloaderView::onTransferFirmware(void){
         else button_transferToMC_->setText(QString("Erste Kommunikation fehlgeschlagen!"));
     }
 
-    sendPageTimer_.start(100);
+    sendPageTimer_.start(200);
 }
 
 void FeldbusBootloaderView::onWritePages(void){
