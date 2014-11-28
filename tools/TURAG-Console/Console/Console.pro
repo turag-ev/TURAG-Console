@@ -19,6 +19,8 @@ QT     += multimediawidgets
 TARGET = turag-console
 TEMPLATE = app
 
+CONFIG += c++11
+
 # Schneller als die Standardimplementierung wenn Strings mit + verbunden werden
 DEFINES *= QT_USE_QSTRINGBUILDER
 
@@ -43,9 +45,6 @@ win32: {
   QMAKE_CFLAGS_RELEASE += -mno-ms-bitfields
   QMAKE_CXXFLAGS += -mno-ms-bitfields
 }
-
-QMAKE_CXXFLAGS         += -std=gnu++0x
-QMAKE_LFLAGS           += -std=gnu++0x
 
 SOURCES +=\
         mainwindow.cpp \
