@@ -39,7 +39,7 @@ StreamModel::StreamModel(QObject* parent) :
     log_sources_(),
     logtime_(0)
 {
-    log_sources_[';'] = "System";
+	log_sources_[';'] = QStringLiteral("System");
     connect(&insertTimer, SIGNAL(timeout()), this, SLOT(insertRowsTimeout()));
     insertTimer.setInterval(100);
 }
@@ -66,7 +66,7 @@ QVariant StreamModel::data(const QModelIndex& index, int role) const {
 
     switch (role) {
     case Qt::DisplayRole:{
-        Row data = rows_[row];
+		const Row& data = rows_[row];
 
         switch (column) {
         case COLUMN_MESSAGE:
@@ -82,7 +82,8 @@ QVariant StreamModel::data(const QModelIndex& index, int role) const {
         }
 
         case COLUMN_TIME:
-            return QString("%1").arg(std::get<DATA_TIME>(data), 0, 'f', 3);
+			// TODO: PERF: QString.arg ersetzen
+			return QStringLiteral("%1").arg(std::get<DATA_TIME>(data), 0, 'f', 3);
         }
         break;
     }
@@ -123,13 +124,13 @@ QVariant StreamModel::headerData(int section,
         if (orientation == Qt::Horizontal) {
             switch (section) {
             case COLUMN_MESSAGE:
-                return "Nachricht";
+				return QStringLiteral("Nachricht");
 
             case COLUMN_SOURCE:
-                return "Quelle";
+				return QStringLiteral("Quelle");
 
             case COLUMN_ICON:
-                return "";
+				return QString();
 
             default:
                 return QVariant();
@@ -164,7 +165,7 @@ bool StreamModel::insertRow(char level, const char *data, std::size_t len, unsig
     }
 
     if (log_sources_[source].isNull()) {
-        log_sources_[source] = "";
+		log_sources_[source] = QString();
     }
 
     row_buffer_.emplace_back(icon, QString::fromUtf8(data, len), source, logtime_);
@@ -204,7 +205,7 @@ void StreamModel::clear() {
     for (unsigned i = 0; i < sizeof(log_sources_) / sizeof(log_sources_[0]); ++i) {
         log_sources_[i] = QString();
     }
-    log_sources_[';'] = "System";
+	log_sources_[';'] = QStringLiteral("System");
 }
 
 void StreamModel::setLogSource(char source, const QString&& name) {
@@ -253,12 +254,12 @@ bool LogFilter::filterAcceptsRow(int sourceRow,
 // LogView
 
 LogView::LogView(TinaInterface *interface, QWidget *parent) :
-    BaseFrontend("Meldungen", parent), scroll_on_output_(false), hasReadOnlyConnection(false)
+	BaseFrontend(QStringLiteral("Meldungen"), parent), scroll_on_output_(false), hasReadOnlyConnection(false)
 {
     // icons
-    icons[StreamModel::ICON_WARNING]  = QIcon(":/images/warning-orange-16.png");
-    icons[StreamModel::ICON_CRITICAL] = QIcon(":/images/error-orange-16.png");
-    icons[StreamModel::ICON_ERROR]    = QIcon(":/images/error-red-16.png");
+	icons[StreamModel::ICON_WARNING]  = QIcon(QStringLiteral(":/images/warning-orange-16.png"));
+	icons[StreamModel::ICON_CRITICAL] = QIcon(QStringLiteral(":/images/error-orange-16.png"));
+	icons[StreamModel::ICON_ERROR]    = QIcon(QStringLiteral(":/images/error-red-16.png"));
 
     // log
     log_model_ = new StreamModel(this);
@@ -401,7 +402,7 @@ void LogView::activated(QModelIndex index) {
 
     StreamModel::Row data = log_model_->rows()[index.row()];
     QString line = std::get<StreamModel::DataColumn::DATA_MESSAGE>(data);
-    if (line.startsWith("Graph") && line.size() > 6) {
+	if (line.startsWith(QStringLiteral("Graph")) && line.size() > 6) {
         bool ok = false;
         int index = line.mid(6, line.indexOf(':') - 6).toInt(&ok);
 
@@ -417,19 +418,19 @@ void LogView::contextMenu(QPoint point) {
     // Makierung
     QItemSelectionModel* selection = log_->selectionModel();
     if (selection && selection->hasSelection()) {
-        menu.addAction("&Kopieren", this, SLOT(copy()));
-        menu.addAction("&Nachrichten von Quelle ausblenden", this, SLOT(hideMsgsFromSource()));
+		menu.addAction(QStringLiteral("&Kopieren"), this, SLOT(copy()));
+		menu.addAction(QStringLiteral("&Nachrichten von Quelle ausblenden"), this, SLOT(hideMsgsFromSource()));
     }
-    menu.addAction("&Alles markieren", log_, SLOT(selectAll()));
-    if (!hasReadOnlyConnection) menu.addAction("Ausgabe löschen", this, SLOT(clear()));
+	menu.addAction(QStringLiteral("&Alles markieren"), log_, SLOT(selectAll()));
+	if (!hasReadOnlyConnection) menu.addAction(QStringLiteral("Ausgabe löschen"), this, SLOT(clear()));
     menu.addSeparator();
 
     // Filter
     filter_mapper_ = new QSignalMapper(this);
     connect(filter_mapper_, SIGNAL(mapped(int)), this, SLOT(filterSrc(int)));
 
-    QMenu* filter_menu = new QMenu("Filter einstellen");
-    const QString* sources = log_model_->getLogSources();
+	QMenu* filter_menu = new QMenu(QStringLiteral("Filter einstellen"));
+	auto sources = log_model_->getLogSources();
     std::string filter = filter_->getFilterSource();
     for (int i = 33; i < 127; i++) {
         if (!sources[i].isNull()) {
@@ -444,8 +445,8 @@ void LogView::contextMenu(QPoint point) {
         }
     }
     menu.addMenu(filter_menu);
-    menu.addAction("&alles anzeigen", this, SLOT(deactivateFilter()));
-    menu.addAction("&nichts anzeigen", this, SLOT(activateFilter()));
+	menu.addAction(QStringLiteral("&alles anzeigen"), this, SLOT(deactivateFilter()));
+	menu.addAction(QStringLiteral("&nichts anzeigen"), this, SLOT(activateFilter()));
 
     menu.exec(log_->mapToGlobal(point));
 }
@@ -501,7 +502,7 @@ void LogView::activateFilter() {
     std::string filter;
     filter.reserve(20);
 
-    const QString* sources = log_model_->getLogSources();
+	auto sources = log_model_->getLogSources();
     for (int i = 33; i < 127; i++) {
         if (!sources[i].isNull()) {
             filter.push_back(i);
@@ -513,13 +514,13 @@ void LogView::activateFilter() {
 void LogView::readSettings() {
     QSettings settings;
     settings.beginGroup(objectName());
-    filter_->setFilterSource(settings.value("filter", QString()).toString().toStdString());
+	filter_->setFilterSource(settings.value(QStringLiteral("filter"), QString()).toString().toStdString());
 }
 
 void LogView::writeSettings() {
     QSettings settings;
     settings.beginGroup(objectName());
-    settings.setValue("filter", QString::fromStdString(filter_->getFilterSource()));
+	settings.setValue(QStringLiteral("filter"), QString::fromStdString(filter_->getFilterSource()));
 }
 
 void LogView::writeLine(QByteArray line) {
@@ -543,7 +544,7 @@ void LogView::writeLine(QByteArray line) {
                 QTextStream stream(line);
                 int index = 0;
                 stream >> index;
-                QString graphline = QString("Graph %1: '%2'").arg(index).arg(stream.readAll().trimmed());
+				QString graphline = QStringLiteral("Graph %1: '%2'").arg(index).arg(stream.readAll().trimmed());
                 insertRow(';', graphline.toLatin1().constData(), graphline.size(), ';');
             }
             break;

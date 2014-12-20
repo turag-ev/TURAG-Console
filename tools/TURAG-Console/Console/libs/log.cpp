@@ -3,17 +3,15 @@
 
 
 LogModel::LogModel(QObject *parent) :
-    QAbstractTableModel(parent), logData(new QList<LogData>)
+	QAbstractTableModel(parent), logData()
 {
 }
 
-LogModel::~LogModel(void) {
-    delete logData;
-}
+LogModel::~LogModel(void) { }
 
 
 int LogModel::rowCount(const QModelIndex &) const {
-    return logData->size();
+	return logData.size();
 }
 
 int LogModel::columnCount(const QModelIndex &) const {
@@ -27,23 +25,23 @@ QVariant LogModel::data(const QModelIndex & index, int role) const {
     int column = index.column();
     int row = index.row();
 
-    if (row >= logData->size() || row < 0)
+	if (row >= logData.size() || row < 0)
         return QVariant();
 
     if (role == Qt::DisplayRole) {
         switch (column) {
-        case 0: return logData->at(row).time.toString();
+		case 0: return logData[row].time.toString();
         case 1:
-            switch (logData->at(row).type) {
-            case MessageType::Debug: return QString("Debug");
-            case MessageType::Info: return QString("Info");
-            case MessageType::Warning: return QString("Warning");
-            case MessageType::Critical: return QString("Critical");
-            case MessageType::Fatal: return QString("Fatal");
+			switch (logData[row].type) {
+			case MessageType::Debug: return QStringLiteral("Debug");
+			case MessageType::Info: return QStringLiteral("Info");
+			case MessageType::Warning: return QStringLiteral("Warning");
+			case MessageType::Critical: return QStringLiteral("Critical");
+			case MessageType::Fatal: return QStringLiteral("Fatal");
             default: return QVariant();
             }
-        case 2: return logData->at(row).msg;
-        case 3: return logData->at(row).context;
+		case 2: return logData[row].msg;
+		case 3: return logData[row].context;
         default: return QVariant();
         }
     }
@@ -57,42 +55,41 @@ QVariant LogModel::headerData(int section, Qt::Orientation orientation, int role
     }
 
     switch (section) {
-    case 0: return QString("Zeit");
-    case 1: return QString("Typ");
-    case 2: return QString("Meldung");
-    case 3: return QString("Quelle");
+	case 0: return QStringLiteral("Zeit");
+	case 1: return QStringLiteral("Typ");
+	case 2: return QStringLiteral("Meldung");
+	case 3: return QStringLiteral("Quelle");
     }
 
     return QVariant();
 }
 
 void LogModel::appendLogMessage(MessageType type, const QString& msg, const QString& context, QTime time) {
-    beginInsertRows(QModelIndex(), logData->size(), logData->size());
-    logData->append(LogData{type, msg, time, context});
+	beginInsertRows(QModelIndex(), logData.size(), logData.size());
+	logData.append(LogData{type, msg, time, context});
     endInsertRows();
 }
 
 void LogModel::appendLogMessage(MessageType type, const QString& msg, const QString& context) {
-    beginInsertRows(QModelIndex(), logData->size(), logData->size());
-    logData->append(LogData{type, msg, QTime::currentTime(), context});
+	beginInsertRows(QModelIndex(), logData.size(), logData.size());
+	logData.append(LogData{type, msg, QTime::currentTime(), context});
     endInsertRows();
 }
 
 void LogModel::clear(void) {
-    beginRemoveRows(QModelIndex(), 0, logData->size() - 1);
-    logData->clear();
+	beginRemoveRows(QModelIndex(), 0, logData.size() - 1);
+	logData.clear();
     endRemoveRows();
 }
 
 
 
 Log::Log(void) :
-    model_(new LogModel)
+	model_()
 {
 }
 
 Log::~Log(void) {
-    delete model_;
 }
 
 
@@ -105,7 +102,7 @@ void Log::captureQtDebugMessages(bool on) {
 }
 
 QAbstractItemModel* Log::model(void) {
-    return get()->model_;
+	return &(get()->model_);
 }
 
 Log* Log::get(void) {
@@ -143,24 +140,24 @@ void Log::messageHandler(QtMsgType type, const QMessageLogContext & context, con
     case QtFatalMsg: logType = LogModel::MessageType::Fatal; break;
     }
 
-    get()->model_->appendLogMessage(logType, msg, QString("%1: %2").arg(context.file).arg(context.line));
+	get()->model_.appendLogMessage(logType, msg, QStringLiteral("%1: %2").arg(context.file).arg(context.line));
 }
 
 
 void Log::info(const QString& msg) {
-    get()->model_->appendLogMessage(LogModel::MessageType::Info, msg, QString());
+	get()->model_.appendLogMessage(LogModel::MessageType::Info, msg, QString());
     get()->emitInfoMsgAvailable(msg);
 }
 void Log::warning(const QString& msg) {
-    get()->model_->appendLogMessage(LogModel::MessageType::Warning, msg, QString());
+	get()->model_.appendLogMessage(LogModel::MessageType::Warning, msg, QString());
     get()->emitWarningMsgAvailable(msg);
 }
 void Log::critical(const QString& msg) {
-    get()->model_->appendLogMessage(LogModel::MessageType::Critical, msg, QString());
+	get()->model_.appendLogMessage(LogModel::MessageType::Critical, msg, QString());
     get()->emitCriticalMsgAvailable(msg);
 }
 void Log::fatal(const QString& msg) {
-    get()->model_->appendLogMessage(LogModel::MessageType::Fatal, msg, QString());
+	get()->model_.appendLogMessage(LogModel::MessageType::Fatal, msg, QString());
     get()->emitFatalMsgAvailable(msg);
 }
 

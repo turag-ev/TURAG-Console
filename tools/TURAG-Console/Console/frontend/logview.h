@@ -73,7 +73,7 @@ public:
   void clear();
 
   void setLogSource(char source, const QString&& name);
-  const QString* getLogSources() const { return log_sources_; }
+  const std::array<QString, 127>& getLogSources() const { return log_sources_; }
 
 private slots:
   void insertRowsTimeout(void);
@@ -82,7 +82,7 @@ private:
   Rows row_buffer_;
   Rows rows_;
   int last_size;
-  QString log_sources_[127];
+  std::array<QString, 127> log_sources_;
   Time logtime_;
 
   QTimer insertTimer;

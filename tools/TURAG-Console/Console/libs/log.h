@@ -45,7 +45,7 @@ private:
         QString context;
     };
 
-    QList<LogData>* logData;
+	QList<LogData> logData;
 };
 
 
@@ -82,7 +82,7 @@ private:
 
     static void messageHandler(QtMsgType, const QMessageLogContext &, const QString &);
 
-    LogModel* model_;
+	LogModel model_;
 };
 
 

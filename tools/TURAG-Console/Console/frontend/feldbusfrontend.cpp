@@ -230,10 +230,10 @@ void FeldbusFrontend::validateAdressFields() {
         bootFromEdit_->setText("0");
     }
     if (!toEdit_->hasAcceptableInput()) {
-        toEdit_->setText(QString("%1").arg(fromEdit_->text().toInt()+1));
+		toEdit_->setText(QStringLiteral("%1").arg(fromEdit_->text().toInt()+1));
     }
     if (!bootToEdit_->hasAcceptableInput()) {
-        bootToEdit_->setText(QString("%1").arg(bootFromEdit_->text().toInt()+1));
+		bootToEdit_->setText(QStringLiteral("%1").arg(bootFromEdit_->text().toInt()+1));
     }
     int fromAddress = fromEdit_->text().toInt();
     int toAddress = toEdit_->text().toInt();
@@ -241,10 +241,10 @@ void FeldbusFrontend::validateAdressFields() {
     int bootToAddress = bootToEdit_->text().toInt();
 
     if (fromAddress > toAddress) {
-        fromEdit_->setText(QString("%1").arg(toAddress - 1));
+		fromEdit_->setText(QStringLiteral("%1").arg(toAddress - 1));
     }
     if (bootFromAddress > bootToAddress) {
-        bootFromEdit_->setText(QString("%1").arg(bootToAddress - 1));
+		bootFromEdit_->setText(QStringLiteral("%1").arg(bootToAddress - 1));
     }
 }
 
@@ -259,7 +259,7 @@ void FeldbusFrontend::dynamixelValidateAdressFields() {
     int toAddress = dynamixelToEdit_->text().toInt();
 
     if (fromAddress > toAddress) {
-        dynamixelFromEdit_->setText(QString("%1").arg(toAddress - 1));
+		dynamixelFromEdit_->setText(QStringLiteral("%1").arg(toAddress - 1));
     }
 }
 
@@ -289,9 +289,9 @@ void FeldbusFrontend::onInquiry(bool boot) {
 
     for (int i = fromAddress; i <= toAddress; i++) {
         if(boot){
-            bootloadertoolsStartInquiry_->setText(QString("Geräte suchen: %1 %").arg(i * 100 / (toAddress - fromAddress + 1)));
+			bootloadertoolsStartInquiry_->setText(QStringLiteral("Geräte suchen: %1 %").arg(i * 100 / (toAddress - fromAddress + 1)));
         }else{
-            startInquiry_->setText(QString("Geräte suchen: %1 %").arg(i * 100 / (toAddress - fromAddress + 1)));
+			startInquiry_->setText(QStringLiteral("Geräte suchen: %1 %").arg(i * 100 / (toAddress - fromAddress + 1)));
         }
         for (int j = 0; j < 2; j++) {
             Feldbus::Device::ChecksumType chksum_type = Feldbus::Device::ChecksumType::xor_based;
@@ -373,7 +373,7 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
     }
 
     for (int i = fromAddress; i <= toAddress; i++) {
-        dynamixelStartInquiry_->setText(QString("Dynamixel-Servos suchen: %1 %").arg(i * 100 / (toAddress - fromAddress + 1)));
+		dynamixelStartInquiry_->setText(QStringLiteral("Dynamixel-Servos suchen: %1 %").arg(i * 100 / (toAddress - fromAddress + 1)));
 
         Feldbus::DynamixelDevice* dev = new Feldbus::DynamixelDevice("", i, 2, 1);
         int modelNumber = 0;
@@ -516,12 +516,12 @@ void FeldbusFrontend::requestStartBootBroad(void){
 
     int percent = 100 * sendBroadcastsBoot / requiredBroadcastsBoot;
 
-    startBootloader_->setText(QString("Gesendet: %1 % ").arg(percent));
+	startBootloader_->setText(QStringLiteral("Gesendet: %1 % ").arg(percent));
 
     if(sendBroadcastsBoot >= requiredBroadcastsBoot){
         sendBroadcastTimer_.stop();
         startBootloader_->setEnabled(true);
-        startBootloader_->setText(QString("Bootloader erneut starten"));
+		startBootloader_->setText(QStringLiteral("Bootloader erneut starten"));
     }
 
     sendBroadcastsBoot++;
@@ -541,7 +541,7 @@ void FeldbusFrontend::onStartBoot(void){
     sendBroadcastTimer_.start(10);
 
     if(sendBroadcastTimer_.isActive()){
-        startBootloader_->setText(QString("Broadcast-Timer gestartet"));
+		startBootloader_->setText(QStringLiteral("Broadcast-Timer gestartet"));
     }
 
 }
