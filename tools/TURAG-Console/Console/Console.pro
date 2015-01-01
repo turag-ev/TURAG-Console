@@ -191,7 +191,6 @@ HEADERS  += \
     libs/keyboardenabledcombobox.h \
     libs/lineeditext.h \
     libs/splitterext.h \
-    tina-platform/public/tina/rs485.h \
     libs/loggerwidget.h \
     libs/log.h \
     frontend/hex2bin/hex2bin.h

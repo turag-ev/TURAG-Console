@@ -1,5 +1,5 @@
 #include "feldbusfrontend.h"
-#include <tina/rs485.h>
+#include <tina/feldbus/host/rs485.h>
 #include <QSplitter>
 #include <QHBoxLayout>
 #include <QPushButton>
@@ -27,6 +27,10 @@
 #include "plaintextfrontend.h"
 
 using namespace TURAG;
+
+extern QIODevice* turag_rs485_io_device;
+extern QByteArray turag_rs485_data_buffer;
+
 
 FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     BaseFrontend("TURAG Feldbus", parent)
@@ -466,7 +470,7 @@ void FeldbusFrontend::onCheckDeviceAvailability(void) {
     int i = 0;
 
     for (FeldbusDeviceWrapper dev_wrapper_ : devices_) {
-        if (dev_wrapper_.device.get() && dev_wrapper_.device.get()->hasReachedTransmissionErrorLimit()) {
+        if (!dev_wrapper_.device.get() && dev_wrapper_.device.get()->isAvailable()) {
             deviceList_->item(i)->setText(dev_wrapper_.devInfo.toString() + " OFFLINE");
         }
         ++i;
@@ -484,7 +488,7 @@ void FeldbusFrontend::onCheckDeviceAvailability(void) {
 
 void FeldbusFrontend::requestStartBootBroad(void){
 
-    TURAG::Feldbus::Broadcast<uint8_t> request;
+    TURAG::Feldbus::Device::Broadcast<uint8_t> request;
     dev = new Device("test",0x00);
 
     request.id = TURAG_FELDBUS_DEVICE_PROTOCOL_BOOTLOADER;

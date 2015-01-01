@@ -39,10 +39,10 @@ FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Device *dev_, QWidg
 
 
     if (dev) {
-        TURAG::Feldbus::Request<uint8_t> request;
+        TURAG::Feldbus::Device::Request<uint8_t> request;
         request.data = TURAG_FELDBUS_BOOTLOADER_COMMAND_GET_MCUID;
 
-        TURAG::Feldbus::Response<uint8_t> response;
+        TURAG::Feldbus::Device::Response<uint8_t> response;
 
         if (dev->transceive(request, &response)) {
 

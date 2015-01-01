@@ -16,7 +16,7 @@ public:
         address(0),
         device_name(QByteArray("unnamed")) {}
 
-    Feldbus::DeviceInfo device_info;
+    Feldbus::Device::DeviceInfo device_info;
     int address;
     QByteArray device_name;
 

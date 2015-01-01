@@ -134,7 +134,7 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
         return;
     }
 
-    commandset = new AktorCommand_t[commandsetLength];
+    commandset = new Aktor::Command_t[commandsetLength];
     if (!actor->populateCommandSet(commandset, commandsetLength)) {
         return;
     }
@@ -142,7 +142,7 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     char command_name[256];
 
     for (unsigned i = 0; i < commandsetLength; ++i) {
-        if (commandset[i].length != AktorCommandLength::none) {
+        if (commandset[i].length != Aktor::Command_t::CommandLength::none) {
             CommandsetEntry entry;
             entry.key = i+1;
             entry.label = new QLabel;
@@ -153,7 +153,7 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
                 entry.label->setText("???");
             }
             entry.value = new QLineEdit;
-            if (commandset[i].writeAccess == AktorCommandWriteAccess::no_write) {
+            if (commandset[i].writeAccess == Aktor::Command_t::WriteAccess::no_write) {
                 entry.value->setReadOnly(true);
                 QPalette pal = entry.value->palette();
                 QColor clr = this->palette().color(QPalette::Window);
@@ -205,7 +205,7 @@ void FeldbusAktorView::onUpdateDeviceValues(void) {
             }
         }
 
-        if (commandset[entry.key-1].writeAccess == AktorCommandWriteAccess::write) {
+        if (commandset[entry.key-1].writeAccess == Aktor::Command_t::WriteAccess::write) {
             QPalette pal = entry.value->palette();
             pal.setColor(QPalette::Active, QPalette::Base, Qt::white);
             entry.value->setPalette(pal);
@@ -310,11 +310,11 @@ void FeldbusAktorView::onTimeout(void) {
 
     int msecs = updateStartTime.elapsed();
 
-    std::vector<StructuredDataPair_t> output;
+    std::vector<Aktor::StructuredDataPair_t> output;
     actor->getStructuredOutput(&output);
 
     int channel = 0;
-    for (StructuredDataPair_t& data : output) {
+    for (Aktor::StructuredDataPair_t& data : output) {
         plot->addData(channel, QPointF(msecs, data.value));
         ++channel;
     }
@@ -363,7 +363,7 @@ void FeldbusAktorView::onCheckboxChanged(void) {
         }
     }
 
-    if (numberOfCheckedValues > 0 && numberOfCheckedValues <= actor->getStructuredOutputTableLength()) {
+    if (numberOfCheckedValues > 0 && (int)numberOfCheckedValues <= actor->getStructuredOutputTableLength()) {
         startStopDataUpdate->setEnabled(true);
     } else {
         startStopDataUpdate->setDisabled(true);
