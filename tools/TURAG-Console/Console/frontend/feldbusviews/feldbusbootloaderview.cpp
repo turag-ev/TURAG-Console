@@ -163,10 +163,10 @@ void FeldbusBootloaderView::onTransferFirmware(void){
     if( ((int)fsize % page_size) != 0) pages_max++;
 
     if(bootloader_){
-        TURAG::Feldbus::Request<uint8_t> request;
+        TURAG::Feldbus::Device::Request<uint8_t> request;
         request.data = TURAG_FELDBUS_BOOTLOADER_COMMAND_TEST;
 
-        TURAG::Feldbus::Response<uint8_t> response;
+        TURAG::Feldbus::Device::Response<uint8_t> response;
 
         if (bootloader_->transceive(request, &response)) {
 
