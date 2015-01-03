@@ -277,7 +277,7 @@ void FeldbusFrontend::onInquiry(bool boot) {
     int fromAddress = fromEdit_->text().toInt();
     int toAddress = toEdit_->text().toInt();
 
-    if(boot){
+    if (boot) {
         fromAddress = bootFromEdit_->text().toInt();
         toAddress = bootToEdit_->text().toInt();
     }
@@ -292,9 +292,9 @@ void FeldbusFrontend::onInquiry(bool boot) {
     dev_info.address = 0;
 
     for (int i = fromAddress; i <= toAddress; i++) {
-        if(boot){
+        if (boot) {
             bootloadertoolsStartInquiry_->setText(QString("Geräte suchen: %1 %").arg(i * 100 / (toAddress - fromAddress + 1)));
-        }else{
+        } else {
             startInquiry_->setText(QString("Geräte suchen: %1 %").arg(i * 100 / (toAddress - fromAddress + 1)));
         }
         for (int j = 0; j < 2; j++) {
@@ -492,7 +492,7 @@ void FeldbusFrontend::onCheckDeviceAvailability(void) {
     int i = 0;
 
     for (FeldbusDeviceWrapper dev_wrapper_ : devices_) {
-        if (!dev_wrapper_.device.get() && dev_wrapper_.device.get()->isAvailable()) {
+        if (dev_wrapper_.device.get() && !dev_wrapper_.device.get()->isAvailable()) {
             deviceList_->item(i)->setText(dev_wrapper_.devInfo.toString() + " OFFLINE");
         }
         ++i;
