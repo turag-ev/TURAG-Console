@@ -45,7 +45,7 @@ texec "${ROOT_DIR}/make_dist.sh"
 
 SRC_TAR="$(ls -t turag-console-*.tar.gz | head -n 1)"
 SRC_VERSION="$(echo ${SRC_TAR} | sed 's/turag-console-\(.*\).tar.gz/\1/')"
-DEB_TAR="turag-console_${SRC_VERSION}.orig.tar.gz"
+DEB_TAR="turag-console_${SRC_VERSION}~${LSB}.orig.tar.gz"
 
 texec mv "${SRC_TAR}" "${DEB_TAR}"
 texec tar zxf "${DEB_TAR}"

@@ -213,7 +213,29 @@ HEADERS  += \
     ../../../tina/tina++/crc.h \
     ../../../tina/tina++/geometry.h \
     ../../../tina/tina++/statemachine.h \
-    ../../../tina/tina++/feldbus/host/bootloader.h
+    ../../../tina/tina++/feldbus/host/bootloader.h \
+    ../../../tina/tina++/container/array_buffer.h \
+    ../../../tina/tina++/container/array_storage.h \
+    ../../../tina/tina++/container/circular_buffer.h \
+    ../../../tina/tina++/container/container.h \
+    ../../../tina/tina++/container/thread_fifo.h \
+    ../../../tina/tina++/container/variant_class.h \
+    ../../../tina/tina++/geometry/units/config.h \
+    ../../../tina/tina++/geometry/units/math.h \
+    ../../../tina/tina++/geometry/units/unit.h \
+    ../../../tina/tina++/geometry/units/units.h \
+    ../../../tina/tina++/geometry/fieldpose.h \
+    ../../../tina/tina++/geometry/geometry.h \
+    ../../../tina/tina++/geometry/units.h \
+    ../../../tina/tina++/helper/locked.h \
+    ../../../tina/tina++/helper/static_const.h \
+    ../../../tina/tina++/range/iterator_range.h \
+    ../../../tina/tina++/range/range.h \
+    ../../../tina/tina++/range/sub_range.h \
+    ../../../tina/tina++/range/traits.h \
+    ../../../tina/tina++/utils/flags.h \
+    ../../../tina/tina++/utils/misc-doc.h \
+    ../../../tina/tina++/utils/timer.h
 
 INCLUDEPATH += \
     ../../../tina \
