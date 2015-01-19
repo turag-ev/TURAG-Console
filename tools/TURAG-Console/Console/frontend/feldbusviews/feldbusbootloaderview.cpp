@@ -4,7 +4,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFileDialog>
-#include <tina++/crc/crc8.h>
+#include <tina++/crc/crc.h>
 
 
 FeldbusBootloaderView::FeldbusBootloaderView(TURAG::Feldbus::Bootloader *bootloader, QWidget *parent) :

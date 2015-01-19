@@ -22,9 +22,6 @@ TEMPLATE = app
 # Schneller als die Standardimplementierung wenn Strings mit + verbunden werden
 DEFINES *= QT_USE_QSTRINGBUILDER
 
-# Tina config
-DEFINES *= TURAG_NO_PROJECT_CONFIG
-
 # non-const Iteratoren nicht in const-Iteratoren umwandeln
 # damit kann entdeckt werden, wenn fälschlicher weise ein non-const Iterator erstellt wurde,
 # was langsam sein kann.
@@ -50,7 +47,7 @@ QMAKE_LFLAGS           += -std=gnu++0x
 SOURCES +=\
         mainwindow.cpp \
     ../../../tina/platform/desktop/thread.cpp \
-    ../../../tina/tina/crc/crc8_icode/crc8_icode.c \
+    ../../../tina/tina/crc/crc_checksum.c \
     ../../../tina/tina/debug/graph.c \
     ../../../tina/tina/feldbus/dynamixel/dxl_hal.c \
     ../../../tina/tina/feldbus/dynamixel/dynamixel.c \
@@ -103,7 +100,6 @@ SOURCES +=\
     frontend/hex2bin/hex2bin.c \
     ../../../tina/tina/debug/image.c \
     ../../../tina/tina/debug/print.c \
-    ../../../tina/tina/crc/crc16_mcrf4/crc16_mcrf4.c \
     ../../../tina/tina++/feldbus/host/bootloader_tina.cpp
 
 HEADERS  += \
@@ -116,7 +112,7 @@ HEADERS  += \
     ../../../tina/platform/desktop/public/tina++/can.h \
     ../../../tina/platform/desktop/public/tina++/thread.h \
     ../../../tina/tina/bytes.h \
-    ../../../tina/tina/crc/crc8_icode/crc8_icode.h \
+    ../../../tina/tina/crc/crc_checksum.h \
     ../../../tina/tina/crc/xor_checksum.h \
     ../../../tina/tina/debug.h \
     ../../../tina/tina/debug/defines.h \
@@ -136,8 +132,7 @@ HEADERS  += \
     ../../../tina/tina/tina.h \
     ../../../tina/tina/utils/base64.h \
     ../../../tina/tina++/algorithm.h \
-    ../../../tina/tina++/crc/crc16.h \
-    ../../../tina/tina++/crc/crc8.h \
+    ../../../tina/tina++/crc/crc.h \
     ../../../tina/tina++/crc/xor.h \
     ../../../tina/tina++/debug.h \
     ../../../tina/tina++/feldbus/dynamixel/dynamixeldevice.h \
@@ -208,20 +203,21 @@ HEADERS  += \
     ../../../tina/tina/helper/config_tina_default.h \
     ../../../tina/tina/helper/locked_type.h \
     ../../../tina/tina/debug/image.h \
-    ../../../tina/tina/crc/crc16_mcrf4/crc16_mcrf4.h \
     ../../../tina/tina/utils/bit_macros.h \
     ../../../tina/tina++/crc.h \
     ../../../tina/tina++/geometry.h \
     ../../../tina/tina++/statemachine.h \
     ../../../tina/tina++/feldbus/host/bootloader.h \
-    libs/comboboxext.h
+    libs/comboboxext.h \
+    config_tina.h
 
 INCLUDEPATH += \
     ../../../tina \
     ../../../tina/platform/desktop/public \
     tina-platform/public \
     ../../Debug-Server \
-    /usr/include/qwt
+    /usr/include/qwt \
+    .
 
 DISTR_FILES += \
     $$files(images/*.png) \
