@@ -10,7 +10,7 @@ void LineEditExt::focusInEvent(QFocusEvent *e) {
 void LineEditExt::mousePressEvent(QMouseEvent *me) {
     QLineEdit::mousePressEvent(me);
     if (selectOnMousePress_) {
-        selectAll();
+        setSelection(text().count(), -text().count());
         selectOnMousePress_ = false;
     }
 }

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-VERSION = 2.9
+VERSION = 2.10
 
 CONFIG +=  qwt
 QT     += core gui
@@ -213,7 +213,8 @@ HEADERS  += \
     ../../../tina/tina++/crc.h \
     ../../../tina/tina++/geometry.h \
     ../../../tina/tina++/statemachine.h \
-    ../../../tina/tina++/feldbus/host/bootloader.h
+    ../../../tina/tina++/feldbus/host/bootloader.h \
+    libs/comboboxext.h
 
 INCLUDEPATH += \
     ../../../tina \

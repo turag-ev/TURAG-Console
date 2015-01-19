@@ -3,6 +3,7 @@
 
 #include "basefrontend.h"
 #include <tina++/feldbus/host/device.h>
+#include <tina++/feldbus/host/bootloader.h>
 #include <QList>
 #include "util/feldbusdevicefactory.h"
 #include <tina++/feldbus/dynamixel/dynamixeldevice.h>
@@ -20,6 +21,12 @@ class QIntValidator;
 class QWidget;
 class QSplitter;
 class PlainTextFrontend;
+class QLabel;
+class CheckBoxExt;
+class ComboBoxExt;
+class LineEditExt;
+class QGroupBox;
+class QTabWidget;
 
 
 using namespace TURAG;
@@ -34,30 +41,60 @@ protected:
     QListWidget* deviceList_;
     QTextEdit* deviceInfo_;
     QList<FeldbusDeviceWrapper> devices_;
+    QTabWidget* inquiryTabwidget;
+
+    ComboBoxExt* checksumCombobox_;
+    CheckBoxExt* twoByteAddressCheckbox_;
     QPushButton* startInquiry_;
-    QPushButton* bootloadertoolsStartInquiry_;
-    QPushButton* startBootloader_;
-    QCheckBox* iKnowWhatImDoingBoot_;
-    QLineEdit* fromEdit_;
-    QLineEdit* toEdit_;
-    QLineEdit* bootFromEdit_;
-    QLineEdit* bootToEdit_;
-    QLineEdit* broadcastTime_;
+    LineEditExt* fromEdit_;
+    LineEditExt* toEdit_;
     QIntValidator* fromValidator_;
     QIntValidator* toValidator_;
 
+    ComboBoxExt* bootloaderChecksumCombobox_;
+    CheckBoxExt* bootloaderTwoByteAddressCheckbox_;
+    QPushButton* startBootloader_;
+    LineEditExt* broadcastTime_;
+    QPushButton* bootloadertoolsStartInquiry_;
+    LineEditExt* bootFromEdit_;
+    LineEditExt* bootToEdit_;
+    QIntValidator* bootloaderFromValidator_;
+    QIntValidator* bootloaderToValidator_;
+
     QPushButton* dynamixelStartInquiry_;
-    QLineEdit* dynamixelFromEdit_;
-    QLineEdit* dynamixelToEdit_;
+    LineEditExt* dynamixelFromEdit_;
+    LineEditExt* dynamixelToEdit_;
     QIntValidator* dynamixelFromValidator_;
     QIntValidator* dynamixelToValidator_;
     QList<DynamixelDeviceWrapper> dynamixelDevices_;
+
+    QGroupBox* masterGroupBox_;
+    QLabel* masterNoErrorPackages_;
+    QLabel* masterNoAnswer_;
+    QLabel* masterMissingData_;
+    QLabel* masterChecksumError_;
+    QLabel* masterSendError_;
+    QGroupBox* slaveGroupBox_;
+    QLabel* slaveOverflow_;
+    QLabel* slaveChecksumError_;
+    QLabel* slaveLostPackages_;
+    QLabel* slaveAcceptedPackages_;
+    QLabel* slaveUptime_;
+    QPushButton* updateStatisticsButton_;
+    CheckBoxExt* updateStatisticsAuto_;
 
     QSplitter* splitter;
     PlainTextFrontend* busLog_;
 
     QTimer availabilityChecker_;
     QTimer sendBroadcastTimer_;
+    QTimer updateStatisticsTimer_;
+
+    Feldbus::Device* selectedDevice_;
+    TURAG::Feldbus::Bootloader* broadcastBootloader;
+
+    TURAG::Feldbus::Device::AddressLength deviceAddressLength;
+    TURAG::Feldbus::Device::AddressLength bootloaderAddressLength;
 
 protected slots:
     void onInquiry(bool boot);
@@ -73,8 +110,13 @@ protected slots:
     void onCheckDeviceAvailability(void);
 
     void onStartBoot(void);
-    void onIKnowWhatImDoingBoot(void);
     void requestStartBootBroad(void);
+
+    void onUpdateStatistics(void);
+    void onUpdateStatisticsSlave(void);
+
+    void onTwoByteAddressCheckBoxToggled(bool state);
+    void onBootloaderTwoByteAddressCheckBoxToggled(bool state);
 
 public:
     FeldbusFrontend(QWidget *parent = 0);
@@ -89,6 +131,10 @@ public slots:
 private:
     void validateAdressFields();
     void dynamixelValidateAdressFields();
+    void disableStatistics(void);
+    void enableStatistics(void);
+    void resetStatistics(void);
+
     int  sendBroadcastsBoot;
     int  requiredBroadcastsBoot;
 

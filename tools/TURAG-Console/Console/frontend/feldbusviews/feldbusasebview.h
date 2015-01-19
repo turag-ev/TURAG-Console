@@ -79,7 +79,6 @@ protected:
     QLabel* syncBufferSize_;
     QLabel* analogInputSize_;
     QLabel* pwmOutputSize_;
-    QLabel* upTime_;
 
 
     QTimer updateTimer_;
