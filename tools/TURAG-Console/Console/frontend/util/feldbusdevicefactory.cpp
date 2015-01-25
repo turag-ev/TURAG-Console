@@ -37,12 +37,12 @@ FeldbusDeviceWrapper FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfo
 
         switch (device_info.device_info.deviceTypeId) {
         case TURAG_FELDBUS_STELLANTRIEBE_DEVICE_TYPE_DC:
-            device = new Feldbus::DCMotor(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
+            device = new Feldbus::DCMotor(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType, device_info.addressLength);
             deviceTypeString = "DC-Motor";
             break;
 
         case TURAG_FELDBUS_STELLANTRIEBE_DEVICE_TYPE_SERVO:
-            device = new Feldbus::Servo(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
+            device = new Feldbus::Servo(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType, device_info.addressLength);
             deviceTypeString = "Servo-Motor";
             break;
 
@@ -57,7 +57,7 @@ FeldbusDeviceWrapper FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfo
 
         switch (device_info.device_info.deviceTypeId) {
         case TURAG_FELDBUS_LOKALISIERUNGSSENSOREN_DEVICE_TYPE_COLORSENSOR:
-            device = new Feldbus::Farbsensor(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
+            device = new Feldbus::Farbsensor(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType, device_info.addressLength);
             deviceTypeString = "Farbsensor";
             break;
 
@@ -85,7 +85,7 @@ FeldbusDeviceWrapper FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfo
 
         switch (device_info.device_info.deviceTypeId) {
         case TURAG_FELDBUS_ASEB_GENERIC:
-            device = new Feldbus::Aseb(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
+            device = new Feldbus::Aseb(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType, device_info.addressLength);
             deviceTypeString = "generic ASEB";
             break;
 
@@ -100,17 +100,17 @@ FeldbusDeviceWrapper FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfo
 
         switch (device_info.device_info.deviceTypeId) {
         case TURAG_FELDBUS_BOOTLOADER_GENERIC:
-            device = new Feldbus::Bootloader(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
+            device = new Feldbus::Bootloader(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType, device_info.addressLength);
             deviceTypeString = "generic - BMaX";
             break;
 
         case TURAG_FELDBUS_BOOTLOADER_ATMEGA:
-            device = new Feldbus::Bootloader(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
+            device = new Feldbus::Bootloader(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType, device_info.addressLength);
             deviceTypeString = "AtMega - BMaX";
             break;
 
         case TURAG_FELDBUS_BOOTLOADER_XMEGA:
-            device = new Feldbus::Bootloader(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType);
+            device = new Feldbus::Bootloader(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType, device_info.addressLength);
             deviceTypeString = "XMEGA - BMaX";
             break;
 
@@ -141,6 +141,10 @@ FeldbusDeviceWrapper FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfo
         devString += checksumString;
         devString += "</td></tr>\n<tr><td>Puffer-Größe: </td><td>";
         devString += QString("%1").arg(device_info.device_info.bufferSize);
+        devString += "</td></tr>\n<tr><td>Uptime-Frequ.: </td><td>";
+        devString += device_info.device_info.uptimeFrequency ? QString("%1 Hz").arg(device_info.device_info.uptimeFrequency) : "n/a";
+        devString += "</td></tr>\n<tr><td>Versions-Info: </td><td>";
+        devString += device_info.versionInfo;
         devString += "</td></tr>\n</table>";
     }
 

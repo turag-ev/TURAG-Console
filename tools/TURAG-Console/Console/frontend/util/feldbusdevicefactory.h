@@ -13,12 +13,15 @@ using namespace TURAG;
 class FeldbusDeviceInfoExt {
 public:
     FeldbusDeviceInfoExt() :
+        addressLength(Feldbus::Device::AddressLength::byte_),
         address(0),
         device_name(QByteArray("unnamed")) {}
 
-    Feldbus::DeviceInfo device_info;
+    Feldbus::Device::DeviceInfo device_info;
+    Feldbus::Device::AddressLength addressLength;
     int address;
     QByteArray device_name;
+    QByteArray versionInfo;
 
     QString toString() { return QString("%1: %2").arg(address).arg(QString(device_name)); }
 };

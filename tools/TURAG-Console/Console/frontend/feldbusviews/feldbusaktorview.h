@@ -59,7 +59,7 @@ protected:
     QLabel* updateDuration;
     QTimer* updateTimer;
     QList<CommandsetEntry> commandsetGrid;
-    AktorCommand_t* commandset;
+    Aktor::Command_t* commandset;
     QSignalMapper* setMapper;
     QTime updateStartTime;
 

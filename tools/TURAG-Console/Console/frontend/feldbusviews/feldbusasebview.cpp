@@ -68,11 +68,6 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
     pwmOutputSize_ = new QLabel;
     info_layout->addWidget(pwmOutputSize_, 2, 1);
 
-    label = new QLabel("Uptime [sec]:");
-    info_layout->addWidget(label, 3, 0);
-    upTime_ = new QLabel;
-    info_layout->addWidget(upTime_, 3, 1);
-
     // datagraph area on the right
     // -----------------------------------------
     QVBoxLayout* right_layout = new QVBoxLayout;
@@ -243,7 +238,7 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
             label = new QLabel(QString(name));
 
             unsigned frequency;
-            if (aseb_->getPwmFrequency(i + TURAG_FELDBUS_ASEB_INDEX_START_PWM_OUTPUT, &frequency)) {
+            if (aseb_->getPwmFrequency(i, &frequency)) {
                 label->setText(label->text() + QString("\n%1 Hz").arg(frequency));
             } else {
                 label->setText("ERROR");
@@ -299,7 +294,7 @@ void FeldbusAsebView::onResetOutputs(void) {
 }
 
 void FeldbusAsebView::onSetOutputs(void) {
-    unsigned key = TURAG_FELDBUS_ASEB_INDEX_START_DIGITAL_OUTPUT;
+    unsigned key = 0;
     for (LabelCheckboxCombo& combo : digitalOutputs_) {
         aseb_->setDigitalOutput(key, combo.checkbox->isChecked());
         QPalette pal = combo.checkbox->palette();
@@ -307,7 +302,7 @@ void FeldbusAsebView::onSetOutputs(void) {
         combo.checkbox->setPalette(pal);
         ++key;
     }
-    key = TURAG_FELDBUS_ASEB_INDEX_START_PWM_OUTPUT;
+    key = 0;
     for (LabelLineeditCombo& combo : pwmOutputs_) {
         aseb_->setPwmOutput(key, combo.lineedit->text().toFloat());
         QPalette pal = combo.lineedit->palette();
@@ -322,7 +317,7 @@ void FeldbusAsebView::onUpdate(void) {
     int channel = 0;
 
     if (aseb_->sync()) {
-        unsigned key = TURAG_FELDBUS_ASEB_INDEX_START_DIGITAL_INPUT;
+        unsigned key = 0;
         for (LabelCheckboxCombo& combo : digitalInputs_) {
             combo.checkbox->setChecked(aseb_->getDigitalInput(key));
 
@@ -333,7 +328,7 @@ void FeldbusAsebView::onUpdate(void) {
             ++key;
         }
 
-        key = TURAG_FELDBUS_ASEB_INDEX_START_ANALOG_INPUT;
+        key = 0;
         for (LabelLineeditCombo& combo : analogInputs_) {
             combo.lineedit->setText(QString("%1").arg(aseb_->getAnalogInput(key)));
 
@@ -364,13 +359,6 @@ void FeldbusAsebView::onUpdate(void) {
         for (LabelLineeditCombo& combo : analogInputs_) {
             combo.lineedit->setText("ERROR");
         }
-    }
-
-    float uptime;
-    if (aseb_->getUpTime(&uptime)) {
-        upTime_->setText(QString("%1").arg(uptime));
-    } else {
-        upTime_->setText("ERROR");
     }
 }
 
