@@ -152,7 +152,7 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
             } else {
                 entry.label->setText("???");
             }
-            entry.value = new QLineEdit;
+            entry.value = new LineEditExt;
             if (commandset[i].writeAccess == Aktor::Command_t::WriteAccess::no_write) {
                 entry.value->setReadOnly(true);
                 QPalette pal = entry.value->palette();

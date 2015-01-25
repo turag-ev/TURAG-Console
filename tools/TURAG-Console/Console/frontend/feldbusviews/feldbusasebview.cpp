@@ -238,7 +238,7 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
             label = new QLabel(QString(name));
 
             unsigned frequency;
-            if (aseb_->getPwmFrequency(i + TURAG_FELDBUS_ASEB_INDEX_START_PWM_OUTPUT, &frequency)) {
+            if (aseb_->getPwmFrequency(i, &frequency)) {
                 label->setText(label->text() + QString("\n%1 Hz").arg(frequency));
             } else {
                 label->setText("ERROR");
