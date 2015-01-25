@@ -252,7 +252,6 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     connect(bootloadertoolsStartInquiry_, SIGNAL(clicked()), this, SLOT(onStartBootInquiry()));
     connect(dynamixelStartInquiry_, SIGNAL(clicked()), SLOT(onStartDynamixelInquiry()));
     connect(startBootloader_, SIGNAL(clicked()), this, SLOT(onStartBoot()));
-    connect(iKnowWhatImDoingBoot_, SIGNAL(toggled(bool)), this, SLOT(onIKnowWhatImDoingBoot()));
     setEnabled(false);
 
     connect(&availabilityChecker_, SIGNAL(timeout()), this, SLOT(onCheckDeviceAvailability()));
@@ -647,8 +646,6 @@ void FeldbusFrontend::requestStartBootBroad(void) {
 void FeldbusFrontend::onStartBoot(void){
     int seconds = broadcastTime_->text().toInt();
 
-    int seconds = broadcastTime_->text().toInt();
-
     // calculate required Broadcasts
     requiredBroadcastsBoot = seconds * 100;
 
@@ -796,16 +793,4 @@ void FeldbusFrontend::onBootloaderTwoByteAddressCheckBoxToggled(bool state) {
     bootFromEdit_->setValidator(bootloaderFromValidator_);
     bootToEdit_->setValidator(bootloaderToValidator_);
     validateAdressFields();
-}
-
-void FeldbusFrontend::onIKnowWhatImDoingBoot(void){
-
-    if(iKnowWhatImDoingBoot_->isChecked()){
-        startBootloader_->setEnabled(true);
-        broadcastTime_->setEnabled(true);
-    }
-    else{
-        startBootloader_->setEnabled(false);
-        broadcastTime_->setEnabled(false);
-    }
 }

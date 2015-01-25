@@ -110,7 +110,6 @@ protected slots:
     void onCheckDeviceAvailability(void);
 
     void onStartBoot(void);
-    void onIKnowWhatImDoingBoot(void);
     void requestStartBootBroad(void);
 
     void onUpdateStatistics(void);
