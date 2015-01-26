@@ -40,7 +40,7 @@ protected:
     QWidget* feldbusWidget;
     QListWidget* deviceList_;
     QTextEdit* deviceInfo_;
-    QList<FeldbusDeviceWrapper> devices_;
+    QList<std::shared_ptr<FeldbusDeviceWrapper>> devices_;
     QTabWidget* inquiryTabwidget;
 
     ComboBoxExt* checksumCombobox_;
@@ -90,7 +90,7 @@ protected:
     QTimer sendBroadcastTimer_;
     QTimer updateStatisticsTimer_;
 
-    Feldbus::Device* selectedDevice_;
+    FeldbusDeviceWrapper* selectedDevice_;
     TURAG::Feldbus::Bootloader* broadcastBootloader;
 
     TURAG::Feldbus::Device::AddressLength deviceAddressLength;

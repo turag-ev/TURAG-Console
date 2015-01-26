@@ -11,7 +11,7 @@
 #include <tina++/feldbus/host/bootloader.h>
 
 
-FeldbusDeviceWrapper FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfoExt &device_info) {
+FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfoExt &device_info) {
     QString checksumString;
     QString protocolIdString;
     QString deviceTypeString;
@@ -148,10 +148,10 @@ FeldbusDeviceWrapper FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfo
         devString += "</td></tr>\n</table>";
     }
 
-    FeldbusDeviceWrapper wrapper;
-    wrapper.device.reset(device);
-    wrapper.devInfo = device_info;
-    wrapper.deviceInfoText = devString;
+    FeldbusDeviceWrapper* wrapper = new FeldbusDeviceWrapper;
+    wrapper->device.reset(device);
+    wrapper->devInfo = device_info;
+    wrapper->deviceInfoText = devString;
 
     return wrapper;
 }

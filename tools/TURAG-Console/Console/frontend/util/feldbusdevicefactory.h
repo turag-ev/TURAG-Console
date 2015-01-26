@@ -32,12 +32,18 @@ struct FeldbusDeviceWrapper {
     QString deviceInfoText;
 
     FeldbusDeviceWrapper() : device(nullptr) {}
+
+    unsigned oldSlaveAcceptedPackages;
+    unsigned oldSlaveOverflow;
+    unsigned oldSlaveLostPackages;
+    unsigned oldSlaveChecksumError;
+
 };
 
 
 class FeldbusDeviceFactory  {
 public:
-    static FeldbusDeviceWrapper createFeldbusDevice(FeldbusDeviceInfoExt& device_info);
+    static FeldbusDeviceWrapper* createFeldbusDevice(FeldbusDeviceInfoExt& device_info);
 };
 
 

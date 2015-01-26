@@ -218,6 +218,10 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     QVBoxLayout* slaveStatisticsVLayout = new QVBoxLayout;
     slaveStatisticsVLayout->addLayout(slaveStatisticsLayout);
     slaveGroupBox_->setLayout(slaveStatisticsVLayout);
+    slaveGroupBox_->setToolTip(
+                "Zeigt Paketstatistiken seit der letzten Gerätesuche an.\n"
+                "Werte in Klammern sind vor der letzten Gerätesuche entstanden.\n"
+                "Es ist zu beachten, dass die Gerätesuche Checksummenfehler im Slave verursachen kann.");
 
     QHBoxLayout* statisticsLayout = new QHBoxLayout;
     statisticsLayout->addWidget(masterGroupBox_);
@@ -426,15 +430,46 @@ void FeldbusFrontend::onInquiry(bool boot) {
 
                             deviceList_->addItem(dev_info.toString());
                             dev_info.addressLength = addressLength;
-                            devices_.append(FeldbusDeviceFactory::createFeldbusDevice(dev_info));
+                            std::shared_ptr<FeldbusDeviceWrapper> sptr;
+                            sptr.reset(FeldbusDeviceFactory::createFeldbusDevice(dev_info));
+                            devices_.append(sptr);
 
-                            // try to reset the errors that unavoidably ocurred on inquiry
-                            dev->resetSlaveErrors();
+                            // try to save old pakage statistics so we can show them
+                            // in brackets
+                            sptr->oldSlaveAcceptedPackages = 0;
+                            sptr->oldSlaveOverflow = 0;
+                            sptr->oldSlaveLostPackages = 0;
+                            sptr->oldSlaveChecksumError = 0;
+                            if (dev_info.device_info.packageStatisticsAvailable) {
+                                uint32_t count[4];
+                                if (sptr->device.get()->receiveAllSlaveErrorCount(count)) {
+                                    // if the call succeeded, we have one accepted package more
+                                    sptr->oldSlaveAcceptedPackages = count[0] + 1;
+                                    sptr->oldSlaveOverflow = count[1];
+                                    sptr->oldSlaveLostPackages = count[2];
+                                    sptr->oldSlaveChecksumError = count[3];
+                                }
+                            }
 
                             delete dev;
 
                             break;
                         }
+                    } else {
+                        // some device answered, but getting the device-info failed.
+                        // This could be a checksum failure but most likely it's a device with
+                        // an outdated firmware. We indicate this fact by showing question marks.
+                        deviceList_->addItem(QString("%1: ???").arg(i));
+
+                        // deviceList_ and devices_ need to be in sync
+                        FeldbusDeviceWrapper* emptyWrapper = new FeldbusDeviceWrapper;
+                        emptyWrapper->deviceInfoText =
+                                QString("A valid response was received on this address using checksum type %1, but getting the "
+                                "device-info failed. This could be a checksum failure but most "
+                                "likely it's a device with an outdated firmware which is no longer supported.").arg(j);
+                        std::shared_ptr<FeldbusDeviceWrapper> sptr;
+                        sptr.reset(emptyWrapper);
+                        devices_.append(sptr);
                     }
                 }
                 delete dev;
@@ -482,8 +517,10 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
     dynamixelDevices_.clear();
     deviceInfo_->clear();
 
-    for (FeldbusDeviceWrapper dev_wrapper: devices_) {
-        deviceList_->addItem(dev_wrapper.devInfo.toString());
+    for (std::shared_ptr<FeldbusDeviceWrapper> pDevWrapper: devices_) {
+        if (pDevWrapper.get()) {
+            deviceList_->addItem(pDevWrapper.get()->devInfo.toString());
+        }
     }
 
     for (int i = fromAddress; i <= toAddress; i++) {
@@ -522,68 +559,67 @@ void FeldbusFrontend::onDeviceSelected(int row) {
 
 
     if (row < devices_.size() && row != -1) {
-        FeldbusDeviceWrapper dev_wrapper = devices_.at(row);
-        selectedDevice_ = devices_.at(row).device.get();
-        enableStatistics();
-        updateStatisticsTimer_.start(750);
+        selectedDevice_ = devices_.at(row).get();
+        deviceInfo_->setText(selectedDevice_->deviceInfoText);
 
-        deviceInfo_->setText(dev_wrapper.deviceInfoText);
+        if (selectedDevice_->device.get()) {
+            updateStatisticsTimer_.start(750);
+            enableStatistics();
 
+            // create Farbsensor view
+            Feldbus::Farbsensor* farbsensor = dynamic_cast<Feldbus::Farbsensor*>(selectedDevice_->device.get());
+            if (farbsensor) {
+                feldbusWidget = new FeldbusFarbsensorView(farbsensor);
+                splitter->addWidget(feldbusWidget);
+                splitter->setStretchFactor(1,2);
+                return;
+            }
 
-        // create Farbsensor view
-        Feldbus::Farbsensor* farbsensor = dynamic_cast<Feldbus::Farbsensor*>(dev_wrapper.device.get());
-        if (farbsensor) {
-            feldbusWidget = new FeldbusFarbsensorView(farbsensor);
-            splitter->addWidget(feldbusWidget);
-            splitter->setStretchFactor(1,2);
-            return;
+            // create Aktor view for DC motor
+            Feldbus::DCMotor* dcmotor = dynamic_cast<Feldbus::DCMotor*>(selectedDevice_->device.get());
+            if (dcmotor) {
+                feldbusWidget = new FeldbusAktorView(dcmotor);
+                splitter->addWidget(feldbusWidget);
+                splitter->setStretchFactor(1,2);
+                clearActions();
+                addActions(static_cast<FeldbusAktorView*>(feldbusWidget)->getActions());
+                return;
+            }
+
+            // create Aktor view for servo
+            Feldbus::Servo* servo = dynamic_cast<Feldbus::Servo*>(selectedDevice_->device.get());
+            if (servo) {
+                feldbusWidget = new FeldbusAktorView(servo);
+                splitter->addWidget(feldbusWidget);
+                splitter->setStretchFactor(1,2);
+                clearActions();
+                addActions(static_cast<FeldbusAktorView*>(feldbusWidget)->getActions());
+                return;
+            }
+
+            // create ASEB view
+            Feldbus::Aseb* aseb = dynamic_cast<Feldbus::Aseb*>(selectedDevice_->device.get());
+            if (aseb) {
+                feldbusWidget = new FeldbusAsebView(aseb);
+                splitter->addWidget(feldbusWidget);
+                splitter->setStretchFactor(1,2);
+                clearActions();
+                addActions(static_cast<FeldbusAsebView*>(feldbusWidget)->getActions());
+                return;
+            }
+
+            // create Bootloader view
+            Feldbus::Bootloader* boot = dynamic_cast<Feldbus::Bootloader*>(selectedDevice_->device.get());
+            if (boot) {
+                feldbusWidget = new FeldbusBootloaderView(boot);
+                splitter->addWidget(feldbusWidget);
+                splitter->setStretchFactor(1,2);
+                return;
+            }
+
+            // TODO: create more views
+
         }
-
-        // create Aktor view for DC motor
-        Feldbus::DCMotor* dcmotor = dynamic_cast<Feldbus::DCMotor*>(dev_wrapper.device.get());
-        if (dcmotor) {
-            feldbusWidget = new FeldbusAktorView(dcmotor);
-            splitter->addWidget(feldbusWidget);
-            splitter->setStretchFactor(1,2);
-            clearActions();
-            addActions(static_cast<FeldbusAktorView*>(feldbusWidget)->getActions());
-            return;
-        }
-
-        // create Aktor view for servo
-        Feldbus::Servo* servo = dynamic_cast<Feldbus::Servo*>(dev_wrapper.device.get());
-        if (servo) {
-            feldbusWidget = new FeldbusAktorView(servo);
-            splitter->addWidget(feldbusWidget);
-            splitter->setStretchFactor(1,2);
-            clearActions();
-            addActions(static_cast<FeldbusAktorView*>(feldbusWidget)->getActions());
-            return;
-        }
-
-        // create ASEB view
-        Feldbus::Aseb* aseb = dynamic_cast<Feldbus::Aseb*>(dev_wrapper.device.get());
-        if (aseb) {
-            feldbusWidget = new FeldbusAsebView(aseb);
-            splitter->addWidget(feldbusWidget);
-            splitter->setStretchFactor(1,2);
-            clearActions();
-            addActions(static_cast<FeldbusAsebView*>(feldbusWidget)->getActions());
-            return;
-        }
-
-        // create Bootloader view
-        Feldbus::Bootloader* boot = dynamic_cast<Feldbus::Bootloader*>(dev_wrapper.device.get());
-        if (boot) {
-            feldbusWidget = new FeldbusBootloaderView(boot);
-            splitter->addWidget(feldbusWidget);
-            splitter->setStretchFactor(1,2);
-            return;
-        }
-
-        // TODO: create more views
-
-
     } else if (row >= devices_.size() && row < devices_.size() + dynamixelDevices_.size()) {
         Feldbus::DynamixelDevice* dev = dynamixelDevices_.at(row - devices_.size()).device_.get();
         dev->setLed(true);
@@ -608,9 +644,10 @@ void FeldbusFrontend::onRs485DebugMsg(QString msg) {
 void FeldbusFrontend::onCheckDeviceAvailability(void) {
     int i = 0;
 
-    for (FeldbusDeviceWrapper dev_wrapper_ : devices_) {
-        if (dev_wrapper_.device.get() && !dev_wrapper_.device.get()->isAvailable()) {
-            deviceList_->item(i)->setText(dev_wrapper_.devInfo.toString() + " OFFLINE");
+    for (std::shared_ptr<FeldbusDeviceWrapper> pDevWrapper : devices_) {
+        //for (FeldbusDeviceWrapper dev_wrapper_ : devices_) {
+        if (pDevWrapper.get() && pDevWrapper.get()->device.get() && !pDevWrapper.get()->device.get()->isAvailable()) {
+            deviceList_->item(i)->setText(pDevWrapper.get()->devInfo.toString() + " OFFLINE");
         }
         ++i;
     }
@@ -667,12 +704,17 @@ void FeldbusFrontend::onStartBoot(void){
 }
 
 void FeldbusFrontend::onUpdateStatistics(void) {
-    if (selectedDevice_) {
-        masterNoErrorPackages_->setText(QString("%1").arg(selectedDevice_->getTotalTransmissions() - selectedDevice_->getNoAnswerErrors() - selectedDevice_->getMissingDataErrors() - selectedDevice_->getChecksumErrors() - selectedDevice_->getTransmitErrors()));
-        masterNoAnswer_->setText(QString("%1").arg(selectedDevice_->getNoAnswerErrors()));
-        masterMissingData_->setText(QString("%1").arg(selectedDevice_->getMissingDataErrors()));
-        masterChecksumError_->setText(QString("%1").arg(selectedDevice_->getChecksumErrors()));
-        masterSendError_->setText(QString("%1").arg(selectedDevice_->getTransmitErrors()));
+    if (selectedDevice_->device.get()) {
+        masterNoErrorPackages_->setText(QString("%1").arg(
+                                            selectedDevice_->device.get()->getTotalTransmissions()
+                                            - selectedDevice_->device.get()->getNoAnswerErrors()
+                                            - selectedDevice_->device.get()->getMissingDataErrors()
+                                            - selectedDevice_->device.get()->getChecksumErrors()
+                                            - selectedDevice_->device.get()->getTransmitErrors()));
+        masterNoAnswer_->setText(QString("%1").arg(selectedDevice_->device.get()->getNoAnswerErrors()));
+        masterMissingData_->setText(QString("%1").arg(selectedDevice_->device.get()->getMissingDataErrors()));
+        masterChecksumError_->setText(QString("%1").arg(selectedDevice_->device.get()->getChecksumErrors()));
+        masterSendError_->setText(QString("%1").arg(selectedDevice_->device.get()->getTransmitErrors()));
 
         if (updateStatisticsAuto_->isChecked()) {
             onUpdateStatisticsSlave();
@@ -681,10 +723,10 @@ void FeldbusFrontend::onUpdateStatistics(void) {
 }
 
 void FeldbusFrontend::onUpdateStatisticsSlave(void) {
-    if (selectedDevice_) {
+    if (selectedDevice_->device.get()) {
         float uptime = NAN;
 
-        if (selectedDevice_->receiveUptime(&uptime)) {
+        if (selectedDevice_->device->receiveUptime(&uptime)) {
             if (std::isnan(uptime)) {
                 slaveUptime_->setText("n/a");
             } else {
@@ -695,15 +737,15 @@ void FeldbusFrontend::onUpdateStatisticsSlave(void) {
         }
 
         Feldbus::Device::DeviceInfo devInfo;
-        selectedDevice_->getDeviceInfo(&devInfo);
+        selectedDevice_->device->getDeviceInfo(&devInfo);
 
         if (devInfo.packageStatisticsAvailable) {
             uint32_t count[4];
-            if (selectedDevice_->receiveAllSlaveErrorCount(count)) {
-                slaveAcceptedPackages_->setText(QString("%1").arg(count[0]));
-                slaveOverflow_->setText(QString("%1").arg(count[1]));
-                slaveLostPackages_->setText(QString("%1").arg(count[2]));
-                slaveChecksumError_->setText(QString("%1").arg(count[3]));
+            if (selectedDevice_->device->receiveAllSlaveErrorCount(count)) {
+                slaveAcceptedPackages_->setText(QString("%1 (%2)").arg(count[0] - selectedDevice_->oldSlaveAcceptedPackages).arg(selectedDevice_->oldSlaveAcceptedPackages));
+                slaveOverflow_->setText(QString("%1 (%2)").arg(count[1] - selectedDevice_->oldSlaveOverflow).arg(selectedDevice_->oldSlaveOverflow));
+                slaveLostPackages_->setText(QString("%1 (%2)").arg(count[2] - selectedDevice_->oldSlaveLostPackages).arg(selectedDevice_->oldSlaveLostPackages));
+                slaveChecksumError_->setText(QString("%1 (%2)").arg(count[3] - selectedDevice_->oldSlaveChecksumError).arg(selectedDevice_->oldSlaveChecksumError));
             } else {
                 slaveAcceptedPackages_->setText("error");
                 slaveOverflow_->setText("error");
