@@ -45,7 +45,6 @@ win32: {
 
 SOURCES +=\
         mainwindow.cpp \
-    ../../../tina/platform/desktop/thread.cpp \
     ../../../tina/tina/crc/crc_checksum.c \
     ../../../tina/tina/debug/graph.c \
     ../../../tina/tina/feldbus/dynamixel/dxl_hal.c \
@@ -99,16 +98,11 @@ SOURCES +=\
     frontend/hex2bin/hex2bin.c \
     ../../../tina/tina/debug/image.c \
     ../../../tina/tina/debug/print.c \
-    ../../../tina/tina++/feldbus/host/bootloader_tina.cpp
+    ../../../tina/tina++/feldbus/host/bootloader_tina.cpp \
+    ../../../tina/platform/desktop/thread.cpp
 
 HEADERS  += \
     mainwindow.h \
-    ../../../tina/platform/desktop/public/tina/can.h \
-    ../../../tina/platform/desktop/public/tina/debugprint.h \
-    ../../../tina/platform/desktop/public/tina/thread.h \
-    ../../../tina/platform/desktop/public/tina/time.h \
-    ../../../tina/platform/desktop/public/tina/timetype.h \
-    ../../../tina/platform/desktop/public/tina++/can.h \
     ../../../tina/platform/desktop/public/tina++/thread.h \
     ../../../tina/tina/bytes.h \
     ../../../tina/tina/crc/crc_checksum.h \
@@ -198,7 +192,6 @@ HEADERS  += \
     libs/loggerwidget.h \
     libs/log.h \
     frontend/hex2bin/hex2bin.h \
-    ../../../tina/platform/desktop/public/tina/config_tina_platform.h \
     ../../../tina/tina/helper/config_tina_default.h \
     ../../../tina/tina/helper/locked_type.h \
     ../../../tina/tina/debug/image.h \
@@ -230,7 +223,17 @@ HEADERS  += \
     ../../../tina/tina++/utils/misc-doc.h \
     ../../../tina/tina++/utils/timer.h \
     libs/comboboxext.h \
-    config_tina.h
+    config_tina.h \
+    ../../../tina/tina/feldbus/host/rs485.h \
+    ../../../tina/tina/helper/static_assert.h \
+    ../../../tina/tina++/debug/binary.h \
+    ../../../tina/platform/desktop/public/tina/can.h \
+    ../../../tina/platform/desktop/public/tina/debugprint.h \
+    ../../../tina/platform/desktop/public/tina/thread.h \
+    ../../../tina/platform/desktop/public/tina/time.h \
+    ../../../tina/platform/desktop/public/tina/timetype.h \
+    ../../../tina/platform/desktop/public/tina/config_tina_platform.h \
+    ../../../tina/platform/desktop/public/tina++/can.h
 
 INCLUDEPATH += \
     ../../../tina \

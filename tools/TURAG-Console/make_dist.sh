@@ -3,6 +3,12 @@
 # aktuelles Verzeichnis speichern
 OLD_PWD=`pwd`
 
+if [ "$1" == "" ]; then
+	LSB="$(lsb_release -sc)"
+else
+  LSB="$1"
+fi
+
 # in Verzeichnis von Skript gehen
 cd "$( dirname "${BASH_SOURCE[0]}" )/Console"
 
@@ -20,7 +26,7 @@ sed 's/\.\.\/\.\.\/Debug-Server/\.\./' Console.new.pro > Console.pro
 rm Console.new.pro
 
 # Konfigurieren mit git-Versionsnummer
-qmake EXT_VERSION=~git`date +%Y%m%d`
+qmake EXT_VERSION=~git`date +%Y%m%d`~$LSB
 
 # Tarball erstellen
 make distr
