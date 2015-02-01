@@ -89,3 +89,11 @@ extern "C" bool turag_rs485_transceive(uint8_t *transmit, int* transmit_length, 
 extern "C" void turag_rs485_buffer_clear(void) {
 	turag_rs485_data_buffer.clear();
 }
+
+extern "C" void turag_rs485_set_timeout(TuragSystemTime timeout) {
+	rs485_timeout = timeout;
+}
+
+extern "C" TuragSystemTime turag_rs485_get_timeout(void) {
+	return rs485_timeout;
+}

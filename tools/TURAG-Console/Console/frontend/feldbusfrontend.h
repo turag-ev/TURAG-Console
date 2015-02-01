@@ -50,16 +50,18 @@ protected:
     LineEditExt* toEdit_;
     QIntValidator* fromValidator_;
     QIntValidator* toValidator_;
+	QList<QWidget*> inquiryWidgetList;
 
     ComboBoxExt* bootloaderChecksumCombobox_;
     CheckBoxExt* bootloaderTwoByteAddressCheckbox_;
     QPushButton* startBootloader_;
-    LineEditExt* broadcastTime_;
     QPushButton* bootloadertoolsStartInquiry_;
     LineEditExt* bootFromEdit_;
     LineEditExt* bootToEdit_;
     QIntValidator* bootloaderFromValidator_;
     QIntValidator* bootloaderToValidator_;
+	QList<QWidget*> bootloaderInquiryWidgetList;
+	QList<QWidget*> bootloaderStartBootloaderWidgetList;
 
     QPushButton* dynamixelStartInquiry_;
     LineEditExt* dynamixelFromEdit_;
@@ -129,14 +131,18 @@ public slots:
     virtual void clear(void);
 
 private:
+	void setInquiryWidgetsEnabled(bool enabled);
+	void setBootInquiryWidgetsEnabled(bool enabled);
+	void setDynamixelInquiryWidgetsEnabled(bool enabled);
+
     void validateAdressFields();
     void dynamixelValidateAdressFields();
     void disableStatistics(void);
     void enableStatistics(void);
     void resetStatistics(void);
 
-    int  sendBroadcastsBoot;
-    int  requiredBroadcastsBoot;
+	bool inquiryRunning;
+	bool bootloaderActivationRunning;
 
     TURAG::Feldbus::Device* dev;
 

@@ -99,7 +99,8 @@ SOURCES +=\
     ../../../tina/tina/debug/image.c \
     ../../../tina/tina/debug/print.c \
     ../../../tina/tina++/feldbus/host/bootloader_tina.cpp \
-    ../../../tina/platform/desktop/thread.cpp
+    ../../../tina/platform/desktop/thread.cpp \
+    frontend/feldbusviews/feldbusbootloaderatmegaview.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -233,7 +234,8 @@ HEADERS  += \
     ../../../tina/platform/desktop/public/tina/time.h \
     ../../../tina/platform/desktop/public/tina/timetype.h \
     ../../../tina/platform/desktop/public/tina/config_tina_platform.h \
-    ../../../tina/platform/desktop/public/tina++/can.h
+    ../../../tina/platform/desktop/public/tina++/can.h \
+    frontend/feldbusviews/feldbusbootloaderatmegaview.h
 
 INCLUDEPATH += \
     ../../../tina \

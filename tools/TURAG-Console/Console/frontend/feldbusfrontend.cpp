@@ -28,6 +28,7 @@
 #include "feldbusviews/feldbusaktorview.h"
 #include "feldbusviews/feldbusasebview.h"
 #include "feldbusviews/feldbusbootloaderview.h"
+#include "feldbusviews/feldbusbootloaderatmegaview.h"
 #include <debugprintclass.h>
 #include "plaintextfrontend.h"
 #include <cmath>
@@ -43,7 +44,9 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     fromValidator_(nullptr), toValidator_(nullptr), bootloaderFromValidator_(nullptr),
     bootloaderToValidator_(nullptr), selectedDevice_(nullptr), broadcastBootloader(nullptr),
     deviceAddressLength(Feldbus::Device::AddressLength::byte_),
-    bootloaderAddressLength(Feldbus::Device::AddressLength::byte_)
+	bootloaderAddressLength(Feldbus::Device::AddressLength::byte_),
+	inquiryRunning(false),
+	bootloaderActivationRunning(false)
 {
     /*
      * Default device inquiry interface
@@ -54,31 +57,37 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     QWidget* left_layout_widget = new QWidget;
     QVBoxLayout* left_layout = new QVBoxLayout;
 
-    QString checksumTypeTooltip("Stellt ein, mit welcher Checksumme nach Geräten gesucht wird. Bei Auswahl von `Alle' dauert die Suche entsprechend länger.");
-
     QHBoxLayout* layoutAboveTop = new QHBoxLayout;
     checksumCombobox_ = new ComboBoxExt("ChecksumConventionalDevices", 2);
+	inquiryWidgetList.append(checksumCombobox_);
     checksumCombobox_->addItem("xor");
     checksumCombobox_->addItem("crc8_icode");
     checksumCombobox_->addItem("Alle");
     checksumCombobox_->selectStandardItem();
     checksumCombobox_->setToolTip("Stellt ein, mit welcher Checksumme nach Geräten gesucht wird. Bei Auswahl von `Alle' dauert die Suche entsprechend länger.");
     QFormLayout* layoutAboveTopFormLayout = new QFormLayout;
-    layoutAboveTopFormLayout->addRow("Checksumme:", checksumCombobox_);
+	QLabel* checksumLabel = new QLabel("Checksumme:");
+	inquiryWidgetList.append(checksumLabel);
+	layoutAboveTopFormLayout->addRow(checksumLabel, checksumCombobox_);
     layoutAboveTop->addLayout(layoutAboveTopFormLayout);
     twoByteAddressCheckbox_ = new CheckBoxExt("2-Byte-Adresse", "twoByteAddressConventionalDevicesCheckbox", false);
-    connect(twoByteAddressCheckbox_, SIGNAL(toggled(bool)), this, SLOT(onTwoByteAddressCheckBoxToggled(bool)));
+	inquiryWidgetList.append(twoByteAddressCheckbox_);
+	connect(twoByteAddressCheckbox_, SIGNAL(toggled(bool)), this, SLOT(onTwoByteAddressCheckBoxToggled(bool)));
     layoutAboveTop->addWidget(twoByteAddressCheckbox_);
 
     QHBoxLayout* layoutTop = new QHBoxLayout;
     QLabel* fromLabel = new QLabel("Von:");
-    layoutTop->addWidget(fromLabel);
+	inquiryWidgetList.append(fromLabel);
+	layoutTop->addWidget(fromLabel);
     fromEdit_ = new LineEditExt(objectName() + "fromAddress", "1");
-    layoutTop->addWidget(fromEdit_);
+	inquiryWidgetList.append(fromEdit_);
+	layoutTop->addWidget(fromEdit_);
     QLabel* topLabel = new QLabel("bis:");
-    layoutTop->addWidget(topLabel);
+	inquiryWidgetList.append(topLabel);
+	layoutTop->addWidget(topLabel);
     toEdit_ = new LineEditExt(objectName() + "toAddress", "25");
-    layoutTop->addWidget(toEdit_);
+	inquiryWidgetList.append(toEdit_);
+	layoutTop->addWidget(toEdit_);
     startInquiry_ = new QPushButton("Geräte suchen");
     layoutTop->addWidget(startInquiry_);
 
@@ -87,14 +96,18 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 
     QHBoxLayout* dynamixel_layoutTop = new QHBoxLayout;
     QLabel* dynamixel_fromLabel = new QLabel("Von:");
-    dynamixel_layoutTop->addWidget(dynamixel_fromLabel);
+	inquiryWidgetList.append(dynamixel_fromLabel);
+	dynamixel_layoutTop->addWidget(dynamixel_fromLabel);
     dynamixelFromEdit_ = new LineEditExt(objectName() + "dynamixelFromAddress", "1");
-    dynamixelFromEdit_->setValidator(dynamixelFromValidator_);
-    dynamixel_layoutTop->addWidget(dynamixelFromEdit_);
+	inquiryWidgetList.append(dynamixelFromEdit_);
+	dynamixelFromEdit_->setValidator(dynamixelFromValidator_);
+	dynamixel_layoutTop->addWidget(dynamixelFromEdit_);
     QLabel* dynamixel_topLabel = new QLabel("bis:");
-    dynamixel_layoutTop->addWidget(dynamixel_topLabel);
+	inquiryWidgetList.append(dynamixel_topLabel);
+	dynamixel_layoutTop->addWidget(dynamixel_topLabel);
     dynamixelToEdit_ = new LineEditExt(objectName() + "dynamixelToAddress", "25");
-    dynamixelToEdit_->setValidator(dynamixelToValidator_);
+	inquiryWidgetList.append(dynamixelToEdit_);
+	dynamixelToEdit_->setValidator(dynamixelToValidator_);
     dynamixel_layoutTop->addWidget(dynamixelToEdit_);
     dynamixelStartInquiry_ = new QPushButton("Dynamixel-Servos suchen");
     dynamixel_layoutTop->addWidget(dynamixelStartInquiry_);
@@ -110,41 +123,48 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
      */
     QHBoxLayout* bootloaderLayoutAboveSetupLayout = new QHBoxLayout;
     bootloaderChecksumCombobox_ = new ComboBoxExt("BootloaderChecksumConventionalDevices", 1);
+	bootloaderStartBootloaderWidgetList.append(bootloaderChecksumCombobox_);
+	bootloaderInquiryWidgetList.append(bootloaderChecksumCombobox_);
     bootloaderChecksumCombobox_->addItem("xor");
     bootloaderChecksumCombobox_->addItem("crc8_icode");
     bootloaderChecksumCombobox_->selectStandardItem();
     bootloaderChecksumCombobox_->setToolTip("Stellt ein, mit welcher Checksumme nach Geräten gesucht wird.");
     QFormLayout* bootloaderLayoutAboveSetupLayoutFormLayout = new QFormLayout;
-    bootloaderLayoutAboveSetupLayoutFormLayout->addRow("Checksumme:", bootloaderChecksumCombobox_);
+	QLabel* bootloaderChecksumLabel = new QLabel("Checksumme:");
+	bootloaderStartBootloaderWidgetList.append(bootloaderChecksumLabel);
+	bootloaderInquiryWidgetList.append(bootloaderChecksumLabel);
+	bootloaderLayoutAboveSetupLayoutFormLayout->addRow(bootloaderChecksumLabel, bootloaderChecksumCombobox_);
     bootloaderLayoutAboveSetupLayout->addLayout(bootloaderLayoutAboveSetupLayoutFormLayout);
     bootloaderTwoByteAddressCheckbox_ = new CheckBoxExt("2-Byte-Adresse", "BootloaderTwoByteAddressConventionalDevicesCheckbox", true);
-    connect(bootloaderTwoByteAddressCheckbox_, SIGNAL(toggled(bool)), this, SLOT(onBootloaderTwoByteAddressCheckBoxToggled(bool)));
+	bootloaderStartBootloaderWidgetList.append(bootloaderTwoByteAddressCheckbox_);
+	bootloaderInquiryWidgetList.append(bootloaderTwoByteAddressCheckbox_);
+	connect(bootloaderTwoByteAddressCheckbox_, SIGNAL(toggled(bool)), this, SLOT(onBootloaderTwoByteAddressCheckBoxToggled(bool)));
     bootloaderLayoutAboveSetupLayout->addWidget(bootloaderTwoByteAddressCheckbox_);
 
-    QHBoxLayout* bootloadertools_setupLayout = new QHBoxLayout;
-    QLabel* secondsLabel_Boot = new QLabel("Startdauer [sec]:");
-    broadcastTime_ = new LineEditExt(objectName() + "broadcastTime", "5");
-    startBootloader_ = new QPushButton("Bootloader starten");
-    bootloadertools_setupLayout->addWidget(secondsLabel_Boot);
-    bootloadertools_setupLayout->addWidget(broadcastTime_);
-    bootloadertools_setupLayout->addWidget(startBootloader_);
 
     QHBoxLayout* bootloadertools_layoutTop = new QHBoxLayout;
-    QLabel* fromLabel_Boot = new QLabel("Von:");
-    bootloadertools_layoutTop->addWidget(fromLabel_Boot);
+	QLabel* fromLabel_Boot = new QLabel("Von:");
+	bootloaderInquiryWidgetList.append(fromLabel_Boot);
+	bootloadertools_layoutTop->addWidget(fromLabel_Boot);
     bootFromEdit_ = new LineEditExt(objectName() + "bootFromAddress", "1");
-    bootloadertools_layoutTop->addWidget(bootFromEdit_);
+	bootloaderInquiryWidgetList.append(bootFromEdit_);
+	bootloadertools_layoutTop->addWidget(bootFromEdit_);
     QLabel* topLabel_Boot = new QLabel("bis:");
-    bootloadertools_layoutTop->addWidget(topLabel_Boot);
+	bootloaderInquiryWidgetList.append(topLabel_Boot);
+	bootloadertools_layoutTop->addWidget(topLabel_Boot);
     bootToEdit_ = new LineEditExt(objectName() + "bootToAddress", "25");
-    bootloadertools_layoutTop->addWidget(bootToEdit_);
-    bootloadertoolsStartInquiry_ = new QPushButton("Geräte suchen");
-    bootloadertools_layoutTop->addWidget(bootloadertoolsStartInquiry_);
+	bootloaderInquiryWidgetList.append(bootToEdit_);
+	bootloadertools_layoutTop->addWidget(bootToEdit_);
+	QVBoxLayout* bootButtonLayout = new QVBoxLayout;
+	startBootloader_ = new QPushButton("Bootloader starten");
+	bootloaderInquiryWidgetList.append(startBootloader_);
+	bootButtonLayout->addWidget(startBootloader_);
+	bootloadertoolsStartInquiry_ = new QPushButton("Geräte suchen");
+	bootButtonLayout->addWidget(bootloadertoolsStartInquiry_);
+	bootloadertools_layoutTop->addLayout(bootButtonLayout);
 
     QVBoxLayout* bootloaderLayout = new QVBoxLayout;
     bootloaderLayout->addLayout(bootloaderLayoutAboveSetupLayout);
-    bootloaderLayout->addLayout(bootloadertools_setupLayout);
-    bootloaderLayout->addSpacing(20);
     bootloaderLayout->addLayout(bootloadertools_layoutTop);
     bootloaderLayout->addStretch();
 
@@ -266,7 +286,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     // windows is a bit slower :D
     turag_rs485_init(0, turag_ms_to_ticks(50));
 #else
-     turag_rs485_init(0, turag_ms_to_ticks(10));
+	 turag_rs485_init(0, turag_ms_to_ticks(10));
 #endif
 
     onTwoByteAddressCheckBoxToggled(twoByteAddressCheckbox_->isChecked());
@@ -358,21 +378,22 @@ void FeldbusFrontend::dynamixelValidateAdressFields() {
 }
 
 void FeldbusFrontend::onInquiry(bool boot) {
-    inquiryTabwidget->setEnabled(false);
+	inquiryRunning = true;
+	bootloaderActivationRunning = false;
 
     TURAG::Feldbus::Device::AddressLength addressLength;
     int checksumTypeIndex;
     if (!boot) {
+		setInquiryWidgetsEnabled(false);
         addressLength = deviceAddressLength;
         checksumTypeIndex = checksumCombobox_->currentIndex();
     } else {
+		setBootInquiryWidgetsEnabled(false);
         addressLength = bootloaderAddressLength;
         checksumTypeIndex = bootloaderChecksumCombobox_->currentIndex();
     }
 
-    startInquiry_->setEnabled(false);
-    bootloadertoolsStartInquiry_->setEnabled(false);
-    availabilityChecker_.stop();
+	availabilityChecker_.stop();
 
     validateAdressFields();
 
@@ -384,7 +405,7 @@ void FeldbusFrontend::onInquiry(bool boot) {
         toAddress = bootToEdit_->text().toInt();
     }
 
-    deviceList_->clearSelection();
+	deviceList_->clearSelection();
     deviceList_->clear();
     devices_.clear();
     deviceInfo_->clear();
@@ -395,9 +416,9 @@ void FeldbusFrontend::onInquiry(bool boot) {
 
     for (int i = fromAddress; i <= toAddress; i++) {
         if (boot) {
-            bootloadertoolsStartInquiry_->setText(QStringLiteral("Geräte suchen: %1 %").arg(i * 100 / (toAddress - fromAddress + 1)));
+			bootloadertoolsStartInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg(i * 100 / (toAddress - fromAddress + 1)));
         } else {
-            startInquiry_->setText(QStringLiteral("Geräte suchen: %1 %").arg(i * 100 / (toAddress - fromAddress + 1)));
+			startInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg(i * 100 / (toAddress - fromAddress + 1)));
         }
         for (int j = 0; j <= static_cast<int>(Feldbus::Device::ChecksumType::crc8_icode); j++) {
             if (j == checksumTypeIndex || checksumTypeIndex > static_cast<int>(Feldbus::Device::ChecksumType::crc8_icode)) {
@@ -476,34 +497,60 @@ void FeldbusFrontend::onInquiry(bool boot) {
             }
         }
         QCoreApplication::processEvents();
+
+		if (!inquiryRunning) {
+			break;
+		}
     }
+
+	inquiryRunning = false;
 
     for (DynamixelDeviceWrapper dev_wrapper : dynamixelDevices_) {
         deviceList_->addItem(dev_wrapper.toString());
     }
 
-    startInquiry_->setEnabled(true);
-    startInquiry_->setText("Geräte suchen");
-    bootloadertoolsStartInquiry_->setEnabled(true);
-    bootloadertoolsStartInquiry_->setText("Geräte suchen");
+	if (!boot) {
+		setInquiryWidgetsEnabled(true);
+	} else {
+		setBootInquiryWidgetsEnabled(true);
+	}
 
     availabilityChecker_.start(250);
-    inquiryTabwidget->setEnabled(true);
 }
 
 void FeldbusFrontend::onStartInquiry(void) {
-    onInquiry(false);
+	if (!inquiryRunning) {
+		// start an inquiry
+		onInquiry(false);
+	} else {
+		// if inquiryRunning is set, then the user wants to cancel
+		// which is signalled by setting inquiryRunning to false.
+		inquiryRunning = false;
+	}
 }
 
 void FeldbusFrontend::onStartBootInquiry(void) {
-    onInquiry(true);
+	if (!inquiryRunning) {
+		// start an inquiry
+		onInquiry(true);
+	} else {
+		// if inquiryRunning is set, then the user wants to cancel
+		// which is signalled by setting inquiryRunning to false.
+		inquiryRunning = false;
+	}
 }
 
 void FeldbusFrontend::onStartDynamixelInquiry(void) {
-    inquiryTabwidget->setEnabled(false);
+	if (inquiryRunning) {
+		inquiryRunning = false;
+		return;
+	}
 
-    dynamixelStartInquiry_->setEnabled(false);
-    availabilityChecker_.stop();
+	inquiryRunning = true;
+
+	setDynamixelInquiryWidgetsEnabled(false);
+
+	availabilityChecker_.stop();
 
     dynamixelValidateAdressFields();
 
@@ -524,7 +571,7 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
     }
 
     for (int i = fromAddress; i <= toAddress; i++) {
-		dynamixelStartInquiry_->setText(QStringLiteral("Dynamixel-Servos suchen: %1 %").arg(i * 100 / (toAddress - fromAddress + 1)));
+		dynamixelStartInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg(i * 100 / (toAddress - fromAddress + 1)));
 
         Feldbus::DynamixelDevice* dev = new Feldbus::DynamixelDevice("", i, 2, 1);
         int modelNumber = 0;
@@ -537,13 +584,17 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
             deviceList_->addItem(dev_wrapper.toString());
         }
         QCoreApplication::processEvents();
-    }
 
-    dynamixelStartInquiry_->setEnabled(true);
-    dynamixelStartInquiry_->setText("Dynamixel-Servos suchen");
+		if (!inquiryRunning) {
+			break;
+		}
+	}
+
+	inquiryRunning = false;
 
     availabilityChecker_.start(250);
-    inquiryTabwidget->setEnabled(true);
+
+	setDynamixelInquiryWidgetsEnabled(true);
 }
 
 void FeldbusFrontend::onDeviceSelected(int row) {
@@ -608,10 +659,10 @@ void FeldbusFrontend::onDeviceSelected(int row) {
                 return;
             }
 
-            // create Bootloader view
-            Feldbus::Bootloader* boot = dynamic_cast<Feldbus::Bootloader*>(selectedDevice_->device.get());
+			// create Bootloader Atmega view
+			Feldbus::BootloaderAtmega* boot = dynamic_cast<Feldbus::BootloaderAtmega*>(selectedDevice_->device.get());
             if (boot) {
-                feldbusWidget = new FeldbusBootloaderView(boot);
+				feldbusWidget = new FeldbusBootloaderAtmegaView(boot);
                 splitter->addWidget(feldbusWidget);
                 splitter->setStretchFactor(1,2);
                 return;
@@ -663,44 +714,68 @@ void FeldbusFrontend::onCheckDeviceAvailability(void) {
 
 
 void FeldbusFrontend::requestStartBootBroad(void) {
-    broadcastBootloader->sendEnterBootloaderBroadcast();
+	static int animationCounter = 0;
+	static int animationState = 0;
 
-    int percent = 100 * sendBroadcastsBoot / requiredBroadcastsBoot;
+	if (bootloaderActivationRunning) {
+		broadcastBootloader->sendEnterBootloaderBroadcast();
 
-    startBootloader_->setText(QString("Gesendet: %1 % ").arg(percent));
+		++animationCounter;
+		if (animationCounter > 10) {
+			animationCounter = 0;
+			++animationState;
 
-    if(sendBroadcastsBoot >= requiredBroadcastsBoot){
-        sendBroadcastTimer_.stop();
-        startBootloader_->setEnabled(true);
-        startBootloader_->setText(QStringLiteral("Bootloader erneut starten"));
-        inquiryTabwidget->setEnabled(true);
-    }
+			switch(animationState) {
+				case  1: startBootloader_->setText(QStringLiteral("A   bbrechen")); break;
+				case  2: startBootloader_->setText(QStringLiteral("Ab   brechen")); break;
+				case  3: startBootloader_->setText(QStringLiteral("Abb   rechen")); break;
+				case  4: startBootloader_->setText(QStringLiteral("Abbr   echen")); break;
+				case  5: startBootloader_->setText(QStringLiteral("Abbre   chen")); break;
+				case  6: startBootloader_->setText(QStringLiteral("Abbrec   hen")); break;
+				case  7: startBootloader_->setText(QStringLiteral("Abbrech   en")); break;
+				case  8: startBootloader_->setText(QStringLiteral("Abbreche   n")); break;
+				case  9: startBootloader_->setText(QStringLiteral("Abbrechen   ")); break;
+				case 10: startBootloader_->setText(QStringLiteral(" Abbrechen  ")); break;
+				case 11: startBootloader_->setText(QStringLiteral("  Abbrechen ")); break;
+				default: startBootloader_->setText(QStringLiteral("   Abbrechen")); animationState = 0; break;
+			}
+		}
 
-    sendBroadcastsBoot++;
+	} else {
+		startBootloader_->setText(QStringLiteral("Bootloader starten"));
+		sendBroadcastTimer_.stop();
+		animationCounter = 0;
+		animationState = 0;
+
+		if (!inquiryRunning) {
+			for (QWidget* child : bootloaderStartBootloaderWidgetList) {
+				child->setEnabled(true);
+			}
+		}
+	}
 }
 
 
-void FeldbusFrontend::onStartBoot(void){
-    int seconds = broadcastTime_->text().toInt();
+void FeldbusFrontend::onStartBoot(void) {
+	if (bootloaderActivationRunning) {
+		bootloaderActivationRunning = false;
+		return;
+	}
 
-    // calculate required Broadcasts
-    requiredBroadcastsBoot = seconds * 100;
+	bootloaderActivationRunning = true;
+	sendBroadcastTimer_.start(10);
+	startBootloader_->setText(QStringLiteral("   Abbrechen"));
 
-    sendBroadcastsBoot = 0;
-    startBootloader_->setEnabled(false);
-    sendBroadcastTimer_.start(10);
-    inquiryTabwidget->setEnabled(false);
+	for (QWidget* child : bootloaderStartBootloaderWidgetList) {
+		child->setEnabled(false);
+	}
 
-    if(sendBroadcastTimer_.isActive()){
-		startBootloader_->setText(QStringLiteral("Broadcast-Timer gestartet"));
-    }
-
-    if (broadcastBootloader) {
-        delete broadcastBootloader;
-    }
-    broadcastBootloader = new Feldbus::Bootloader("broadcastBootloader", 0,
-                                                  static_cast<Feldbus::Device::ChecksumType>(bootloaderChecksumCombobox_->currentIndex()),
-                                                  bootloaderAddressLength);
+	if (broadcastBootloader) {
+		delete broadcastBootloader;
+	}
+	broadcastBootloader = new Feldbus::Bootloader("broadcastBootloader", 0,
+												  static_cast<Feldbus::Device::ChecksumType>(bootloaderChecksumCombobox_->currentIndex()),
+												  bootloaderAddressLength);
 }
 
 void FeldbusFrontend::onUpdateStatistics(void) {
@@ -835,4 +910,57 @@ void FeldbusFrontend::onBootloaderTwoByteAddressCheckBoxToggled(bool state) {
     bootFromEdit_->setValidator(bootloaderFromValidator_);
     bootToEdit_->setValidator(bootloaderToValidator_);
     validateAdressFields();
+}
+
+void FeldbusFrontend::setInquiryWidgetsEnabled(bool enabled) {
+	if (enabled) {
+		inquiryTabwidget->setTabEnabled(1, true);
+
+		for (QWidget* child : inquiryWidgetList) {
+			child->setEnabled(true);
+		}
+		dynamixelStartInquiry_->setEnabled(true);
+		startInquiry_->setText("Geräte suchen");
+	} else {
+		inquiryTabwidget->setTabEnabled(1, false);
+		for (QWidget* child : inquiryWidgetList) {
+			child->setEnabled(false);
+		}
+		dynamixelStartInquiry_->setEnabled(false);
+	}
+}
+
+void FeldbusFrontend::setBootInquiryWidgetsEnabled(bool enabled) {
+	if (enabled) {
+		inquiryTabwidget->setTabEnabled(0, true);
+		bootloadertoolsStartInquiry_->setText("Geräte suchen");
+
+		for (QWidget* child : bootloaderInquiryWidgetList) {
+			child->setEnabled(true);
+		}
+	} else {
+		inquiryTabwidget->setTabEnabled(0, false);
+
+		for (QWidget* child : bootloaderInquiryWidgetList) {
+			child->setEnabled(false);
+		}
+	}
+}
+
+void FeldbusFrontend::setDynamixelInquiryWidgetsEnabled(bool enabled) {
+	if (enabled) {
+		inquiryTabwidget->setTabEnabled(1, true);
+
+		for (QWidget* child : inquiryWidgetList) {
+			child->setEnabled(true);
+		}
+		startInquiry_->setEnabled(true);
+		dynamixelStartInquiry_->setText("Dynamixel-Servos suchen");
+	} else {
+		inquiryTabwidget->setTabEnabled(1, false);
+		for (QWidget* child : inquiryWidgetList) {
+			child->setEnabled(false);
+		}
+		startInquiry_->setEnabled(false);
+	}
 }
