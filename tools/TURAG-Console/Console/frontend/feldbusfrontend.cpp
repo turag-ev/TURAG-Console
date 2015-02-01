@@ -721,28 +721,32 @@ void FeldbusFrontend::requestStartBootBroad(void) {
 		broadcastBootloader->sendEnterBootloaderBroadcast();
 
 		++animationCounter;
-		if (animationCounter > 10) {
+		if (animationCounter > 35) {
 			animationCounter = 0;
 			++animationState;
 
 			switch(animationState) {
-				case  1: startBootloader_->setText(QStringLiteral("A   bbrechen")); break;
-				case  2: startBootloader_->setText(QStringLiteral("Ab   brechen")); break;
-				case  3: startBootloader_->setText(QStringLiteral("Abb   rechen")); break;
-				case  4: startBootloader_->setText(QStringLiteral("Abbr   echen")); break;
-				case  5: startBootloader_->setText(QStringLiteral("Abbre   chen")); break;
-				case  6: startBootloader_->setText(QStringLiteral("Abbrec   hen")); break;
-				case  7: startBootloader_->setText(QStringLiteral("Abbrech   en")); break;
-				case  8: startBootloader_->setText(QStringLiteral("Abbreche   n")); break;
-				case  9: startBootloader_->setText(QStringLiteral("Abbrechen   ")); break;
-				case 10: startBootloader_->setText(QStringLiteral(" Abbrechen  ")); break;
-				case 11: startBootloader_->setText(QStringLiteral("  Abbrechen ")); break;
-				default: startBootloader_->setText(QStringLiteral("   Abbrechen")); animationState = 0; break;
+			case  1: {
+				QFont font = startBootloader_->font();
+				font.setWeight(QFont::Normal);
+				startBootloader_->setFont(font);
+				break;
+			}
+
+			default:  {
+				QFont font = startBootloader_->font();
+				font.setWeight(QFont::Bold);
+				startBootloader_->setFont(font);
+				animationState = 0;
+				break;
+			}
 			}
 		}
-
 	} else {
 		startBootloader_->setText(QStringLiteral("Bootloader starten"));
+		QFont font = startBootloader_->font();
+		font.setWeight(QFont::Normal);
+		startBootloader_->setFont(font);
 		sendBroadcastTimer_.stop();
 		animationCounter = 0;
 		animationState = 0;
@@ -764,7 +768,10 @@ void FeldbusFrontend::onStartBoot(void) {
 
 	bootloaderActivationRunning = true;
 	sendBroadcastTimer_.start(10);
-	startBootloader_->setText(QStringLiteral("   Abbrechen"));
+	startBootloader_->setText(QStringLiteral("Abbrechen"));
+	QFont font = startBootloader_->font();
+	font.setWeight(QFont::Bold);
+	startBootloader_->setFont(font);
 
 	for (QWidget* child : bootloaderStartBootloaderWidgetList) {
 		child->setEnabled(false);

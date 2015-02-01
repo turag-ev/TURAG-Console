@@ -123,6 +123,20 @@ FeldbusBootloaderAtmegaView::FeldbusBootloaderAtmegaView(TURAG::Feldbus::Bootloa
 	connect(readImageFileButton, SIGNAL(clicked()), this, SLOT(readImageFile()));
 	readImageLayout2->addWidget(readImageFileButton);
 	layout->addLayout(readImageLayout2);
+	layout->addSpacing(30);
+
+	QLabel* startProgramLabel = new QLabel("Bootloader verlassen");
+	label_font = startProgramLabel->font();
+	label_font.setPointSize(14);
+	label_font.setWeight(QFont::Bold);
+	startProgramLabel->setFont(label_font);
+	layout->addWidget(startProgramLabel);
+	QHBoxLayout* startProgramLayout = new QHBoxLayout;
+	QPushButton* startProgramButton = new QPushButton("Bootloader jetzt in allen Geräten verlassen");
+	connect(startProgramButton, SIGNAL(clicked()), this, SLOT(leaveBootloader()));
+	startProgramLayout->addWidget(startProgramButton);
+	startProgramLayout->addStretch();
+	layout->addLayout(startProgramLayout);
 
 	layout->addStretch();
 
@@ -208,6 +222,12 @@ void FeldbusBootloaderAtmegaView::openHexFile(void) {
 	if (dialog.exec() == QDialog::Accepted) {
 		QStringList files = dialog.selectedFiles();
 		hexFilePathEdit->setText(QString("%1").arg(files[0]));
+	}
+}
+
+void FeldbusBootloaderAtmegaView::leaveBootloader(void) {
+	if (bootloader_->sendStartProgramBroadcast()) {
+		this->setEnabled(false);
 	}
 }
 

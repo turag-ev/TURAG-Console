@@ -1,3 +1,5 @@
+#define TURAG_DEBUG_LOG_SOURCE "_"
+
 #include <tina/debug/print.h>
 #include <tina/debug/graph.h>
 

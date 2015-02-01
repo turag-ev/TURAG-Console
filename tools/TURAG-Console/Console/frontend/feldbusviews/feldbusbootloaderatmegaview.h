@@ -31,6 +31,8 @@ protected slots:
 	void checkReadImageFile(QString path);
 	void readImageFile(void);
 
+	void leaveBootloader(void);
+
 private:
 	void setDisabledTheme(QLineEdit *lineedit);
 
