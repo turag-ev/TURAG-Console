@@ -27,7 +27,6 @@
 #include "feldbusviews/dynamixelview.h"
 #include "feldbusviews/feldbusaktorview.h"
 #include "feldbusviews/feldbusasebview.h"
-#include "feldbusviews/feldbusbootloaderview.h"
 #include "feldbusviews/feldbusbootloaderatmegaview.h"
 #include <debugprintclass.h>
 #include "plaintextfrontend.h"

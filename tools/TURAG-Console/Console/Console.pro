@@ -72,7 +72,6 @@ SOURCES +=\
     frontend/feldbusviews/dynamixelview.cpp \
     frontend/feldbusviews/feldbusaktorview.cpp \
     frontend/feldbusviews/feldbusasebview.cpp \
-    frontend/feldbusviews/feldbusbootloaderview.cpp \
     frontend/feldbusviews/feldbusfarbsensorview.cpp \
     frontend/graphutils/canvaspicker.cpp \
     frontend/graphutils/colormap.cpp \
@@ -95,7 +94,6 @@ SOURCES +=\
     tina-platform/rs485.cpp \
     libs/loggerwidget.cpp \
     libs/log.cpp \
-    frontend/hex2bin/hex2bin.c \
     ../../../tina/tina/debug/image.c \
     ../../../tina/tina/debug/print.c \
     ../../../tina/tina++/feldbus/host/bootloader_tina.cpp \
@@ -165,7 +163,6 @@ HEADERS  += \
     frontend/feldbusviews/dynamixelview.h \
     frontend/feldbusviews/feldbusaktorview.h \
     frontend/feldbusviews/feldbusasebview.h \
-    frontend/feldbusviews/feldbusbootloaderview.h \
     frontend/feldbusviews/feldbusfarbsensorview.h \
     frontend/graphutils/canvaspicker.h \
     frontend/graphutils/colormap.h \
@@ -192,7 +189,6 @@ HEADERS  += \
     libs/splitterext.h \
     libs/loggerwidget.h \
     libs/log.h \
-    frontend/hex2bin/hex2bin.h \
     ../../../tina/tina/helper/config_tina_default.h \
     ../../../tina/tina/helper/locked_type.h \
     ../../../tina/tina/debug/image.h \
