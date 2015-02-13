@@ -72,7 +72,7 @@ extern "C" bool turag_rs485_transceive(uint8_t *transmit, int* transmit_length, 
                 }
             }
 
-            rs485Debug.generateDebugMessage(outmsg + QString(" available: %1").arg(turag_rs485_data_buffer.size()));
+            rs485Debug.generateDebugMessage(outmsg + QString(" available: %1/%2").arg(turag_rs485_data_buffer.size()).arg(receive_length_copy));
             outmsg = "data: {";
             for (int i = 0; i < receive_length_copy; ++i) {
                 receive[i] = turag_rs485_data_buffer.at(i);

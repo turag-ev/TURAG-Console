@@ -38,8 +38,7 @@ DEFINES += PACKAGE_NAME=$$TARGET
 
 win32: {
   # don't use broken -mms-bitfields flag for windows
-  QMAKE_CFLAGS_DEBUG += -mno-ms-bitfields
-  QMAKE_CFLAGS_RELEASE += -mno-ms-bitfields
+  QMAKE_CFLAGS += -mno-ms-bitfields
   QMAKE_CXXFLAGS += -mno-ms-bitfields
 }
 
@@ -231,7 +230,8 @@ HEADERS  += \
     ../../../tina/platform/desktop/public/tina/timetype.h \
     ../../../tina/platform/desktop/public/tina/config_tina_platform.h \
     ../../../tina/platform/desktop/public/tina++/can.h \
-    frontend/feldbusviews/feldbusbootloaderatmegaview.h
+    frontend/feldbusviews/feldbusbootloaderatmegaview.h \
+	libs/buttongroupext.h
 
 INCLUDEPATH += \
     ../../../tina \

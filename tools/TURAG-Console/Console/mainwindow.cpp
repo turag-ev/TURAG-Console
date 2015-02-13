@@ -513,9 +513,10 @@ int main(int argc, char *argv[]) {
     Log::captureQtDebugMessages(true);
 
     QApplication a(argc, argv);
-
+	QObject::connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
+	
     QLocale curLocale(QLocale("de_DE"));
-     QLocale::setDefault(curLocale);
+    QLocale::setDefault(curLocale);
     setlocale(LC_ALL, "de");
 
 #if QT_VERSION < 0x050000

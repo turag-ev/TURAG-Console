@@ -215,29 +215,29 @@ void FeldbusBootloaderAtmegaView::setDisabledTheme(QLineEdit* lineedit) {
 	lineedit->setReadOnly(true);
 }
 
-void FeldbusBootloaderAtmegaView::openHexFile(void) {
-	QFileDialog dialog(this, "Firmwaredatei auswählen", "");
-	dialog.setFileMode(QFileDialog::ExistingFile);
-	dialog.setNameFilter(tr("Intel Hex-file (*.hex)"));
-	if (dialog.exec() == QDialog::Accepted) {
-		QStringList files = dialog.selectedFiles();
-		hexFilePathEdit->setText(QString("%1").arg(files[0]));
-	}
-}
-
 void FeldbusBootloaderAtmegaView::leaveBootloader(void) {
 	if (bootloader_->sendStartProgramBroadcast()) {
 		this->setEnabled(false);
 	}
 }
 
-void FeldbusBootloaderAtmegaView::checkHexFile(QString path) {
+// void FeldbusBootloaderAtmegaView::openHexFile(void) {
+	// QFileDialog dialog(this, "Firmwaredatei auswählen", "");
+	// dialog.setFileMode(QFileDialog::ExistingFile);
+	// dialog.setNameFilter(tr("Intel Hex-file (*.hex)"));
+	// if (dialog.exec() == QDialog::Accepted) {
+		// QStringList files = dialog.selectedFiles();
+		// hexFilePathEdit->setText(QString("%1").arg(files[0]));
+	// }
+// }
 
-}
+// void FeldbusBootloaderAtmegaView::checkHexFile(QString path) {
 
-void FeldbusBootloaderAtmegaView::flashHexFile(void) {
+// }
 
-}
+// void FeldbusBootloaderAtmegaView::flashHexFile(void) {
+
+// }
 
 void FeldbusBootloaderAtmegaView::openImageFile(void) {
 	QFileDialog dialog(this, "Firmwaredatei auswählen", "");

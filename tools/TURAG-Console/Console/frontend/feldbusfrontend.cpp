@@ -598,7 +598,7 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
 
 void FeldbusFrontend::onDeviceSelected(int row) {
     feldbusWidget->hide();
-    delete feldbusWidget;
+    feldbusWidget->deleteLater();
     selectedDevice_ = nullptr;
     disableStatistics();
     updateStatisticsTimer_.stop();

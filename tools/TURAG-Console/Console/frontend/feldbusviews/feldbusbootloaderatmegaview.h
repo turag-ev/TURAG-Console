@@ -19,9 +19,9 @@ signals:
 public slots:
 
 protected slots:
-	void openHexFile(void);
-	void checkHexFile(QString path);
-	void flashHexFile(void);
+	//void openHexFile(void);
+	//void checkHexFile(QString path);
+	//void flashHexFile(void);
 
 	void openImageFile(void);
 	void checkImageFile(QString path);

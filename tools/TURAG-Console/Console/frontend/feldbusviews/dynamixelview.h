@@ -20,6 +20,38 @@ class DynamixelView : public QWidget
 public:
     explicit DynamixelView(DynamixelDevice* dev, QWidget *parent = 0);
 
+ protected slots:
+    void onUpdateTimeout(void);
+    void onSetPositionPushed(void);
+    void onSetBaudRate(void);
+    void onSetID(void);
+    void onSetCwAngleLimit(void);
+    void onSetCcwAngleLimit(void);
+    void onSetMovingSpeed(void);
+    void onSetTorqueLimit(void);
+    void onSetCwComplMargin(void);
+    void onSetCcwComplMargin(void);
+    void onSetCwComplSlope(void);
+    void onSetCcwComplSlope(void);
+    void onSetAlarmShutdown(void);
+    void onSetReturnDelayTime(void);
+
+
+    void readCwAngleLimit(void);
+    void readCcwAngleLimit(void);
+    void readMovingSpeed(void);
+    void readTorqueLimit(void);
+    void readCwComplMargin(void);
+    void readCcwComplMargin(void);
+    void readCwComplSlope(void);
+    void readCcwComplSlope(void);
+    void readAlarmShutdown(void);
+    void readReturnDelayTime(void);
+    void readGoalPosition(void);
+    void readTorqueEnable(void);
+
+    void onTorqueEnable(bool state);
+
 protected:
     DynamixelDevice* device;
 
@@ -65,38 +97,6 @@ protected:
     QPushButton* setCcwComplSlope;
     QPushButton* setAlarmShutdown;
     QPushButton* setReturnDelayTime;
-
- protected slots:
-    void onUpdateTimeout(void);
-    void onSetPositionPushed(void);
-    void onSetBaudRate(void);
-    void onSetID(void);
-    void onSetCwAngleLimit(void);
-    void onSetCcwAngleLimit(void);
-    void onSetMovingSpeed(void);
-    void onSetTorqueLimit(void);
-    void onSetCwComplMargin(void);
-    void onSetCcwComplMargin(void);
-    void onSetCwComplSlope(void);
-    void onSetCcwComplSlope(void);
-    void onSetAlarmShutdown(void);
-    void onSetReturnDelayTime(void);
-
-
-    void readCwAngleLimit(void);
-    void readCcwAngleLimit(void);
-    void readMovingSpeed(void);
-    void readTorqueLimit(void);
-    void readCwComplMargin(void);
-    void readCcwComplMargin(void);
-    void readCwComplSlope(void);
-    void readCcwComplSlope(void);
-    void readAlarmShutdown(void);
-    void readReturnDelayTime(void);
-    void readGoalPosition(void);
-    void readTorqueEnable(void);
-
-    void onTorqueEnable(bool state);
 
 };
 

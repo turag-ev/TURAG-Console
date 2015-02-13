@@ -16,6 +16,7 @@
 #include <QDebug>
 #include <QScrollArea>
 #include <libs/lineeditext.h>
+#include <libs/buttongroupext.h>
 
 
 FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
@@ -79,7 +80,11 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     radio_layout->addWidget(cyclicDataUpdate);
     oneShotDataUpdate = new QRadioButton("einmalige Datenaktualisierung");
     radio_layout->addWidget(oneShotDataUpdate);
-
+	ButtonGroupExt* dataUpdateButtonGroup = new ButtonGroupExt("feldbusAktorViewDataUpdateButtonGroup", this);
+    dataUpdateButtonGroup->addButton(cyclicDataUpdate);
+    dataUpdateButtonGroup->addButton(oneShotDataUpdate);
+    dataUpdateButtonGroup->readSettings();
+	
     QFormLayout* settings_form = new QFormLayout;
     settings_layout->addLayout(settings_form);
     QLabel* label1 = new QLabel("Abfrage-Intervall [ms]");
@@ -249,26 +254,6 @@ void FeldbusAktorView::onStartStopDataUpdate(void) {
 
 }
 
-void FeldbusAktorView::readSettings() {
-    QSettings settings;
-    settings.beginGroup("FeldbusAktorView");
-
-    if (settings.value("cyclicDataUpdate", true).toBool()) {
-        cyclicDataUpdate->setChecked(true);
-    } else {
-        oneShotDataUpdate->setChecked(true);
-    }
-}
-
-void FeldbusAktorView::writeSettings() {
-    validateInput();
-
-    QSettings settings;
-    settings.beginGroup("FeldbusAktorView");
-
-    settings.setValue("cyclicDataUpdate", cyclicDataUpdate->isChecked());
-}
-
 FeldbusAktorView::~FeldbusAktorView(void) {
     if (commandset) {
         if (updateTimer->isActive()) {
@@ -276,7 +261,6 @@ FeldbusAktorView::~FeldbusAktorView(void) {
         }
         delete[] commandset;
     }
-    writeSettings();
 }
 
 

@@ -33,10 +33,25 @@ public:
     ~FeldbusAktorView(void);
     QList<QAction *> getActions(void) { return plot->getActions(); }
 
-signals:
+protected slots:
+    void onUpdateDeviceValues(void);
+    void onStartStopDataUpdate(void);
+    void onInputEdited(void);
+    void onTimeout(void);
+    void onValueSet(int id);
+    void onCheckboxChanged(void);
+    void onUserInput(void);
 
-public slots:
+protected:
+    void enableCheckboxes(void);
+    void disableCheckboxes(void);
 
+    unsigned updateCounter;
+	
+private:
+    void validateInput(void);
+
+	
 protected:
     struct CommandsetEntry {
         uint8_t key;
@@ -62,25 +77,6 @@ protected:
     Aktor::Command_t* commandset;
     QSignalMapper* setMapper;
     QTime updateStartTime;
-
-    void readSettings();
-    void writeSettings();
-    void enableCheckboxes(void);
-    void disableCheckboxes(void);
-
-    unsigned updateCounter;
-
-protected slots:
-    void onUpdateDeviceValues(void);
-    void onStartStopDataUpdate(void);
-    void onInputEdited(void);
-    void onTimeout(void);
-    void onValueSet(int id);
-    void onCheckboxChanged(void);
-    void onUserInput(void);
-
-private:
-    void validateInput(void);
 
 };
 
