@@ -104,7 +104,6 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     setMapper = new QSignalMapper(this);
     connect(setMapper, SIGNAL(mapped(int)), this, SLOT(onValueSet(int)));
 
-    readSettings();
     onInputEdited();
 
 
