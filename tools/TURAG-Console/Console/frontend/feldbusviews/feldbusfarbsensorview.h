@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <tina++/feldbus/host/farbsensor.h>
+#include <frontend/graphutils/datagraph.h>
 
 class DataGraph;
 class QTimer;
@@ -14,6 +15,14 @@ using namespace TURAG::Feldbus;
 class FeldbusFarbsensorView : public QWidget
 {
     Q_OBJECT
+public:
+    explicit FeldbusFarbsensorView(Farbsensor* farbsensor, QWidget *parent = 0);
+    ~FeldbusFarbsensorView();
+    QList<QAction *> getActions(void) { return rgbGraph->getActions(); }
+
+protected slots:
+    void mainIntervalTimeout();
+
 protected:
     Farbsensor* farbsensor_;
     DataGraph* rgbGraph;
@@ -23,13 +32,6 @@ protected:
 
     QGraphicsScene* rgbScene;
     QGraphicsScene* hsvScene;
-
-protected slots:
-    void mainIntervalTimeout();
-
-public:
-    explicit FeldbusFarbsensorView(Farbsensor* farbsensor, QWidget *parent = 0);
-    ~FeldbusFarbsensorView();
 
 signals:
 

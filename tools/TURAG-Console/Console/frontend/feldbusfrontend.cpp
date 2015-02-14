@@ -622,6 +622,8 @@ void FeldbusFrontend::onDeviceSelected(int row) {
                 feldbusWidget = new FeldbusFarbsensorView(farbsensor);
                 splitter->addWidget(feldbusWidget);
                 splitter->setStretchFactor(1,2);
+                clearActions();
+                addActions(static_cast<FeldbusFarbsensorView*>(feldbusWidget)->getActions());
                 return;
             }
 
