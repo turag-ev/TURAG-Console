@@ -268,7 +268,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     layout->addWidget(splitter);
     splitter->addWidget(left_layout_widget);
     splitter->addWidget(feldbusWidget);
-    splitter->setStretchFactor(1,2);
+	splitter->setStretchFactor(1,2);
     setLayout(layout);
 
     connect(startInquiry_, SIGNAL(clicked()), this, SLOT(onStartInquiry()));
@@ -598,7 +598,7 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
 
 void FeldbusFrontend::onDeviceSelected(int row) {
     feldbusWidget->hide();
-    feldbusWidget->deleteLater();
+	delete feldbusWidget;
     selectedDevice_ = nullptr;
     disableStatistics();
     updateStatisticsTimer_.stop();
@@ -621,7 +621,7 @@ void FeldbusFrontend::onDeviceSelected(int row) {
             if (farbsensor) {
                 feldbusWidget = new FeldbusFarbsensorView(farbsensor);
                 splitter->addWidget(feldbusWidget);
-                splitter->setStretchFactor(1,2);
+				splitter->setStretchFactor(1,2);
                 clearActions();
                 addActions(static_cast<FeldbusFarbsensorView*>(feldbusWidget)->getActions());
                 return;
