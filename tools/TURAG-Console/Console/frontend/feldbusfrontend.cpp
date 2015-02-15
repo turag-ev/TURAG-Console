@@ -433,7 +433,7 @@ void FeldbusFrontend::onInquiry(bool boot) {
                             dev_info.address = i;
                             delete dev;
 
-                            Feldbus::Device* dev = new TURAG::Feldbus::Device("", dev_info.address, (Feldbus::Device::ChecksumType)dev_info.device_info.crcType, addressLength, 5, 30);
+                            Feldbus::Device* dev = new TURAG::Feldbus::Device("", dev_info.address, (Feldbus::Device::ChecksumType)dev_info.device_info.crcType, addressLength, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ATTEMPTS, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ERRORS);
                             QByteArray name_buffer(dev_info.device_info.nameLength + 2, '\0');
                             if (dev->receiveDeviceRealName(name_buffer.data())) {
                                 dev_info.device_name = name_buffer;
@@ -454,20 +454,22 @@ void FeldbusFrontend::onInquiry(bool boot) {
                             sptr.reset(FeldbusDeviceFactory::createFeldbusDevice(dev_info));
                             devices_.append(sptr);
 
-                            // try to save old pakage statistics so we can show them
-                            // in brackets
-                            sptr->oldSlaveAcceptedPackages = 0;
-                            sptr->oldSlaveOverflow = 0;
-                            sptr->oldSlaveLostPackages = 0;
-                            sptr->oldSlaveChecksumError = 0;
-                            if (dev_info.device_info.packageStatisticsAvailable) {
-                                uint32_t count[4];
-                                if (sptr->device.get()->receiveAllSlaveErrorCount(count)) {
-                                    // if the call succeeded, we have one accepted package more
-                                    sptr->oldSlaveAcceptedPackages = count[0] + 1;
-                                    sptr->oldSlaveOverflow = count[1];
-                                    sptr->oldSlaveLostPackages = count[2];
-                                    sptr->oldSlaveChecksumError = count[3];
+                            if (sptr->device.get()) {
+                                // try to save old pakage statistics so we can show them
+                                // in brackets
+                                sptr->oldSlaveAcceptedPackages = 0;
+                                sptr->oldSlaveOverflow = 0;
+                                sptr->oldSlaveLostPackages = 0;
+                                sptr->oldSlaveChecksumError = 0;
+                                if (dev_info.device_info.packageStatisticsAvailable) {
+                                    uint32_t count[4];
+                                    if (sptr->device->receiveAllSlaveErrorCount(count)) {
+                                        // if the call succeeded, we have one accepted package more
+                                        sptr->oldSlaveAcceptedPackages = count[0] + 1;
+                                        sptr->oldSlaveOverflow = count[1];
+                                        sptr->oldSlaveLostPackages = count[2];
+                                        sptr->oldSlaveChecksumError = count[3];
+                                    }
                                 }
                             }
 

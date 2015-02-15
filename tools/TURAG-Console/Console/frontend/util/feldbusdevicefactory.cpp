@@ -122,6 +122,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
     default:
         protocolIdString = "unbekannt";
         deviceTypeString = "unbekannt";
+        device = new Feldbus::Device(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType, device_info.addressLength);
         break;
     }
 
