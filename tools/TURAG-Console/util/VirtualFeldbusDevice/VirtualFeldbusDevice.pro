@@ -27,13 +27,13 @@ INCLUDEPATH += \
 
 
 SOURCES += \
-    C:/Users/martin/Documents/programmierung/libs/qt/signal_handler/signalhandler.cpp \
+    ../../../../libs/qt/signal_handler/signalhandler.cpp \
     feldbusdevice.cpp \
     ../../../../tina/tina/feldbus/slave/feldbus.c \
     ../../../../tina/tina/crc/crc_checksum.c
 
 HEADERS += \
-    C:/Users/martin/Documents/programmierung/libs/qt/signal_handler/signalhandler.h \
+    ../../../../libs/qt/signal_handler/signalhandler.h \
     ../../../../tina/tina/feldbus/protocol/turag_feldbus_bus_protokoll.h \
     feldbusdevice.h \
     ../../../../tina/tina/feldbus/slave/feldbus.h \

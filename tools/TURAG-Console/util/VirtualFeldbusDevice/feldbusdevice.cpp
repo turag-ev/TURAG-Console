@@ -31,8 +31,11 @@ int main(int argc, char *argv[])
     dev = new FeldbusDevice;
 
     if (dev->init(argv[1])) {
-        return a.exec();
+		a.exec();
     }
+
+	delete dev;
+	return 0;
 }
 
 
