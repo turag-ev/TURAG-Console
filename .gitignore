@@ -31,5 +31,8 @@ core
 .cproject
 .settings
 
+#Python
+*.pyc
+
 tools/GerbGerb/bin_unix
 
