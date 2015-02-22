@@ -9,8 +9,8 @@ else
   LSB="$1"
 fi
 
-# in Verzeichnis von Skript gehen
-cd "$( dirname "${BASH_SOURCE[0]}" )/Console"
+# in Verzeichnis von Quellcode gehen
+cd "$( dirname "${BASH_SOURCE[0]}" )/../Console"
 
 # Links zu tina und Debug-Server erstellen
 ln -s ../../tina ../

@@ -12,7 +12,8 @@ fi
 
 # Verzeichnisse speichern
 WORKING_DIR=`pwd`
-ROOT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
+SCRIPT_DIR="$( dirname "${BASH_SOURCE[0]}" )"
+ROOT_DIR="${SCRIPT_DIR}/.."
 SRC_DIR="${ROOT_DIR}/Console"
 
 # Hilfsfunktionen
@@ -41,7 +42,7 @@ cd "${WORKING_DIR}"
 
 # Quellcodepaket erstellen
 techo "Quellcodepaket erstellen"
-texec "${ROOT_DIR}/make_dist.sh ${LSB}"
+texec "${SCRIPT_DIR}/make_dist.sh ${LSB}"
 
 SRC_TAR="$(ls -t turag-console-*.tar.gz | head -n 1)"
 SRC_VERSION="$(echo ${SRC_TAR} | sed 's/turag-console-\(.*\).tar.gz/\1/')"
