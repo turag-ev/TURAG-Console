@@ -182,7 +182,6 @@ bool StreamModel::insertRow(char level, const char *data, std::size_t len, unsig
 
 void StreamModel::insertRowsTimeout(void) {
     if (row_buffer_.size()) {
-        rows_.reserve(rows_.size() + row_buffer_.size());
         beginInsertRows(QModelIndex(), rows_.size(), rows_.size() + row_buffer_.size() - 1);
         std::move(row_buffer_.begin(), row_buffer_.end(), std::back_inserter(rows_));
         endInsertRows();

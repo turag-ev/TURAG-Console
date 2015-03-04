@@ -3,7 +3,7 @@
 
 #include <tuple>
 #include <string>
-#include <vector>
+#include <deque>
 #include <QAbstractTableModel>
 #include <QSortFilterProxyModel>
 #include <tina++/tina.h>
@@ -55,7 +55,7 @@ public:
   typedef unsigned SourceId;
   typedef float Time;
   typedef std::tuple<Icon, QString, SourceId, Time> Row;
-  typedef std::vector<Row> Rows;
+  typedef std::deque<Row> Rows;
 
   StreamModel(QObject* parent = 0);
 
