@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-VERSION = 2.11
+VERSION = 2.12
 
 CONFIG +=  qwt
 QT     += core gui
@@ -97,7 +97,9 @@ SOURCES +=\
     ../../../tina/tina/debug/print.c \
     ../../../tina/tina++/feldbus/host/bootloader_tina.cpp \
     ../../../tina/platform/desktop/thread.cpp \
-    frontend/feldbusviews/feldbusbootloaderatmegaview.cpp
+    frontend/feldbusviews/feldbusbootloaderatmegaview.cpp \
+    frontend/feldbusviews/feldbusbootloaderbaseview.cpp \
+    frontend/feldbusviews/feldbusbootloaderxmegaview.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -231,7 +233,9 @@ HEADERS  += \
     ../../../tina/platform/desktop/public/tina/config_tina_platform.h \
     ../../../tina/platform/desktop/public/tina++/can.h \
     frontend/feldbusviews/feldbusbootloaderatmegaview.h \
-	libs/buttongroupext.h
+	libs/buttongroupext.h \
+    frontend/feldbusviews/feldbusbootloaderbaseview.h \
+    frontend/feldbusviews/feldbusbootloaderxmegaview.h
 
 INCLUDEPATH += \
     ../../../tina \

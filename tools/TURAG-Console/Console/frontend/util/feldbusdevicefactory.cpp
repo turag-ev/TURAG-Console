@@ -109,6 +109,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
             break;
 
         case TURAG_FELDBUS_BOOTLOADER_XMEGA:
+			device = new Feldbus::BootloaderXmega(device_info.device_name.constData(), device_info.address, (Feldbus::Device::ChecksumType)device_info.device_info.crcType, device_info.addressLength);
 			deviceTypeString = "XMEGA - BMaX";
             break;
 

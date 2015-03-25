@@ -28,6 +28,7 @@
 #include "feldbusviews/feldbusaktorview.h"
 #include "feldbusviews/feldbusasebview.h"
 #include "feldbusviews/feldbusbootloaderatmegaview.h"
+#include "feldbusviews/feldbusbootloaderxmegaview.h"
 #include <debugprintclass.h>
 #include "plaintextfrontend.h"
 #include <cmath>
@@ -663,15 +664,24 @@ void FeldbusFrontend::onDeviceSelected(int row) {
             }
 
 			// create Bootloader Atmega view
-			Feldbus::BootloaderAtmega* boot = dynamic_cast<Feldbus::BootloaderAtmega*>(selectedDevice_->device.get());
-            if (boot) {
-				feldbusWidget = new FeldbusBootloaderAtmegaView(boot);
-                splitter->addWidget(feldbusWidget);
-                splitter->setStretchFactor(1,2);
-                return;
-            }
+			Feldbus::BootloaderAtmega* atmegaBoot = dynamic_cast<Feldbus::BootloaderAtmega*>(selectedDevice_->device.get());
+			if (atmegaBoot) {
+				feldbusWidget = new FeldbusBootloaderAtmegaView(atmegaBoot);
+				splitter->addWidget(feldbusWidget);
+				splitter->setStretchFactor(1,2);
+				return;
+			}
 
-            // TODO: create more views
+			// create Bootloader Xmega view
+			Feldbus::BootloaderXmega* xmegaBoot = dynamic_cast<Feldbus::BootloaderXmega*>(selectedDevice_->device.get());
+			if (xmegaBoot) {
+				feldbusWidget = new FeldbusBootloaderXmegaView(xmegaBoot);
+				splitter->addWidget(feldbusWidget);
+				splitter->setStretchFactor(1,2);
+				return;
+			}
+
+			// TODO: create more views
 
         }
     } else if (row >= devices_.size() && row < devices_.size() + dynamixelDevices_.size()) {

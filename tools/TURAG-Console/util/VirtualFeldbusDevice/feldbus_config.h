@@ -8,10 +8,14 @@
 #define FELDBUS_CONFIG_H_
 
 #include <tina/feldbus/protocol/turag_feldbus_fuer_lokalisierungssensoren.h>
+#include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
+#include <tina/feldbus/protocol/turag_feldbus_fuer_stellantriebe.h>
+#include <tina/feldbus/protocol/turag_feldbus_fuer_aseb.h>
 
-
-#define TURAG_FELDBUS_DEVICE_PROTOCOL                           0xff
-#define TURAG_FELDBUS_DEVICE_TYPE_ID							0x00
+//#define TURAG_FELDBUS_DEVICE_PROTOCOL                           0xff
+//#define TURAG_FELDBUS_DEVICE_TYPE_ID							0x00
+#define TURAG_FELDBUS_DEVICE_PROTOCOL							TURAG_FELDBUS_DEVICE_PROTOCOL_BOOTLOADER
+#define TURAG_FELDBUS_DEVICE_TYPE_ID							TURAG_FELDBUS_BOOTLOADER_XMEGA
 
 #define TURAG_FELDBUS_SLAVE_CONFIG_CRC_TYPE 					TURAG_FELDBUS_CHECKSUM_CRC8_ICODE
 #define TURAG_FELDBUS_SLAVE_CONFIG_BUFFER_SIZE					(80)
