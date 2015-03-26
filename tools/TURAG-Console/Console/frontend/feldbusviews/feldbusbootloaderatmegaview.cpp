@@ -23,6 +23,21 @@ FeldbusBootloaderAtmegaView::FeldbusBootloaderAtmegaView(TURAG::Feldbus::Bootloa
 		return;
 	}
 
+	// read mcu ID
+	uint16_t mcuId = bootloader->getMcuId();
+	QString mcuName;
+
+	switch (mcuId) {
+		case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA8: mcuName = "AtMega8"; break;
+		case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA32: mcuName = "AtMega32"; break;
+		case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA128: mcuName = "AtMega128"; break;
+		case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA88: mcuName = "AtMega88"; break;
+		case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA168: mcuName = "AtMega168"; break;
+		case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA644: mcuName = "AtMega644"; break;
+		default: mcuName = "Error";
+	}
+	mcuIdEdit->setText(mcuName);
+
 	// read fuses
 	TURAG::Feldbus::BootloaderAtmega::Fuses fuses;
 	if (!bootloader->readFuses(&fuses)) {

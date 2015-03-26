@@ -16,6 +16,19 @@ FeldbusBootloaderXmegaView::FeldbusBootloaderXmegaView(TURAG::Feldbus::Bootloade
 		return;
 	}
 
+	// read mcu ID
+	uint16_t mcuId = bootloader->getMcuId();
+	QString mcuName;
+
+	switch (mcuId) {
+		case TURAG_FELDBUS_BOOTLOADER_MCU_ID_XMEGA16D4: mcuName = "Xmega16D4"; break;
+		case TURAG_FELDBUS_BOOTLOADER_MCU_ID_XMEGA32D4: mcuName = "Xmega32D4"; break;
+		case TURAG_FELDBUS_BOOTLOADER_MCU_ID_XMEGA64D4: mcuName = "Xmega64D4"; break;
+		case TURAG_FELDBUS_BOOTLOADER_MCU_ID_XMEGA128D4: mcuName = "Xmega128D4"; break;
+		default: mcuName = "Error";
+	}
+	mcuIdEdit->setText(mcuName);
+
 	// read revision
 	char revision = bootloader->getRevisionId();
 	if (!revision) {

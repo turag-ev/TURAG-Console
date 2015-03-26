@@ -25,7 +25,7 @@ FeldbusBootloaderBaseView::FeldbusBootloaderBaseView(TURAG::Feldbus::BootloaderA
 	QVBoxLayout* layout = new QVBoxLayout;
 
 	infoLayout = new QFormLayout;
-	QLineEdit* mcuIdEdit = new QLineEdit;
+	mcuIdEdit = new QLineEdit;
 	setDisabledTheme(mcuIdEdit);
 	infoLayout->addRow("Controller-Typ:", mcuIdEdit);
 	QLineEdit* flashSizeEdit = new QLineEdit;
@@ -117,21 +117,6 @@ FeldbusBootloaderBaseView::FeldbusBootloaderBaseView(TURAG::Feldbus::BootloaderA
 		return;
 	}
 
-	// read mcu ID
-	uint16_t mcuId = bootloader_->getMcuId();
-	QString mcuName;
-
-	switch (mcuId) {
-		case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA8: mcuName = "AtMega8"; break;
-		case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA32: mcuName = "AtMega32"; break;
-		case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA128: mcuName = "AtMega128"; break;
-		case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA88: mcuName = "AtMega88"; break;
-		case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA168: mcuName = "AtMega168"; break;
-		case TURAG_FELDBUS_BOOTLOADER_MCU_ID_ATMEGA644: mcuName = "AtMega644"; break;
-		default: mcuName = "Error";
-	}
-	mcuIdEdit->setText(mcuName);
-
 	// unlock bootloader
 	if (!bootloader_->unlockBootloader()) {
 		return;
@@ -182,7 +167,7 @@ void FeldbusBootloaderBaseView::leaveBootloader(void) {
 void FeldbusBootloaderBaseView::openImageFile(void) {
 	QFileDialog dialog(this, "Firmwaredatei auswählen", "");
 	dialog.setFileMode(QFileDialog::ExistingFile);
-	dialog.setNameFilter(tr("Intel Hex-file (*.bin)"));
+	dialog.setNameFilter(tr("Binary Image file (*.bin)"));
 	if (dialog.exec() == QDialog::Accepted) {
 		QStringList files = dialog.selectedFiles();
 		imagePathEdit->setText(QString("%1").arg(files[0]));
@@ -241,7 +226,7 @@ void FeldbusBootloaderBaseView::flashImageFile(void) {
 void FeldbusBootloaderBaseView::openReadImageFile(void) {
 	QFileDialog dialog(this, "Firmwaredatei speichern als", "");
 	dialog.setAcceptMode(QFileDialog::AcceptSave);
-	dialog.setNameFilter(tr("Intel Hex-file (*.bin)"));
+	dialog.setNameFilter(tr("Binary Image file (*.bin)"));
 	dialog.setDefaultSuffix("bin");
 	if (dialog.exec() == QDialog::Accepted) {
 		QStringList files = dialog.selectedFiles();

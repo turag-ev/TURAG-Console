@@ -35,6 +35,7 @@ protected:
 	void setDisabledTheme(QLineEdit *lineedit);
 
 	QFormLayout* infoLayout;
+	QLineEdit* mcuIdEdit;
 
 private:
 	TURAG::Feldbus::BootloaderAvrBase* bootloader_;
