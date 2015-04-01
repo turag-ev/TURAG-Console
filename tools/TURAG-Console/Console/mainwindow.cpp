@@ -146,10 +146,10 @@ MainWindow::MainWindow(QWidget *parent) :
     show_statusbar->setStatusTip("Statusleiste anzeigen");
     connect(show_statusbar, SIGNAL(triggered(bool)), this, SLOT(onShowStatusbar(bool)));
 
-    QAction* show_menubar = new CheckActionExt("Menüleiste anzeigen", "Menüleiste anzeigen", true, this);
-    show_menubar->setStatusTip("Menüleiste anzeigen");
-    show_menubar->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_M));
-    connect(show_menubar, SIGNAL(triggered(bool)), this, SLOT(onShowMenubar(bool)));
+//    QAction* show_menubar = new CheckActionExt("Menüleiste anzeigen", "Menüleiste anzeigen", true, this);
+//    show_menubar->setStatusTip("Menüleiste anzeigen");
+//    show_menubar->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_M));
+//    connect(show_menubar, SIGNAL(triggered(bool)), this, SLOT(onShowMenubar(bool)));
 
     QAction* show_toolbar = new CheckActionExt("Toolbar anzeigen", "Toolbar anzeigen", true, this);
     show_toolbar->setStatusTip("Toolbar anzeigen");
@@ -188,7 +188,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(refreshAction, SIGNAL(triggered()), controller, SLOT(refresh()));
 
     QMenu* view_menu = menuBar()->addMenu("&Ansicht");
-    view_menu->addAction(show_menubar);
+//    view_menu->addAction(show_menubar);
     view_menu->addAction(show_statusbar);
     view_menu->addAction(show_toolbar);
     view_menu->addAction(show_logger);
@@ -258,7 +258,7 @@ MainWindow::MainWindow(QWidget *parent) :
     controller->setAutoSave(save_auto_action->isChecked());
     controller->setAutoReconnect(auto_reconnect_action->isChecked());
 
-    onShowMenubar(show_menubar->isChecked());
+//    onShowMenubar(show_menubar->isChecked());
     onShowStatusbar(show_statusbar->isChecked());
     onShowToolbar(show_toolbar->isChecked());
 
@@ -273,6 +273,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QWidget* central_widget = new QWidget;
     QHBoxLayout* mainLayout = new QHBoxLayout;
+	mainLayout->setContentsMargins(2, 2, 2, 2);
     mainLayout->addWidget(controller);
     mainLayout->addWidget(logger);
     logger->hide();
@@ -280,8 +281,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget(central_widget);
 
 
-
-    readSettings();
+	readSettings();
     controller->openNewConnection();
 }
 

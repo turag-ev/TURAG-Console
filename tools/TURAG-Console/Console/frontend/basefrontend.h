@@ -11,6 +11,9 @@
 class QAction;
 class QMenu;
 class QPoint;
+class QLayout;
+class QFrame;
+class QScrollArea;
 
 
 class BaseFrontend : public QWidget
@@ -45,6 +48,9 @@ public slots:
     // frontend was disconnected from stream, does nothing if not overloaded
     virtual void onDisconnected(bool reconnecting);
 
+public:
+	void setLayout(QLayout *);
+
 protected slots:
     void showContextMenu(const QPoint & pos);
 
@@ -63,8 +69,8 @@ protected:
 
 
     QList<QAction*> externalContextActions;
-    QMenu* contextMenu;
-
+	QMenu* contextMenu;
+	QFrame* scrollFrame;
 };
 
 #endif // BASEFRONTEND_H

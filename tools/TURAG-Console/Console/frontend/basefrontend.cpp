@@ -3,9 +3,12 @@
 #include <QAction>
 #include <QMenu>
 #include <QPoint>
+#include <QScrollArea>
+#include <QFrame>
+#include <QHBoxLayout>
 
 BaseFrontend::BaseFrontend(QString name, QWidget *parent) :
-    QWidget(parent)
+	QWidget(parent)
 {
     setObjectName(name);
 
@@ -13,8 +16,25 @@ BaseFrontend::BaseFrontend(QString name, QWidget *parent) :
 
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(showContextMenu(QPoint)));
+
+
+	scrollFrame = new QFrame;
+
+	QScrollArea* scrollarea = new QScrollArea;
+	scrollarea->setWidgetResizable(true);
+	scrollarea->setFrameStyle(0);
+	scrollarea->setWidget(scrollFrame);
+
+	QHBoxLayout* layout = new QHBoxLayout;
+	layout->setContentsMargins(0, 0, 0, 0);
+	layout->addWidget(scrollarea);
+	QWidget::setLayout(layout);
 }
 
+void BaseFrontend::setLayout(QLayout * layout) {
+	layout->setContentsMargins(0, 0, 0, 0);
+	scrollFrame->setLayout(layout);
+}
 
 void BaseFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice * dev) {
     (void)readOnly;
