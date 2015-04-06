@@ -99,7 +99,8 @@ SOURCES +=\
     ../../../tina/platform/desktop/thread.cpp \
     frontend/feldbusviews/feldbusbootloaderatmegaview.cpp \
     frontend/feldbusviews/feldbusbootloaderbaseview.cpp \
-    frontend/feldbusviews/feldbusbootloaderxmegaview.cpp
+    frontend/feldbusviews/feldbusbootloaderxmegaview.cpp \
+    ../../../tina/tina/debug/binary.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -235,7 +236,10 @@ HEADERS  += \
     frontend/feldbusviews/feldbusbootloaderatmegaview.h \
 	libs/buttongroupext.h \
     frontend/feldbusviews/feldbusbootloaderbaseview.h \
-    frontend/feldbusviews/feldbusbootloaderxmegaview.h
+    frontend/feldbusviews/feldbusbootloaderxmegaview.h \
+    ../../../tina/tina/debug/binary.h \
+    ../../../tina/tina/debug/internal-debug.h \
+    ../../../tina/tina/debug/log-source.h
 
 INCLUDEPATH += \
     ../../../tina \
