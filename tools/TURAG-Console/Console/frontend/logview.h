@@ -1,6 +1,7 @@
 #ifndef LOGVIEW_H
 #define LOGVIEW_H
 
+#include <array>
 #include <tuple>
 #include <string>
 #include <deque>

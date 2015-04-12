@@ -246,7 +246,6 @@ INCLUDEPATH += \
     ../../../tina/platform/desktop/public \
     tina-platform/public \
     ../../Debug-Server \
-    /usr/include/qwt \
     .
 
 DISTR_FILES += \
