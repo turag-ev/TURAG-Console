@@ -648,6 +648,7 @@ bool DataGraph::exportOutput(void) {
 #endif
     filter += "Postscript Documents (*.ps)";
 
+	// Setting the parent causes trouble in windows.
     QWidget* parent = nullptr;
 #ifndef Q_OS_WIN32
     parent = this;
