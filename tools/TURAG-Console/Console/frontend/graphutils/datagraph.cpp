@@ -648,7 +648,12 @@ bool DataGraph::exportOutput(void) {
 #endif
     filter += "Postscript Documents (*.ps)";
 
-    fileName = QFileDialog::getSaveFileName(this, "Export File Name", fileName,
+    QWidget* parent = nullptr;
+#ifndef Q_OS_WIN32
+    parent = this;
+#endif
+
+    fileName = QFileDialog::getSaveFileName(parent, "Export File Name", fileName,
         filter.join(";;"), NULL);
 
     return exportOutput(fileName);
