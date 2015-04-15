@@ -166,7 +166,7 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
         for (int i = 0; i < digInSize; ++i) {
             name[0] = 0;
             aseb_->getCommandName(i + TURAG_FELDBUS_ASEB_INDEX_START_DIGITAL_INPUT, name);
-            label = new QLabel(QString(name));
+			label = new QLabel(QString("%1: %2").arg(i).arg(name));
             checkbox = new QCheckBox;
             checkbox->setEnabled(false);
             select_checkbox = new QCheckBox;
@@ -182,7 +182,7 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
         for (int i = 0; i < analogInSize; ++i) {
             name[0] = 0;
             aseb_->getCommandName(i + TURAG_FELDBUS_ASEB_INDEX_START_ANALOG_INPUT, name);
-            label = new QLabel(QString(name));
+			label = new QLabel(QString("%1: %2").arg(i).arg(name));
 
             unsigned resolution = 0;
             if (aseb_->getAnalogResolution(&resolution)) {
@@ -218,8 +218,8 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
         for (int i = 0; i < digOutSize; ++i) {
             name[0] = 0;
             aseb_->getCommandName(i + TURAG_FELDBUS_ASEB_INDEX_START_DIGITAL_OUTPUT, name);
-            label = new QLabel(QString(name));
-            checkbox = new QCheckBox;
+			label = new QLabel(QString("%1: %2").arg(i).arg(name));
+			checkbox = new QCheckBox;
             select_checkbox = new QCheckBox;
             connect(select_checkbox, SIGNAL(toggled(bool)), this, SLOT(updateGraph()));
 
@@ -235,7 +235,7 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
         for (int i = 0; i < pwmOutSize; ++i) {
             name[0] = 0;
             aseb_->getCommandName(i + TURAG_FELDBUS_ASEB_INDEX_START_PWM_OUTPUT, name);
-            label = new QLabel(QString(name));
+			label = new QLabel(QString("%1: %2 [%]").arg(i).arg(name));
 
             unsigned frequency;
             if (aseb_->getPwmFrequency(i, &frequency)) {
@@ -275,7 +275,7 @@ FeldbusAsebView::~FeldbusAsebView(void) {
 
 
 void FeldbusAsebView::onResetOutputs(void) {
-    unsigned key = TURAG_FELDBUS_ASEB_INDEX_START_DIGITAL_OUTPUT;
+	unsigned key = 0;
     for (LabelCheckboxCombo& combo : digitalOutputs_) {
         combo.checkbox->setChecked(aseb_->getDigitalOutput(key));
         QPalette pal = combo.checkbox->palette();
@@ -283,7 +283,7 @@ void FeldbusAsebView::onResetOutputs(void) {
         combo.checkbox->setPalette(pal);
         ++key;
     }
-    key = TURAG_FELDBUS_ASEB_INDEX_START_PWM_OUTPUT;
+	key = 0;
     for (LabelLineeditCombo& combo : pwmOutputs_) {
         combo.lineedit->setText(QString("%1").arg(aseb_->getPwmOutput(key)));
         QPalette pal = combo.lineedit->palette();
@@ -310,6 +310,8 @@ void FeldbusAsebView::onSetOutputs(void) {
         combo.lineedit->setPalette(pal);
         ++key;
     }
+
+	onResetOutputs();
 }
 
 void FeldbusAsebView::onUpdate(void) {
