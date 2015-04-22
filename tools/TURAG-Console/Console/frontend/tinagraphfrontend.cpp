@@ -237,7 +237,6 @@ void TinaGraphFrontend::activateItem(QTreeWidgetItem* item) {
 
     stack->setCurrentIndex(graphIndex);
     DataGraph* graph = static_cast<DataGraph*>(stack->currentWidget());
-    clearActions();
     if (graph) addActions(graph->getActions());
 
     if (item->parent() && item->parent()->parent()) {

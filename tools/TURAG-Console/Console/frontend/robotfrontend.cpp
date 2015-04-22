@@ -1,4 +1,4 @@
-#include "mcfrontend.h"
+#include "robotfrontend.h"
 
 #include <QHBoxLayout>
 #include <QSplitter>
@@ -11,8 +11,8 @@
 #include "tinagraphfrontend.h"
 
 
-MCFrontend::MCFrontend(QWidget *parent) :
-    BaseFrontend("Motion Control", parent)
+RobotFrontend::RobotFrontend(QWidget *parent) :
+	BaseFrontend("TURAG Roboter-Ansicht (TinA)", parent)
 {
     tabs = new QTabWidget;
     interface = new TinaInterface(this);
@@ -48,37 +48,31 @@ MCFrontend::MCFrontend(QWidget *parent) :
 }
 
 
-void MCFrontend::writeData(QByteArray data) {
+void RobotFrontend::writeData(QByteArray data) {
     interface->dataInput(data);
 }
 
-void MCFrontend::clear(void) {
+void RobotFrontend::clear(void) {
     logview->clear();
     cmenu->clear();
     graphView->clear();
     interface->clear();
 }
 
-void MCFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
+void RobotFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
     logview->onConnected(readOnly, isBuffered, dev);
     cmenu->onConnected(readOnly, isBuffered, dev);
     graphView->onConnected(readOnly, isBuffered, dev);
 }
 
-void MCFrontend::onDisconnected(bool reconnecting) {
+void RobotFrontend::onDisconnected(bool reconnecting) {
     logview->onDisconnected(reconnecting);
     cmenu->onDisconnected(reconnecting);
     graphView->onDisconnected(reconnecting);
 }
 
-void MCFrontend::setExternalContextActions(QList<QAction*> actions) {
-    cmenu->setExternalContextActions(actions);
-    graphView->setExternalContextActions(actions);
-    BaseFrontend::setExternalContextActions(actions);
-}
 
-
-void MCFrontend::activateGraph(int index) {
+void RobotFrontend::activateGraph(int index) {
     tabs->setCurrentIndex(1);
     graphView->activateGraph(index);
 

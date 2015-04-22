@@ -11,12 +11,11 @@ class TinaGraphFrontend;
 class QTabWidget;
 
 
-class MCFrontend : public BaseFrontend
+class RobotFrontend : public BaseFrontend
 {
     Q_OBJECT
 public:
-    explicit MCFrontend(QWidget *parent = 0);
-    virtual void setExternalContextActions(QList<QAction*> actions);
+	explicit RobotFrontend(QWidget *parent = 0);
 
 signals:
 

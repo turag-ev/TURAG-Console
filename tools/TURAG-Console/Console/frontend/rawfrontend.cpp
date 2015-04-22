@@ -1,4 +1,4 @@
-#include "plaintextfrontend.h"
+#include "rawfrontend.h"
 #include <QVBoxLayout>
 #include <QScrollBar>
 #include <QTextCursor>
@@ -14,8 +14,8 @@
 #include <QApplication>
 #include <QClipboard>
 
-PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
-	BaseFrontend("Text-Konsole", parent), scroll_on_output(true), buffer_(new QByteArray), cleanedBuffer_(new QByteArray)
+RawFrontend::RawFrontend(QWidget *parent) :
+	BaseFrontend("Raw-Frontend", parent), scroll_on_output(true), rawBuffer_(new QByteArray)
 {
     QVBoxLayout* layout = new QVBoxLayout();
 
@@ -112,32 +112,32 @@ PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
     connect(&updateTimer, SIGNAL(timeout()), this, SLOT(onUpdate()));
 }
 
-PlainTextFrontend::~PlainTextFrontend() {
+RawFrontend::~RawFrontend() {
     writeSettings();
 }
 
 
-void PlainTextFrontend::onStyleBlackOnWhite() {
+void RawFrontend::onStyleBlackOnWhite() {
     setStyle(STYLE::BLACK_ON_WHITE);
 }
 
-void PlainTextFrontend::onStyleGreyOnBlack() {
+void RawFrontend::onStyleGreyOnBlack() {
     setStyle(STYLE::GREY_ON_BLACK);
 }
 
-void PlainTextFrontend::onStyleGreenOnBlack() {
+void RawFrontend::onStyleGreenOnBlack() {
     setStyle(STYLE::GREEN_ON_BLACK);
 }
 
-void PlainTextFrontend::onStyleBlueOnBlack() {
+void RawFrontend::onStyleBlueOnBlack() {
     setStyle(STYLE::BLUE_ON_BLACK);
 }
 
-void PlainTextFrontend::onStyleRaspberryOnBlack() {
+void RawFrontend::onStyleRaspberryOnBlack() {
     setStyle(STYLE::RASPBERRY_ON_BLACK);
 }
 
-void PlainTextFrontend::setStyle(STYLE style) {
+void RawFrontend::setStyle(STYLE style) {
     selectedStyle = style;
 
     QPalette p = textbox->palette();
@@ -173,81 +173,68 @@ void PlainTextFrontend::setStyle(STYLE style) {
 }
 
 
-void PlainTextFrontend::writeData(QByteArray data) {
-    buffer_->append(data);
+void RawFrontend::writeData(QByteArray data) {
+	rawBuffer_->append(data);
     if (!updateTimer.isActive()) {
         updateTimer.start();
     }
 }
 
-void PlainTextFrontend::onUpdate(void) {
-    if (buffer_->size()) {
+void RawFrontend::onUpdate(void) {
+	QString temp;
+
+	if (rawBuffer_->size()) {
         // make sure we insert text at the end
         QTextCursor cursor = textbox->textCursor();
         cursor.movePosition(QTextCursor::End);
 
-        if (cleanedBuffer_->capacity() < buffer_->size()) {
-            cleanedBuffer_->reserve(buffer_->size());
-        }
+		static int count = 0;
+		for (char byte : *rawBuffer_) {
+			temp.append(QString("%1 ").arg(((long)byte) & 0xff, (int)2, (int)16, (QChar)'0'));
+			++count;
+			if (count == 20) {
+				temp.append("\n");
+				count = 0;
+			}
+		}
 
-        // clean input stream
-        const char* data = buffer_->constBegin();
-        while (data != buffer_->constEnd()) {
-            if ((*data >= 0x20 && *data <= 0x7E) || *data == '\n' || *data == '\t' || *data < 0) {
-                // printable characters, utf-8 characters and newlines are piped through
-                cleanedBuffer_->append(*data);
-            } else if (*data == 0x08 || *data == 0x7F) {
-                // special handling for backspace and delete characters
-                if (cleanedBuffer_->size()) {
-                    cleanedBuffer_->chop(1);
-                } else {
-                    cursor.deletePreviousChar();
-                }
-            } else if (*data != '\r') {
-                // ignore carriage return, empty place holder for anything else
-                cleanedBuffer_->append("�");
-            }
-
-            ++data;
-        }
 
         QScrollBar* scrollbar = textbox->verticalScrollBar();
         bool scroll_to_max = scroll_on_output && scrollbar->value() == scrollbar->maximum();
 
         // insert data
-        cursor.insertText(QString::fromUtf8(*cleanedBuffer_));
+		cursor.insertText(temp);
 
         // handle auto scroll feature
         if (scroll_to_max) {
             scrollbar->setValue(scrollbar->maximum());
         }
 
-        buffer_->clear();
-        cleanedBuffer_->clear();
+		rawBuffer_->clear();
         updateTimer.stop();
     }
 }
 
 
-void PlainTextFrontend::keyPressEvent ( QKeyEvent * e ) {
-  if (e->count() > 0) {
-      qDebug() << "PTF keyPressEvent: '" << e->text().toUtf8() << "'";
-      emit dataReady(e->text().toUtf8());
-  } else {
-      BaseFrontend::keyPressEvent(e);
-  }
+void RawFrontend::keyPressEvent ( QKeyEvent * e ) {
+//  if (e->count() > 0) {
+//      qDebug() << "PTF keyPressEvent: '" << e->text().toUtf8() << "'";
+//      emit dataReady(e->text().toUtf8());
+//  } else {
+//      BaseFrontend::keyPressEvent(e);
+//  }
 }
 
 
-void PlainTextFrontend::clear(void) {
+void RawFrontend::clear(void) {
     textbox->clear();
 }
 
-void PlainTextFrontend::setScrollOnOutput(bool on) {
+void RawFrontend::setScrollOnOutput(bool on) {
     scroll_on_output = on;
 }
 
-void PlainTextFrontend::setAutoWrap(bool on) {
+void RawFrontend::setAutoWrap(bool on) {
     auto_wrap = on;
 
     if (on) {
@@ -258,7 +245,7 @@ void PlainTextFrontend::setAutoWrap(bool on) {
 }
 
 
-void PlainTextFrontend::onConnected(bool readOnly, bool, QIODevice* dev) {
+void RawFrontend::onConnected(bool readOnly, bool, QIODevice* dev) {
 	Q_UNUSED(dev);
 
     if (readOnly) {
@@ -269,23 +256,23 @@ void PlainTextFrontend::onConnected(bool readOnly, bool, QIODevice* dev) {
 }
 
 
-void PlainTextFrontend::onDisconnected(bool reconnecting) {
+void RawFrontend::onDisconnected(bool reconnecting) {
     (void) reconnecting;
     // TODO
 }
 
-void PlainTextFrontend::onPaste() {
-    QTextCursor cursor = textbox->textCursor();
-    cursor.movePosition(QTextCursor::End);
+void RawFrontend::onPaste() {
+//    QTextCursor cursor = textbox->textCursor();
+//    cursor.movePosition(QTextCursor::End);
 
-    QClipboard *clipboard = QApplication::clipboard();
-    QString txt = clipboard->text();
+//    QClipboard *clipboard = QApplication::clipboard();
+//    QString txt = clipboard->text();
 
-    qDebug() << "PTF paste clipboard: '" << txt.toUtf8() << "'";
-    emit dataReady(txt.toUtf8());
+//    qDebug() << "PTF paste clipboard: '" << txt.toUtf8() << "'";
+//    emit dataReady(txt.toUtf8());
 }
 
-void PlainTextFrontend::readSettings() {
+void RawFrontend::readSettings() {
     QSettings settings;
     settings.beginGroup(objectName());
     scroll_action->setChecked(settings.value("scrollOnOutput", true).toBool());
@@ -308,7 +295,7 @@ void PlainTextFrontend::readSettings() {
     }
 }
 
-void PlainTextFrontend::writeSettings() {
+void RawFrontend::writeSettings() {
     QSettings settings;
     settings.beginGroup(objectName());
     settings.setValue("scrollOnOutput", scroll_action->isChecked());

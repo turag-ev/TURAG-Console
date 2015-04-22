@@ -5,11 +5,11 @@
 #include "backend/tcpbackend.h"
 
 #include "frontend/plaintextfrontend.h"
-#include "frontend/scfrontend.h"
 #include "frontend/oscilloscope.h"
 #include "frontend/feldbusfrontend.h"
-#include "frontend/mcfrontend.h"
+#include "frontend/robotfrontend.h"
 #include "frontend/stmcamfrontend.h"
+#include "frontend/rawfrontend.h"
 
 #include "connectionwidgets/connectionwidgetfile.h"
 #include "connectionwidgets/connectionwidgetserial.h"
@@ -43,12 +43,12 @@ Controller::Controller(QWidget *parent) :
     availableBackends.append(tcpbackend);
 
     // add all available Frontends to list without a parent
-    availableFrontends.append(new PlainTextFrontend);
-    //availableFrontends.append(new SCFrontend);
-    availableFrontends.append(new MCFrontend);
+	availableFrontends.append(new PlainTextFrontend);
+	availableFrontends.append(new RobotFrontend);
     availableFrontends.append(new Oscilloscope);
     availableFrontends.append(new FeldbusFrontend);
     availableFrontends.append(new STMCamFrontend);
+	availableFrontends.append(new RawFrontend);
 
     // add all available connectionWidgets to list without a parent
     availableConnectionWidgets.append(new ConnectionWidgetSerial);
@@ -308,13 +308,6 @@ void Controller::openNewConnection(void) {
 void Controller::cancelNewConnection() {
     setCurrentIndex(currentFrontendIndex);
     emit newConnectionDialogStateChanged(false);
-}
-
-
-void Controller::setExternalContextActions(QList<QAction*> actions) {
-    for (auto iter : availableFrontends) {
-        iter->setExternalContextActions(actions);
-    }
 }
 
 

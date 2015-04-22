@@ -82,8 +82,3 @@ void STMCamFrontend::onDisconnected(bool reconnecting) {
     camview->onDisconnected(reconnecting);
 }
 
-void STMCamFrontend::setExternalContextActions(QList<QAction*> actions) {
-    cshell->setExternalContextActions(actions);
-    camview->setExternalContextActions(actions);
-    BaseFrontend::setExternalContextActions(actions);
-}

@@ -15,7 +15,6 @@ class STMCamFrontend : public BaseFrontend {
 
 public:
     STMCamFrontend(QWidget *parent = 0);
-    virtual void setExternalContextActions(QList<QAction*> actions);
 
 public slots:
     void writeData(QByteArray data) override;

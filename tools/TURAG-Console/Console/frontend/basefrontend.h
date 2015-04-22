@@ -23,12 +23,6 @@ class BaseFrontend : public QWidget
 public:
     explicit BaseFrontend(QString name, QWidget *parent = 0);
 
-    // This function is called from the parent widget. Its purpose
-    // to provide the context entries from parent widgets in child
-    // widgets as well. If you override this fucntion you should always
-    // call the base implementation.
-    virtual void setExternalContextActions(QList<QAction*> actions);
-
 signals:
     // data was received from the frontend (usually user input)
     void dataReady(QByteArray data);
@@ -52,24 +46,9 @@ public:
 	void setLayout(QLayout *);
 
 protected slots:
-    void showContextMenu(const QPoint & pos);
 
 
 protected:
-    void rebuildContextMenu();
-
-    // Use these functions to add menu actions. They will be automatically
-    // shown in the right places.
-    void addAction(QAction * action);
-    void addActions(QList<QAction *> actions);
-    void insertAction(QAction * before, QAction * action);
-    void insertActions(QAction * before, QList<QAction *> actions);
-    void removeAction(QAction * action);
-    void clearActions(void);
-
-
-    QList<QAction*> externalContextActions;
-	QMenu* contextMenu;
 	QFrame* scrollFrame;
 };
 

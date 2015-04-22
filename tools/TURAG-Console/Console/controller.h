@@ -29,7 +29,6 @@ public:
     bool isConnected(void) const;
     QString getConnectionInfo();
 
-    void setExternalContextActions(QList<QAction*> actions);
     void setExternalMenuBar(QMenuBar* menubar) { menuBar_ = menubar; }
     void setExternalConnectionMenu(QMenu* menu) { connectionMenu = menu; }
     void setExternalFrontendMenu(QMenu* menu) { frontendMenu = menu; }

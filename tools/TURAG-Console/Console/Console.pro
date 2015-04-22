@@ -76,10 +76,8 @@ SOURCES +=\
     frontend/graphutils/colormap.cpp \
     frontend/graphutils/datagraph.cpp \
     frontend/logview.cpp \
-    frontend/mcfrontend.cpp \
     frontend/oscilloscope.cpp \
     frontend/plaintextfrontend.cpp \
-    frontend/scfrontend.cpp \
     frontend/stmcamfrontend.cpp \
     frontend/tinacamerafrontend.cpp \
     frontend/tinagraphfrontend.cpp \
@@ -100,7 +98,9 @@ SOURCES +=\
     frontend/feldbusviews/feldbusbootloaderatmegaview.cpp \
     frontend/feldbusviews/feldbusbootloaderbaseview.cpp \
     frontend/feldbusviews/feldbusbootloaderxmegaview.cpp \
-    ../../../tina/tina/debug/binary.cpp
+    ../../../tina/tina/debug/binary.cpp \
+    frontend/rawfrontend.cpp \
+    frontend/robotfrontend.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -172,10 +172,8 @@ HEADERS  += \
     frontend/graphutils/hoverableqwtlegend.h \
     frontend/graphutils/hoverableqwtlegendlabel.h \
     frontend/logview.h \
-    frontend/mcfrontend.h \
     frontend/oscilloscope.h \
     frontend/plaintextfrontend.h \
-    frontend/scfrontend.h \
     frontend/stmcamfrontend.h \
     frontend/tinacamerafrontend.h \
     frontend/tinagraphfrontend.h \
@@ -239,7 +237,9 @@ HEADERS  += \
     frontend/feldbusviews/feldbusbootloaderxmegaview.h \
     ../../../tina/tina/debug/binary.h \
     ../../../tina/tina/debug/internal-debug.h \
-    ../../../tina/tina/debug/log-source.h
+    ../../../tina/tina/debug/log-source.h \
+    frontend/rawfrontend.h \
+    frontend/robotfrontend.h
 
 INCLUDEPATH += \
     ../../../tina \
