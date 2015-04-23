@@ -85,7 +85,7 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     addWidget(containerWidget);
     restoreState();
     widget(1)->hide();
-
+	setContextMenuPolicy(Qt::ActionsContextMenu);
 
     panner = new QwtPlotPanner( plot->canvas() );
     zoomer = new QwtPlotZoomer(plot->canvas());
