@@ -1,3 +1,39 @@
+turag-console (2.13~git20150427~vivid-1) vivid; urgency=medium
+
+  * new upstream release
+
+ -- TURAG Developers <dev-team@turag.de>  Mon, 27 Apr 2015 23:04:46 +0200
+
+turag-console (2.13~git20150427~utopic-1) utopic; urgency=medium
+
+  * new upstream release
+
+ -- TURAG Developers <dev-team@turag.de>  Mon, 27 Apr 2015 18:25:25 +0200
+
+turag-console (2.13~git20150406~utopic-1) utopic; urgency=medium
+
+  * new upstream release
+
+ -- TURAG Developers <dev-team@turag.de>  Mon, 06 Apr 2015 21:25:07 +0200
+
+turag-console (2.11~git20150222~utopic-1) utopic; urgency=medium
+
+  * new upstream release
+
+ -- TURAG Developers <dev-team@turag.de>  Sun, 22 Feb 2015 11:47:13 +0100
+
+turag-console (2.10~git20150126~utopic-1) utopic; urgency=medium
+
+  * new upstream release
+
+ -- TURAG Developers <dev-team@turag.de>  Mon, 26 Jan 2015 16:08:05 +0100
+
+turag-console (2.9~git20141231-1) utopic; urgency=medium
+
+  * new upstream release
+
+ -- TURAG Developers <dev-team@turag.de>  Wed, 31 Dec 2014 18:24:21 +0100
+
 turag-console (2.9~git20141030-1) trusty; urgency=medium
 
   * new upstream release

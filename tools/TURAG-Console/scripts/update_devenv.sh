@@ -17,4 +17,11 @@ else
   LSB="$1"
 fi
 
-texec pbuilder-dist $LSB update --release-only
+echo 'EXTRAPACKAGES="apt-transport-https ca-certificates"
+OTHERMIRROR="deb [trusted=yes] https://svn.turag.et.tu-dresden.de/debian/ubuntu' $LSB 'main"
+APTCACHEHARDLINK=no' > "$HOME/.pbuilderrc"
+
+texec pbuilder-dist $LSB i386 update --release-only
+if [ "$(uname -m)" == "x86_64" ]; then
+	texec pbuilder-dist $LSB amd64 update --release-only
+fi

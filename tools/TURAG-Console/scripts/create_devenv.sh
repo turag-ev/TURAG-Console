@@ -26,8 +26,11 @@ if [ -f "$HOME/.pbuilderrc" ]; then
 fi
 
 echo 'EXTRAPACKAGES="apt-transport-https ca-certificates"
-OTHERMIRROR="deb [trusted=yes] https://svn.turag.et.tu-dresden.de/debian/ubuntu $LSB main"
+OTHERMIRROR="deb [trusted=yes] https://svn.turag.et.tu-dresden.de/debian/ubuntu' $LSB 'main"
 APTCACHEHARDLINK=no' > "$HOME/.pbuilderrc"
 
 # pbuilder Umgebung erstellen
-texec pbuilder-dist $LSB create --debootstrapopts --variant=buildd
+texec pbuilder-dist $LSB i386 create --debootstrapopts --variant=buildd
+if [ "$(uname -m)" == "x86_64" ]; then
+	texec pbuilder-dist $LSB amd64 create --debootstrapopts --variant=buildd
+fi
