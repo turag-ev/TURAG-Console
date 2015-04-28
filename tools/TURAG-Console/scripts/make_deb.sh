@@ -17,7 +17,7 @@ else
   LSB="$1"
 fi
 
-SRC="$(ls -t *.dsc | head -n 1)"
+SRC="$(ls -t *$LSB*.dsc | head -n 1)"
 
 texec pbuilder-dist "$LSB" i386 build "$SRC"
 if [ "$(uname -m)" == "x86_64" ]; then
