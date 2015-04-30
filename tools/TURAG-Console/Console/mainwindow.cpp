@@ -298,6 +298,7 @@ void MainWindow::about() {
                                        "insbesondere von:<br/><br />"
                                        "&nbsp; Richard Liebscher<br />"
                                        "&nbsp; Martin Oemus<br />"
+									   "&nbsp; Pascal Below<br />"
 									   "&nbsp; Kevin Seidel<br />"
 									   "&nbsp; Florian Völker<br /><br />"
 									   "Copyright © 2013 - 2015 TURAG e.V.<br /><br />"
