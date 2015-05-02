@@ -1,0 +1,4 @@
+moc_*
+Makefile
+*.o
+libqwebdav.so*
