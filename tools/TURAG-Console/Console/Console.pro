@@ -12,6 +12,7 @@ QT     += network
 QT     += printsupport
 QT     += serialport
 QT     += widgets
+QT     += xml
 # camera stuff
 QT     += multimedia
 QT     += multimediawidgets
@@ -36,6 +37,8 @@ DEFINES += QT_STRICT_ITERATORS
 DEFINES += PACKAGE_VERSION=$$VERSION
 DEFINES += PACKAGE_NAME=$$TARGET
 
+DEFINES += DEBUG_WEBDAV
+
 win32: {
   # don't use broken -mms-bitfields flag for windows
   QMAKE_CFLAGS += -mno-ms-bitfields
@@ -45,7 +48,6 @@ win32: {
 SOURCES +=\
         mainwindow.cpp \
     ../../../tina/tina/crc/crc_checksum.c \
-    ../../../tina/tina/debug/graph.c \
     ../../../tina/tina/feldbus/dynamixel/dxl_hal.c \
     ../../../tina/tina/feldbus/dynamixel/dynamixel.c \
     ../../../tina/tina/utils/base64.c \
@@ -100,7 +102,14 @@ SOURCES +=\
     frontend/feldbusviews/feldbusbootloaderxmegaview.cpp \
     ../../../tina/tina/debug/binary.cpp \
     frontend/rawfrontend.cpp \
-    frontend/robotfrontend.cpp
+    frontend/robotfrontend.cpp \
+    ../../../tina/tina/debug/graph.cpp \
+    ../../../libs/qt/qwebdav/qwebdavlib/qnaturalsort.cpp \
+    ../../../libs/qt/qwebdav/qwebdavlib/qwebdav.cpp \
+    ../../../libs/qt/qwebdav/qwebdavlib/qwebdavdirparser.cpp \
+    ../../../libs/qt/qwebdav/qwebdavlib/qwebdavitem.cpp \
+    connectionwidgets/connectionwidgetwebdav.cpp \
+    libs/logindialog.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -110,7 +119,6 @@ HEADERS  += \
     ../../../tina/tina/crc/xor_checksum.h \
     ../../../tina/tina/debug.h \
     ../../../tina/tina/debug/defines.h \
-    ../../../tina/tina/debug/graph.h \
     ../../../tina/tina/debug/print.h \
     ../../../tina/tina/feldbus/dynamixel/dxl_hal.h \
     ../../../tina/tina/feldbus/dynamixel/dynamixel.h \
@@ -239,14 +247,23 @@ HEADERS  += \
     ../../../tina/tina/debug/internal-debug.h \
     ../../../tina/tina/debug/log-source.h \
     frontend/rawfrontend.h \
-    frontend/robotfrontend.h
+    frontend/robotfrontend.h \
+    ../../../tina/tina++/debug/graph.h \
+    ../../../libs/qt/qwebdav/qwebdavlib/qnaturalsort.h \
+    ../../../libs/qt/qwebdav/qwebdavlib/qwebdav_global.h \
+    ../../../libs/qt/qwebdav/qwebdavlib/qwebdav.h \
+    ../../../libs/qt/qwebdav/qwebdavlib/qwebdavdirparser.h \
+    ../../../libs/qt/qwebdav/qwebdavlib/qwebdavitem.h \
+    connectionwidgets/connectionwidgetwebdav.h \
+    libs/logindialog.h
 
 INCLUDEPATH += \
     ../../../tina \
     ../../../tina/platform/desktop/public \
     tina-platform/public \
     ../../Debug-Server \
-    .
+    . \
+    ../../../libs/qt
 
 DISTR_FILES += \
     $$files(images/*.png) \
@@ -295,3 +312,6 @@ unix:!mac {
 
   QMAKE_EXTRA_TARGETS += distr
 }
+
+SUBDIRS += \
+    ../../../libs/qt/qwebdav/qwebdavlib/qwebdavlib.pro

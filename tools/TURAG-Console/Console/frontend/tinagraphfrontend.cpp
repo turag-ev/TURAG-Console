@@ -1,7 +1,7 @@
 #include "tinagraphfrontend.h"
 #include "graphutils/datagraph.h"
 #include <tina++/utils/base64.h>
-#include <tina/debug/graph.h>
+#include <tina++/debug/graph.h>
 #include <QHBoxLayout>
 #include <QTreeWidget>
 #include <QTextStream>

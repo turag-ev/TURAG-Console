@@ -22,7 +22,7 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
 
     QSettings settings;
     settings.beginGroup("ConnectionWidgetTcp");
-    recentHost = settings.value("host", QString("%1:%2").arg(DEFAULTHOST).arg(CONTROLSERVER_PORT)).toString();
+	QString recentHost = settings.value("host", QString("%1:%2").arg(DEFAULTHOST).arg(CONTROLSERVER_PORT)).toString();
 
     // Eingabemaske für Host
     // --------------------------------------------------

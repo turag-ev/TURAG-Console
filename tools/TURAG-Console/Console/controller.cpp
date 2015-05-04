@@ -14,6 +14,7 @@
 #include "connectionwidgets/connectionwidgetfile.h"
 #include "connectionwidgets/connectionwidgetserial.h"
 #include "connectionwidgets/connectionwidgettcp.h"
+#include "connectionwidgets/connectionwidgetwebdav.h"
 
 #include <QVBoxLayout>
 #include <QFrame>
@@ -55,6 +56,7 @@ Controller::Controller(QWidget *parent) :
     availableConnectionWidgets.append(new ConnectionWidgetFile);
     ConnectionWidgetTcp* connectionwidgettcp = new ConnectionWidgetTcp;
     availableConnectionWidgets.append(connectionwidgettcp);
+	availableConnectionWidgets.append(new ConnectionWidgetWebDAV);
 
 
     // ---------------------------------------------------------------

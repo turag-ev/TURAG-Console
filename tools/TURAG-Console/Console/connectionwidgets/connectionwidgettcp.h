@@ -1,13 +1,10 @@
 #ifndef CONNECTIONWIDGETTCP_H
 #define CONNECTIONWIDGETTCP_H
 
-#define DEFAULTHOST "robot.turag.et.tu-dresden.de"
-
 #include "connectionwidget.h"
 #include <Debug_Server/debugserver_protocol.h>
 #include "../backend/tcpbackend.h"
 
-#include <QSettings>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QHBoxLayout>
@@ -31,6 +28,8 @@ class ConnectionWidgetTcp: public ConnectionWidget {
     Q_OBJECT
 
 public:
+	static constexpr const char* DEFAULTHOST = "robot.turag.et.tu-dresden.de";
+
     struct device {
         QString path;
         QString port;
@@ -88,7 +87,6 @@ private:
     device * selectedDevice;
     TcpBackend* associatedBackend;
 
-    QString recentHost;
     QLineEdit * hostEdit;
     QPushButton * connect_button;
     QPushButton * connect_cancel_button;
