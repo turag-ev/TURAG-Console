@@ -125,6 +125,33 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
                     break;
                 }
 
+				case TURAG_DEBUG_GRAPH_DATA2D[0]: {
+					int listindex = graphIndices.indexOf(index);
+					if (listindex != -1) {
+						DataGraph* graph = static_cast<DataGraph*>(stack->widget(listindex));
+						int secondSpacePos = line.indexOf(' ', space_pos + 1);
+						int channelIndex = line.mid(space_pos + 1, secondSpacePos - space_pos - 1).toInt(&ok);
+
+						if (ok && channelIndex < graph->getNumberOfChannels()) {
+							QString encoded = line.right(line.size() - secondSpacePos - 1);
+							QByteArray byte_data = encoded.toLatin1();
+							const uint8_t* data = reinterpret_cast<const uint8_t*>(byte_data.constData());
+							size_t encoded_values = encoded.size() / 6;
+
+							if (encoded_values == 2) {
+								float x, y;
+
+								TURAG::Base64::decode(data, 6, reinterpret_cast<uint8_t*>(&x));
+								data += 6;
+								TURAG::Base64::decode(data, 6, reinterpret_cast<uint8_t*>(&y));
+
+								graph->addData(channelIndex, QPointF(x, y));
+							}
+						}
+					}
+					break;
+				}
+
                 case TURAG_DEBUG_GRAPH_VERTICAL_MARKER[0]: {
                     int listindex = graphIndices.indexOf(index);
                     if (listindex != -1) {
