@@ -90,6 +90,9 @@ public:
                             const QString &sslCertDigestMd5 = "",
                             const QString &sslCertDigestSha1 = "" );
 
+	void setUsername(QString username);
+	void setPassword(QString password);
+
 #ifndef QT_NO_OPENSSL
     //! set SSL certificate digests after emitted checkSslCertifcate() signal
     void acceptSslCertificate(const QString &sslCertDigestMd5 = "",
@@ -132,13 +135,14 @@ signals:
     void checkSslCertifcate(const QList<QSslError> &errors);
 #endif
     void errorChanged(QString error);
+	void authRequired(void);
 
 protected slots:
     void replyReadyRead();
     void replyFinished(QNetworkReply*);
     void replyDeleteLater(QNetworkReply*);
     void replyError(QNetworkReply::NetworkError);
-    void provideAuthenication(QNetworkReply* reply, QAuthenticator* authenticator);
+	void provideAuthentication(QNetworkReply* reply, QAuthenticator* authenticator);
 #ifndef QT_NO_OPENSSL
     void sslErrors(QNetworkReply *reply,const QList<QSslError> &errors);
 #endif

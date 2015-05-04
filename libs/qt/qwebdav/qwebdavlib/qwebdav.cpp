@@ -64,7 +64,7 @@ QWebdav::QWebdav (QObject *parent) : QNetworkAccessManager(parent)
     qRegisterMetaType<QNetworkReply*>("QNetworkReply*");
 
     connect(this, SIGNAL(finished(QNetworkReply*)), this, SLOT(replyFinished(QNetworkReply*)));
-    connect(this, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)), this, SLOT(provideAuthenication(QNetworkReply*,QAuthenticator*)));
+	connect(this, SIGNAL(authenticationRequired(QNetworkReply*,QAuthenticator*)), this, SLOT(provideAuthentication(QNetworkReply*,QAuthenticator*)));
 #ifndef QT_NO_OPENSSL
     connect(this, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)), this, SLOT(sslErrors(QNetworkReply*,QList<QSslError>)));
 #endif
@@ -155,6 +155,15 @@ void QWebdav::setConnectionSettings(const QWebdavConnectionType connectionType,
     m_password = password;
 }
 
+void QWebdav::setUsername(QString username) {
+	m_username = username;
+}
+
+void QWebdav::setPassword(QString password) {
+	m_password = password;
+}
+
+
 #ifndef QT_NO_OPENSSL
 void QWebdav::acceptSslCertificate(const QString &sslCertDigestMd5,
                                    const QString &sslCertDigestSha1)
@@ -229,7 +238,7 @@ void QWebdav::replyError(QNetworkReply::NetworkError)
     emit errorChanged(reply->errorString());
 }
 
-void QWebdav::provideAuthenication(QNetworkReply *reply, QAuthenticator *authenticator)
+void QWebdav::provideAuthentication(QNetworkReply *reply, QAuthenticator *authenticator)
 {
 #ifdef DEBUG_WEBDAV
     qDebug() << "QWebdav::authenticationRequired()";
@@ -239,12 +248,18 @@ void QWebdav::provideAuthenication(QNetworkReply *reply, QAuthenticator *authent
         qDebug() << "QWebdav::authenticationRequired()  option == " << optVar.toString();
     }
 #endif
-
-    if (reply == m_authenticator_lastReply) {
+	if (m_username.isEmpty() && m_password.isEmpty()) {
+		emit authRequired();
+		reply->abort();
+		reply->deleteLater();
+		reply=0;
+	} else if (reply == m_authenticator_lastReply) {
         reply->abort();
         emit errorChanged("WebDAV server requires authentication. Check WebDAV share settings!");
         reply->deleteLater();
         reply=0;
+		m_username = QString();
+		m_password = QString();
     }
 
     m_authenticator_lastReply = reply;
