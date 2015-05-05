@@ -53,10 +53,12 @@
 
 #include <QtCore/qglobal.h>
 
-#if defined(QWEBDAV_LIBRARY)
-#  define QWEBDAVSHARED_EXPORT Q_DECL_EXPORT
-#else
-#  define QWEBDAVSHARED_EXPORT Q_DECL_IMPORT
-#endif
+//#if defined(QWEBDAV_LIBRARY)
+//#  define QWEBDAVSHARED_EXPORT Q_DECL_EXPORT
+//#else
+//#  define QWEBDAVSHARED_EXPORT Q_DECL_IMPORT
+//#endif
+
+#  define QWEBDAVSHARED_EXPORT
 
 #endif // QWEBDAV_GLOBAL_H
