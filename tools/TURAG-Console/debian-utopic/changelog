@@ -1,3 +1,9 @@
+turag-console (2.14~git20150505~utopic-1) utopic; urgency=medium
+
+  * new upstream release
+
+ -- TURAG Developers <dev-team@turag.de>  Tue, 05 May 2015 12:13:10 +0200
+
 turag-console (2.13~git20150427~utopic-1) utopic; urgency=medium
 
   * new upstream release

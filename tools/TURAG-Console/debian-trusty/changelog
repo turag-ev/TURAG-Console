@@ -1,3 +1,9 @@
+turag-console (2.14~git20150505~trusty-1) trusty; urgency=medium
+
+  * new upstream release
+
+ -- TURAG Developers <dev-team@turag.de>  Tue, 05 May 2015 11:58:13 +0200
+
 turag-console (2.13~git20150428~trusty-1) trusty; urgency=medium
 
   * new upstream release
