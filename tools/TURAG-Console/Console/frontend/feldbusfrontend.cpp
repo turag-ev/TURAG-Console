@@ -416,9 +416,9 @@ void FeldbusFrontend::onInquiry(bool boot) {
 
     for (int i = fromAddress; i <= toAddress; i++) {
         if (boot) {
-			bootloadertoolsStartInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg(i * 100 / (toAddress - fromAddress + 1)));
+			bootloadertoolsStartInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg((i - fromAddress) * 100 / (toAddress - fromAddress + 1)));
         } else {
-			startInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg(i * 100 / (toAddress - fromAddress + 1)));
+			startInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg((i - fromAddress) * 100 / (toAddress - fromAddress + 1)));
         }
         for (int j = 0; j <= static_cast<int>(Feldbus::Device::ChecksumType::crc8_icode); j++) {
             if (j == checksumTypeIndex || checksumTypeIndex > static_cast<int>(Feldbus::Device::ChecksumType::crc8_icode)) {
