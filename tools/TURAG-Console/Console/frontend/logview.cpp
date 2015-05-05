@@ -351,10 +351,11 @@ void LogView::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
 
     setScrollOnOutput(!readOnly);
 
-    if (!readOnly) {
-        timedSendString = "\x18\x18\x18\x18\x18\x18\x18>\r\n";
-        sendTimer.start(10);
-    }
+	// boards emit this by themselves on startup
+//    if (!readOnly) {
+//        timedSendString = "\x18\x18\x18\x18\x18\x18\x18>\r\n";
+//        sendTimer.start(10);
+//    }
 
     hasReadOnlyConnection = readOnly;
 //    log_->setEnabled(true);
