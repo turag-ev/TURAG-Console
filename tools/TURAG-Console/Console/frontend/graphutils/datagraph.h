@@ -51,12 +51,39 @@ public:
     void setTitle (const QString & title) {
         plot->setTitle(title);
     }
+	QString getTitle(void) {
+		return plot->title().text();
+	}
+
     void addChannelGroup(const QList<int>& channelGroup);
     void applyChannelGrouping(int index);
     void resetChannelGrouping(void);
 
+	/**
+	 * @brief Übernimmt Metadaten von einer anderen Instanz.
+	 * @param source Referenz auf die Quelle der Metadaten.
+	 *
+	 * Die übernommenen Metadaten umfassen Titel, Channel und
+	 * Channelgruppen.
+	 */
+	void copyMetadata(DataGraph& source);
+
 public slots:
+	/**
+	 * @brief Löscht sämtliche Daten und Metadaten des Diagramms.
+	 *
+	 * Neben den Diagrammdaten werden Channels und Channelgruppen
+	 * gelöscht.
+	 */
     virtual void clear();
+
+	/**
+	 * @brief Löscht alle Daten des Diagramms.
+	 *
+	 * Metadaten wie Channel udn Channelgruppen bleiben erahlten.
+	 */
+	virtual void clearData(void);
+
     virtual void addChannel(QString title);
     virtual void addChannel(QString title, qreal timespan, bool keepHiddenPoints = true);
     virtual void addChannel(QString title,bool xAxisFixed,qreal start, qreal length, bool keepHiddenPoints = true);
@@ -123,7 +150,7 @@ private:
 class CurveDataBase: public QwtArraySeriesData<QPointF>
 {
 protected:
-    bool keepHiddenPoints_;
+	bool keepHiddenPoints_;
 
 public:
     CurveDataBase(bool keepHiddenPoints = true) : keepHiddenPoints_(keepHiddenPoints) { }
@@ -133,15 +160,21 @@ public:
     void resetBoundingRect(void) {
         d_boundingRect = CurveDataBase::boundingRect();
     }
+	void clear(void) {
+		d_samples.clear();
+	}
+	virtual CurveDataBase* createInstance(void) = 0;
 };
 
 
 class CurveData : public CurveDataBase {
 public:
-    CurveData() : CurveDataBase() {}
+	CurveData(bool keepHiddenPoints = true) : CurveDataBase(keepHiddenPoints) {}
     virtual QRectF boundingRect() const;
     virtual void append( const QPointF &point );
-
+	virtual CurveDataBase* createInstance(void) {
+		return new CurveData(keepHiddenPoints_);
+	}
 };
 
 
@@ -150,11 +183,13 @@ protected:
     qreal left;
     qreal right;
 public:
-    CurveDataFixedX(qreal x, qreal width, bool keepHiddenPoints = true) :
-        CurveDataBase(keepHiddenPoints), left(x), right(x + width) { }
-    virtual QRectF boundingRect() const;
+	CurveDataFixedX(qreal x, qreal width, bool keepHiddenPoints = true) :
+		CurveDataBase(keepHiddenPoints), left(x), right(x + width) { }
+	virtual QRectF boundingRect() const;
     virtual void append( const QPointF &point );
-
+	virtual CurveDataBase* createInstance(void) {
+		return new CurveDataFixedX(left, right - left, keepHiddenPoints_);
+	}
 };
 
 
@@ -163,11 +198,13 @@ protected:
     qreal bottom;
     qreal top;
 public:
-    CurveDataFixedY(qreal y, qreal height, bool keepHiddenPoints = true) :
-        CurveDataBase(keepHiddenPoints), bottom(y), top(y + height) { }
-    virtual QRectF boundingRect() const;
+	CurveDataFixedY(qreal y, qreal height, bool keepHiddenPoints = true) :
+		CurveDataBase(keepHiddenPoints), bottom(y), top(y + height) { }
+	virtual QRectF boundingRect() const;
     virtual void append( const QPointF &point );
-
+	virtual CurveDataBase* createInstance(void) {
+		return new CurveDataFixedY(bottom, top - bottom, keepHiddenPoints_);
+	}
 };
 
 
@@ -175,11 +212,13 @@ class CurveDataTime : public CurveDataBase {
 protected:
     qreal timespan_;
 public:
-    CurveDataTime(qreal timespan, bool keepHiddenPoints = true) :
-        CurveDataBase(keepHiddenPoints), timespan_(timespan) { }
-    virtual QRectF boundingRect() const;
+	CurveDataTime(qreal timespan, bool keepHiddenPoints = true) :
+		CurveDataBase(keepHiddenPoints), timespan_(timespan) { }
+	virtual QRectF boundingRect() const;
     virtual void append( const QPointF &point );
-
+	virtual CurveDataBase* createInstance(void) {
+		return new CurveDataTime(timespan_, keepHiddenPoints_);
+	}
 };
 
 
@@ -189,20 +228,22 @@ protected:
     qreal bottom;
     qreal top;
 public:
-    CurveDataTimeFixedY(qreal timespan, qreal y, qreal height, bool keepHiddenPoints = true) :
-        CurveDataBase(keepHiddenPoints), timespan_(timespan), bottom(y), top(y + height) { }
-    virtual QRectF boundingRect() const;
+	CurveDataTimeFixedY(qreal timespan, qreal y, qreal height, bool keepHiddenPoints = true) :
+		CurveDataBase(keepHiddenPoints), timespan_(timespan), bottom(y), top(y + height) { }
+	virtual QRectF boundingRect() const;
     virtual void append( const QPointF &point );
-
+	virtual CurveDataBase* createInstance(void) {
+		return new CurveDataTimeFixedY(timespan_, bottom, top - bottom);
+	}
 };
 
 
 class CurveDataFixedXFixedY : public CurveDataBase {
 public:
-    CurveDataFixedXFixedY(qreal x, qreal width, qreal y, qreal height, bool keepHiddenPoints = true);
-    virtual QRectF boundingRect() const;
+	CurveDataFixedXFixedY(qreal x, qreal width, qreal y, qreal height, bool keepHiddenPoints = true);
+	virtual QRectF boundingRect() const;
     virtual void append( const QPointF &point );
-
+	virtual CurveDataBase* createInstance(void);
 };
 
 

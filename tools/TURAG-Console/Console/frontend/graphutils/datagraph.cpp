@@ -248,6 +248,20 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
 DataGraph::~DataGraph() {
 }
 
+void DataGraph::copyMetadata(DataGraph& source) {
+	setTitle(source.plot->title().text());
+
+	for (QwtPlotCurve* channel : source.channels) {
+		CurveDataBase* curveData = static_cast<CurveDataBase*>(channel->data());
+
+		this->addChannelGeneric(channel->title().text(), curveData->createInstance());
+	}
+
+	for (QList<int> channelList : source.channelGroups) {
+		channelGroups.append(channelList);
+	}
+}
+
 void DataGraph::execReplot(void) {
     plot->replot();
     refreshTimer.stop();
@@ -342,6 +356,20 @@ void DataGraph::clear() {
     channelGroups.clear();
 
     doAutoZoom();
+}
+
+void DataGraph::clearData(void) {
+	for (QwtPlotCurve* channel : channels) {
+		CurveDataBase* curveData = static_cast<CurveDataBase*>(channel->data());
+		curveData->clear();
+	}
+
+	curvesWithRightYAxis = 0;
+	updateRightAxis();
+
+	dataTable->clearContents();
+
+	doAutoZoom();
 }
 
 
@@ -866,7 +894,6 @@ void CurveDataFixedX::append( const QPointF &point ) {
     }
 }
 
-
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
@@ -896,8 +923,6 @@ void CurveDataFixedY::append( const QPointF &point ) {
         }
     }
 }
-
-
 
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
@@ -946,8 +971,6 @@ void CurveDataTime::append( const QPointF &point ) {
     }
 }
 
-
-
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
@@ -991,8 +1014,6 @@ void CurveDataTimeFixedY::append( const QPointF &point ) {
     }
 }
 
-
-
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
@@ -1001,10 +1022,11 @@ void CurveDataTimeFixedY::append( const QPointF &point ) {
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 CurveDataFixedXFixedY::CurveDataFixedXFixedY(qreal x, qreal width, qreal y, qreal height, bool keepHiddenPoints) :
-    CurveDataBase(keepHiddenPoints)
+	CurveDataBase(keepHiddenPoints)
 {
     d_boundingRect = QRectF(QPointF(x, y), QSizeF(width, height));
 }
+
 
 QRectF CurveDataFixedXFixedY::boundingRect() const {
     return d_boundingRect;
@@ -1018,3 +1040,13 @@ void CurveDataFixedXFixedY::append( const QPointF &point ) {
         d_samples += point;
     }
 }
+
+CurveDataBase* CurveDataFixedXFixedY::createInstance(void) {
+	return new CurveDataFixedXFixedY(
+				d_boundingRect.left(),
+				d_boundingRect.right() - d_boundingRect.left(),
+				d_boundingRect.bottom(),
+				d_boundingRect.top() - d_boundingRect.bottom(),
+				keepHiddenPoints_);
+}
+

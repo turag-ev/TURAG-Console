@@ -540,14 +540,21 @@ void LogView::writeLine(QByteArray line) {
             insertRow(level, line.data(), line.size(), source);
             break;
 
-        case TURAG_DEBUG_GRAPH_PREFIX[0]:
-            if (source == 'n') {
+		case TURAG_DEBUG_GRAPH_PREFIX[0]:
+			if (source == TURAG_DEBUG_GRAPH_CREATE[0]) {
                 QTextStream stream(line);
                 int index = 0;
                 stream >> index;
 				QString graphline = QStringLiteral("Graph %1: '%2'").arg(index).arg(stream.readAll().trimmed());
                 insertRow(';', graphline.toLatin1().constData(), graphline.size(), ';');
-            }
+			} else if (source == TURAG_DEBUG_GRAPH_COPY[0]) {
+				QTextStream stream(line);
+				int index = 0, old_index;
+				stream >> index;
+				stream >> old_index;
+				QString graphline = QStringLiteral("Graph %1: '%2'").arg(index).arg(stream.readAll().trimmed());
+				insertRow(';', graphline.toLatin1().constData(), graphline.size(), ';');
+			}
             break;
 
         case TURAG_DEBUG_REPORT_LOG_SOURCE_PREFIX[0]:

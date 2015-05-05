@@ -58,6 +58,35 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
 
                     break;
                 }
+
+				case TURAG_DEBUG_GRAPH_COPY[0]: {
+					int secondSpacePos = line.indexOf(' ', space_pos + 1);
+					int oldChannelIndex = line.mid(space_pos + 1, secondSpacePos - space_pos - 1).toInt(&ok);
+					int oldGraphIndex = graphIndices.indexOf(oldChannelIndex);
+					QString newTitle = line.right(line.size() - secondSpacePos - 1);
+
+					// only continue if old index exists and new does not
+					if (oldGraphIndex != -1 && graphIndices.indexOf(index) == -1) {
+						DataGraph* oldGraph = static_cast<DataGraph*>(stack->widget(oldGraphIndex));
+						DataGraph* newGraph = new DataGraph;
+						newGraph->copyMetadata(*oldGraph);
+						newGraph->setTitle(newTitle);
+
+						stack->addWidget(newGraph);
+						graphIndices.append(index);
+
+						QTreeWidgetItem* item = createGraphEntry(index, newTitle);
+						item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+						graphList->addTopLevelItem(item);
+
+						for (int i = 0; i < graphList->topLevelItem(oldGraphIndex)->child(0)->childCount(); ++i) {
+							QTreeWidgetItem* groupItem = new QTreeWidgetItem(item->child(0));
+							groupItem->setText(0, graphList->topLevelItem(oldGraphIndex)->child(0)->child(0)->text(0));
+						}
+					}
+
+					break;
+				}
                 case TURAG_DEBUG_GRAPH_CHANNEL[0]: {
                     int listindex = graphIndices.indexOf(index);
                     if (listindex != -1) {
@@ -230,8 +259,8 @@ QTreeWidgetItem* TinaGraphFrontend::createGraphEntry(int index, const QString& t
     QTreeWidgetItem* viewAllItem = new QTreeWidgetItem(viewItem);
     viewAllItem->setText(0, "Alle Kanäle anzeigen");
 
-    QTreeWidgetItem* markerItem = new QTreeWidgetItem(item);
-    markerItem->setText(0, "Marker");
+//    QTreeWidgetItem* markerItem = new QTreeWidgetItem(item);
+//    markerItem->setText(0, "Marker");
 
     return item;
 }
