@@ -157,8 +157,11 @@ public:
 
     virtual QRectF boundingRect() const;
     virtual void append( const QPointF &point ) = 0;
-    void resetBoundingRect(void) {
-        d_boundingRect = CurveDataBase::boundingRect();
+	virtual void resetBoundingRect(void) {
+		// invalidate bounding rect
+		d_boundingRect = QRectF();
+		// retrieve new bounding rect
+		d_boundingRect = boundingRect();
     }
 	void clear(void) {
 		d_samples.clear();
@@ -189,6 +192,9 @@ public:
     virtual void append( const QPointF &point );
 	virtual CurveDataBase* createInstance(void) {
 		return new CurveDataFixedX(left, right - left, keepHiddenPoints_);
+	}
+	virtual void resetBoundingRect(void) {
+		d_boundingRect = CurveDataBase::boundingRect();
 	}
 };
 
@@ -233,17 +239,26 @@ public:
 	virtual QRectF boundingRect() const;
     virtual void append( const QPointF &point );
 	virtual CurveDataBase* createInstance(void) {
-		return new CurveDataTimeFixedY(timespan_, bottom, top - bottom);
+		return new CurveDataTimeFixedY(timespan_, bottom, top - bottom, keepHiddenPoints_);
 	}
 };
 
 
 class CurveDataFixedXFixedY : public CurveDataBase {
 public:
-	CurveDataFixedXFixedY(qreal x, qreal width, qreal y, qreal height, bool keepHiddenPoints = true);
+	CurveDataFixedXFixedY(qreal x, qreal width, qreal y, qreal height, bool keepHiddenPoints = true) :
+		CurveDataBase(keepHiddenPoints), bottom(y), top(y + height), left(x), right(x + width) { }
 	virtual QRectF boundingRect() const;
     virtual void append( const QPointF &point );
-	virtual CurveDataBase* createInstance(void);
+	virtual CurveDataBase* createInstance(void) {
+		return new CurveDataFixedXFixedY(left, right - left, bottom, top - bottom, keepHiddenPoints_);
+	}
+
+protected:
+	qreal bottom;
+	qreal top;
+	qreal left;
+	qreal right;
 };
 
 

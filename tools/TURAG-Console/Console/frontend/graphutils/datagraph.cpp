@@ -480,7 +480,7 @@ void DataGraph::focusVerticalMarker(unsigned index) {
 
 void DataGraph::doAutoZoom(void) {
     for (QwtPlotCurve* channel : channels) {
-        CurveDataBase *curvedata = static_cast<CurveData *>( channel->data() );
+		CurveDataBase *curvedata = static_cast<CurveDataBase *>( channel->data() );
         curvedata->resetBoundingRect();
     }
     plot->setAxisAutoScale(QwtPlot::xBottom, true);
@@ -1021,15 +1021,14 @@ void CurveDataTimeFixedY::append( const QPointF &point ) {
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
-CurveDataFixedXFixedY::CurveDataFixedXFixedY(qreal x, qreal width, qreal y, qreal height, bool keepHiddenPoints) :
-	CurveDataBase(keepHiddenPoints)
-{
-    d_boundingRect = QRectF(QPointF(x, y), QSizeF(width, height));
-}
-
-
 QRectF CurveDataFixedXFixedY::boundingRect() const {
-    return d_boundingRect;
+	if (!d_boundingRect.isValid()) {
+		d_boundingRect.setLeft(left);
+		d_boundingRect.setRight(right);
+		d_boundingRect.setBottom(top);
+		d_boundingRect.setTop(bottom);
+	}
+	return d_boundingRect;
 }
 void CurveDataFixedXFixedY::append( const QPointF &point ) {
     if (keepHiddenPoints_|| (
@@ -1039,14 +1038,5 @@ void CurveDataFixedXFixedY::append( const QPointF &point ) {
                 point.x() <= d_boundingRect.right())) {
         d_samples += point;
     }
-}
-
-CurveDataBase* CurveDataFixedXFixedY::createInstance(void) {
-	return new CurveDataFixedXFixedY(
-				d_boundingRect.left(),
-				d_boundingRect.right() - d_boundingRect.left(),
-				d_boundingRect.bottom(),
-				d_boundingRect.top() - d_boundingRect.bottom(),
-				keepHiddenPoints_);
 }
 

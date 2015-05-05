@@ -401,16 +401,21 @@ void LogView::activated(QModelIndex index) {
     log_->resizeRowToContents(index.row());
     log_->resizeColumnsToContents();
 
-    StreamModel::Row data = log_model_->rows()[index.row()];
-    QString line = std::get<StreamModel::DataColumn::DATA_MESSAGE>(data);
-	if (line.startsWith(QStringLiteral("Graph")) && line.size() > 6) {
-        bool ok = false;
-        int index = line.mid(6, line.indexOf(':') - 6).toInt(&ok);
+	if (index.column() != StreamModel::COLUMN_MESSAGE) {
+		index = index.sibling(index.row(), StreamModel::COLUMN_MESSAGE);
+	}
 
-        if (ok) {
-            emit activatedGraph(index);
-        }
-    }
+	if (index.isValid()) {
+		QString line = index.data().toString();
+		if (line.startsWith(QStringLiteral("Graph")) && line.size() > 6) {
+			bool ok = false;
+			int index = line.mid(6, line.indexOf(':') - 6).toInt(&ok);
+
+			if (ok) {
+				emit activatedGraph(index);
+			}
+		}
+	}
 }
 
 void LogView::contextMenu(QPoint point) {

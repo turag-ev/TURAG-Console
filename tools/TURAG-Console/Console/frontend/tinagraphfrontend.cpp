@@ -79,9 +79,9 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
 						item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
 						graphList->addTopLevelItem(item);
 
-						for (int i = 0; i < graphList->topLevelItem(oldGraphIndex)->child(0)->childCount(); ++i) {
+						for (int i = 1; i < graphList->topLevelItem(oldGraphIndex)->child(0)->childCount(); ++i) {
 							QTreeWidgetItem* groupItem = new QTreeWidgetItem(item->child(0));
-							groupItem->setText(0, graphList->topLevelItem(oldGraphIndex)->child(0)->child(0)->text(0));
+							groupItem->setText(0, graphList->topLevelItem(oldGraphIndex)->child(0)->child(i)->text(0));
 						}
 					}
 
