@@ -31,7 +31,6 @@ protected:
     QLabel* channel_label;
     
     DataPointInterface* interface;
-    bool hasBufferedConnection;
 
     void readSettings();
 
@@ -51,7 +50,7 @@ public:
 public slots:
     virtual void writeData(QByteArray data);
     virtual void clear(void);
-    virtual void onConnected(bool readOnly, bool isBuffered, QIODevice*);
+	virtual void onConnected(bool readOnly, QIODevice*);
 };
 
 

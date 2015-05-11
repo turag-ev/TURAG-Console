@@ -308,8 +308,7 @@ FeldbusFrontend::~FeldbusFrontend() {
     }
 }
 
-void FeldbusFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
-    (void)isBuffered;
+void FeldbusFrontend::onConnected(bool readOnly, QIODevice* dev) {
     turag_rs485_io_device = dev;
     if (!readOnly) {
         setEnabled(true);

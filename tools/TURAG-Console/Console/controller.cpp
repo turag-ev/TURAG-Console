@@ -67,7 +67,7 @@ Controller::Controller(QWidget *parent) :
 
     // receive all error and infomessages and connection signals from all available backends
     for (BaseBackend* iter : availableBackends) {
-        connect(iter,SIGNAL(connected(bool,bool)),this,SLOT(onConnected(bool,bool)), Qt::QueuedConnection);
+		connect(iter,SIGNAL(connected(bool)),this,SLOT(onConnected(bool)), Qt::QueuedConnection);
         connect(iter,SIGNAL(disconnected(bool)),this,SLOT(onDisconnected()), Qt::QueuedConnection);
         connect(iter,SIGNAL(disconnected(bool)),this,SIGNAL(disconnected(bool)), Qt::QueuedConnection);
     }
@@ -168,10 +168,10 @@ void Controller::setFrontend(int newFrontendIndex, bool calledManually) {
         connect(currentBackend, SIGNAL(dataReady(QByteArray)), newFrontend, SLOT(writeData(QByteArray)));
         connect(newFrontend, SIGNAL(dataReady(QByteArray)), currentBackend, SLOT(writeData(QByteArray)));
         connect(newFrontend, SIGNAL(requestData()), this, SLOT(refresh()), Qt::QueuedConnection);
-        connect(this,SIGNAL(connected(bool,bool,QIODevice*)),newFrontend,SLOT(onConnected(bool,bool,QIODevice*)));
+		connect(this,SIGNAL(connected(bool,QIODevice*)),newFrontend,SLOT(onConnected(bool,QIODevice*)));
         connect(this,SIGNAL(disconnected(bool)),newFrontend,SLOT(onDisconnected(bool)));
         if (currentBackend->isOpen()) {
-            if (calledManually) newFrontend->onConnected(currentBackend->isReadOnly(), currentBackend->isBuffered(), currentBackend->getDevice());
+			if (calledManually) newFrontend->onConnected(currentBackend->isReadOnly(), currentBackend->getDevice());
         } else {
             if (calledManually) newFrontend->onDisconnected(false);
         }
@@ -319,14 +319,14 @@ void Controller::setAutoReconnect(bool on) {
     }
 }
 
-void Controller::onConnected(bool readOnly, bool isBuffered) {
+void Controller::onConnected(bool readOnly) {
     if (connectionMenu) {
         connectionMenu->addActions(currentBackend->getMenuEntries());
     }
 
     refresh();
 
-    emit connected(readOnly, isBuffered, currentBackend->getDevice());
+	emit connected(readOnly, currentBackend->getDevice());
 }
 
 void Controller::onDisconnected() {

@@ -141,7 +141,7 @@ public:
   void writeSettings();
 
 public slots:
-  void onConnected(bool readOnly, bool isBuffered, QIODevice*) override;
+  void onConnected(bool readOnly, QIODevice*) override;
   void onDisconnected(bool reconnecting) override;
   void clear() override;
   void writeData(QByteArray data) override;

@@ -20,7 +20,7 @@ public slots:
     virtual void writeData(QByteArray data);
 
     // frontend was connected to stream
-    void onConnected(bool readOnly, bool isBuffered, QIODevice*);
+	void onConnected(bool readOnly, QIODevice*);
 
     // frontend was disconnected from stream
     void onDisconnected(bool reconnecting);

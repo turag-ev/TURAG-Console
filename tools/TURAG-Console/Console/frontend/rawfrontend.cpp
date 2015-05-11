@@ -245,9 +245,7 @@ void RawFrontend::setAutoWrap(bool on) {
 }
 
 
-void RawFrontend::onConnected(bool readOnly, bool, QIODevice* dev) {
-	Q_UNUSED(dev);
-
+void RawFrontend::onConnected(bool readOnly, QIODevice*) {
     if (readOnly) {
         paste_action->setEnabled(false);
     } else {

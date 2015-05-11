@@ -37,7 +37,7 @@ public slots:
     virtual void clear(void) = 0;
 
     // frontend was connected to stream, does nothing if not overloaded
-    virtual void onConnected(bool readOnly, bool isBuffered, QIODevice*);
+	virtual void onConnected(bool readOnly, QIODevice*);
 
     // frontend was disconnected from stream, does nothing if not overloaded
     virtual void onDisconnected(bool reconnecting);

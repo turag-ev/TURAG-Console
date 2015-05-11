@@ -40,14 +40,6 @@ bool BaseBackend::isOpen(void) const {
 }
 
 
-bool BaseBackend::isBuffered(void) const {
-    if (stream_.get() == nullptr) {
-        return false;
-    } else {
-        return !stream_->isSequential();
-    }
-}
-
 bool BaseBackend::openConnection(void) {
     if (connectionString_.isEmpty()) {
         return false;
@@ -123,7 +115,7 @@ void BaseBackend::emitConnected() {
     }
 
     deviceShouldBeConnectedString = connectionString_;
-    emit connected(isReadOnly(), isBuffered());
+	emit connected(isReadOnly());
 
     recoverDeviceTimer.stop();
 }

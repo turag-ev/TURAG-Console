@@ -85,10 +85,9 @@ Oscilloscope::~Oscilloscope() {
     settings.setValue("streamType", tab->currentIndex());
 }
 
-void Oscilloscope::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
+void Oscilloscope::onConnected(bool readOnly, QIODevice* dev) {
     (void)readOnly;
     (void)dev;
-    hasBufferedConnection = isBuffered;
 }
 
 void Oscilloscope::onStreamTypeChanged(int index) {
@@ -111,9 +110,6 @@ void Oscilloscope::onStreamTypeChanged(int index) {
 }
 
 void Oscilloscope::writeData(QByteArray data) {
-    // buffered devices do always output their contents completely, so clear contents beforehand
-    if (hasBufferedConnection) clear();
-
     interface->writeData(data);
 }
 

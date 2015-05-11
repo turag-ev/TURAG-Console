@@ -32,9 +32,8 @@ void BaseFrontend::setLayout(QLayout * layout) {
 	scrollFrame->setLayout(layout);
 }
 
-void BaseFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice * dev) {
+void BaseFrontend::onConnected(bool readOnly, QIODevice * dev) {
     (void)readOnly;
-    (void)isBuffered;
     (void)dev;
 }
 

@@ -16,7 +16,6 @@ public:
 
     static const QString connectionPrefix;
     virtual bool isReadOnly(void) const;
-    virtual bool isBuffered(void) const { return true; }
     virtual QString getConnectionInfo();
     QString getDevicePath(void) { return devicePath; }
 

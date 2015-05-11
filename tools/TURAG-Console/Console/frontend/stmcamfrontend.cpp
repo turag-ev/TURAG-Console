@@ -68,12 +68,10 @@ void STMCamFrontend::clear(void) {
     interface->clear();
 }
 
-void STMCamFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
-    Q_UNUSED(dev);
-
-    logview->onConnected(readOnly, isBuffered, dev);
-    cshell->onConnected(readOnly, isBuffered, dev);
-    camview->onConnected(readOnly, isBuffered, dev);
+void STMCamFrontend::onConnected(bool readOnly, QIODevice* dev) {
+	logview->onConnected(readOnly, dev);
+	cshell->onConnected(readOnly, dev);
+	camview->onConnected(readOnly, dev);
 }
 
 void STMCamFrontend::onDisconnected(bool reconnecting) {

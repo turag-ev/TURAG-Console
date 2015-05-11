@@ -48,13 +48,13 @@ public slots:
     void refresh(void);
 
 protected slots:
-    void onConnected(bool readOnly, bool isBuffered);
+	void onConnected(bool readOnly);
     void onDisconnected();
     void onToolboxChangedCurrent(int index);
 
 signals:
     void newConnectionDialogStateChanged(bool visible);
-    void connected(bool readOnly, bool isBuffered, QIODevice*);
+	void connected(bool readOnly, QIODevice*);
     void disconnected(bool reconnecting);
 
 

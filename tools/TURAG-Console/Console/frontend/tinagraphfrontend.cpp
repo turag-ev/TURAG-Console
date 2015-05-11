@@ -308,7 +308,7 @@ void TinaGraphFrontend::activateItem(QTreeWidgetItem* item) {
 
 }
 
-void TinaGraphFrontend::onConnected(bool , bool, QIODevice*) {
+void TinaGraphFrontend::onConnected(bool, QIODevice*) {
 
 }
 

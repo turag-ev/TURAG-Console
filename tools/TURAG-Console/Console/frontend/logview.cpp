@@ -345,8 +345,7 @@ const char* charToKey(char c) {
     return key;
 }
 
-void LogView::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
-    (void)isBuffered;
+void LogView::onConnected(bool readOnly, QIODevice* dev) {
     (void)dev;
 
     setScrollOnOutput(!readOnly);

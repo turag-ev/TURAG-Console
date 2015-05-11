@@ -59,10 +59,10 @@ void RobotFrontend::clear(void) {
     interface->clear();
 }
 
-void RobotFrontend::onConnected(bool readOnly, bool isBuffered, QIODevice* dev) {
-    logview->onConnected(readOnly, isBuffered, dev);
-    cmenu->onConnected(readOnly, isBuffered, dev);
-    graphView->onConnected(readOnly, isBuffered, dev);
+void RobotFrontend::onConnected(bool readOnly, QIODevice* dev) {
+	logview->onConnected(readOnly, dev);
+	cmenu->onConnected(readOnly, dev);
+	graphView->onConnected(readOnly, dev);
 }
 
 void RobotFrontend::onDisconnected(bool reconnecting) {

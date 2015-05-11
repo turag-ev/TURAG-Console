@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(Log::get(), SIGNAL(criticalMsgAvailable(QString)), this, SLOT(printError(QString)));
     connect(Log::get(), SIGNAL(warningMsgAvailable(QString)), this, SLOT(printError(QString)));
     connect(Log::get(), SIGNAL(infoMsgAvailable(QString)), this, SLOT(printMessage(QString)));
-    connect(controller, SIGNAL(connected(bool,bool,QIODevice*)), this, SLOT(onConnected(bool)));
+	connect(controller, SIGNAL(connected(bool,QIODevice*)), this, SLOT(onConnected(bool)));
     connect(controller, SIGNAL(disconnected(bool)), this, SLOT(onDisconnected(bool)));
 
 

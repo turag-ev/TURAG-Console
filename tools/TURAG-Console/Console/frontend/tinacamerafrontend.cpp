@@ -135,7 +135,7 @@ void TinaCameraFrontend::writeLine(QByteArray line) {
     }
 }
 
-void TinaCameraFrontend::onConnected(bool , bool, QIODevice*) {
+void TinaCameraFrontend::onConnected(bool, QIODevice*) {
     scene->clear();
     scene->addText("Connected. Waiting for camera image ...");
 }

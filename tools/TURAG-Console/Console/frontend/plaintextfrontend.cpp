@@ -258,9 +258,7 @@ void PlainTextFrontend::setAutoWrap(bool on) {
 }
 
 
-void PlainTextFrontend::onConnected(bool readOnly, bool, QIODevice* dev) {
-	Q_UNUSED(dev);
-
+void PlainTextFrontend::onConnected(bool readOnly, QIODevice*) {
     if (readOnly) {
         paste_action->setEnabled(false);
     } else {
