@@ -11,8 +11,11 @@ class SerialBackend : public BaseBackend {
 
 public:
     SerialBackend(QObject *parent = 0);
+	virtual ~SerialBackend() {
+		closeConnection();
+	}
 
-    static const QString connectionPrefix;
+    static const QString protocolScheme;
     virtual QString getConnectionInfo();
 
 protected slots:

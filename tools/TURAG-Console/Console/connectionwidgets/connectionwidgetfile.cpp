@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <QFileDialog>
 #include <QStringList>
+#include <QUrl>
 
 
 ConnectionWidgetFile::ConnectionWidgetFile(QWidget *parent) :
@@ -22,7 +23,6 @@ ConnectionWidgetFile::ConnectionWidgetFile(QWidget *parent) :
     addRecentConnections();
 
     connect(file_button, SIGNAL(clicked()), this, SLOT(onOpenFile()));
-
 }
 
 
@@ -32,12 +32,14 @@ void ConnectionWidgetFile::onOpenFile() {
     if (dialog.exec() == QDialog::Accepted) {
       QStringList files = dialog.selectedFiles();
 
-      QString connectionString = FileBackend::connectionPrefix + files[0];
+	  QUrl url;
+	  url.setScheme("file");
+	  url.setPath(files[0]);
 
       bool save = false;
-      emit connectionChanged(connectionString, &save, nullptr);
+	  emit connectionChanged(url.toDisplayString(), &save, nullptr);
       if (save) {
-          saveConnection(connectionString);
+		  saveConnection(url.toDisplayString());
           addRecentConnections();
       }
     }

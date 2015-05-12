@@ -7,6 +7,7 @@
 #include <QByteArray>
 #include <QList>
 #include <QTimer>
+#include <QScopedPointer>
 
 class QAction;
 class QIODevice;
@@ -15,19 +16,19 @@ class BaseBackend : public QObject {
     Q_OBJECT
 
 public:
-    explicit BaseBackend(QString connectionPrefix, QObject *parent = 0);
-    ~BaseBackend(void);
+	explicit BaseBackend(std::initializer_list<QString> protocolScheme, QObject *parent = 0);
+	virtual ~BaseBackend(void);
 
-    bool isOpen(void) const;
+	virtual bool isOpen(void) const;
     virtual bool isReadOnly(void) const;
     virtual QString getConnectionInfo();
     virtual QList<QAction*> getMenuEntries();
-    QIODevice* getDevice() { return stream_.get(); }
+	QIODevice* getDevice() { return stream_.data(); }
 
     // Checks if backend is capable for this connection
     // normally only checks url prefix. This function is thread-safe
     // and so should be any redefinitions.
-    virtual bool canHandleUrl(const QString& url) const;
+	bool canHandleUrl(const QString& url) const;
 
     void setDeviceRecovery(bool on);
 
@@ -80,9 +81,11 @@ protected slots:
     bool saveBufferToFileInternal(QString fileName);
 
 protected:
-    std::unique_ptr<QIODevice> stream_;
+	// QScopedPointerDeleteLater is safer for some sub classes of
+	// QIODevice
+	QScopedPointer<QIODevice, QScopedPointerDeleteLater> stream_;
     QString connectionString_;
-    const QString connectionPrefix_;
+	QList<QString> protocolScheme_;
     QByteArray* buffer;
 
 private slots:

@@ -4,10 +4,15 @@
 #include <QIODevice>
 #include <QDebug>
 #include <QFile>
+#include <initializer_list>
 
-BaseBackend::BaseBackend(QString connectionPrefix, QObject *parent) :
-    QObject(parent), connectionPrefix_(connectionPrefix), deviceShouldBeConnectedString(""), deviceRecoveryActive(false)
+BaseBackend::BaseBackend(std::initializer_list<QString> protocolScheme, QObject *parent) :
+	QObject(parent), deviceShouldBeConnectedString(""), deviceRecoveryActive(false)
 {
+	for (const QString& scheme : protocolScheme) {
+		protocolScheme_.append(scheme);
+	}
+
     recoverDeviceTimer.setInterval(500);
     connect(&recoverDeviceTimer, SIGNAL(timeout()), this, SLOT(onRecoverDevice()));
 
@@ -19,13 +24,12 @@ BaseBackend::BaseBackend(QString connectionPrefix, QObject *parent) :
 
 
 BaseBackend::~BaseBackend(void) {
-    closeConnection();
     delete buffer;
 }
 
 
 bool BaseBackend::isReadOnly(void) const {
-    if (stream_.get() == nullptr) {
+	if (stream_.data() == nullptr) {
         return true;
     } else {
         return !stream_->isWritable();
@@ -35,7 +39,7 @@ bool BaseBackend::isReadOnly(void) const {
 
 
 bool BaseBackend::isOpen(void) const {
-    if (stream_.get() == nullptr) {
+	if (stream_.data() == nullptr) {
         return false;
     } else {
         return stream_->isOpen();
@@ -84,7 +88,7 @@ void BaseBackend::writeData(QByteArray data) {
 
 
 void BaseBackend::emitDataReady(void) {
-    if (stream_.get() && stream_->isReadable()) {
+	if (stream_.data() && stream_->isReadable()) {
         if (!stream_->isSequential()) {
             stream_->seek(0);
         }
@@ -108,7 +112,7 @@ void BaseBackend::reloadData() {
 }
 
 void BaseBackend::onReadData() {
-	int readBytes = std::min(buffer->size() - readIndex, 1024);
+	int readBytes = std::min(buffer->size() - readIndex, 10240);
 
 	emit dataReady(buffer->mid(readIndex, readBytes));
 	readIndex += readBytes;
@@ -128,7 +132,12 @@ QList<QAction*> BaseBackend::getMenuEntries() {
 }
 
 bool BaseBackend::canHandleUrl(const QString& url) const {
-    return url.startsWith(connectionPrefix_);
+	for (const QString& scheme : protocolScheme_) {
+		if (url.startsWith(scheme)) {
+			return true;
+		}
+	}
+	return false;
 }
 
 void BaseBackend::emitConnected() {

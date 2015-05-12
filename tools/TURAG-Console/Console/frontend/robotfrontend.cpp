@@ -62,7 +62,6 @@ void RobotFrontend::onConnected(bool readOnly, QIODevice* dev) {
 	logview->onConnected(readOnly, dev);
 	cmenu->onConnected(readOnly, dev);
 	graphView->onConnected(readOnly, dev);
-	cmenu->setScrollOnOutput(!readOnly);
 }
 
 void RobotFrontend::onDisconnected(bool reconnecting) {

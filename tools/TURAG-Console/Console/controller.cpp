@@ -3,6 +3,7 @@
 #include "backend/filebackend.h"
 #include "backend/serialbackend.h"
 #include "backend/tcpbackend.h"
+#include "backend/webdavbackend.h"
 
 #include "frontend/plaintextfrontend.h"
 #include "frontend/oscilloscope.h"
@@ -15,6 +16,8 @@
 #include "connectionwidgets/connectionwidgetserial.h"
 #include "connectionwidgets/connectionwidgettcp.h"
 #include "connectionwidgets/connectionwidgetwebdav.h"
+
+#include <libs/log.h>
 
 #include <QVBoxLayout>
 #include <QFrame>
@@ -42,6 +45,7 @@ Controller::Controller(QWidget *parent) :
     availableBackends.append(new SerialBackend(this));
     TcpBackend* tcpbackend = new TcpBackend(this);
     availableBackends.append(tcpbackend);
+	availableBackends.append(new WebDAVBackend(true, this));
 
     // add all available Frontends to list without a parent
 	availableFrontends.append(new PlainTextFrontend);
@@ -272,7 +276,10 @@ void Controller::openConnection(QString connectionString, bool *success, BaseBac
         // destroy signal-slot connection if connecting failed
         backend->disconnect(currentFrontend);
         currentFrontend->disconnect(backend);
-    }
+		Log::critical("connection failed");
+	} else {
+		Log::warning("no suitable backend available");
+	}
 
     if (success) *success = false;
     if (openedBackend) *openedBackend = currentBackend;

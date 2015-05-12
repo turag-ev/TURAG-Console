@@ -109,7 +109,8 @@ SOURCES +=\
     ../../../libs/qt/qwebdav/qwebdavlib/qwebdavdirparser.cpp \
     ../../../libs/qt/qwebdav/qwebdavlib/qwebdavitem.cpp \
     connectionwidgets/connectionwidgetwebdav.cpp \
-    libs/logindialog.cpp
+    libs/logindialog.cpp \
+    backend/webdavbackend.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -255,7 +256,8 @@ HEADERS  += \
     ../../../libs/qt/qwebdav/qwebdavlib/qwebdavdirparser.h \
     ../../../libs/qt/qwebdav/qwebdavlib/qwebdavitem.h \
     connectionwidgets/connectionwidgetwebdav.h \
-    libs/logindialog.h
+    libs/logindialog.h \
+    backend/webdavbackend.h
 
 INCLUDEPATH += \
     ../../../tina \

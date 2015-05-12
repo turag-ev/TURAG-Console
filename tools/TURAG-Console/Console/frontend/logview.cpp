@@ -348,14 +348,7 @@ const char* charToKey(char c) {
 void LogView::onConnected(bool readOnly, QIODevice* dev) {
 	(void)dev;
 
-    setScrollOnOutput(!readOnly);
-	qDebug() << "readOnly" << readOnly;
-
-	// boards emit this by themselves on startup
-//    if (!readOnly) {
-//        timedSendString = "\x18\x18\x18\x18\x18\x18\x18>\r\n";
-//        sendTimer.start(10);
-//    }
+	setScrollOnOutput(true);
 
     hasReadOnlyConnection = readOnly;
 //    log_->setEnabled(true);

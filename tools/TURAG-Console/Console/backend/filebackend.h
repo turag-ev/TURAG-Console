@@ -10,8 +10,11 @@ class FileBackend : public BaseBackend {
 
 public:
     FileBackend(QObject *parent = 0);
+	virtual ~FileBackend() {
+		closeConnection();
+	}
 
-    static const QString connectionPrefix;
+    static const QString protocolScheme;
     virtual QString getConnectionInfo();
 
 public slots:

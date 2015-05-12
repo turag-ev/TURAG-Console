@@ -13,8 +13,11 @@ class TcpBackend : public BaseBackend {
 
 public:
     TcpBackend(QObject * parent = 0);
+	virtual ~TcpBackend() {
+		closeConnection();
+	}
 
-    static const QString connectionPrefix;
+    static const QString protocolScheme;
     virtual bool isReadOnly(void) const;
     virtual QString getConnectionInfo();
     QString getDevicePath(void) { return devicePath; }

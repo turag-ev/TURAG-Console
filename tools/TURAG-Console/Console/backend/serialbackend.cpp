@@ -3,11 +3,11 @@
 #include <QFileInfo>
 #include <QDebug>
 
-const QString SerialBackend::connectionPrefix = "serial://";
+const QString SerialBackend::protocolScheme = "serial://";
 
 
 SerialBackend::SerialBackend(QObject *parent) :
-    BaseBackend(SerialBackend::connectionPrefix, parent)
+	BaseBackend({SerialBackend::protocolScheme}, parent)
 {
 }
 
@@ -26,12 +26,12 @@ bool SerialBackend::openConnection(QString connectionString) {
     if (isOpen()) closeConnection();
 
     // extract arguments
-    QString device = connectionString.mid(connectionPrefix_.length(),
-                                  colonIndex - connectionPrefix_.length());
+    QString device = connectionString.mid(protocolScheme_.length(),
+                                  colonIndex - protocolScheme_.length());
     QString baudrate = connectionString.right(connectionString.size() - colonIndex - 1);
 
     // open stream
-    std::unique_ptr<QSerialPort> port(new QSerialPort(device));
+	QSerialPort* port = new QSerialPort(device);
 
     bool success = port->open(QIODevice::ReadWrite);
     if (!success) {
@@ -76,9 +76,9 @@ bool SerialBackend::openConnection(QString connectionString) {
 
     connectionString_ = connectionString;
 
-    stream_ = std::move(port);
-    connect(stream_.get(),SIGNAL(readyRead()),this,SLOT(emitDataReady()));
-    connect(stream_.get(),SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(onError(QSerialPort::SerialPortError)));
+	stream_.reset(port);
+	connect(stream_.data(),SIGNAL(readyRead()),this,SLOT(emitDataReady()));
+	connect(stream_.data(),SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(onError(QSerialPort::SerialPortError)));
 
     emitConnected();
 
@@ -90,8 +90,8 @@ QString SerialBackend::getConnectionInfo() {
         return "";
     } else {
         int colonIndex = connectionString_.lastIndexOf(":");
-        QString device = connectionString_.mid(connectionPrefix_.length(),
-                                      colonIndex - connectionPrefix_.length());
+        QString device = connectionString_.mid(protocolScheme_.length(),
+                                      colonIndex - protocolScheme_.length());
         QString baudrate = connectionString_.right(connectionString_.size() - colonIndex - 1);
 
         return QFileInfo(device).fileName() + ":" + baudrate;

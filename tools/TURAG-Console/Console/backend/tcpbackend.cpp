@@ -3,10 +3,10 @@
 #include <QDebug>
 #include <QStringList>
 
-const QString TcpBackend::connectionPrefix = "tcp://";
+const QString TcpBackend::protocolScheme = "tcp://";
 
 TcpBackend::TcpBackend (QObject *parent) :
-    BaseBackend(TcpBackend::connectionPrefix, parent), connecting(false)
+	BaseBackend({TcpBackend::protocolScheme}, parent), connecting(false)
 { }
 
 bool TcpBackend::openConnection(QString connectionString) {
@@ -27,8 +27,8 @@ bool TcpBackend::openConnection(QString connectionString) {
     connectionString_ = connectionString;
 
     //ich überprüfe den connectionString nicht weiter, da er maschinell erzeugt wird
-    //erstmal connectionPrefix wegwerfen:
-    connectionString.remove(0, connectionPrefix.length());
+    //erstmal protocolScheme wegwerfen:
+    connectionString.remove(0, protocolScheme.length());
 
     //was ich jetzt noch hab: host:port/path:description
     int index = connectionString.indexOf("/");
@@ -43,11 +43,11 @@ bool TcpBackend::openConnection(QString connectionString) {
     port = addressAndPort.at(1).toInt();
 
     //und jetzt den Socket erzeugen
-    std::unique_ptr<QTcpSocket>  socket(new QTcpSocket);
-    connect(socket.get(), SIGNAL(readyRead()), this, SLOT(emitDataReady()));
-    connect(socket.get(), SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onTcpError(QAbstractSocket::SocketError)));
-    connect(socket.get(), SIGNAL(connected()), this, SLOT(socketConnected()));
-    connect(socket.get(), SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
+	QTcpSocket* socket = new QTcpSocket;
+	connect(socket, SIGNAL(readyRead()), this, SLOT(emitDataReady()));
+	connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onTcpError(QAbstractSocket::SocketError)));
+	connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
+	connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
 
     socket->connectToHost( * hostAddress, port);
 
@@ -55,7 +55,7 @@ bool TcpBackend::openConnection(QString connectionString) {
      *VOID QTcpSocket::connectToHost(), sollte dennoch ein Fehler auftreten, so wird er schlicht
      *ausgegeben */
 
-    stream_ = std::move(socket);
+	stream_.reset(socket);
     return true;
 }
 
@@ -66,7 +66,7 @@ void TcpBackend::socketConnected(void) {
 
     QString connectionString = connectionString_;
 
-    connectionString.remove(0, connectionPrefix.length());
+    connectionString.remove(0, protocolScheme.length());
 
     int index = connectionString.indexOf("/");
     int index2 = connectionString.indexOf(":");
@@ -116,7 +116,7 @@ void TcpBackend::onTcpError(QAbstractSocket::SocketError error) {
 
 
 bool TcpBackend::isReadOnly(void) const {
-    if (stream_.get() == nullptr) {
+	if (stream_.data() == nullptr) {
         return true;
     } else {
         return false;
@@ -128,7 +128,7 @@ bool TcpBackend::isReadOnly(void) const {
 QString TcpBackend::getConnectionInfo() {
     QString connectionString = connectionString_;
 
-    connectionString.remove(0, connectionPrefix.length());
+    connectionString.remove(0, protocolScheme.length());
 
     int index = connectionString.indexOf(":");
     int index2 = connectionString.indexOf(":", index + 1);

@@ -58,7 +58,8 @@ QWebdav::QWebdav (QObject *parent) : QNetworkAccessManager(parent)
   ,m_currentConnectionType(QWebdav::HTTP)
   ,m_authenticator_lastReply(0)
   ,m_sslCertDigestMd5("")
-  ,m_sslCertDigestSha1("")
+  ,m_sslCertDigestSha1(""),
+	alwaysIgnoreSslErrors(false)
 
 {
     qRegisterMetaType<QNetworkReply*>("QNetworkReply*");
@@ -275,8 +276,9 @@ void QWebdav::sslErrors(QNetworkReply *reply, const QList<QSslError> &errors)
 
     QSslCertificate sslcert = errors[0].certificate();
 
-    if ( ( sslcert.digest(QCryptographicHash::Md5) == m_sslCertDigestMd5 ) &&
-         ( sslcert.digest(QCryptographicHash::Sha1) == m_sslCertDigestSha1) )
+	if ( (( sslcert.digest(QCryptographicHash::Md5) == m_sslCertDigestMd5 ) &&
+		 ( sslcert.digest(QCryptographicHash::Sha1) == m_sslCertDigestSha1)) ||
+		 alwaysIgnoreSslErrors)
     {
         // user accepted this SSL certifcate already ==> ignore SSL errors
         reply->ignoreSslErrors();

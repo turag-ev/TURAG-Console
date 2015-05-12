@@ -117,17 +117,33 @@ void Log::messageHandler(QtMsgType type, const QMessageLogContext & context, con
     QByteArray localMsg = msg.toLocal8Bit();
     switch (type) {
     case QtDebugMsg:
-        fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-        break;
+		if (context.file) {
+			fprintf(stderr, "Debug: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+		} else {
+			fprintf(stderr, "Debug: %s\n", localMsg.constData());
+		}
+		break;
     case QtWarningMsg:
-        fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-        break;
+		if (context.file) {
+			fprintf(stderr, "Warning: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+		} else {
+			fprintf(stderr, "Warning: %s\n", localMsg.constData());
+		}
+		break;
     case QtCriticalMsg:
-        fprintf(stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-        break;
+		if (context.file) {
+			fprintf(stderr, "Critical: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+		} else {
+			fprintf(stderr, "Critical: %s\n", localMsg.constData());
+		}
+		break;
     case QtFatalMsg:
-        fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
-        abort();
+		if (context.file) {
+			fprintf(stderr, "Fatal: %s (%s:%u, %s)\n", localMsg.constData(), context.file, context.line, context.function);
+		} else {
+			fprintf(stderr, "Fatal: %s\n", localMsg.constData());
+		}
+		abort();
     }
 
     // pipe debug message to log model

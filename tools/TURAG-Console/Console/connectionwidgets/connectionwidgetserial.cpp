@@ -68,12 +68,12 @@ ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
 
 
 void ConnectionWidgetSerial::connectionChangedInternal() {
-    QString connectionString = SerialBackend::connectionPrefix + port_name_->currentText() + ":" + baudrate_->currentText();
+	QString connectionString = SerialBackend::protocolScheme + port_name_->currentText() + ":" + baudrate_->currentText();
 
-    bool save = false;
-    emit connectionChanged(connectionString, &save, nullptr);
+	bool save = false;
+	emit connectionChanged(connectionString, &save, nullptr);
     if (save) {
-        saveConnection(connectionString);
+		saveConnection(connectionString);
         addRecentConnections();
     }
 

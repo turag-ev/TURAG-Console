@@ -59,6 +59,7 @@ private:
     QAction *connect_action;
     QAction *disconnect_action;
     QAction *new_connection_action;
+	QAction* refreshAction;
 
     QActionGroup* frontendOptions;
 

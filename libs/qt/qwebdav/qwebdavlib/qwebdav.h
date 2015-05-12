@@ -80,6 +80,9 @@ public:
     QString password() const;
     QWebdavConnectionType connectionType() const;
     bool isSSL() const;
+	void setAlwaysIgnoreSslErrors(bool ignore) {
+		alwaysIgnoreSslErrors = ignore;
+	}
 
     void setConnectionSettings( const QWebdavConnectionType connectionType,
                             const QString &hostname,
@@ -172,6 +175,7 @@ private:
     // MD5 and SHA1 digests to accept explicitly a SSL certificate
     QByteArray m_sslCertDigestMd5;
     QByteArray m_sslCertDigestSha1;
+	bool alwaysIgnoreSslErrors;
 };
 
 #endif // QWEBDAV_H

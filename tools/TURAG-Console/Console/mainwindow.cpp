@@ -181,10 +181,11 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     connect(frontendMapper, SIGNAL(mapped(int)), controller, SLOT(setFrontend(int)));
 
-    QAction* refreshAction = new QAction("Refresh", this);
+	refreshAction = new QAction("Refresh", this);
     refreshAction->setShortcut(QKeySequence(Qt::Key_F5));
     refreshAction->setIcon(QIcon::fromTheme("view-refresh", QIcon(":/images/view-refresh.png")));
-    refreshAction->setStatusTip("Daten aus Puffer neu laden");
+	refreshAction->setStatusTip("Daten aus lokalem Puffer neu laden");
+	refreshAction->setEnabled(false);
     connect(refreshAction, SIGNAL(triggered()), controller, SLOT(refresh()));
 
     QMenu* view_menu = menuBar()->addMenu("&Ansicht");
@@ -364,6 +365,7 @@ void MainWindow::resetStatusBar() {
 void MainWindow::onConnected(bool readOnly) {
     connect_action->setEnabled(false);
     disconnect_action->setEnabled(true);
+	refreshAction->setEnabled(true);
     frontendOptions->setEnabled(true);
 
     status->setText(controller->getConnectionInfo());
@@ -392,6 +394,7 @@ void MainWindow::onDisconnected(bool reconnecting) {
     if (!reconnecting) {
         connect_action->setEnabled(true);
         disconnect_action->setEnabled(false);
+		refreshAction->setEnabled(false);
     }
     status->setText("");
     permanentStatus->setText("Getrennt");
