@@ -346,7 +346,7 @@ const char* charToKey(char c) {
 }
 
 void LogView::onConnected(bool readOnly, QIODevice* dev) {
-    (void)dev;
+	(void)dev;
 
     setScrollOnOutput(!readOnly);
 
@@ -585,7 +585,7 @@ void LogView::clear(void) {
 // but we don't actually need it.
 void LogView::writeData(QByteArray data)
 {
-    Q_UNUSED(data);
+	Q_UNUSED(data);
 }
 
 void LogView::keyPressEvent ( QKeyEvent * e ) {

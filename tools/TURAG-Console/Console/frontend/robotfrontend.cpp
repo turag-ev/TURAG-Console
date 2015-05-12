@@ -43,7 +43,6 @@ RobotFrontend::RobotFrontend(QWidget *parent) :
     connect(cmenu, SIGNAL(dataReady(QByteArray)), this, SIGNAL(dataReady(QByteArray)));
     connect(logview, SIGNAL(activatedGraph(int)), this, SLOT(activateGraph(int)));
     connect(interface, SIGNAL(tinaPackageReady(QByteArray)), graphView, SLOT(writeLine(QByteArray)));
-    //connect(graphView, SIGNAL(newGraph(int)), this, SLOT(activateGraph(int)));
 
 }
 
@@ -63,6 +62,7 @@ void RobotFrontend::onConnected(bool readOnly, QIODevice* dev) {
 	logview->onConnected(readOnly, dev);
 	cmenu->onConnected(readOnly, dev);
 	graphView->onConnected(readOnly, dev);
+	cmenu->setScrollOnOutput(!readOnly);
 }
 
 void RobotFrontend::onDisconnected(bool reconnecting) {

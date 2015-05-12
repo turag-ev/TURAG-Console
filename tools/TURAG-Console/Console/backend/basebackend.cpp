@@ -11,6 +11,9 @@ BaseBackend::BaseBackend(QString connectionPrefix, QObject *parent) :
     recoverDeviceTimer.setInterval(500);
     connect(&recoverDeviceTimer, SIGNAL(timeout()), this, SLOT(onRecoverDevice()));
 
+	readTimer.setInterval(0);
+	connect(&readTimer, SIGNAL(timeout()), this, SLOT(onReadData()));
+
     buffer = new QByteArray;
 }
 
@@ -61,6 +64,7 @@ void BaseBackend::closeConnection(void) {
 
     deviceShouldBeConnectedString = "";
     recoverDeviceTimer.stop();
+	readTimer.stop();
 }
 
 
@@ -84,14 +88,34 @@ void BaseBackend::emitDataReady(void) {
         if (!stream_->isSequential()) {
             stream_->seek(0);
         }
-        QByteArray data(stream_->readAll());
-        emit dataReady(data);
-        buffer->append(data);
+
+		if (!readTimer.isActive()) {
+			readIndex = buffer->size();
+			readTimer.start();
+		}
+
+		QByteArray data(stream_->readAll());
+		if (buffer->size() + data.size() > buffer->capacity()) {
+			buffer->reserve(buffer->size() + 1024 * 1024);
+		}
+		buffer->append(data);
     }
 }
 
 void BaseBackend::reloadData() {
-    emit dataReady(*buffer);
+	readIndex = 0;
+	readTimer.start();
+}
+
+void BaseBackend::onReadData() {
+	int readBytes = std::min(buffer->size() - readIndex, 1024);
+
+	emit dataReady(buffer->mid(readIndex, readBytes));
+	readIndex += readBytes;
+
+	if (readIndex >= buffer->size()) {
+		readTimer.stop();
+	}
 }
 
 

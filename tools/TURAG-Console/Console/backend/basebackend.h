@@ -87,13 +87,15 @@ protected:
 
 private slots:
     void onRecoverDevice(void);
+	void onReadData(void);
 
 private:
     QTimer recoverDeviceTimer;
     QString deviceShouldBeConnectedString;
     bool deviceRecoveryActive;
 
-
+	QTimer readTimer;
+	int readIndex;
 };
 
 #endif // BASEBACKEND_H

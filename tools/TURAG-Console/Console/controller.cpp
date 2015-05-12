@@ -148,8 +148,8 @@ void Controller::setFrontend(int newFrontendIndex, bool calledManually) {
     // only evaluate this function if :
     // - the desired frontend index is valid and
     // - either the chosen frontend stays the same
-    // but it is not shown just now or we want to set a new
-    // frontend
+	//   but it is not shown just now or we want to set a new
+	//   frontend
     if (newFrontendIndex >= availableFrontends.size() ||
             (newFrontendIndex == currentFrontendIndex && currentFrontendIndex == currentIndex())) {
         return;

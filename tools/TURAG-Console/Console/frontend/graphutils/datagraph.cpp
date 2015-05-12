@@ -53,38 +53,24 @@ class CurveData;
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 
+QIcon DataGraph::showDatatableIcon(QIcon::fromTheme("view-form-table", QIcon(":/images/view-form-table.png")));
+QIcon DataGraph::zoomFitIcon(QIcon::fromTheme("zoom-original", QIcon(":/images/zoom-original.png")));
+QIcon DataGraph::zoomBoxIcon(QIcon::fromTheme("zoom-select", QIcon(":/images/zoom-select.png")));
+QIcon DataGraph::zoomDragIcon(QIcon::fromTheme("transform-move", QIcon(":/images/transform-move.png")));
+QIcon DataGraph::canvasPickIcon(QIcon::fromTheme("edit-node", QIcon(":/images/edit-node.png")));
+QIcon DataGraph::exportIcon(QIcon::fromTheme("document-export", QIcon(":/images/document-export.png")));
+
+
 DataGraph::DataGraph(QString title, QWidget *parent) :
-    SplitterExt("genericDatagraphidentifier", parent), curvesWithRightYAxis(0)
+	QSplitter(parent), curvesWithRightYAxis(0), dataTable(nullptr), dataTableChannelList(nullptr),
+	updateCurveColorsRequested(false), appliedChannelGrouping(-1)
 {
     setChildrenCollapsible(false);
+	setMinimumHeight(300);
 
     plot = new QwtPlot(title);
-
-    dataTableChannelList = new QComboBox;
-    dataTable = new QTableWidget;
-    dataTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    dataTable->setSelectionMode(QAbstractItemView::SingleSelection);
-    dataTable->setFocusPolicy(Qt::NoFocus);
-    QFont font;
-    font.setStyleHint(QFont::System);
-    font.setPointSize(8);
-    dataTable->setFont(font);
-    dataTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    dataTable->verticalHeader()->hide();
-    dataTable->setColumnCount(2);
-    dataTable->setHorizontalHeaderLabels(QStringList{"x", "y"});
-
-    QVBoxLayout* layout = new QVBoxLayout;
-    layout->addWidget(dataTableChannelList);
-    layout->addWidget(dataTable);
-
-    QWidget* containerWidget = new QWidget;
-    containerWidget->setLayout(layout);
-
     addWidget(plot);
-    addWidget(containerWidget);
-    restoreState();
-    widget(1)->hide();
+
 	setContextMenuPolicy(Qt::ActionsContextMenu);
 
     panner = new QwtPlotPanner( plot->canvas() );
@@ -94,7 +80,6 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     connect(picker, SIGNAL(dataPointSuggested(int)), this, SLOT(showEntryInDatatable(int)));
     connect(picker, SIGNAL(nextPlotCurveSuggested()), this, SLOT(selectNextPlotCurve()));
     connect(picker, SIGNAL(previuosPlotCurveSuggested()), this, SLOT(selectPreviousPlotCurve()));
-    connect(dataTable, SIGNAL(currentCellChanged(int,int,int,int)), picker, SLOT(selectPlotPoint(int)));
 
 
     // zoom in/out with the wheel
@@ -133,40 +118,40 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     addAction(separator_action2);
 
     show_datatable_action = new QAction("Show data table", this);
-    show_datatable_action->setIcon(QIcon::fromTheme("view-form-table", QIcon(":/images/view-form-table.png")));
+	show_datatable_action->setIcon(showDatatableIcon);
     addAction(show_datatable_action);
     connect(show_datatable_action, SIGNAL(triggered(bool)), this, SLOT(showDataTable(bool)));
     show_datatable_action->setCheckable(true);
 
 
     QAction* zoom_fit_action = new QAction("Apply automatic zoom", this);
-    zoom_fit_action->setIcon(QIcon::fromTheme("zoom-original", QIcon(":/images/zoom-original.png")));
+	zoom_fit_action->setIcon(zoomFitIcon);
     addAction(zoom_fit_action);
     connect(zoom_fit_action, SIGNAL(triggered()), this, SLOT(doAutoZoom()));
 
     QActionGroup* style_group = new QActionGroup(this);
 
-    CheckActionExt* style_symbols = new CheckActionExt("DatagraphStyleKreuze", "Kreuze", false, this);
+	CheckActionExt* style_symbols = new CheckActionExt("DatagraphStyleKreuze", "Kreuze", false, this, false);
     style_symbols->setActionGroup(style_group);
     styleMapper.setMapping(style_symbols, static_cast<int>(Style::symbols));
     connect(style_symbols, SIGNAL(triggered()), &styleMapper, SLOT(map()));
 
-    CheckActionExt* style_stepped = new CheckActionExt("DatagraphStyleGestuft", "Linie", false, this);
+	CheckActionExt* style_stepped = new CheckActionExt("DatagraphStyleGestuft", "Linie", false, this, false);
     style_stepped->setActionGroup(style_group);
     styleMapper.setMapping(style_stepped, static_cast<int>(Style::stepped_line));
     connect(style_stepped, SIGNAL(triggered()), &styleMapper, SLOT(map()));
 
-    CheckActionExt* style_stepped_line_and_symbols = new CheckActionExt("DatagraphStyleSteppedLinieUndSymbol", "Linie + Kreuze", false, this);
+	CheckActionExt* style_stepped_line_and_symbols = new CheckActionExt("DatagraphStyleSteppedLinieUndSymbol", "Linie + Kreuze", false, this, false);
     style_stepped_line_and_symbols->setActionGroup(style_group);
     styleMapper.setMapping(style_stepped_line_and_symbols, static_cast<int>(Style::stepped_line_and_symbols));
     connect(style_stepped_line_and_symbols, SIGNAL(triggered()), &styleMapper, SLOT(map()));
 
-    CheckActionExt* style_interpolated = new CheckActionExt("DatagraphStyleInterpoliert", "Linie, interpoliert", false, this);
+	CheckActionExt* style_interpolated = new CheckActionExt("DatagraphStyleInterpoliert", "Linie, interpoliert", true, this, false);
     style_interpolated->setActionGroup(style_group);
     styleMapper.setMapping(style_interpolated, static_cast<int>(Style::interpolated_line));
     connect(style_interpolated, SIGNAL(triggered()), &styleMapper, SLOT(map()));
 
-    CheckActionExt* style_interpolated_line_and_symbols = new CheckActionExt("DatagraphStyleInterpoliertLinieUndSymbol", "Linie, interpoliert + Kreuze", true, this);
+	CheckActionExt* style_interpolated_line_and_symbols = new CheckActionExt("DatagraphStyleInterpoliertLinieUndSymbol", "Linie, interpoliert + Kreuze", false, this, false);
     style_interpolated_line_and_symbols->setActionGroup(style_group);
     styleMapper.setMapping(style_interpolated_line_and_symbols, static_cast<int>(Style::interpolated_line_and_symbols));
     connect(style_interpolated_line_and_symbols, SIGNAL(triggered()), &styleMapper, SLOT(map()));
@@ -187,22 +172,22 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
 
     QActionGroup* zoom_group = new QActionGroup(this);
 
-    CheckActionExt* zoom_box_zoom_action = new CheckActionExt("Datagraphzoom_box_zoom_action", "Activate box zoom", false, this);
+	CheckActionExt* zoom_box_zoom_action = new CheckActionExt("Datagraphzoom_box_zoom_action", "Activate box zoom", true, this, false);
     zoom_box_zoom_action->setActionGroup(zoom_group);
-    zoom_box_zoom_action->setIcon(QIcon::fromTheme("zoom-select", QIcon(":/images/zoom-select.png")));
+	zoom_box_zoom_action->setIcon(zoomBoxIcon);
     connect(zoom_box_zoom_action, SIGNAL(triggered()), &userInputModeMapper, SLOT(map()));
     userInputModeMapper.setMapping(zoom_box_zoom_action, 0);
 
-    CheckActionExt* zoom_drag_action = new CheckActionExt("Datagraphzoom_drag_action", "Activate graph panner", true, this);
+	CheckActionExt* zoom_drag_action = new CheckActionExt("Datagraphzoom_drag_action", "Activate graph panner", false, this, false);
     zoom_drag_action->setActionGroup(zoom_group);
-    zoom_drag_action->setIcon(QIcon::fromTheme("transform-move", QIcon(":/images/transform-move.png")));
+	zoom_drag_action->setIcon(zoomDragIcon);
     connect(zoom_drag_action, SIGNAL(triggered()), &userInputModeMapper, SLOT(map()));
     userInputModeMapper.setMapping(zoom_drag_action, 1);
 
     QAction* canvas_pick_action = new QAction("Activate plot picker", this);
     canvas_pick_action->setActionGroup(zoom_group);
     canvas_pick_action->setCheckable(true);
-    canvas_pick_action->setIcon(QIcon::fromTheme("edit-node", QIcon(":/images/edit-node.png")));
+	canvas_pick_action->setIcon(canvasPickIcon);
     connect(canvas_pick_action, SIGNAL(triggered()), &userInputModeMapper, SLOT(map()));
     userInputModeMapper.setMapping(canvas_pick_action, 2);
 
@@ -238,7 +223,7 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     addAction(separator_action3);
 
     QAction* export_action = new QAction("Export Graph", this);
-    export_action->setIcon(QIcon::fromTheme("document-export", QIcon(":/images/document-export.png")));
+	export_action->setIcon(exportIcon);
     addAction(export_action);
     connect(export_action, SIGNAL(triggered()), this, SLOT(exportOutput()));
 
@@ -263,7 +248,15 @@ void DataGraph::copyMetadata(DataGraph& source) {
 }
 
 void DataGraph::execReplot(void) {
-    plot->replot();
+	if (updateCurveColorsRequested) {
+		ColorMapDiscrete2 colormap(channels.size());
+
+		for (int i = 0; i < channels.size(); ++i) {
+			channels.at(i)->setPen(QPen(colormap.getColor(i)));
+		}
+		updateCurveColorsRequested = false;
+	}
+	plot->replot();
     refreshTimer.stop();
 }
 
@@ -296,7 +289,9 @@ void DataGraph::addChannelGeneric(QString title, CurveDataBase* curveData) {
     applyCurveStyleToCurve(curve);
     showCurve(curve, true);
 
-    dataTableChannelList->addItem(title);
+	if (dataTableChannelList) {
+		dataTableChannelList->addItem(title);
+	}
 }
 
 void DataGraph::addChannel(QString title) {
@@ -335,7 +330,9 @@ void DataGraph::removeChannel(int index) {
         delete channels.at(index);
         channels.removeAt(index);
 
-        dataTableChannelList->removeItem(index);
+		if (dataTableChannelList) {
+			dataTableChannelList->removeItem(index);
+		}
     }
     updateCurveColors();
 }
@@ -350,8 +347,12 @@ void DataGraph::clear() {
     curvesWithRightYAxis = 0;
     updateRightAxis();
 
-    dataTableChannelList->clear();
-    dataTable->clearContents();
+	if (dataTableChannelList) {
+		dataTableChannelList->clear();
+	}
+	if (dataTable) {
+		dataTable->clearContents();
+	}
 
     channelGroups.clear();
 
@@ -367,7 +368,9 @@ void DataGraph::clearData(void) {
 	curvesWithRightYAxis = 0;
 	updateRightAxis();
 
-	dataTable->clearContents();
+	if (dataTable) {
+		dataTable->clearContents();
+	}
 
 	doAutoZoom();
 }
@@ -450,7 +453,7 @@ void DataGraph::addData(int channel, QPointF data) {
         curvedata->append(data);
 
         show_datatable_action->setChecked(false);
-        showDataTable(false);
+		showDataTable(false);
 
         requestReplot();
     } else {
@@ -530,15 +533,11 @@ void DataGraph::showCurve(QwtPlotItem *item, bool on, bool visible) {
 }
 
 void DataGraph::showAllCurves(void) {
-    for (QwtPlotCurve* curve : channels) {
-        showCurve(curve, true);
-    }
+	applyChannelGrouping(appliedChannelGrouping);
 }
 
 void DataGraph::hideAllCurves(void) {
-    for (QwtPlotCurve* curve : channels) {
-        showCurve(curve, false);
-    }
+	applyChannelGrouping(appliedChannelGrouping, false);
 }
 
 void DataGraph::setCurveStyle(int styleIndex) {
@@ -623,11 +622,8 @@ void DataGraph::legendMouseMiddleClicked(const QVariant &itemInfo) {
 
 
 void DataGraph::updateCurveColors() {
-    ColorMapDiscrete2 colormap(channels.size());
-
-    for (int i = 0; i < channels.size(); ++i) {
-        channels.at(i)->setPen(QPen(colormap.getColor(i)));
-    }
+	updateCurveColorsRequested = true;
+	requestReplot();
 }
 
 
@@ -702,18 +698,55 @@ void DataGraph::updateRightAxis(void) {
 }
 
 void DataGraph::showDataTable(bool show) {
-    if (show) {
-        widget(1)->show();
-        connect(dataTableChannelList, SIGNAL(currentIndexChanged(int)), this, SLOT(generateDataTableForChannel(int)));
-        generateDataTableForChannel(dataTableChannelList->currentIndex());
-    } else {
-        widget(1)->hide();
-        disconnect(dataTableChannelList, SIGNAL(currentIndexChanged(int)), this, SLOT(generateDataTableForChannel(int)));
-    }
+	if (show) {
+		if (dataTable == nullptr) {
+			createDataTable();
+		}
+		if (widget(1)->isHidden()) {
+			widget(1)->show();
+			connect(dataTableChannelList, SIGNAL(currentIndexChanged(int)), this, SLOT(generateDataTableForChannel(int)));
+			generateDataTableForChannel(dataTableChannelList->currentIndex());
+		}
+	} else if (!show && widget(1) && widget(1)->isVisible()) {
+		widget(1)->hide();
+		disconnect(dataTableChannelList, SIGNAL(currentIndexChanged(int)), this, SLOT(generateDataTableForChannel(int)));
+	}
+}
+
+void DataGraph::createDataTable(void) {
+	dataTableChannelList = new QComboBox;
+	dataTable = new QTableWidget;
+	dataTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+	dataTable->setSelectionMode(QAbstractItemView::SingleSelection);
+	dataTable->setFocusPolicy(Qt::NoFocus);
+	QFont font;
+	font.setStyleHint(QFont::System);
+	font.setPointSize(8);
+	dataTable->setFont(font);
+	dataTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	dataTable->verticalHeader()->hide();
+	dataTable->setColumnCount(2);
+	dataTable->setHorizontalHeaderLabels(QStringList{"x", "y"});
+
+	QVBoxLayout* layout = new QVBoxLayout;
+	layout->addWidget(dataTableChannelList);
+	layout->addWidget(dataTable);
+
+	QWidget* containerWidget = new QWidget;
+	containerWidget->setLayout(layout);
+	addWidget(containerWidget);
+	containerWidget->hide();
+	setStretchFactor(0, 2);
+
+	connect(dataTable, SIGNAL(currentCellChanged(int,int,int,int)), picker, SLOT(selectPlotPoint(int)));
+
+	for (QwtPlotCurve* channel : channels) {
+		dataTableChannelList->addItem(channel->title().text());
+	}
 }
 
 void DataGraph::generateDataTableForChannel(int index) {
-    if (index >= 0 && index < static_cast<int>(channels.at(index)->data()->size())) {
+	if (index >= 0 && index < channels.size()) {
         int oldIndex = dataTable->currentRow();
 
         dataTable->clearContents();
@@ -745,8 +778,10 @@ void DataGraph::addEntryToDataTable(QPointF data, int row) {
 }
 
 void DataGraph::showEntryInDatatable(int index) {
-    dataTable->scrollToItem(dataTable->item(index, 0), QAbstractItemView::PositionAtCenter);
-    dataTable->selectRow(index);
+	if (dataTable) {
+		dataTable->scrollToItem(dataTable->item(index, 0), QAbstractItemView::PositionAtCenter);
+		dataTable->selectRow(index);
+	}
 }
 
 void DataGraph::selectNextPlotCurve(void) {
@@ -776,18 +811,24 @@ void DataGraph::addChannelGroup(const QList<int>& channelGroup) {
     channelGroups.append(channelGroup);
 }
 
-void DataGraph::applyChannelGrouping(int index) {
+void DataGraph::applyChannelGrouping(int index, bool showCurves) {
     for (int i = 0; i < channels.size(); ++i) {
-        if (channelGroups.at(index).contains(i)) {
-            showCurve(channels.at(i), true);
+		if (index < 0 || index >= channelGroups.size() || channelGroups.at(index).contains(i)) {
+			showCurve(channels.at(i), showCurves);
         } else {
             showCurve(channels.at(i), false, false);
         }
     }
+
+	appliedChannelGrouping = index;
 }
 
 void DataGraph::resetChannelGrouping(void) {
-    showAllCurves();
+	for (QwtPlotCurve* curve : channels) {
+		showCurve(curve, true);
+	}
+
+	appliedChannelGrouping = -1;
 }
 
 

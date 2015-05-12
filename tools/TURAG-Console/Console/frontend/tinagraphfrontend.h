@@ -8,6 +8,7 @@
 class QAction;
 class QTreeWidget;
 class QTreeWidgetItem;
+class QHBoxLayout;
 
 class TinaGraphFrontend : public BaseFrontend
 {
@@ -39,6 +40,7 @@ private:
     QList<int> graphIndices;
     QStackedWidget* stack;
     QTreeWidget* graphList;
+	QHBoxLayout* layout;
 };
 
 #endif // TINAGRAPHVIEW_H

@@ -8,12 +8,12 @@ class CheckActionExt : public QAction
 {
     Q_OBJECT
 public:
-    explicit CheckActionExt(const QString& identifier, const QString &text, bool standardValue, QObject* parent) :
-        QAction(text, parent)
+	explicit CheckActionExt(const QString& identifier, const QString &text, bool standardValue, QObject* parent, bool persistent_ = true) :
+		QAction(text, parent), persistent(persistent_)
     {
         setCheckable(true);
 
-        if (!identifier.isEmpty()) {
+		if (!identifier.isEmpty() && persistent) {
             setObjectName(identifier);
             QSettings settings;
             setChecked(settings.value(identifier, standardValue).toBool());
@@ -25,7 +25,9 @@ public:
 
     ~CheckActionExt(void) {
         if (!objectName().isEmpty()) {
-            saveToggled();
+		   // not necessary...
+
+			// saveToggled();
         }
     }
 
@@ -33,10 +35,14 @@ signals:
 
 protected slots:
     void saveToggled(void) {
-        QSettings settings;
-        settings.setValue(objectName(), isChecked());
+		if (persistent) {
+			QSettings settings;
+			settings.setValue(objectName(), isChecked());
+		}
     }
 
+private:
+	bool persistent;
 
 };
 

@@ -10,7 +10,7 @@
 TinaGraphFrontend::TinaGraphFrontend(QWidget *parent) :
     BaseFrontend("TinaGraphFrontend", parent)
 {
-    QHBoxLayout* layout = new QHBoxLayout;
+	layout = new QHBoxLayout;
 
     graphList = new QTreeWidget;
     graphList->setColumnCount(1);
@@ -318,11 +318,13 @@ void TinaGraphFrontend::onDisconnected(bool ) {
 }
 
 void TinaGraphFrontend::clear(void) {
-    QWidget* widget;
-    while ((widget = stack->currentWidget())) {
-        stack->removeWidget(widget);
-        widget->deleteLater();
-    }
+	stack->hide();
+	stack->deleteLater();
+
+	stack = new QStackedWidget;
+	layout->addWidget(stack);
+	layout->setStretch(layout->count() - 1, 2);
+
     graphIndices.clear();
     graphList->clear();
 }

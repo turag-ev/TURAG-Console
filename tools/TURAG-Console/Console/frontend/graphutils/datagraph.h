@@ -3,12 +3,14 @@
 
 #include <QWidget>
 #include <QList>
+#include <QIcon>
 #include <qwt_series_data.h>
 #include <qwt_plot_curve.h>
 #include <QPalette>
 #include <QTimer>
 #include <QSignalMapper>
 #include <libs/splitterext.h>
+#include <QSplitter>
 #include <qwt_plot.h>
 
 class QString;
@@ -28,7 +30,7 @@ class QwtPlotMarker;
 
 
 
-class DataGraph : public SplitterExt
+class DataGraph : public QSplitter
 {
     Q_OBJECT
 
@@ -56,7 +58,7 @@ public:
 	}
 
     void addChannelGroup(const QList<int>& channelGroup);
-    void applyChannelGrouping(int index);
+	void applyChannelGrouping(int index, bool showCurves = true);
     void resetChannelGrouping(void);
 
 	/**
@@ -132,9 +134,9 @@ protected slots:
 
 private:
     void addEntryToDataTable(QPointF data, int row = -1);
+	void createDataTable(void);
 
     QAction* show_datatable_action;
-    QTimer refreshTimer;
     int curvesWithRightYAxis;
 
     QSignalMapper styleMapper;
@@ -144,6 +146,19 @@ private:
     QTableWidget* dataTable;
     QwtPlot* plot;
     QComboBox* dataTableChannelList;
+
+	// static for performance reasons
+	static QIcon showDatatableIcon;
+	static QIcon zoomFitIcon;
+	static QIcon zoomBoxIcon;
+	static QIcon zoomDragIcon;
+	static QIcon canvasPickIcon;
+	static QIcon exportIcon;
+
+	QTimer refreshTimer;
+	bool updateCurveColorsRequested;
+
+	int appliedChannelGrouping;
 };
 
 
