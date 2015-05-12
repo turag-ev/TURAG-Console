@@ -349,6 +349,7 @@ void LogView::onConnected(bool readOnly, QIODevice* dev) {
 	(void)dev;
 
     setScrollOnOutput(!readOnly);
+	qDebug() << "readOnly" << readOnly;
 
 	// boards emit this by themselves on startup
 //    if (!readOnly) {
@@ -384,8 +385,9 @@ void LogView::setScrollOnOutput(bool on) {
             connect(log_->verticalHeader(), SIGNAL(sectionCountChanged(int,int)),
                     this, SLOT(scroll(int,int)));
         } else {
-            disconnect(this, SLOT(scroll(int,int)));
-        }
+			disconnect(log_->verticalHeader(), SIGNAL(sectionCountChanged(int,int)),
+					this, SLOT(scroll(int,int)));
+		}
     }
 }
 
