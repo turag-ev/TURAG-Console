@@ -293,8 +293,11 @@ unix:!mac {
 
   desktop.path = $$DATADIR/applications
   desktop.files += turag-console.desktop
+  
+  mime.path = $$DATADIR/mime/packages
+  mime.files += turag-console.xml
 
-  INSTALLS += target pixmaps desktop
+  INSTALLS += target pixmaps desktop mime
 
   # own make dist :P -> make distr
   PACKAGE_STRING = $(TARGET)-$${VERSION}$${EXT_VERSION}

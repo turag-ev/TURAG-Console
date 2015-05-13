@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-turag-console-log">
+     <comment xml:lang="en">TURAG Console Logfile</comment>
+     <comment xml:lang="de">TURAG Console Logdatei</comment>
+     <generic-icon name="text-x-log"/>
+     <glob pattern="*.turag"/>
+  </mime-type>
+</mime-info>
