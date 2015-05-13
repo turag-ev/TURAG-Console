@@ -13,13 +13,16 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QTreeView>
+#include <connectionwidgets/connectionwidgetwebdav/webdavtreeitem.h>
+#include <QTableWidget>
+#include <QHeaderView>
 
 #ifdef QT_NO_OPENSSL
 # error QT_NO_OPENSSL must not be defined
 #endif
 
 ConnectionWidgetWebDAV::ConnectionWidgetWebDAV (QWidget *parent) :
-	ConnectionWidget("Letzte Verbindungen", parent), status(Status::unconnected)
+	ConnectionWidget("Letzte Verbindungen", parent), status(Status::unconnected), currentFileItem(nullptr)
 {
 	setObjectName("WebDAV");
 
@@ -59,15 +62,30 @@ ConnectionWidgetWebDAV::ConnectionWidgetWebDAV (QWidget *parent) :
 	// tree view
 	// --------------------------------------------------
 	view = new QTreeView;
+	connect(view, SIGNAL(expanded(QModelIndex)), this, SLOT(expandItem(QModelIndex)));
+	connect(view, SIGNAL(activated(QModelIndex)), this, SLOT(activateItem(QModelIndex)));
 
-	QVBoxLayout* treeLayout = new QVBoxLayout;
+	fileList = new QTableWidget;
+	fileList->setSelectionBehavior(QAbstractItemView::SelectRows);
+	fileList->setSelectionMode(QAbstractItemView::SingleSelection);
+	fileList->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	fileList->setColumnCount(3);
+	fileList->setHorizontalHeaderLabels(QStringList({"Name", "Size", "Modified"}));
+	fileList->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+	fileList->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+	fileList->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+	connect(fileList, SIGNAL(cellActivated(int,int)), this, SLOT(fileActivated(int,int)));
+
+	QHBoxLayout* treeLayout = new QHBoxLayout;
 	treeLayout->addWidget(view);
+	treeLayout->addWidget(fileList);
 
 
     // add stuff to layout
     // ----------------------------------------
     layout->addLayout(editLayout);
 	layout->addLayout(treeLayout);
+	layout->setStretchFactor(treeLayout, 1);
 
     layout->addSpacing(10);
 	addRecentConnections();
@@ -101,6 +119,13 @@ void ConnectionWidgetWebDAV::connectToServer() {
 		return;
 	}
 
+	model.reset(new WebDAVTreeModel(QString("/")));
+	view->setModel(model.data());
+//	view->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+//	view->header()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+
+	currentlyQueriedItem = model->index(0, 0);
+
 	webdav.setConnectionSettings(connectionType, url.host(), url.path(), QString(), QString(), url.port());
 	webdavDirParser.listDirectory(&webdav, "/");
 	enterConnectingState();
@@ -128,19 +153,41 @@ void ConnectionWidgetWebDAV::parsingFinished(void) {
 		saveConnection(hostEdit->text());
 		addRecentConnections();
 
-		QList<QWebdavItem> list = webdavDirParser.getList();
-
-		QWebdavItem item;
-		foreach(item, list) {
-			qDebug() << item.name();
-		}
+		parseData();
 
 		enterConnectedState();
+		return;
+	}
+
+	case Status::connected: {
+		parseData();
 		return;
 	}
 	default:
 		return;
 	}
+}
+
+void ConnectionWidgetWebDAV::parseData(void) {
+	QList<WebDAVTreeItem*> itemList;
+	WebDAVTreeItem* oldItem = static_cast<WebDAVTreeItem*>(currentlyQueriedItem.internalPointer());
+
+	model->clear(currentlyQueriedItem);
+
+	for (QWebdavItem& item : webdavDirParser.getList()) {
+		WebDAVTreeItem* newItem;
+
+		if (item.isDir()) {
+			newItem = new WebDAVTreeItem(item.path(), item.name());
+			itemList.append(newItem);
+		} else {
+			oldItem->addFile(item);
+		}
+	}
+	model->addRows(itemList, currentlyQueriedItem);
+	oldItem->setWasExpanded(true);
+
+	fillFileList(currentlyQueriedItem);
 }
 
 void ConnectionWidgetWebDAV::errorOccured(QString errorMsg) {
@@ -213,6 +260,8 @@ void ConnectionWidgetWebDAV::enterUnconnectedState(bool error) {
 	connect_cancel_button->setVisible(false);
 	hostEdit->setEnabled(true);
 	if (recentConnectionsContainer) recentConnectionsContainer->setEnabled(true);
+	fileList->setEnabled(false);
+	view->setEnabled(false);
 }
 
 void ConnectionWidgetWebDAV::enterConnectingState(void) {
@@ -223,6 +272,8 @@ void ConnectionWidgetWebDAV::enterConnectingState(void) {
 	connect_cancel_button->setText("Abbrechen");
 	hostEdit->setEnabled(false);
 	if (recentConnectionsContainer) recentConnectionsContainer->setEnabled(false);
+	fileList->setEnabled(false);
+	view->setEnabled(false);
 }
 
 void ConnectionWidgetWebDAV::enterConnectedState(void) {
@@ -233,7 +284,90 @@ void ConnectionWidgetWebDAV::enterConnectedState(void) {
 	connect_cancel_button->setText("Trennen");
 	hostEdit->setEnabled(false);
 	if (recentConnectionsContainer) recentConnectionsContainer->setEnabled(false);
+	fileList->setEnabled(true);
+	fileList->clearContents();
+	fileList->setRowCount(0);
+	view->setEnabled(true);
 }
 
+void ConnectionWidgetWebDAV::expandItem(const QModelIndex & index) {
+	qDebug() << "expandItem";
+
+	if (index.isValid()) {
+		currentlyQueriedItem = index;
+		WebDAVTreeItem* item = static_cast<WebDAVTreeItem*>(index.internalPointer());
+
+//		if (!item->wasExpanded()) {
+			webdavDirParser.listDirectory(&webdav, item->path());
+//		}
+	}
+}
+
+void ConnectionWidgetWebDAV::activateItem(const QModelIndex & index) {
+	qDebug() << "activated";
+
+	expandItem(index);
+
+	fillFileList(index);
+}
+
+void ConnectionWidgetWebDAV::fillFileList(const QModelIndex & index) {
+	if (index.isValid()) {
+		currentFileItem = static_cast<WebDAVTreeItem*>(index.internalPointer());
+		fileList->clearContents();
+		fileList->setRowCount(currentFileItem->files().size());
+
+		int row = 0;
+		for (QWebdavItem& file : currentFileItem->files()) {
+			QTableWidgetItem* nameEntry = new QTableWidgetItem(file.name());
+			fileList->setItem(row, 0, nameEntry);
+			QTableWidgetItem* sizeEntry = new QTableWidgetItem(formatFileSize(file.size()));
+			fileList->setItem(row, 1, sizeEntry);
+			QTableWidgetItem* modifiedEntry = new QTableWidgetItem(file.lastModifiedStr());
+			fileList->setItem(row, 2, modifiedEntry);
+			++row;
+		}
+		fileList->resizeRowsToContents();
+	}
+}
+
+QString ConnectionWidgetWebDAV::formatFileSize(int size) {
+	float num = static_cast<float>(size);
+	QStringList list;
+	list << "KB" << "MB" << "GB" << "TB";
+
+	QStringListIterator i(list);
+	QString unit("bytes");
+
+	while(num >= 1024.0 && i.hasNext())
+	 {
+		unit = i.next();
+		num /= 1024.0;
+	}
+	return QString().setNum(num,'f',2)+" "+unit;
+}
+
+void ConnectionWidgetWebDAV::fileActivated(int row,	int) {
+	QTableWidgetItem* item = fileList->item(row, 0);
+
+	if (currentFileItem && item) {
+		QString fileName = item->text();
+
+		QUrl url;
+		if (webdav.isSSL()) {
+			url.setScheme("https");
+		} else {
+			url.setScheme("http");
+		}
+
+		url.setHost(webdav.hostname());
+		url.setPort(webdav.port());
+		url.setUserName(webdav.username());
+		url.setPassword(webdav.password());
+		url.setPath(webdav.rootPath() + currentFileItem->path() + fileName);
+
+		emit connectionChanged(url.toEncoded(), nullptr, nullptr);
+	}
 
 
+}

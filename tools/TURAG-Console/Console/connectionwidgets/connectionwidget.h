@@ -5,11 +5,11 @@
 #include <QString>
 #include <QBoxLayout>
 
-class QGroupBox;
 class QVBoxLayout;
 class QSignalMapper;
 class QMenu;
 class BaseBackend;
+class QGroupBox;
 
 class ConnectionWidget : public QWidget {
     Q_OBJECT
@@ -26,7 +26,8 @@ signals:
 
 protected:
     QStringList recent_connections;
-    QGroupBox* recentConnectionsContainer;
+	QVBoxLayout* recentConnectionsLayout;
+	QGroupBox* recentConnectionsContainer;
     QVBoxLayout* layout;
 
     QString recentConnectionSpecifier_;

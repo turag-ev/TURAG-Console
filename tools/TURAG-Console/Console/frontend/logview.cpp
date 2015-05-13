@@ -166,6 +166,9 @@ bool StreamModel::insertRow(char level, const char *data, std::size_t len, unsig
         }
     }
 
+	if (source > log_sources_.size()) {
+		source = 0;
+	}
     if (log_sources_[source].isNull()) {
 		log_sources_[source] = QString();
     }

@@ -6,12 +6,13 @@
 #include <QLabel>
 #include <QGroupBox>
 #include <QMenu>
+#include <QGroupBox>
 
 #include "libs/elidedbutton.h"
 
 
 ConnectionWidget::ConnectionWidget(QString recentConnectionSpecifier, QWidget *parent) :
-    QWidget(parent), recentConnectionsContainer(nullptr), recentConnectionSpecifier_(recentConnectionSpecifier)
+	QWidget(parent), recentConnectionsLayout(nullptr), recentConnectionsContainer(nullptr),  recentConnectionSpecifier_(recentConnectionSpecifier)
 {
     recent_files_map_ = new QSignalMapper(this);
     connect(recent_files_map_,SIGNAL(mapped(int)),this,SLOT(onOpenRecentConnection(int)));
@@ -21,20 +22,26 @@ ConnectionWidget::ConnectionWidget(QString recentConnectionSpecifier, QWidget *p
 }
 
 void ConnectionWidget::addRecentConnections() {
-    // remove recentConnections in case this is not the first call of this function
-    if (recentConnectionsContainer != nullptr) {
-        layout->removeWidget(recentConnectionsContainer);
-        recentConnectionsContainer->deleteLater();
-    }
+	// remove recentConnections in case this is not the first call of this function
+	if (recentConnectionsLayout != nullptr) {
+		layout->removeItem(recentConnectionsLayout);
+		if (recentConnectionsContainer != nullptr) {
+			recentConnectionsLayout->removeWidget(recentConnectionsContainer);
+			recentConnectionsContainer->deleteLater();
+		}
+		recentConnectionsLayout->deleteLater();
+	}
+
+	recentConnectionsLayout = new QVBoxLayout;
 
     QSettings settings;
     settings.beginGroup("RecentConnections");
     recent_connections = settings.value(objectName()).toStringList();
 
     if (!recent_connections.empty()) {
-        recentConnectionsContainer = new QGroupBox(recentConnectionSpecifier_ + ":");
-        recentConnectionsContainer->setFlat(true);
-        QVBoxLayout* innerLayout = new QVBoxLayout;
+		recentConnectionsContainer = new QGroupBox(recentConnectionSpecifier_ + ":");
+		recentConnectionsContainer->setFlat(true);
+		QVBoxLayout* innerLayout = new QVBoxLayout;
 
         for (int i = 0; i < recent_connections.length(); i++) {
             ElidedButton* link = new ElidedButton(" " + recent_connections[i]);
@@ -47,11 +54,12 @@ void ConnectionWidget::addRecentConnections() {
             connect(link, SIGNAL(clicked()), recent_files_map_, SLOT(map()));
             recent_files_map_->setMapping(link, i);
             innerLayout->addWidget(link, 0, Qt::AlignLeft);
-        }
-        recentConnectionsContainer->setLayout(innerLayout);
-        layout->addWidget(recentConnectionsContainer);
-    }
-    layout->addStretch();
+		}
+		recentConnectionsContainer->setLayout(innerLayout);
+		recentConnectionsLayout->addWidget(recentConnectionsContainer);
+	}
+	recentConnectionsLayout->addStretch();
+	layout->addLayout(recentConnectionsLayout);
 }
 
 void ConnectionWidget::onOpenRecentConnection(int index) {

@@ -99,6 +99,9 @@ void BaseBackend::emitDataReady(void) {
 		}
 
 		QByteArray data(stream_->readAll());
+
+		// TODO implement gzip support
+
 		if (buffer->size() + data.size() > buffer->capacity()) {
 			buffer->reserve(buffer->size() + 1024 * 1024);
 		}

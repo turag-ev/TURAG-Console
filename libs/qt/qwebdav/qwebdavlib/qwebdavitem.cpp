@@ -80,7 +80,7 @@ QWebdavItem::QWebdavItem(const QString &path, const QString &name,
   ,m_name(name)
   ,m_ext(ext)
   ,m_lastModified(lastModified)
-  ,m_lastModifiedStr(lastModified.toString("yyyy-MM-dd hh:mm")) // ISO format
+  ,m_lastModifiedStr(lastModified.toString("dd.MM.yyyy hh:mm")) // ISO format
   ,m_size(size)
 #ifdef QWEBDAVITEM_EXTENDED_PROPERTIES
   ,m_displayName()

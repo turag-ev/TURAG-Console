@@ -88,20 +88,19 @@ void WebDAVBackend::onDataReady(void) {
 }
 
 void WebDAVBackend::errorOccured(QString msg) {
-	if (!connecting) {
-		connectionWasLost();
-	}
-
 	Log::critical(msg);
+
+	closeConnection();
+	connecting = false;
 }
 
 void WebDAVBackend::replyError(QNetworkReply::NetworkError) {
-	if (!connecting) {
-		connectionWasLost();
-	}
-
 	QNetworkReply* reply = static_cast<QNetworkReply*>(stream_.data());
 
 	Log::critical(reply->error() + ": " + reply->errorString());
+	qDebug() << reply->errorString();
+
+	closeConnection();
+	connecting = false;
 }
 

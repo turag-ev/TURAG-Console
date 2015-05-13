@@ -37,7 +37,7 @@ DEFINES += QT_STRICT_ITERATORS
 DEFINES += PACKAGE_VERSION=$$VERSION
 DEFINES += PACKAGE_NAME=$$TARGET
 
-DEFINES += DEBUG_WEBDAV
+#DEFINES += DEBUG_WEBDAV
 
 win32: {
   # don't use broken -mms-bitfields flag for windows
@@ -110,7 +110,9 @@ SOURCES +=\
     ../../../libs/qt/qwebdav/qwebdavlib/qwebdavitem.cpp \
     connectionwidgets/connectionwidgetwebdav.cpp \
     libs/logindialog.cpp \
-    backend/webdavbackend.cpp
+    backend/webdavbackend.cpp \
+    connectionwidgets/connectionwidgetwebdav/webdavtreeitem.cpp \
+    connectionwidgets/connectionwidgetwebdav/webdavtreemodel.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -257,7 +259,9 @@ HEADERS  += \
     ../../../libs/qt/qwebdav/qwebdavlib/qwebdavitem.h \
     connectionwidgets/connectionwidgetwebdav.h \
     libs/logindialog.h \
-    backend/webdavbackend.h
+    backend/webdavbackend.h \
+    connectionwidgets/connectionwidgetwebdav/webdavtreeitem.h \
+    connectionwidgets/connectionwidgetwebdav/webdavtreemodel.h
 
 INCLUDEPATH += \
     ../../../tina \
