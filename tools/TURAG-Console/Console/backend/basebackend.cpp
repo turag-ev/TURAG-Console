@@ -7,7 +7,7 @@
 #include <initializer_list>
 
 BaseBackend::BaseBackend(std::initializer_list<QString> protocolScheme, QObject *parent) :
-	QObject(parent), deviceShouldBeConnectedString(""), deviceRecoveryActive(false)
+	QObject(parent), deviceShouldBeConnectedString(""), deviceRecoveryActive(false), dataEmissionChunkSize(10240)
 {
 	for (const QString& scheme : protocolScheme) {
 		protocolScheme_.append(scheme);
@@ -93,14 +93,21 @@ void BaseBackend::emitDataReady(void) {
             stream_->seek(0);
         }
 
-		if (!readTimer.isActive()) {
-			readIndex = buffer->size();
-			readTimer.start();
-		}
-
 		QByteArray data(stream_->readAll());
 
+		if (dataEmissionChunkSize != 0) {
+			if (!readTimer.isActive()) {
+				readIndex = buffer->size();
+				readTimer.start();
+			}
+		} else {
+			emit dataReady(data);
+		}
+
 		// TODO implement gzip support
+
+		// check whether buffer->size() == 0 --> beginning of stream
+		// only applicalble if stream is not sequential
 
 		if (buffer->size() + data.size() > buffer->capacity()) {
 			buffer->reserve(buffer->size() + 1024 * 1024);
@@ -110,12 +117,18 @@ void BaseBackend::emitDataReady(void) {
 }
 
 void BaseBackend::reloadData() {
-	readIndex = 0;
-	readTimer.start();
+	if (dataEmissionChunkSize != 0) {
+		readIndex = 0;
+		readTimer.start();
+	} else {
+		emit dataReady(*buffer);
+	}
 }
 
+// this slot is called by a zero-timer. We always output small chunks of data.
+// This keeps the GUI responsive.
 void BaseBackend::onReadData() {
-	int readBytes = std::min(buffer->size() - readIndex, 10240);
+	int readBytes = std::min(buffer->size() - readIndex, dataEmissionChunkSize);
 
 	emit dataReady(buffer->mid(readIndex, readBytes));
 	readIndex += readBytes;

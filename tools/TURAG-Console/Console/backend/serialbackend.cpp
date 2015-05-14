@@ -9,6 +9,9 @@ const QString SerialBackend::protocolScheme = "serial://";
 SerialBackend::SerialBackend(QObject *parent) :
 	BaseBackend({SerialBackend::protocolScheme}, parent)
 {
+	// it usually doesn't make sense and it must be disabled
+	// for feldbusfrontend
+	setDataEmissionChunkSize(0);
 }
 
 

@@ -36,6 +36,12 @@ public:
     // This function is thread-safe.
     void saveBufferToFile(QString fileName);
 
+	// it is potentially dangerous set the chunk size from
+	// non-zero to zero when data was already received.
+	void setDataEmissionChunkSize(int size) {
+		dataEmissionChunkSize = size;
+	}
+
 signals:
     // data was received from the backend
     void dataReady(QByteArray data);
@@ -99,6 +105,8 @@ private:
 
 	QTimer readTimer;
 	int readIndex;
+
+	int dataEmissionChunkSize;
 };
 
 #endif // BASEBACKEND_H
