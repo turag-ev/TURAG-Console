@@ -795,12 +795,14 @@ void FeldbusFrontend::onStartBoot(void) {
 
 void FeldbusFrontend::onUpdateStatistics(void) {
     if (selectedDevice_->device.get()) {
-        masterNoErrorPackages_->setText(QString("%1").arg(
-                                            selectedDevice_->device.get()->getTotalTransmissions()
-                                            - selectedDevice_->device.get()->getNoAnswerErrors()
-                                            - selectedDevice_->device.get()->getMissingDataErrors()
-                                            - selectedDevice_->device.get()->getChecksumErrors()
-                                            - selectedDevice_->device.get()->getTransmitErrors()));
+		int successfulTransmissions = selectedDevice_->device.get()->getTotalTransmissions()
+				- selectedDevice_->device.get()->getNoAnswerErrors()
+				- selectedDevice_->device.get()->getMissingDataErrors()
+				- selectedDevice_->device.get()->getChecksumErrors()
+				- selectedDevice_->device.get()->getTransmitErrors();
+
+		masterNoErrorPackages_->setText(QString("%1 (%2 %)").arg(successfulTransmissions)
+										.arg(100 * successfulTransmissions / selectedDevice_->device.get()->getTotalTransmissions()));
         masterNoAnswer_->setText(QString("%1").arg(selectedDevice_->device.get()->getNoAnswerErrors()));
         masterMissingData_->setText(QString("%1").arg(selectedDevice_->device.get()->getMissingDataErrors()));
         masterChecksumError_->setText(QString("%1").arg(selectedDevice_->device.get()->getChecksumErrors()));

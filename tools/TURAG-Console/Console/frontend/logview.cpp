@@ -80,7 +80,6 @@ QVariant StreamModel::data(const QModelIndex& index, int role) const {
 				return "";
 			} else {
 				const QString& source = log_sources_[sourceId];
-				qDebug() << source;
 				if (source.length() > 0) {
 					return source;
 				} else {
