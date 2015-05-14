@@ -501,7 +501,7 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
     emit connectionChanged(connectionString, nullptr, &backend);
     if (backend) {
         associatedBackend = dynamic_cast<TcpBackend*>(backend);
-        connect(associatedBackend, SIGNAL(connected(bool,bool)), this, SLOT(backendConnected()));
+		connect(associatedBackend, SIGNAL(connected(bool)), this, SLOT(backendConnected()));
         connect(associatedBackend, SIGNAL(dataReady(QByteArray)), &heartBeatTimer, SLOT(start()), Qt::UniqueConnection);
     }
 }
