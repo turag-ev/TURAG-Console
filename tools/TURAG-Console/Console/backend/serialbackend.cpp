@@ -26,8 +26,8 @@ bool SerialBackend::openConnection(QString connectionString) {
     if (isOpen()) closeConnection();
 
     // extract arguments
-    QString device = connectionString.mid(protocolScheme_.length(),
-                                  colonIndex - protocolScheme_.length());
+	QString device = connectionString.mid(protocolScheme.length(),
+								  colonIndex - protocolScheme.length());
     QString baudrate = connectionString.right(connectionString.size() - colonIndex - 1);
 
     // open stream
