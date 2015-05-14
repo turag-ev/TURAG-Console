@@ -291,21 +291,15 @@ void ConnectionWidgetWebDAV::enterConnectedState(void) {
 }
 
 void ConnectionWidgetWebDAV::expandItem(const QModelIndex & index) {
-	qDebug() << "expandItem";
-
 	if (index.isValid()) {
 		currentlyQueriedItem = index;
 		WebDAVTreeItem* item = static_cast<WebDAVTreeItem*>(index.internalPointer());
 
-//		if (!item->wasExpanded()) {
-			webdavDirParser.listDirectory(&webdav, item->path());
-//		}
+		webdavDirParser.listDirectory(&webdav, item->path());
 	}
 }
 
 void ConnectionWidgetWebDAV::activateItem(const QModelIndex & index) {
-	qDebug() << "activated";
-
 	expandItem(index);
 
 	fillFileList(index);
@@ -337,7 +331,7 @@ QString ConnectionWidgetWebDAV::formatFileSize(int size) {
 	list << "KB" << "MB" << "GB" << "TB";
 
 	QStringListIterator i(list);
-	QString unit("bytes");
+	QString unit("B");
 
 	while(num >= 1024.0 && i.hasNext())
 	 {

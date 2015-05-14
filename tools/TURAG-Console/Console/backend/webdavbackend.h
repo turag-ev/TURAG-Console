@@ -25,6 +25,7 @@ private slots:
 	void errorOccured(QString msg);
 	void replyError(QNetworkReply::NetworkError);
 	void onDataReady(void);
+	void finished(void);
 
 
 private:

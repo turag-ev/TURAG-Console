@@ -58,6 +58,7 @@ bool WebDAVBackend::openConnection(QString connectionString) {
 
 	connect(reply, SIGNAL(readyRead()), this, SLOT(onDataReady()));
 	connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(replyError(QNetworkReply::NetworkError)));
+	connect(reply, SIGNAL(finished()), this, SLOT(finished()));
 
 	stream_.reset(reply);
 	connectionString_ = connectionString;
@@ -102,5 +103,13 @@ void WebDAVBackend::replyError(QNetworkReply::NetworkError) {
 
 	closeConnection();
 	connecting = false;
+}
+
+// workaround for zero-byte files
+void WebDAVBackend::finished(void) {
+	if (connecting) {
+		connecting = false;
+		emitConnected();
+	}
 }
 

@@ -75,12 +75,18 @@ QVariant StreamModel::data(const QModelIndex& index, int role) const {
             return std::get<DATA_MESSAGE>(data);
 
         case COLUMN_SOURCE: {
-            const QString& source = log_sources_[std::get<DATA_SOURCE>(data)];
-            if (source.length() > 0) {
-                return source;
-            } else {
-                return QChar::fromLatin1(std::get<DATA_SOURCE>(data));
-            }
+			SourceId sourceId = std::get<DATA_SOURCE>(data);
+			if (sourceId >= log_sources_.size()) {
+				return "";
+			} else {
+				const QString& source = log_sources_[sourceId];
+				qDebug() << source;
+				if (source.length() > 0) {
+					return source;
+				} else {
+					return QChar::fromLatin1(sourceId);
+				}
+			}
         }
 
         case COLUMN_TIME:
