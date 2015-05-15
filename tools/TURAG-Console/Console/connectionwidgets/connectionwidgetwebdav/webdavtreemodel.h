@@ -44,6 +44,7 @@
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>
+#include <QIcon>
 
 class WebDAVTreeItem;
 
@@ -71,6 +72,7 @@ public:
 	virtual bool hasChildren(const QModelIndex & parent = QModelIndex()) const;
 private:
     WebDAVTreeItem *rootItem;
+	static QIcon dirIcon;
 };
 
 

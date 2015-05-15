@@ -21,6 +21,9 @@
 # error QT_NO_OPENSSL must not be defined
 #endif
 
+QIcon ConnectionWidgetWebDAV::unknownIcon(QIcon::fromTheme("unknown", QIcon(":/images/unknown.png")));
+
+
 ConnectionWidgetWebDAV::ConnectionWidgetWebDAV (QWidget *parent) :
 	ConnectionWidget("Letzte Verbindungen", parent), status(Status::unconnected), currentFileItem(nullptr)
 {
@@ -314,6 +317,7 @@ void ConnectionWidgetWebDAV::fillFileList(const QModelIndex & index) {
 		int row = 0;
 		for (QWebdavItem& file : currentFileItem->files()) {
 			QTableWidgetItem* nameEntry = new QTableWidgetItem(file.name());
+			nameEntry->setIcon(unknownIcon);
 			fileList->setItem(row, 0, nameEntry);
 			QTableWidgetItem* sizeEntry = new QTableWidgetItem(formatFileSize(file.size()));
 			fileList->setItem(row, 1, sizeEntry);

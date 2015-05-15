@@ -44,6 +44,8 @@
 
 #include <QStringList>
 
+QIcon WebDAVTreeModel::dirIcon(QIcon::fromTheme("folder", QIcon(":/images/folder.png")));
+
 WebDAVTreeModel::WebDAVTreeModel(QString rootDir, QObject *parent)
     : QAbstractItemModel(parent)
 {
@@ -72,12 +74,17 @@ QVariant WebDAVTreeModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    if (role != Qt::DisplayRole)
-        return QVariant();
+	switch (role) {
+	case Qt::DisplayRole: {
+		WebDAVTreeItem *item = static_cast<WebDAVTreeItem*>(index.internalPointer());
+		return item->data(index.column());
+	}
+	case Qt::DecorationRole:
+		return dirIcon;
 
-    WebDAVTreeItem *item = static_cast<WebDAVTreeItem*>(index.internalPointer());
-
-    return item->data(index.column());
+	default:
+		return QVariant();
+	}
 }
 
 Qt::ItemFlags WebDAVTreeModel::flags(const QModelIndex &index) const

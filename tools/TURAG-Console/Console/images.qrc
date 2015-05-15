@@ -1,5 +1,5 @@
 <RCC>
-    <qresource lang="de" prefix="/">
+    <qresource prefix="/" lang="de">
         <file>images/ok.png</file>
         <file>images/nok.png</file>
         <file>images/turag-55.png</file>
@@ -22,5 +22,7 @@
         <file>images/zoom-original.png</file>
         <file>images/view-form-table.png</file>
         <file>images/utilities-log-viewer.png</file>
+        <file>images/folder.png</file>
+        <file>images/unknown.png</file>
     </qresource>
 </RCC>
