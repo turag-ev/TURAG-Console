@@ -9,7 +9,8 @@
 ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     ConnectionWidget("Letzte Verbindungen", parent),
     selectedDevice(nullptr),
-    associatedBackend(nullptr)
+	associatedBackend(nullptr),
+	requestDataPending(false)
 {
     setObjectName("Debug Server");
 
@@ -254,6 +255,14 @@ void ConnectionWidgetTcp::handleData() {
                         }
                     }
                     fillDeviceList();
+
+					if (requestDataPending) {
+						requestDataPending = false;
+						if (associatedBackend) {
+							requestData(associatedBackend->getDevicePath());
+						}
+					}
+
                 }
             }
         }
@@ -490,7 +499,7 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
     //Signal emitten mit dem connectionstring;
     //save connectionString hat hier keine Bedeutung
     if (associatedBackend) {
-        disconnect(associatedBackend, SIGNAL(connected(bool,bool)), this, SLOT(backendConnected()));
+		disconnect(associatedBackend, SIGNAL(connected(bool)), this, SLOT(backendConnected()));
         disconnect(associatedBackend, SIGNAL(dataReady(QByteArray)), &heartBeatTimer, SLOT(start()));
 
         // tcp backend might be in auto reconnect mode - in that case we couldn't do a manual reconnect
@@ -522,7 +531,7 @@ void ConnectionWidgetTcp::showContextMenu(const QPoint & pos) {
 }
 
 void ConnectionWidgetTcp::requestData(QString path) {
-    if (!selectedDevice && associatedBackend) {
+	if (!selectedDevice && associatedBackend) {
         QString path = associatedBackend->getDevicePath();
 
         for (device* dev : allDevices) {
@@ -541,8 +550,9 @@ void ConnectionWidgetTcp::requestData(QString path) {
         data.append(" ");
         data.append(socket->localAddress().toString());
         send(data);
-
-    }
+	} else {
+		requestDataPending = true;
+	}
 }
 
 

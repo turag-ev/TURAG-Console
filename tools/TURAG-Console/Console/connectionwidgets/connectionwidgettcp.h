@@ -104,7 +104,7 @@ private:
 
     QMenu* contextMenu;
 
-
+	bool requestDataPending;
 
 };
 
