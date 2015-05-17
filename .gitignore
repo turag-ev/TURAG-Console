@@ -1,6 +1,8 @@
 *~
 *.bak
 *build*
+!build_info.c
+!build_info.h
 tmp
 bin
 *.kate-swp
