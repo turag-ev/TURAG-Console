@@ -112,7 +112,8 @@ SOURCES +=\
     libs/logindialog.cpp \
     backend/webdavbackend.cpp \
     connectionwidgets/connectionwidgetwebdav/webdavtreeitem.cpp \
-    connectionwidgets/connectionwidgetwebdav/webdavtreemodel.cpp
+    connectionwidgets/connectionwidgetwebdav/webdavtreemodel.cpp \
+    libs/iconmanager.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -261,7 +262,8 @@ HEADERS  += \
     libs/logindialog.h \
     backend/webdavbackend.h \
     connectionwidgets/connectionwidgetwebdav/webdavtreeitem.h \
-    connectionwidgets/connectionwidgetwebdav/webdavtreemodel.h
+    connectionwidgets/connectionwidgetwebdav/webdavtreemodel.h \
+    libs/iconmanager.h
 
 INCLUDEPATH += \
     ../../../tina \

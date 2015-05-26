@@ -26,6 +26,7 @@
 #include <libs/log.h>
 #include "connectionwidgets/connectionwidgetfile.h"
 #include "connectionwidgets/connectionwidgetserial.h"
+#include <libs/iconmanager.h>
 
 #if QT_VERSION < 0x050000
 # include <QtGui/QApplication>
@@ -81,13 +82,13 @@ MainWindow::MainWindow(QWidget *parent) :
     new_window->setShortcut(QKeySequence::New);
     new_window->setShortcutContext(Qt::ApplicationShortcut);
     new_window->setStatusTip("Neues Konsolen-Fenster öffnen");
-    new_window->setIcon(QIcon::fromTheme("window-new", QIcon(":/images/window-new.png")));
+    new_window->setIcon(IconManager::get("window-new"));
     connect(new_window, SIGNAL(triggered()), this, SLOT(onNewWindow()));
 
     QAction *save_action = new QAction("&Speichern...", this);
     save_action->setShortcuts(QKeySequence::Save);
     save_action->setStatusTip("Ausgabe speichern");
-    save_action->setIcon(QIcon::fromTheme("document-save", QIcon(":/images/document-save.png")));
+    save_action->setIcon(IconManager::get("document-save"));
     connect(save_action, SIGNAL(triggered()), controller, SLOT(saveOutput()));
 
     QAction* save_auto_action = new CheckActionExt("Automatisches Speichern", "Automatisches Speichern", false, this);
@@ -96,7 +97,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QAction *exit_action = new QAction("&Beenden", this);
     exit_action->setShortcuts(QKeySequence::Quit);
     exit_action->setStatusTip("Programm verlassen");
-    //exit_action->setIcon(QIcon::fromTheme("application-exit", QIcon(":/images/application-exit.png")));
+    //exit_action->setIcon(IconManager::get("application-exit")));
     connect(exit_action, SIGNAL(triggered()), this, SLOT(close()));
 
     QMenu *file_menu = menuBar()->addMenu("&Datei");
@@ -111,13 +112,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect_action = new QAction("&Verbinden", this);
     connect_action->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Y));
     connect_action->setStatusTip("Letzte Verbindung wiederaufbauen");
-    connect_action->setIcon(QIcon::fromTheme("call-start", QIcon(":/images/call-start.png")));
+    connect_action->setIcon(IconManager::get("call-start"));
     connect(connect_action, SIGNAL(triggered()), controller, SLOT(openConnection()));
 
     disconnect_action = new QAction("&Trennen", this);
     disconnect_action->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
     disconnect_action->setStatusTip("Aktive Verbindung trennen");
-    disconnect_action->setIcon(QIcon::fromTheme("call-stop", QIcon(":/images/call-stop.png")));
+    disconnect_action->setIcon(IconManager::get("call-stop"));
     connect(disconnect_action, SIGNAL(triggered()), controller, SLOT(closeConnection()));
 
     QAction* auto_reconnect_action = new CheckActionExt("Verbindung offen halten", "Verbindung offen halten", true, this);
@@ -127,7 +128,7 @@ MainWindow::MainWindow(QWidget *parent) :
     new_connection_action = new QAction("&Neue Sitzung...", this);
     new_connection_action->setStatusTip("Neue Sitzung öffnen");
     new_connection_action->setShortcuts( QList<QKeySequence>{Qt::Key_F2, QKeySequence::Open});
-    new_connection_action->setIcon(QIcon::fromTheme("document-open-remote", QIcon(":/images/document-open-remote.png")));
+    new_connection_action->setIcon(IconManager::get("document-open-remote"));
     new_connection_action->setCheckable(true);
     connect(new_connection_action, SIGNAL(triggered(bool)), this, SLOT(handleNewConnectionAction(bool)));
     connect(controller, SIGNAL(newConnectionDialogStateChanged(bool)), new_connection_action, SLOT(setChecked(bool)));
@@ -157,7 +158,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(show_toolbar, SIGNAL(triggered(bool)), this, SLOT(onShowToolbar(bool)));
 
     QAction* show_logger = new QAction("Logmeldungen...", this);
-    show_logger->setIcon(QIcon::fromTheme("utilities-log-viewer", QIcon(":/images/utilities-log-viewer.png")));
+    show_logger->setIcon(IconManager::get("utilities-log-viewer"));
     show_logger->setCheckable(true);
     show_logger->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_L));
 
@@ -183,7 +184,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	refreshAction = new QAction("Refresh", this);
     refreshAction->setShortcut(QKeySequence(Qt::Key_F5));
-    refreshAction->setIcon(QIcon::fromTheme("view-refresh", QIcon(":/images/view-refresh.png")));
+    refreshAction->setIcon(IconManager::get("view-refresh"));
 	refreshAction->setStatusTip("Daten aus lokalem Puffer neu laden");
 	refreshAction->setEnabled(false);
     connect(refreshAction, SIGNAL(triggered()), controller, SLOT(refresh()));
@@ -217,7 +218,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QAction* about_action = new QAction("&Über", this);
     about_action->setStatusTip("Informationen über TURAG Console");
-    //about_action->setIcon(QIcon::fromTheme("dialog-information", QIcon(":/images/dialog-information.png")));
+    //about_action->setIcon(IconManager::get("dialog-information"));
     connect(about_action, SIGNAL(triggered()), this, SLOT(about()));
     help_menu->addAction(about_action);
 
@@ -514,6 +515,7 @@ void MainWindow::openConnection(QString connection_string) {
 
 int main(int argc, char *argv[]) {
     Log::captureQtDebugMessages(true);
+    IconManager::setFallback(":/images", "png");
 
     QApplication a(argc, argv);
 	QObject::connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));

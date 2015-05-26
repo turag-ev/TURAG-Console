@@ -68,8 +68,6 @@ private:
 	QScopedPointer<WebDAVTreeModel> model;
 	QModelIndex currentlyQueriedItem;
 	WebDAVTreeItem* currentFileItem;
-
-	static QIcon unknownIcon;
 };
 
 #endif // CONNECTIONWIDGETWEBDAV_H

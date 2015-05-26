@@ -37,6 +37,7 @@
 #include <QFont>
 #include <QHeaderView>
 #include <qwt_plot_marker.h>
+#include <libs/iconmanager.h>
 
 
 
@@ -52,13 +53,6 @@ class CurveData;
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
-
-QIcon DataGraph::showDatatableIcon(QIcon::fromTheme("view-form-table", QIcon(":/images/view-form-table.png")));
-QIcon DataGraph::zoomFitIcon(QIcon::fromTheme("zoom-original", QIcon(":/images/zoom-original.png")));
-QIcon DataGraph::zoomBoxIcon(QIcon::fromTheme("zoom-select", QIcon(":/images/zoom-select.png")));
-QIcon DataGraph::zoomDragIcon(QIcon::fromTheme("transform-move", QIcon(":/images/transform-move.png")));
-QIcon DataGraph::canvasPickIcon(QIcon::fromTheme("edit-node", QIcon(":/images/edit-node.png")));
-QIcon DataGraph::exportIcon(QIcon::fromTheme("document-export", QIcon(":/images/document-export.png")));
 
 
 DataGraph::DataGraph(QString title, QWidget *parent) :
@@ -118,14 +112,14 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     addAction(separator_action2);
 
     show_datatable_action = new QAction("Show data table", this);
-	show_datatable_action->setIcon(showDatatableIcon);
+    show_datatable_action->setIcon(IconManager::get("view-form-table"));
     addAction(show_datatable_action);
     connect(show_datatable_action, SIGNAL(triggered(bool)), this, SLOT(showDataTable(bool)));
     show_datatable_action->setCheckable(true);
 
 
     QAction* zoom_fit_action = new QAction("Apply automatic zoom", this);
-	zoom_fit_action->setIcon(zoomFitIcon);
+    zoom_fit_action->setIcon(IconManager::get("zoom-original"));
     addAction(zoom_fit_action);
     connect(zoom_fit_action, SIGNAL(triggered()), this, SLOT(doAutoZoom()));
 
@@ -174,20 +168,20 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
 
 	CheckActionExt* zoom_box_zoom_action = new CheckActionExt("Datagraphzoom_box_zoom_action", "Activate box zoom", true, this, false);
     zoom_box_zoom_action->setActionGroup(zoom_group);
-	zoom_box_zoom_action->setIcon(zoomBoxIcon);
+    zoom_box_zoom_action->setIcon(IconManager::get("zoom-select"));
     connect(zoom_box_zoom_action, SIGNAL(triggered()), &userInputModeMapper, SLOT(map()));
     userInputModeMapper.setMapping(zoom_box_zoom_action, 0);
 
 	CheckActionExt* zoom_drag_action = new CheckActionExt("Datagraphzoom_drag_action", "Activate graph panner", false, this, false);
     zoom_drag_action->setActionGroup(zoom_group);
-	zoom_drag_action->setIcon(zoomDragIcon);
+    zoom_drag_action->setIcon(IconManager::get("transform-move"));
     connect(zoom_drag_action, SIGNAL(triggered()), &userInputModeMapper, SLOT(map()));
     userInputModeMapper.setMapping(zoom_drag_action, 1);
 
     QAction* canvas_pick_action = new QAction("Activate plot picker", this);
     canvas_pick_action->setActionGroup(zoom_group);
     canvas_pick_action->setCheckable(true);
-	canvas_pick_action->setIcon(canvasPickIcon);
+    canvas_pick_action->setIcon(IconManager::get("edit-node"));
     connect(canvas_pick_action, SIGNAL(triggered()), &userInputModeMapper, SLOT(map()));
     userInputModeMapper.setMapping(canvas_pick_action, 2);
 
@@ -223,7 +217,7 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     addAction(separator_action3);
 
     QAction* export_action = new QAction("Export Graph", this);
-	export_action->setIcon(exportIcon);
+    export_action->setIcon(IconManager::get("document-export"));
     addAction(export_action);
     connect(export_action, SIGNAL(triggered()), this, SLOT(exportOutput()));
 

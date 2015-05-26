@@ -1,11 +1,11 @@
 #include "connectionwidgetfile.h"
 #include "backend/filebackend.h"
-#include <QIcon>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QFileDialog>
 #include <QStringList>
 #include <QUrl>
+#include <libs/iconmanager.h>
 
 
 ConnectionWidgetFile::ConnectionWidgetFile(QWidget *parent) :
@@ -14,7 +14,7 @@ ConnectionWidgetFile::ConnectionWidgetFile(QWidget *parent) :
     setObjectName("Datei");
 
     // button to open file
-    file_button = new QPushButton(QIcon::fromTheme("document-open"), "Datei öffnen");
+    file_button = new QPushButton(IconManager::get("document-open"), "Datei öffnen");
 
     // vertical layout including the button and a label
     layout->addWidget(file_button, 0, Qt::AlignLeft);

@@ -43,8 +43,7 @@
 #include "webdavtreemodel.h"
 
 #include <QStringList>
-
-QIcon WebDAVTreeModel::dirIcon(QIcon::fromTheme("folder", QIcon(":/images/folder.png")));
+#include <libs/iconmanager.h>
 
 WebDAVTreeModel::WebDAVTreeModel(QString rootDir, QObject *parent)
     : QAbstractItemModel(parent)
@@ -80,7 +79,7 @@ QVariant WebDAVTreeModel::data(const QModelIndex &index, int role) const
 		return item->data(index.column());
 	}
 	case Qt::DecorationRole:
-		return dirIcon;
+        return IconManager::get("folder");
 
 	default:
 		return QVariant();

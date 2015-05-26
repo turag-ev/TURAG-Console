@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include <QList>
-#include <QIcon>
 #include <qwt_series_data.h>
 #include <qwt_plot_curve.h>
 #include <QPalette>
@@ -146,14 +145,6 @@ private:
     QTableWidget* dataTable;
     QwtPlot* plot;
     QComboBox* dataTableChannelList;
-
-	// static for performance reasons
-	static QIcon showDatatableIcon;
-	static QIcon zoomFitIcon;
-	static QIcon zoomBoxIcon;
-	static QIcon zoomDragIcon;
-	static QIcon canvasPickIcon;
-	static QIcon exportIcon;
 
 	QTimer refreshTimer;
 	bool updateCurveColorsRequested;
