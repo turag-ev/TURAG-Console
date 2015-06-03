@@ -13,20 +13,23 @@
 #include <QPlainTextEdit>
 #include <QApplication>
 #include <QClipboard>
+#include <QEvent>
 
 PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
-	BaseFrontend("Text-Konsole", parent), scroll_on_output(true), buffer_(new QByteArray), cleanedBuffer_(new QByteArray)
+	BaseFrontend("Text-Konsole (Terminal)", parent), scroll_on_output(true), buffer_(new QByteArray), cleanedBuffer_(new QByteArray)
 {
     QVBoxLayout* layout = new QVBoxLayout();
 
     textbox = new QPlainTextEdit(this);
     textbox->setReadOnly(true);
     textbox->setWordWrapMode(QTextOption::NoWrap);
-    textbox->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
-    textbox->setFocusPolicy(Qt::NoFocus);
+	textbox->setTextInteractionFlags(Qt::TextSelectableByMouse);
+//	textbox->setFocusPolicy(Qt::NoFocus);
+	textbox->installEventFilter(this);
 
     // this option effectively leaves the context menu handling to the BaseFrontend.
     textbox->setContextMenuPolicy(Qt::NoContextMenu);
+
 
 	QFont font("Monospace", 9);
 	font.setStyleHint(QFont::Monospace);
@@ -229,16 +232,6 @@ void PlainTextFrontend::onUpdate(void) {
 }
 
 
-void PlainTextFrontend::keyPressEvent ( QKeyEvent * e ) {
-  if (e->count() > 0) {
-      qDebug() << "PTF keyPressEvent: '" << e->text().toUtf8() << "'";
-      emit dataReady(e->text().toUtf8());
-  } else {
-      BaseFrontend::keyPressEvent(e);
-  }
-}
-
-
 void PlainTextFrontend::clear(void) {
     textbox->clear();
 }
@@ -312,4 +305,58 @@ void PlainTextFrontend::writeSettings() {
     settings.setValue("scrollOnOutput", scroll_action->isChecked());
     settings.setValue("autoWrap", wrap_action->isChecked());
     settings.setValue("Style", (int)selectedStyle);
+}
+
+bool PlainTextFrontend::eventFilter(QObject *obj, QEvent *event) {
+	if (event->type() == QEvent::KeyPress) {
+		QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+
+		switch (keyEvent->key()) {
+
+		// VT100-compatible cursor control sequences.
+		// See: http://www.vt100.net/docs/vt100-ug/chapter3.html#S3.1
+		case Qt::Key_Up:
+			if (keyEvent->modifiers() == Qt::NoModifier) {
+				emit dataReady("\x1b[A");
+				qDebug() << "Sent Key_Up";
+			}
+			break;
+
+		case Qt::Key_Down:
+			if (keyEvent->modifiers() == Qt::NoModifier) {
+				emit dataReady("\x1b[B");
+				qDebug() << "Sent Key_Down";
+			}
+			break;
+
+		case Qt::Key_Left:
+			if (keyEvent->modifiers() == Qt::NoModifier) {
+				emit dataReady("\x1b[D");
+				qDebug() << "Sent Key_Left";
+			}
+			break;
+
+		case Qt::Key_Right:
+			if (keyEvent->modifiers() == Qt::NoModifier) {
+				emit dataReady("\x1b[C");
+				qDebug() << "Sent Key_Right";
+			}
+			break;
+
+		default:
+			QByteArray text(keyEvent->text().toUtf8());
+			if (text.size() > 0) {
+				emit dataReady(text);
+
+				for (char i : text) {
+					qDebug() << "Sent" << (uint8_t)i;
+				}
+			}
+			break;
+		}
+		return true;
+	} else {
+		// standard event processing
+		return QObject::eventFilter(obj, event);
+	}
 }

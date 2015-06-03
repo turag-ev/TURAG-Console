@@ -323,6 +323,3 @@ unix:!mac {
 
   QMAKE_EXTRA_TARGETS += distr
 }
-
-SUBDIRS += \
-    ../../../libs/qt/qwebdav/qwebdavlib/qwebdavlib.pro

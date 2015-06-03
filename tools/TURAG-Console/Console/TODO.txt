@@ -1,0 +1,6 @@
+ - Raw-Frontend erweitern: bis zum Hterm-Ersatz
+ - Stmcam-Frontend in TinA-Frontend integrieren -> gehört zur Roboteransicht
+ - Suche im Terminal-Frontend/Plaintextfrontend
+ - Plaintext-Frontend und Terminal-Frontend trennen -> wenn möglich Terminal von plaintext erben lassen? Prüfen,
+ ob Plaintext-Frontend überhaupt notwendig, oder ob überall Terminal-Frontend benutzt werden kann
+ - Scrolling im Terminal/plaintextfrontend mit Shift+Cursor Up/Down, sowie Page Up/Down

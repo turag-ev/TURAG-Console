@@ -5,6 +5,7 @@
 #include <QTimer>
 
 class QPlainTextEdit;
+class QEvent;
 
 class PlainTextFrontend : public BaseFrontend
 {
@@ -23,6 +24,7 @@ public:
 public:
     PlainTextFrontend(QWidget *parent = 0);
     ~PlainTextFrontend();
+	virtual bool eventFilter(QObject * watched, QEvent * event);
 
 
 public slots:
@@ -51,7 +53,10 @@ protected slots:
     void onUpdate(void);
 
 protected:
-    QPlainTextEdit* textbox;
+	virtual void readSettings();
+	virtual void writeSettings();
+
+	QPlainTextEdit* textbox;
     bool scroll_on_output;
     bool auto_wrap;
     STYLE selectedStyle;
@@ -66,10 +71,6 @@ protected:
     QAction* blue_on_black_action;
     QAction* white_on_black_action;
     QAction* black_on_white_action;
-
-    virtual void keyPressEvent ( QKeyEvent * e );
-    virtual void readSettings();
-    virtual void writeSettings();
 
 private:
     QTimer updateTimer;
