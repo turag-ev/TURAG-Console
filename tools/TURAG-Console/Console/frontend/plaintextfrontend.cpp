@@ -197,7 +197,8 @@ void PlainTextFrontend::onUpdate(void) {
         const char* data = buffer_->constBegin();
         while (data != buffer_->constEnd()) {
             if ((*data >= 0x20 && *data <= 0x7E) || *data == '\n' || *data == '\t' || *data < 0) {
-                // printable characters, utf-8 characters and newlines are piped through
+				// printable characters, utf-8 characters (checked with: *data < 0)
+				// and newlines are piped through
                 cleanedBuffer_->append(*data);
             } else if (*data == 0x08 || *data == 0x7F) {
                 // special handling for backspace and delete characters
@@ -206,8 +207,28 @@ void PlainTextFrontend::onUpdate(void) {
                 } else {
                     cursor.deletePreviousChar();
                 }
-            } else if (*data != '\r') {
-                // ignore carriage return, empty place holder for anything else
+
+				// TODO: Carriage return kann nicht so simpel behandelt werden,
+				// das klappt nicht bei \r\n
+				// Für Bus-Pirate muss außerdem Esc[2K behandelt werden
+				// siehe http://ascii-table.com/ansi-escape-sequences-vt-100.php
+				// Bleibt die Frage, man weiter um QPlainTextEdit drumrumbaut oder auf ein
+				// simpleres Widget aufsetzt. Aber ersteres ist wohl das beste. zB bei auftreten von \r
+				// aufs nächste Zeichen warten und abhängig davon das richtige tun, das sollte gehen.
+
+//			} else if (*data == '\r') {
+//				// handling of carriage return: delete line
+//				int indexOfNewline = cleanedBuffer_->lastIndexOf('\n');
+//				if (indexOfNewline != -1) {
+//					cleanedBuffer_->chop(cleanedBuffer_->size() - indexOfNewline - 1);
+//				} else {
+//					cleanedBuffer_->clear();
+//					while (!cursor.atBlockStart()) {
+//						cursor.deletePreviousChar();
+//					}
+//				}
+			} else if (*data != '\r') {
+				// empty place holder for anything else
                 cleanedBuffer_->append("�");
             }
 
@@ -341,6 +362,13 @@ bool PlainTextFrontend::eventFilter(QObject *obj, QEvent *event) {
 				emit dataReady("\x1b[C");
 				qDebug() << "Sent Key_Right";
 			}
+			break;
+
+			// convert carriage return on enter to line feed
+		case Qt::Key_Return:
+		case Qt::Key_Enter:
+			emit dataReady("\x0a");
+			qDebug() << "Sent line feed";
 			break;
 
 		default:
