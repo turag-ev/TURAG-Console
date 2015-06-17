@@ -323,3 +323,5 @@ unix:!mac {
 
   QMAKE_EXTRA_TARGETS += distr
 }
+
+include(../../../libs/libsimeurobot.pri)
