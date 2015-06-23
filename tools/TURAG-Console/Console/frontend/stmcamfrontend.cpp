@@ -17,7 +17,7 @@ STMCamFrontend::STMCamFrontend(QWidget *parent) :
 {
     interface = new TinaInterface(this);
     camview = new TinaCameraFrontend(this);
-    logview = new LogView(interface);
+    logview = new RobotLogFrontend(interface);
     cshell = new PlainTextFrontend(this);
 
     // IO box

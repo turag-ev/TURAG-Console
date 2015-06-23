@@ -7,7 +7,7 @@
 
 class TinaInterface;
 class TinaCameraFrontend;
-class LogView;
+class RobotLogFrontend;
 class PlainTextFrontend;
 
 class STMCamFrontend : public BaseFrontend {
@@ -29,7 +29,7 @@ public slots:
 protected:
     TinaInterface* interface;
     TinaCameraFrontend* camview;
-    LogView* logview;
+    RobotLogFrontend* logview;
     PlainTextFrontend* cshell;
 
 };

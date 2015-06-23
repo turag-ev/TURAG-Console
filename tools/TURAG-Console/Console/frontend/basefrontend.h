@@ -22,6 +22,7 @@ class BaseFrontend : public QWidget
 
 public:
     explicit BaseFrontend(QString name, QWidget *parent = 0);
+	virtual ~BaseFrontend() = default;
 
 signals:
     // data was received from the frontend (usually user input)

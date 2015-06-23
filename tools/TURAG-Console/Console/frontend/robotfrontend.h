@@ -5,7 +5,7 @@
 
 class TinaInterface;
 class PlainTextFrontend;
-class LogView;
+class RobotLogFrontend;
 class QStackedWidget;
 class TinaGraphFrontend;
 class QTabWidget;
@@ -34,7 +34,7 @@ private slots:
 
 private:
     TinaInterface* interface;
-    LogView* logview;
+    RobotLogFrontend* logview;
     PlainTextFrontend* cmenu;
     TinaGraphFrontend* graphView;
     QTabWidget* tabs;

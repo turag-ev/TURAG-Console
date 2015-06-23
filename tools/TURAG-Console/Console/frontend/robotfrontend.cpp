@@ -16,7 +16,7 @@ RobotFrontend::RobotFrontend(QWidget *parent) :
 {
     tabs = new QTabWidget;
     interface = new TinaInterface(this);
-    logview = new LogView(interface);
+    logview = new RobotLogFrontend(interface);
     cmenu = new PlainTextFrontend();
     graphView = new TinaGraphFrontend;
     graphView->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);

@@ -45,6 +45,8 @@ win32: {
   QMAKE_CXXFLAGS += -mno-ms-bitfields
 }
 
+QMAKE_CXXFLAGS_RELEASE += -flto
+
 SOURCES +=\
         mainwindow.cpp \
     ../../../tina/tina/crc/crc_checksum.c \
@@ -224,10 +226,6 @@ HEADERS  += \
     ../../../tina/tina++/geometry/units.h \
     ../../../tina/tina++/helper/locked.h \
     ../../../tina/tina++/helper/static_const.h \
-    ../../../tina/tina++/range/iterator_range.h \
-    ../../../tina/tina++/range/range.h \
-    ../../../tina/tina++/range/sub_range.h \
-    ../../../tina/tina++/range/traits.h \
     ../../../tina/tina++/utils/flags.h \
     ../../../tina/tina++/utils/misc-doc.h \
     ../../../tina/tina++/utils/timer.h \
