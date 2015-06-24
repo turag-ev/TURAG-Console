@@ -28,9 +28,10 @@ void LogFileTimeProvider::parseGameTimeMessage(const QString& message)
 }
 
 RobotLogFrontend::RobotLogFrontend(TinaInterface *interface, QWidget *parent) :
-	BaseFrontend(QStringLiteral("Meldungen"), parent)
+	BaseFrontend(QStringLiteral("Meldungen"), parent),
+	robot_context_(app_context_, log_sources_, log_filter_, time_provider_)
 {
-	log_view_ = new RobotLogView(time_provider_);
+	log_view_ = new RobotLogView(robot_context_);
 
     // build gui
     QHBoxLayout* layout = new QHBoxLayout;
@@ -54,7 +55,7 @@ RobotLogFrontend::~RobotLogFrontend() {
 
 void RobotLogFrontend::setLogSource(char source, const QString& name)
 {
-	log_view_->setLogSource(source, name);
+	robot_context_.getLogSources().setLogSource(source, name);
 }
 
 void RobotLogFrontend::onSendTimeout()
