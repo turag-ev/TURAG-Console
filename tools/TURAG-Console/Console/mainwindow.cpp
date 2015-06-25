@@ -490,7 +490,10 @@ void MainWindow::writeSettings() {
   }
 }
 
-MainWindow::~MainWindow() { }
+MainWindow::~MainWindow()
+{
+	IconManager::clear();
+}
 
 void MainWindow::closeEvent(QCloseEvent *event) {
   writeSettings();
@@ -523,6 +526,11 @@ int main(int argc, char *argv[]) {
     QLocale curLocale(QLocale("de_DE"));
     QLocale::setDefault(curLocale);
     setlocale(LC_ALL, "de");
+
+	// make qt cute :)
+	a.setStyleSheet(
+				"QStatusBar { border-top: 1px solid #ddd; }"
+				"QStatusBar::item { border: 0px solid black; } ");
 
 #if QT_VERSION < 0x050000
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));

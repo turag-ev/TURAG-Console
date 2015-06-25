@@ -5,6 +5,7 @@
 #include <QKeyEvent>
 #include <QHBoxLayout>
 #include <QDebug>
+#include <QSettings>
 #include <tina/debug/defines.h>
 #include <libsimeurobot/ui/robotlogview.h>
 #include <libsimeurobot/parser.h>
@@ -13,23 +14,9 @@
 
 using namespace TURAG::SimEurobot;
 
-unsigned LogFileTimeProvider::getTime() const
-{
-	return last_log_time_;
-}
-
-void LogFileTimeProvider::parseGameTimeMessage(const QString& message)
-{
-	unsigned hex_time;
-    if (sscanf(message.toLatin1().data(), "%x", &hex_time) == 1) // TODO: Perf
-	{
-        setTime(hex_time);
-    }
-}
-
 RobotLogFrontend::RobotLogFrontend(TinaInterface *interface, QWidget *parent) :
 	BaseFrontend(QStringLiteral("Meldungen"), parent),
-	robot_context_(app_context_, log_sources_, log_filter_, time_provider_)
+	robot_context_(app_context_)
 {
 	log_view_ = new RobotLogView(robot_context_);
 
@@ -46,16 +33,31 @@ RobotLogFrontend::RobotLogFrontend(TinaInterface *interface, QWidget *parent) :
 
     connect(&sendTimer, SIGNAL(timeout()), this, SLOT(onSendTimeout()));
 
-    //readSettings();
+    readSettings();
 }
 
-RobotLogFrontend::~RobotLogFrontend() {
-	//writeSettings();
+RobotLogFrontend::~RobotLogFrontend()
+{
+	writeSettings();
 }
 
 void RobotLogFrontend::setLogSource(char source, const QString& name)
 {
 	robot_context_.getLogSources().setLogSource(source, name);
+}
+
+void RobotLogFrontend::readSettings()
+{
+	QSettings settings;
+	settings.beginGroup("RobotLogFrontend");
+	robot_context_.readSettings(&settings);
+}
+
+void RobotLogFrontend::writeSettings()
+{
+	QSettings settings;
+	settings.beginGroup("RobotLogFrontend");
+	robot_context_.writeSettings(&settings);
 }
 
 void RobotLogFrontend::onSendTimeout()
@@ -74,15 +76,6 @@ void RobotLogFrontend::onUpdateLog()
 	log_view_->updateLog();
 }
 
-static
-const char* charToKey(char c)
-{
-    static char key[2];
-    key[0] = c;
-    key[1] = '\0';
-    return key;
-}
-
 void RobotLogFrontend::onConnected(bool readOnly, QIODevice* dev)
 {
 	UNUSED(dev);
@@ -97,34 +90,13 @@ void RobotLogFrontend::onDisconnected(bool reconnecting)
     UNUSED(reconnecting);
 
 	refresh_log_timer_.stop();
-
-/* TODO    QSettings settings;
-    const std::string& filter = filter_->getFilterSource();
-    for (char key : filter) {
-        if (TURAG::any_of_value(filter, key)) {
-            settings.setValue(charToKey(key), false);
-        } else {
-            settings.remove(charToKey(key));
-        }
-    }*/
 }
-
-/* TODO
-void RobotLogFrontend::readSettings() {
-    QSettings settings;
-    settings.beginGroup(objectName());
-	filter_->setFilterSource(settings.value(QStringLiteral("filter"), QString()).toString().toStdString());
-}
-
-void RobotLogFrontend::writeSettings() {
-    QSettings settings;
-    settings.beginGroup(objectName());
-	settings.setValue(QStringLiteral("filter"), QString::fromStdString(filter_->getFilterSource()));
-}*/
 
 static
 bool handleGraphMessage(DebugMessage& input)
 {
+	if (input.level != TURAG_DEBUG_GRAPH_PREFIX[0]) return false;
+
 	if (input.log_source == TURAG_DEBUG_GRAPH_CREATE[0])
 	{
 		QTextStream stream(&input.message, QIODevice::ReadOnly);
@@ -135,7 +107,7 @@ bool handleGraphMessage(DebugMessage& input)
 		input.level = ';';
 		input.message = QStringLiteral("Graph %1: '%2'")
 						.arg(index).arg(stream.readAll().trimmed());
-		return true;
+		return false;
 	}
 	else if (input.log_source == TURAG_DEBUG_GRAPH_COPY[0])
 	{
@@ -148,43 +120,27 @@ bool handleGraphMessage(DebugMessage& input)
 		input.level = ';';
 		input.message = QStringLiteral("Graph %1: '%2'")
 						.arg(index).arg(stream.readAll().trimmed());
-		return true;
+		return false;
 	}
 
-	return false;
+	return true;
 }
 
 void RobotLogFrontend::writeLine(QByteArray line)
 {
+	bool handled;
 	// TODO: Code nach LogModel verscheiben
 
 	DebugMessage message = parseDebugMessagePayload(line);
-	switch (message.level) {
-	case TURAG_DEBUG_ERROR_PREFIX[0]:
-	case TURAG_DEBUG_CRITICAL_PREFIX[0]:
-	case TURAG_DEBUG_WARN_PREFIX[0]:
-	case TURAG_DEBUG_INFO_PREFIX[0]:
-	case TURAG_DEBUG_DEBUG_PREFIX[0]:
-	case ';':
-		log_view_->insertRow(message);
-		break;
 
-	case TURAG_DEBUG_GAMETIME_PREFIX[0]:
-		time_provider_.parseGameTimeMessage(message.message);
-		break;
+	if (robot_context_.handle(message))
+		return;
 
-	case TURAG_DEBUG_GRAPH_PREFIX[0]:
-		if (handleGraphMessage(message)) {
-			log_view_->insertRow(message);
-		}
-		break;
+	// Graphen
+	handled = handleGraphMessage(message);
+	if (handled) return;
 
-	case TURAG_DEBUG_REPORT_LOG_SOURCE_PREFIX[0]:
-		if (std::isprint(message.log_source)) {
-			setLogSource(message.log_source, message.message);
-		}
-		break;
-	}
+	log_view_->insertRow(message);
 }
 
 void RobotLogFrontend::clear(void)

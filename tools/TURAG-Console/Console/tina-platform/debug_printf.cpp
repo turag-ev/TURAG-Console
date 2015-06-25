@@ -1,28 +1,32 @@
 #include <cstdio>
 #include <cstdarg>
 #include <QDebug>
-
+#include <QString>
 
 extern "C"
 void turag_debug_printf(const char* fmt, ...) {
-    char buffer[4096];
+    QString buffer;
 
     va_list args;
     va_start(args, fmt);
-    vsnprintf(buffer, sizeof(buffer), fmt, args);
+    buffer.vsprintf(fmt, args);
     va_end(args);
 
-    char* pChar = buffer;
+    /*char* pChar = buffer;
     while(*pChar) {
         if (*pChar < 32) *pChar = 32;
         ++pChar;
-    }
+    }*/
 
-    qDebug() << buffer;
+    qDebug() << buffer.constData();
 }
 
 extern "C"
-void turag_debug_puts(const char* s) {
-    qDebug() << s;
+void turag_debug_puts(const char* s)
+{
+	QString out(s);
+    out = out.right(1);
+    out.chop(2);
+    qDebug() << out.constData();
 }
 
