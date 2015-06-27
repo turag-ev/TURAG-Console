@@ -18,7 +18,7 @@ void TinaInterface::dataInput(const QByteArray data) {
     while (iter < data.end()) {
         if (tina_package_depth_ == 0) {
             // look for separator in stream
-            iter = std::find(iter, data.constEnd(), '\x02');
+            iter = std::find(iter, data.cend(), '\x02');
 
             // output data until separator or end
             if (iter - msg_begin > 0) {
@@ -26,26 +26,26 @@ void TinaInterface::dataInput(const QByteArray data) {
             }
             if (iter != data.constEnd()) {
                 ++tina_package_depth_;
-                packageBuffer_.append(QByteArray(""));
+                packageBuffer_.push_back(QByteArray(""));
                 ++iter;
                 msg_begin = iter;
             }
         } else { // if (tina_package_depth_ > 0)
-            iter = std::find_first_of(iter, data.constEnd(), tina_separators, tina_separators + 2);
+            iter = std::find_first_of(iter, data.cend(), tina_separators, tina_separators + 2);
 
             // append data to buffer until separator or end
             if (iter - msg_begin > 0) {
-                packageBuffer_.last().append(msg_begin, iter - msg_begin);
+                packageBuffer_.back().append(msg_begin, iter - msg_begin);
             }
 
             if (iter != data.constEnd()) {
                 if (*iter == '\x02') {
                     ++tina_package_depth_;
-                    packageBuffer_.append(QByteArray(""));
+                    packageBuffer_.push_back(QByteArray(""));
                 } else { // if (*iter == '\n')
-                    emit tinaPackageReady(trimmedBuffer(packageBuffer_.last()));
+                    emit tinaPackageReady(trimmedBuffer(packageBuffer_.back()));
                     --tina_package_depth_;
-                    packageBuffer_.removeLast();
+                    packageBuffer_.pop_back();
                 }
                 ++iter;
                 msg_begin = iter;

@@ -43,11 +43,6 @@ RobotLogFrontend::~RobotLogFrontend()
 	writeSettings();
 }
 
-void RobotLogFrontend::setLogSource(char source, const QString& name)
-{
-	robot_context_.getLogSources().setLogSource(source, name);
-}
-
 void RobotLogFrontend::readSettings()
 {
 	QSettings settings;
@@ -145,7 +140,7 @@ void RobotLogFrontend::writeLine(QByteArray line)
 	log_view_->insertRow(message);
 }
 
-void RobotLogFrontend::clear(void)
+void RobotLogFrontend::clear()
 {
     log_view_->clear();
 }

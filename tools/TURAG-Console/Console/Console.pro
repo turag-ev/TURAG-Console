@@ -115,7 +115,8 @@ SOURCES +=\
     backend/webdavbackend.cpp \
     connectionwidgets/connectionwidgetwebdav/webdavtreeitem.cpp \
     connectionwidgets/connectionwidgetwebdav/webdavtreemodel.cpp \
-    libs/iconmanager.cpp
+    libs/iconmanager.cpp \
+    frontend/scfrontend.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -261,7 +262,8 @@ HEADERS  += \
     backend/webdavbackend.h \
     connectionwidgets/connectionwidgetwebdav/webdavtreeitem.h \
     connectionwidgets/connectionwidgetwebdav/webdavtreemodel.h \
-    libs/iconmanager.h
+    libs/iconmanager.h \
+    frontend/scfrontend.h
 
 INCLUDEPATH += \
     ../../../tina \

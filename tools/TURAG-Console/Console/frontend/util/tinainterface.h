@@ -2,7 +2,7 @@
 #define TINAINTERFACE_H
 
 #include <QObject>
-#include <QList>
+#include <vector>
 
 class TinaInterface : public QObject
 {
@@ -16,12 +16,12 @@ signals:
     void cmenuDataReady(QByteArray data);
 
 public slots:
-    virtual void dataInput(const QByteArray data);
+    void dataInput(const QByteArray data);
     void clear(void);
 
 protected:
     unsigned tina_package_depth_;
-    QList<QByteArray> packageBuffer_;
+    std::vector<QByteArray> packageBuffer_;
 
 	static QByteArray trimmedBuffer(const char *begin, const char *end);
     static QByteArray trimmedBuffer(const QByteArray& data) {

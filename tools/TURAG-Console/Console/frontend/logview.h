@@ -24,8 +24,6 @@ public:
 
   virtual ~RobotLogFrontend();
 
-  void setLogSource(char source, const QString& name);
-
   void readSettings();
   void writeSettings();
 

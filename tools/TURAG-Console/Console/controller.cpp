@@ -11,6 +11,7 @@
 #include "frontend/robotfrontend.h"
 #include "frontend/stmcamfrontend.h"
 #include "frontend/rawfrontend.h"
+#include "frontend/scfrontend.h"
 
 #include "connectionwidgets/connectionwidgetfile.h"
 #include "connectionwidgets/connectionwidgetserial.h"
@@ -54,6 +55,7 @@ Controller::Controller(QWidget *parent) :
     availableFrontends.append(new FeldbusFrontend);
     availableFrontends.append(new STMCamFrontend);
 	availableFrontends.append(new RawFrontend);
+	availableFrontends.append(new SCFrontend);
 
     // add all available connectionWidgets to list without a parent
     availableConnectionWidgets.append(new ConnectionWidgetSerial);
