@@ -8,6 +8,7 @@
 #include <QSettings>
 #include <tina/debug/defines.h>
 #include <libsimeurobot/ui/robotlogview.h>
+#include <libsimeurobot/ui/robotlogmodel.h>
 #include <libsimeurobot/parser.h>
 
 #include "util/tinainterface.h"
@@ -16,9 +17,12 @@ using namespace TURAG::SimEurobot;
 
 RobotLogFrontend::RobotLogFrontend(TinaInterface *interface, QWidget *parent) :
 	BaseFrontend(QStringLiteral("Meldungen"), parent),
-	robot_context_(app_context_)
+	sim_context_(app_context_),
+	robot_context_(sim_context_)
 {
 	log_view_ = new RobotLogView(robot_context_);
+	connect(log_view_, SIGNAL(activated(QModelIndex)),
+			this, SLOT(activated(QModelIndex)));
 
     // build gui
     QHBoxLayout* layout = new QHBoxLayout;
@@ -30,8 +34,6 @@ RobotLogFrontend::RobotLogFrontend(TinaInterface *interface, QWidget *parent) :
     connect(interface, SIGNAL(tinaPackageReady(QByteArray)), this, SLOT(writeLine(QByteArray)));
 
 	connect(&refresh_log_timer_, SIGNAL(timeout()), this, SLOT(onUpdateLog()));
-
-    connect(&sendTimer, SIGNAL(timeout()), this, SLOT(onSendTimeout()));
 
     readSettings();
 }
@@ -60,20 +62,23 @@ void RobotLogFrontend::writeSettings()
 	robot_context_.writeSettings(&settings);
 }
 
-void RobotLogFrontend::onSendTimeout()
-{
-    if (timedSendString.size()) {
-        emit dataReady(timedSendString.left(1));
-        timedSendString.remove(0,1);
-    }
-    if (timedSendString.size() == 0) {
-        sendTimer.stop();
-	}
-}
-
 void RobotLogFrontend::onUpdateLog()
 {
 	log_view_->updateLog();
+}
+
+void RobotLogFrontend::activated(QModelIndex index)
+{
+	using namespace TURAG::SimEurobot;
+
+	if (!index.isValid()) return;
+
+	const QAbstractItemModel* model = index.model();
+	QModelIndex message_index = index.sibling(index.row(), RobotLogModel::COLUMN_MESSAGE);
+	QModelIndex source_index = index.sibling(index.row(), RobotLogModel::COLUMN_SOURCE);
+	emit activatedMessage(
+				model->data(source_index).toChar().toLatin1(),
+				model->data(message_index).toString());
 }
 
 void RobotLogFrontend::onConnected(bool readOnly, QIODevice* dev)
@@ -128,17 +133,14 @@ bool handleGraphMessage(DebugMessage& input)
 
 void RobotLogFrontend::writeLine(QByteArray line)
 {
-	bool handled;
-	// TODO: Code nach LogModel verscheiben
-
 	DebugMessage message = parseDebugMessagePayload(line);
 
 	if (robot_context_.handle(message))
 		return;
 
 	// Graphen
-	handled = handleGraphMessage(message);
-	if (handled) return;
+	if (handleGraphMessage(message))
+		return;
 
 	log_view_->insertRow(message);
 }

@@ -2,7 +2,6 @@
 
 #include <QHBoxLayout>
 #include <QSplitter>
-#include <QDebug>
 #include <QTabWidget>
 
 #include "logview.h"
@@ -41,9 +40,8 @@ RobotFrontend::RobotFrontend(QWidget *parent) :
     // connect outputs of logview and cmenu to own dataReadySignal
     connect(logview, SIGNAL(dataReady(QByteArray)), this, SIGNAL(dataReady(QByteArray)));
     connect(cmenu, SIGNAL(dataReady(QByteArray)), this, SIGNAL(dataReady(QByteArray)));
-    connect(logview, SIGNAL(activatedGraph(int)), this, SLOT(activateGraph(int)));
+    connect(logview, SIGNAL(activatedMessage(char,QString)), this, SLOT(activatedMessage(char,QString)));
     connect(interface, SIGNAL(tinaPackageReady(QByteArray)), graphView, SLOT(writeLine(QByteArray)));
-
 }
 
 
@@ -71,8 +69,15 @@ void RobotFrontend::onDisconnected(bool reconnecting) {
 }
 
 
-void RobotFrontend::activateGraph(int index) {
-    tabs->setCurrentIndex(1);
-    graphView->activateGraph(index);
-
+void RobotFrontend::activatedMessage(char,QString message)
+{
+	if (message.startsWith(QStringLiteral("Graph")) && message.size() > 6)
+	{
+		bool ok = false;
+		int i = message.mid(6, message.indexOf(':') - 6).toInt(&ok);
+		if (ok) {
+			tabs->setCurrentIndex(1);
+		    graphView->activateGraph(i);
+		}
+	}
 }

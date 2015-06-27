@@ -3,9 +3,11 @@
 
 #include <QTimer>
 #include <QByteArray>
+#include <QModelIndex>
 #include <tina++/tina.h>
 #include <libsimeurobot/fwd.h>
 #include <libsimeurobot/appcontext.h>
+#include <libsimeurobot/simcontext.h>
 #include <libsimeurobot/robotcontext.h>
 #include "basefrontend.h"
 
@@ -34,26 +36,24 @@ public slots:
   void writeData(QByteArray data) override;
 
 protected:
-  void keyPressEvent ( QKeyEvent * e );
+  void keyPressEvent(QKeyEvent * e);
 
 private slots:
   void writeLine(QByteArray line);
-  void onSendTimeout();
   void onUpdateLog();
+  void activated(QModelIndex index);
 
 signals:
-  void activatedGraph(int index);
+  void activatedMessage(char source, QString message);
 
 private:
   TURAG::SimEurobot::RobotLogView* log_view_;
 
   TURAG::SimEurobot::AppContext app_context_;
+  TURAG::SimEurobot::SimContext sim_context_;
   TURAG::SimEurobot::RobotContext robot_context_;
 
   QTimer refresh_log_timer_;
-
-  QTimer sendTimer;
-  QByteArray timedSendString;
 };
 
 #endif // LOGVIEW_H

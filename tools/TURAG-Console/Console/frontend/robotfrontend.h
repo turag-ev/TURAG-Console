@@ -17,8 +17,6 @@ class RobotFrontend : public BaseFrontend
 public:
 	explicit RobotFrontend(QWidget *parent = 0);
 
-signals:
-
 public slots:
     void writeData(QByteArray data) override;
     void clear(void) override;
@@ -30,7 +28,7 @@ public slots:
     void onDisconnected(bool reconnecting) override;
 
 private slots:
-    void activateGraph(int index);
+    void activatedMessage(char, QString message);
 
 private:
     TinaInterface* interface;
@@ -38,7 +36,6 @@ private:
     PlainTextFrontend* cmenu;
     TinaGraphFrontend* graphView;
     QTabWidget* tabs;
-
 };
 
 #endif // MCFRONTEND_H
