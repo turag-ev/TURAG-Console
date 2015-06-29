@@ -14,6 +14,8 @@
 #include <QMessageBox>
 #include <QCoreApplication>
 
+#include <libcintelhex/cintelhex.h>
+
 
 extern "C" TuragSystemTime turag_rs485_get_timeout(void);
 extern "C" void turag_rs485_set_timeout(TuragSystemTime timeout);
@@ -113,12 +115,16 @@ FeldbusBootloaderBaseView::FeldbusBootloaderBaseView(TURAG::Feldbus::BootloaderA
 	wrapLayout->addStretch();
 	setLayout(wrapLayout);
 
+//	setDisabled(true);
+
 	if (!bootloader_) {
+		mcuIdEdit->setText("ERROR: no device pointer given");
 		return;
 	}
 
 	// unlock bootloader
 	if (!bootloader_->unlockBootloader()) {
+		mcuIdEdit->setText("ERROR: unable to unlock bootloader");
 		return;
 	}
 
@@ -126,6 +132,7 @@ FeldbusBootloaderBaseView::FeldbusBootloaderBaseView(TURAG::Feldbus::BootloaderA
 	uint32_t flashSize = bootloader_->getFlashSize(false);
 	if (flashSize == 0) {
 		flashSizeEdit->setText("Error");
+		return;
 	} else {
 		flashSizeEdit->setText(QString("%1").arg(flashSize));
 	}
@@ -134,6 +141,7 @@ FeldbusBootloaderBaseView::FeldbusBootloaderBaseView(TURAG::Feldbus::BootloaderA
 	flashSize = bootloader_->getFlashSize(true);
 	if (flashSize == 0) {
 		writableFlashSizeEdit->setText("Error");
+		return;
 	} else {
 		writableFlashSizeEdit->setText(QString("%1").arg(flashSize));
 	}
@@ -142,10 +150,12 @@ FeldbusBootloaderBaseView::FeldbusBootloaderBaseView(TURAG::Feldbus::BootloaderA
 	uint16_t pageSize = bootloader_->getPageSize();
 	if (pageSize == 0) {
 		pageSizeEdit->setText("Error");
+		return;
 	} else {
 		pageSizeEdit->setText(QString("%1").arg(pageSize));
 	}
 
+	setDisabled(false);
 }
 
 
@@ -167,7 +177,7 @@ void FeldbusBootloaderBaseView::leaveBootloader(void) {
 void FeldbusBootloaderBaseView::openImageFile(void) {
 	QFileDialog dialog(this, "Firmwaredatei auswählen", "");
 	dialog.setFileMode(QFileDialog::ExistingFile);
-	dialog.setNameFilter(tr("Binary Image file (*.bin)"));
+	dialog.setNameFilter(tr("Firmware image files (*.bin *.hex)"));
 	if (dialog.exec() == QDialog::Accepted) {
 		QStringList files = dialog.selectedFiles();
 		imagePathEdit->setText(QString("%1").arg(files[0]));
@@ -175,13 +185,51 @@ void FeldbusBootloaderBaseView::openImageFile(void) {
 }
 
 void FeldbusBootloaderBaseView::checkImageFile(QString path) {
+	flashImageFileButton->setEnabled(false);
+	imageFileSizeEdit->setText("");
+
 	QFile image(path);
 	if (image.exists()) {
-		imageFileSizeEdit->setText(QString("%1 KB (%2 Byte) %3 %").arg(image.size() / 1024).arg(image.size()).arg(100*image.size()/bootloader_->getFlashSize(true)));
-		flashImageFileButton->setEnabled(true);
-	} else {
-		imageFileSizeEdit->setText("");
-		flashImageFileButton->setEnabled(false);
+		if (path.endsWith(".bin")) {
+			QString imageFileSizeEditString = QString("%1 KB (%2 Byte)")
+					.arg((image.size() + 512) / 1024)
+					.arg(image.size());
+			if (bootloader_->getFlashSize(true) != 0) {
+				imageFileSizeEditString = QString(imageFileSizeEditString + " %3 %").arg(100 * image.size() / bootloader_->getFlashSize(true));
+			}
+			imageFileSizeEdit->setText(imageFileSizeEditString);
+			flashImageFileButton->setEnabled(true);
+		} else if (path.endsWith(".hex")) {
+			ihex_recordset_t* hexRecordset = ihex_rs_from_file(path.toLatin1().constData());
+			if (!hexRecordset) {
+				imageFileSizeEdit->setText("Error parsing hex file");
+				return;
+			}
+			uint32_t max, min;
+			if (ihex_rs_get_address_range(hexRecordset, &min, &max) != 0) {
+				imageFileSizeEdit->setText("Error parsing hex file");
+				return;
+			}
+
+			int size = max - min;
+
+			QString imageFileSizeEditString = QString("%1 KB (%2 Byte)")
+					.arg((size + 512) / 1024)
+					.arg(size);
+			if (bootloader_->getFlashSize(true) != 0) {
+				imageFileSizeEditString = QString(imageFileSizeEditString + " %3 %").arg(100 * size / bootloader_->getFlashSize(true));
+			}
+			if (min > 0) {
+				imageFileSizeEditString = QString(imageFileSizeEditString + " (Adresse %1 - %2)")
+						.arg(min)
+						.arg(max - 1);
+			}
+			imageFileSizeEdit->setText(imageFileSizeEditString);
+			flashImageFileButton->setEnabled(true);
+		} else {
+			imageFileSizeEdit->setText("only *.hex and *.bin files are supported");
+			flashImageFileButton->setEnabled(false);
+		}
 	}
 }
 
@@ -197,6 +245,45 @@ void FeldbusBootloaderBaseView::flashImageFile(void) {
 		return;
 	}
 
+	QByteArray data(image.readAll());
+	image.close();
+	uint8_t* rawData;
+	unsigned dataLength = 0;
+
+	if (imagePathEdit->text().endsWith(".hex")) {
+		ihex_recordset_t* hexRecordset = ihex_rs_from_mem(data.constData(), data.size());
+		if (!hexRecordset) {
+			QMessageBox msg(QMessageBox::Warning, "Fehler", "Hex-Datei konnte nicht verarbeitet werden", QMessageBox::Ok);
+			msg.exec();
+			return;
+		}
+		uint32_t max, min;
+		if (ihex_rs_get_address_range(hexRecordset, &min, &max) != 0) {
+			QMessageBox msg(QMessageBox::Warning, "Fehler", "Hex-Datei konnte nicht verarbeitet werden", QMessageBox::Ok);
+			msg.exec();
+			return;
+		}
+
+		// TODO: increase efficiency for images that do not start at address zero by only transmitting
+		// the data from where it actually starts.
+		int size = max;
+		uint8_t imageBuffer[size];
+
+		if (ihex_mem_copy(hexRecordset, imageBuffer, size) != 0) {
+			QMessageBox msg(QMessageBox::Warning, "Fehler", "Hex-Datei konnte nicht verarbeitet werden", QMessageBox::Ok);
+			msg.exec();
+			return;
+		}
+		rawData = imageBuffer;
+		dataLength = size;
+
+	} else if (imagePathEdit->text().endsWith(".bin")) {
+		rawData = (uint8_t*)data.constData();
+		dataLength = data.size();
+	} else {
+		return;
+	}
+
 	this->setEnabled(false);
 	QCoreApplication::processEvents();
 
@@ -204,8 +291,7 @@ void FeldbusBootloaderBaseView::flashImageFile(void) {
 	TuragSystemTime originalTimeout = turag_rs485_get_timeout();
 	turag_rs485_set_timeout(turag_ms_to_ticks(100));
 
-	QByteArray data(image.readAll());
-	TURAG::Feldbus::BootloaderAtmega::ErrorCode result = bootloader_->writeFlash(0, data.size(), (uint8_t*)data.constData());
+	TURAG::Feldbus::BootloaderAtmega::ErrorCode result = bootloader_->writeFlash(0, dataLength, rawData);
 
 	if (result == TURAG::Feldbus::BootloaderAtmega::ErrorCode::success) {
 		QMessageBox msg(QMessageBox::Information, "Erfolgreich", "Image erfolgreich zum Gerät übertragen", QMessageBox::Ok);
@@ -216,8 +302,6 @@ void FeldbusBootloaderBaseView::flashImageFile(void) {
 	}
 
 	turag_rs485_set_timeout(originalTimeout);
-
-	image.close();
 
 	this->setEnabled(true);
 }

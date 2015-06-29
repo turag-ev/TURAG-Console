@@ -45,6 +45,7 @@ win32: {
   QMAKE_CXXFLAGS += -mno-ms-bitfields
 }
 
+QMAKE_CFLAGS += -std=c99
 QMAKE_CXXFLAGS_RELEASE += -flto
 
 SOURCES +=\
@@ -116,7 +117,10 @@ SOURCES +=\
     connectionwidgets/connectionwidgetwebdav/webdavtreeitem.cpp \
     connectionwidgets/connectionwidgetwebdav/webdavtreemodel.cpp \
     libs/iconmanager.cpp \
-    frontend/scfrontend.cpp
+    frontend/scfrontend.cpp \
+    ../../../libs/libcintelhex/ihex_copy.c \
+    ../../../libs/libcintelhex/ihex_parse.c \
+    ../../../libs/libcintelhex/ihex_record.c
 
 HEADERS  += \
     mainwindow.h \
@@ -263,7 +267,9 @@ HEADERS  += \
     connectionwidgets/connectionwidgetwebdav/webdavtreeitem.h \
     connectionwidgets/connectionwidgetwebdav/webdavtreemodel.h \
     libs/iconmanager.h \
-    frontend/scfrontend.h
+    frontend/scfrontend.h \
+    ../../../libs/libcintelhex/cintelhex.h \
+    ../../../libs/libcintelhex/config.h
 
 INCLUDEPATH += \
     ../../../tina \
