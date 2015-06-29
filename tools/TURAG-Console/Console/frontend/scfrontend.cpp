@@ -20,7 +20,7 @@
 using namespace TURAG::SimEurobot;
 
 SCFrontend::SCFrontend(QWidget *parent)
-	: BaseFrontend(QStringLiteral("Meldungen"), parent),
+	: BaseFrontend(QStringLiteral("SystemControl Debug"), parent),
 	  tina_interface_(nullptr),
 //	  sim_context_(app_context_),
 //	  robot_context_(sim_context_),
@@ -70,7 +70,6 @@ SCFrontend::SCFrontend(QWidget *parent)
     layout->setMargin(0);
     setLayout(layout);
 
-	sim_manager_.pause();
 	sim_manager_.init(scene_);
 	sim_manager_.setPlayingArea(new EuroBot2015());
 	sim_manager_.getRobotModule(ROBOT_1A).init(scene_, log_view_, robot_model_item);
@@ -124,12 +123,7 @@ void SCFrontend::onDisconnected(bool reconnecting)
 
 void SCFrontend::writeLine(QByteArray line)
 {
-	DebugMessage message = parseDebugMessagePayload(line);
-
-	if (robot_context_.handle(message))
-		return;
-
-	log_view_->insertRow(message);
+	robot_.logFromExternal(line);
 }
 
 void SCFrontend::writeData(QByteArray data)

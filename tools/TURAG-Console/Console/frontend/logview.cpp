@@ -106,7 +106,7 @@ bool handleGraphMessage(DebugMessage& input)
 		input.log_source = ';';
 		input.level = ';';
 		input.message = QStringLiteral("Graph %1: '%2'")
-						.arg(index).arg(stream.readAll().trimmed());
+						.arg(index).arg(stream.readAll().trimmed()).toUtf8();
 		return false;
 	}
 	else if (input.log_source == TURAG_DEBUG_GRAPH_COPY[0])
@@ -119,7 +119,7 @@ bool handleGraphMessage(DebugMessage& input)
 		input.log_source = ';';
 		input.level = ';';
 		input.message = QStringLiteral("Graph %1: '%2'")
-						.arg(index).arg(stream.readAll().trimmed());
+						.arg(index).arg(stream.readAll().trimmed()).toUtf8();
 		return false;
 	}
 

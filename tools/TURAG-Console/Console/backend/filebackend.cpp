@@ -47,7 +47,7 @@ bool FileBackend::openConnection(QString connectionString) {
 
     emitConnected();
 
-    buffer->append(stream_->readAll());
+	buffer.append(stream_->readAll());
     logFilteredInfoMessage("Datei gelesen");
 
     return true;

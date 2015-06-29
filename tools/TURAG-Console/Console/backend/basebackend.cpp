@@ -10,7 +10,7 @@ BaseBackend::BaseBackend(std::initializer_list<QString> protocolScheme, QObject 
 	QObject(parent), deviceShouldBeConnectedString(""), deviceRecoveryActive(false), dataEmissionChunkSize(10240)
 {
 	for (const QString& scheme : protocolScheme) {
-		protocolScheme_.append(scheme);
+		protocolScheme_.push_back(scheme);
 	}
 
     recoverDeviceTimer.setInterval(500);
@@ -18,14 +18,10 @@ BaseBackend::BaseBackend(std::initializer_list<QString> protocolScheme, QObject 
 
 	readTimer.setInterval(0);
 	connect(&readTimer, SIGNAL(timeout()), this, SLOT(onReadData()));
-
-    buffer = new QByteArray;
 }
 
 
-BaseBackend::~BaseBackend(void) {
-    delete buffer;
-}
+BaseBackend::~BaseBackend() { }
 
 
 bool BaseBackend::isReadOnly(void) const {
@@ -97,7 +93,7 @@ void BaseBackend::emitDataReady(void) {
 
 		if (dataEmissionChunkSize != 0) {
 			if (!readTimer.isActive()) {
-				readIndex = buffer->size();
+				readIndex = buffer.size();
 				readTimer.start();
 			}
 		} else {
@@ -109,10 +105,10 @@ void BaseBackend::emitDataReady(void) {
 		// check whether buffer->size() == 0 --> beginning of stream
 		// only applicalble if stream is not sequential
 
-		if (buffer->size() + data.size() > buffer->capacity()) {
-			buffer->reserve(buffer->size() + 1024 * 1024);
+		if (buffer.size() + data.size() > buffer.capacity()) {
+			buffer.reserve(buffer.size() + 1024 * 1024);
 		}
-		buffer->append(data);
+		buffer.append(data);
     }
 }
 
@@ -121,19 +117,19 @@ void BaseBackend::reloadData() {
 		readIndex = 0;
 		readTimer.start();
 	} else {
-		emit dataReady(*buffer);
+		emit dataReady(buffer);
 	}
 }
 
 // this slot is called by a zero-timer. We always output small chunks of data.
 // This keeps the GUI responsive.
 void BaseBackend::onReadData() {
-	int readBytes = std::min(buffer->size() - readIndex, dataEmissionChunkSize);
+	int readBytes = std::min(buffer.size() - readIndex, dataEmissionChunkSize);
 
-	emit dataReady(buffer->mid(readIndex, readBytes));
+	emit dataReady(buffer.mid(readIndex, readBytes));
 	readIndex += readBytes;
 
-	if (readIndex >= buffer->size()) {
+	if (readIndex >= buffer.size()) {
 		readTimer.stop();
 	}
 }
@@ -157,7 +153,7 @@ bool BaseBackend::canHandleUrl(const QString& url) const {
 }
 
 void BaseBackend::emitConnected() {
-    buffer->clear();
+	buffer.clear();
 
     if (deviceShouldBeConnectedString == connectionString_ && deviceRecoveryActive && recoverDeviceTimer.isActive()) {
         Log::info("Verbindung erfolgreich wiederaufgebaut");
@@ -215,7 +211,7 @@ void BaseBackend::saveBufferToFile(QString fileName) {
 bool BaseBackend::saveBufferToFileInternal(QString fileName) {
     QFile savefile(std::move(fileName));
 
-    if (buffer->isEmpty()) {
+	if (buffer.isEmpty()) {
         return false;
     }
 
@@ -229,7 +225,7 @@ bool BaseBackend::saveBufferToFileInternal(QString fileName) {
         return false;
     }
 
-    if (savefile.write(*buffer) == -1) {
+	if (savefile.write(buffer) == -1) {
         Log::critical("Saving output failed: error while writing.");
         return false;
     }

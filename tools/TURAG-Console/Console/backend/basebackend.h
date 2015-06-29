@@ -92,7 +92,9 @@ protected:
 	QScopedPointer<QIODevice, QScopedPointerDeleteLater> stream_;
     QString connectionString_;
 	QList<QString> protocolScheme_;
-    QByteArray* buffer;
+	QByteArray buffer;
+
+	static_assert(sizeof(QString) == sizeof(QString*),"");
 
 private slots:
     void onRecoverDevice(void);
