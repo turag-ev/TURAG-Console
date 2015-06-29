@@ -271,7 +271,7 @@ INCLUDEPATH += \
     tina-platform/public \
     ../../Debug-Server \
     . \
-    ../../../libs/qt
+    ../../../libs
 
 DISTR_FILES += \
     $$files(images/*.png) \

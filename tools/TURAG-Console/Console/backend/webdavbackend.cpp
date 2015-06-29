@@ -1,6 +1,6 @@
 #include "webdavbackend.h"
 #include <QUrl>
-#include <qwebdav/qwebdavlib/qwebdav.h>
+#include <qt/qwebdav/qwebdavlib/qwebdav.h>
 #include <libs/log.h>
 
 

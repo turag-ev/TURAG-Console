@@ -43,7 +43,7 @@
 
 #include <QList>
 #include <QVariant>
-#include <qwebdav/qwebdavlib/qwebdavitem.h>
+#include <qt/qwebdav/qwebdavlib/qwebdavitem.h>
 
 
 class WebDAVTreeItem

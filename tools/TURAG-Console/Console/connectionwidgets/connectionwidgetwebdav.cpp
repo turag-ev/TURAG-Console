@@ -6,7 +6,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QUrl>
-#include <qwebdav/qwebdavlib/qwebdavitem.h>
+#include <qt/qwebdav/qwebdavlib/qwebdavitem.h>
 #include <QMessageBox>
 #include <libs/logindialog.h>
 #include <QSpacerItem>

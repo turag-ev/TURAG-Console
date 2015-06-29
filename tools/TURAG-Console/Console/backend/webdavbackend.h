@@ -2,7 +2,7 @@
 #define WEBDAVBACKEND_H
 
 #include "basebackend.h"
-#include <qwebdav/qwebdavlib/qwebdav.h>
+#include <qt/qwebdav/qwebdavlib/qwebdav.h>
 
 
 class WebDAVBackend : public BaseBackend

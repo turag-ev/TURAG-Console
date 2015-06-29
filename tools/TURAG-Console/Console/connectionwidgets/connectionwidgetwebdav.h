@@ -6,8 +6,8 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QString>
-#include <qwebdav/qwebdavlib/qwebdav.h>
-#include <qwebdav/qwebdavlib/qwebdavdirparser.h>
+#include <qt/qwebdav/qwebdavlib/qwebdav.h>
+#include <qt/qwebdav/qwebdavlib/qwebdavdirparser.h>
 #include <QList>
 #include <QSslError>
 #include <QScopedPointer>
