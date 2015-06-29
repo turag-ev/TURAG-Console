@@ -115,7 +115,7 @@ FeldbusBootloaderBaseView::FeldbusBootloaderBaseView(TURAG::Feldbus::BootloaderA
 	wrapLayout->addStretch();
 	setLayout(wrapLayout);
 
-//	setDisabled(true);
+    setDisabled(true);
 
 	if (!bootloader_) {
 		mcuIdEdit->setText("ERROR: no device pointer given");
