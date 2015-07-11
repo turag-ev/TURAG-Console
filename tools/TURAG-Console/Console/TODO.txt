@@ -1,6 +1,139 @@
+
+Frontends
+-----------------------------
  - Raw-Frontend erweitern: bis zum Hterm-Ersatz
  - Stmcam-Frontend in TinA-Frontend integrieren -> gehört zur Roboteransicht
  - Suche im Terminal-Frontend/Plaintextfrontend
  - Plaintext-Frontend und Terminal-Frontend trennen -> wenn möglich Terminal von plaintext erben lassen? Prüfen,
  ob Plaintext-Frontend überhaupt notwendig, oder ob überall Terminal-Frontend benutzt werden kann
  - Scrolling im Terminal/plaintextfrontend mit Shift+Cursor Up/Down, sowie Page Up/Down
+ - Farben im Roboterfrontend
+ - flexiblere Möglichkeiten Logquellen im Logview zu filtern
+ - Filtern nach Log-Typ im LogView
+ - Informationen einblenden (wieviele Zeilen insgesamt, wieviele gefiltert...)
+
+
+DataGraph
+--------------------------------------------------------
+ - Performance optimieren (angeblich bei hohen Update-Frequenzen nicht mehr benutzbar)
+ - CSV-Export
+ - prüfen, ob statt qwt  QCustomPlot benutzt werden könnte (weniger Abhängigkeiten, einfacheres
+ compilen)
+ - CodeBasis bisschen aufräumen, dokumentieren, Features vervollständigen
+ - komische Bugs beim hervorheben fixen
+ - Datentabelle optimieren
+ - 3D-Graphen anzeigbar machen/Zeitinfo in 2D-Plots
+
+Sich irgendwas mit den Icons einfallen lassen, also wie man die Menüeinträge auch als Icon anzeigen kann
+und ob das überhaupt sinnvoll ist.
+
+Meldungen/Log
+-----------------------------
+ - beschleunigen, derzeit viel zu langsam -> Anzeige nur bei Bedarf
+ - Anzeige moderner gestalten, Auftritt einer Meldung deutlicher machen
+ - sowas in der Art wie die Notification-Anzeige in KDE wäre cool
+
+
+Verbessertes Interface für Sitzungsverwaltung
+--------------------------------------------------
+es scheint nicht klar zu sein, wie das ganze System der Console
+funktioniert, "Neu Sitzung öffnen" sollte eher sowas wie "Verbindung ändern"
+werden und eher so einen Popup-Charakter bekommen
+
+es wäre cool, wenn die Console sich beim Öffnen einer neuen Verbindung
+intelligenter verhalten würde und nicht immer dumm das letzte Frontend
+öffnen würde. Möglichkeiten:
+ - speichern, mit welchem Frontend eine bestimmte URL geöffnet wurde
+ - einem Backend ein bestimmtes Standard-Frontend zuordnen
+--> beides mit eigenen Vor- und Nachteilen
+
+
+
+Mehrere Datenquellen gleichzeitig öffnen
+-----------------------------------------------------
+Prinzipiell wäre es kein Problem, mehrere Datenquellen parallel zu öffnen.
+Ist die Frage, was man dann damit macht. Man könnte einfach die Daten beider
+Quellen, so wie sie ankommen, ans Frontend weiterleiten. Das würde aber schon
+problematisch werden, wenn man ein SC- und ein MC-Log öffnet.
+
+Die Forderung kommt ja auch nur, weil man gern verschiedene Logs gleichzeitig betrachten können möchte.
+--> prüfen ob sich das mit dem generischen Anspruch der Console vereinbaren lässt.
+
+Wahrscheinlich ist folgender Ansatz am sinnvollsten: Es können beliebig viele Datenquellen
+geöffnet werden und es ist dem Frontend überlassen, was es mit den Daten macht.
+--> das verspielt allerdings die Möglichkeit, verschiedene Frontends parallel zu betreiben
+--> was praktisch betrachtet aber kein Nachteil ist, da die meisten Frontends so verschieden
+sind, dass sich da kein wirklicher Vorteil erkennen lässt...
+--> Also wäre wohl zB das RoboterFrontend in der Lage, mit mehreren Datenstreams zu arbeiten.
+
+--> Sowas bringt aber unheimlich viel Mehraufwand. Das gesamte Interface müsste für
+mehrere Verbindungen ausgebaut werden. Und irgendwie muss das ganze auch noch intuitiv
+und angenehm bedienbar bleiben.
+
+
+
+
+Performance-Optimierung/Multi-Threading
+--------------------------------------------------
+Backends und Frontends evt. in verschiedene Threads
+--> da gab es schon Versuche
+
+Ziel ist letzlich immer, die Daten von der Datenquelle möglichst schnell
+in den Backend-Puffer zu schaufeln. Von dort müssen die Daten häppchenweise
+ans Frontend übergeben werden. Bzw. muss das Frontend die Daten in einen
+eigenen Puffer kopieren und dann häppchenwiese anzeigen. Eine inkrementelle
+Aktualisierung der Anzeige ohne "freeze" steht dabei im Vordergrund, selbst
+wenn die Gesamtdauer der Anzeige dabei um 10-20 % länger dauert.
+
+Derzeit ist das mit einem zero-Timer im Backend gelöst, was halbwegs funktioniert.
+Dabei muss man aufpassen, da das Feldbus-Frontend dann zB nicht mehr funktioniert,
+daher ist das für das SerialBackend deaktiviert.
+
+
+Komprimierung
+------------------------------------------
+Bei den Roboter-Logs besteht ein ungeheures Einspar-Potenzial, wenn diese
+server-seitig mit gzip komprimiert würden. (50-80 % Einsparung).
+Im Base-Backend sollte geprüft werden, ob es sich um einen komprimierten
+Datenstrom handelt, der dann transparent entschlüsselt werden sollte.
+
+Die selbsttätige Erkennung klappt an sich nur beim File- und WebDAV-Backend, also
+für die nicht-sequentiellen.
+
+Für sequentielle Backends müsste man eine entsprechende Meta-Information übertragen
+und es entstehen eine neue Klasse von Problemen (mir fehlen x Byte Daten um den Block
+abzuschließen. Was tun? Warten? Mit Dummy-Byte auffüllen?)
+
+Für letzteres könnte die QByteArray::qCompress-Funktion benutzt werden, für ersteres
+die MiniZ-Bibliothek.
+
+
+CLI-Interface
+-------------------------------------------
+Man könnte die Fleibilität der Console auf ein weiteres Level heben,
+indem CLI-Frontends eingeführt werden. Während die Umsetzung mit der
+QCommandLineParser Klasse gut machbar ist, stellt sich hier eher die Frage
+ob der Vorteil einer zentralen Anwendung für alles (die Console würde dann
+den BMax-Launcher und den TURAG-Flasher ersetzen) den Nachteil aufwiegt,
+dass die Konsole relativ viele Abhängigkeiten hat und schwerer zu compilieren ist
+als die genannten Mini-Programme.
+
+
+Feldbus
+----------------------------------------
+Bug aufspüren, der Funktion in Qt-Versionen > 5.2.0 in Windows behindert!
+
+- Standardview, was Adresse und Checksumme übernimmt. Der User kann dann den Datenteil
+der Pakete bestimmen. Antwortpakete werden auch entsprechend ausgewertet. Sollte
+vom Hex-/Hterm-View abgeleitet werden
+
+Sniffing-View: lediglich Darstellung der mitgehörten Pakete
+
+
+Optionen
+-------------------------------------------
+Lange Zeit waren alle Optionen transparent gespeichert. Das hat aber zumindest beim
+Datagraph für Performance-Probleme gesorgt. Außerdem sorgt es für merkwürdiges Verhalten
+wenn mehr als eine Instanz benutzt wird.
+Vielleicht lieber einen Options-Dialog bereitstellen, in dem Standard-Einstellungen
+bearbeitet werden können, die nicht transparent gespeichert werden können?

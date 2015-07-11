@@ -74,8 +74,8 @@ public:
 	 * @brief Aktiviert oder deaktiviert die Verarbeitung von Debug-Nachrichten.
 	 * @param on Aktivieren oder deaktivieren.
 	 *
-	 * Wird die Verarbeitung aktiviert, so werden Nachrichten, die mit qDebug(), qWarning(),
-	 * qCritical() oder qFatal() ausgegeben werden um Informationen erweitert, auf der
+	 * Wird die Verarbeitung aktiviert, so werden Nachrichten die mit qDebug(), qWarning(),
+	 * qCritical() oder qFatal() ausgegeben werden, um Informationen erweitert auf der
 	 * Standardausgabe ausgegeben, sowie im Log gespeichert.
 	 *
 	 * Wird qFatal() benutzt, so wird das Programm mit abort() beendet.
