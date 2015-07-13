@@ -8,6 +8,7 @@
 class QShowEvent;
 class KeyboardEnabledComboBox;
 class QPushButton;
+class QComboBox;
 
 
 
@@ -22,6 +23,10 @@ protected:
     KeyboardEnabledComboBox* baudrate_;
     QPushButton* serial_button;
     KeyboardEnabledComboBox* port_name_;
+	QComboBox* wordLength_;
+	QComboBox* numberOfStopBits_;
+	QComboBox* parityType_;
+
 
     virtual void showEvent ( QShowEvent * event );
     virtual void hideEvent ( QHideEvent * event );

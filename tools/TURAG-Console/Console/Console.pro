@@ -331,3 +331,4 @@ unix:!mac {
 }
 
 include(../../../libs/libsimeurobot.pri)
+include(../../../libs/qt/expander-widget/expanderwidget.pri)

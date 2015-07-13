@@ -94,6 +94,7 @@ protected:
 	QList<QString> protocolScheme_;
 	QByteArray buffer;
 
+	// ???
 	static_assert(sizeof(QString) == sizeof(QString*),"");
 
 private slots:

@@ -58,8 +58,20 @@ void ConnectionWidget::addRecentConnections() {
 		recentConnectionsContainer->setLayout(innerLayout);
 		recentConnectionsLayout->addWidget(recentConnectionsContainer);
 	}
+	// Two variants here: place it directly beneath the other widgets with a fixed
+	// spacing:
+	layout->addSpacing(25);
 	recentConnectionsLayout->addStretch();
+
+	// or place it at the bottom:
+//	layout->addStretch();
+
+	// I think the first variant is preferrable because
+	// it keeps the layout more compact.
+
+
 	layout->addLayout(recentConnectionsLayout);
+
 }
 
 void ConnectionWidget::onOpenRecentConnection(int index) {

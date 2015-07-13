@@ -124,7 +124,6 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     heartBeatTimer.setInterval(3 * HEARTBEAT_SEND_PERIOD);
     connect(&heartBeatTimer, SIGNAL(timeout()), this, SLOT(heartBeatTimerOccured()));
 
-    layout->addSpacing(10);
     addRecentConnections();
 }
 

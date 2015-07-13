@@ -1,3 +1,20 @@
+Connectionwidgets
+-----------------------------------
+Connectionstrings auf QUrl umstellen. Dies ist notwendig, damit für
+SerialBackend ohne großen  Aufwand weitere Optionen eingebaut werden können.
+
+ConnectionWidgetSerial um weitere SerialPort-Optionen erweitern
+
+Deployment
+---------------------------------------
+mal versuchen Linux-Binaries mit Libs + Start-Skript bereitzustellen
+http://doc.qt.io/qt-5/linux-deployment.html
+
+
+Plugin-Modell
+-------------------------------------------
+Frontends und Backends als Plugins dynamscih laden
+
 
 Frontends
 -----------------------------

@@ -88,7 +88,6 @@ ConnectionWidgetWebDAV::ConnectionWidgetWebDAV (QWidget *parent) :
 	layout->addLayout(treeLayout);
 	layout->setStretchFactor(treeLayout, 1);
 
-    layout->addSpacing(10);
 	addRecentConnections();
 	enterUnconnectedState();
 }

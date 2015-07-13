@@ -11,7 +11,11 @@
 #include <QSerialPortInfo>
 #include <QDebug>
 #include <QPushButton>
+#include <QFormLayout>
+#include <qt/expander-widget/expanderwidget.h>
 #include <libs/keyboardenabledcombobox.h>
+
+#include <QTextEdit>
 
 
 ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
@@ -43,23 +47,63 @@ ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
     }
     baudrate_->setCurrentIndex(default_index);
 
-    // create button to connect
+
+
+
+	QComboBox* wordLength_ = new QComboBox;
+	wordLength_->addItems(QStringList({"5", "6", "7", "8"}));
+	wordLength_->setMaximumWidth(200);
+	wordLength_->setCurrentIndex(3);
+
+	QComboBox* numberOfStopBits_ = new QComboBox;
+	numberOfStopBits_->addItems(QStringList({"1", "1.5", "2"}));
+	numberOfStopBits_->setMaximumWidth(200);
+	numberOfStopBits_->setCurrentIndex(0);
+
+	QComboBox* parityType_ = new QComboBox;
+	parityType_->addItems(QStringList({"Keine", "Even", "Odd", "Space", "Mark"}));
+	parityType_->setMaximumWidth(200);
+	parityType_->setCurrentIndex(0);
+
+	QFormLayout* extendedFormLayout = new QFormLayout;
+	extendedFormLayout->addRow("Bit-Zahl", wordLength_);
+	extendedFormLayout->addRow("Stop-Bits", numberOfStopBits_);
+	extendedFormLayout->addRow("Parität", parityType_);
+
+	QWidget* extendedSettingsWidget = new QWidget;
+	extendedSettingsWidget->setLayout(extendedFormLayout);
+	ExpanderWidget* expander = new ExpanderWidget;
+	expander->setExpanderTitle("weitere Einstellungen");
+	expander->setExpanded(false);
+	expander->setWidget(extendedSettingsWidget);
+
+
+	// create button to connect
     serial_button = new QPushButton("Verbinden");
+//	serial_button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+	serial_button->setMaximumWidth(200);
     // connect signals directly to base signal
     connect(serial_button, SIGNAL(clicked()), this, SLOT(connectionChangedInternal()));
 
 
-    // horizontal layout for input text edits
-    QHBoxLayout* port_layout = new QHBoxLayout();
-    port_layout->addWidget(port_name_, 1);
-    port_layout->addWidget(baudrate_, 1);
-    port_layout->addWidget(serial_button, 0);
-    port_layout->addStretch();
+	// horizontal layout for input fields
+	QFormLayout* port_layout = new QFormLayout();
+	port_layout->addRow("Port", port_name_);
+	port_layout->addRow("Baudrate", baudrate_);
+	layout->addLayout(port_layout);
+
+	layout->addWidget(expander);
+
+	layout->addSpacing(10);
+	layout->addWidget(serial_button);
+//	layout->setAlignment(serial_button, Qt::AlignRight);
+//    port_layout->addWidget(port_name_, 1);
+//    port_layout->addWidget(baudrate_, 1);
+//    port_layout->addWidget(serial_button, 0);
+//    port_layout->addStretch();
 
     // vertical layout including the button and a label
-    layout->addLayout(port_layout);
 
-    layout->addSpacing(10);
     addRecentConnections();
 
     connect(&deviceUpdateTimer, SIGNAL(timeout()), this, SLOT(onDeviceUpdate()));

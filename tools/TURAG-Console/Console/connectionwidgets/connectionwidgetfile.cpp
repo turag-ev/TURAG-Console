@@ -19,7 +19,6 @@ ConnectionWidgetFile::ConnectionWidgetFile(QWidget *parent) :
     // vertical layout including the button and a label
     layout->addWidget(file_button, 0, Qt::AlignLeft);
 
-    layout->addSpacing(10);
     addRecentConnections();
 
     connect(file_button, SIGNAL(clicked()), this, SLOT(onOpenFile()));
