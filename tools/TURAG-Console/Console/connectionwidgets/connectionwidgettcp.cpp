@@ -375,30 +375,30 @@ void ConnectionWidgetTcp::connectToServer() {
         settings.beginGroup("ConnectionWidgetTcp");
         settings.setValue("host", hostEdit->text());
 
-        qint16 port;
-        QString hostAddress;
-        QString host = hostEdit->text().toCaseFolded();
+		qint16 port;
+		QString hostAddress;
+		QString host = hostEdit->text().toCaseFolded();
 
-        int index = host.indexOf(":");
+		int index = host.indexOf(":");
 
-        if (index == -1) {
-            port = CONTROLSERVER_PORT;
-            hostAddress = host;
-            if (hostAddress.isEmpty()) {
-                hostAddress = "127.0.0.1";
-            }
-        } else {
-            hostAddress = host.left(index);
-            if (hostAddress.isEmpty()) {
-                hostAddress = "127.0.0.1";
-            }
+		if (index == -1) {
+			port = CONTROLSERVER_PORT;
+			hostAddress = host;
+			if (hostAddress.isEmpty()) {
+				hostAddress = "127.0.0.1";
+			}
+		} else {
+			hostAddress = host.left(index);
+			if (hostAddress.isEmpty()) {
+				hostAddress = "127.0.0.1";
+			}
 
-            if (host.endsWith(":")) {
-                port = CONTROLSERVER_PORT;
-            } else {
-                port = host.right(host.size() - index - 1).toInt();
-            }
-        }
+			if (host.endsWith(":")) {
+				port = CONTROLSERVER_PORT;
+			} else {
+				port = host.right(host.size() - index - 1).toInt();
+			}
+		}
 
         connect_button->setEnabled(false);
         connect_button->setVisible(false);
@@ -406,7 +406,7 @@ void ConnectionWidgetTcp::connectToServer() {
         hostEdit->setEnabled(false);
         if (recentConnectionsContainer) recentConnectionsContainer->setEnabled(false);
 
-        socket->connectToHost(hostAddress, port);
+		socket->connectToHost(hostAddress, port);
     } else {
         socket->close();
         if (associatedBackend) {
@@ -481,32 +481,30 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
     if (newSelectedDevice->onlineStatus == false) {
         return;
     }
-    selectedDevice = newSelectedDevice;
-    fillDeviceList();
+	selectedDevice = newSelectedDevice;
+	fillDeviceList();
 
-    //den connection String zusammenbasteln
-    QString connectionString("tcp://");
-    connectionString.append(socket->peerAddress().toString());
-    connectionString.append(":");
-
-    connectionString.append(selectedDevice->port);
-    connectionString.append("/");
-    connectionString.append(selectedDevice->path);
-    connectionString.append(":");
-    connectionString.append(selectedDevice->description);
-
-    //Signal emitten mit dem connectionstring;
-    //save connectionString hat hier keine Bedeutung
-    if (associatedBackend) {
+	if (associatedBackend) {
 		disconnect(associatedBackend, SIGNAL(connected(bool)), this, SLOT(backendConnected()));
-        disconnect(associatedBackend, SIGNAL(dataReady(QByteArray)), &heartBeatTimer, SLOT(start()));
+		disconnect(associatedBackend, SIGNAL(dataReady(QByteArray)), &heartBeatTimer, SLOT(start()));
 
-        // tcp backend might be in auto reconnect mode - in that case we couldn't do a manual reconnect
-        // so we have to do a manual disconnect
-        associatedBackend->closeConnection();
-    }
-    BaseBackend* backend;
-    emit connectionChanged(connectionString, nullptr, &backend);
+		// tcp backend might be in auto reconnect mode - in that case we couldn't do a manual reconnect
+		// so we have to do a manual disconnect
+		associatedBackend->closeConnection();
+	}
+
+	QUrl url;
+	url.setScheme("tcp");
+	url.setHost(socket->peerAddress().toString());
+	url.setPort(selectedDevice->port.toInt());
+	url.setPath(selectedDevice->path);
+	url.setFragment(selectedDevice->description);
+
+	//Signal emitten mit der URL;
+	//save connectionString hat hier keine Bedeutung,
+	// da der Host schon früher gespeichert wird
+	BaseBackend* backend;
+	emit connectionChanged(url, nullptr, &backend);
     if (backend) {
         associatedBackend = dynamic_cast<TcpBackend*>(backend);
 		connect(associatedBackend, SIGNAL(connected(bool)), this, SLOT(backendConnected()));

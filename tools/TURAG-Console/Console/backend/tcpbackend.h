@@ -13,21 +13,16 @@ class TcpBackend : public BaseBackend {
 
 public:
     TcpBackend(QObject * parent = 0);
-	virtual ~TcpBackend() {
-		closeConnection();
-	}
+	virtual ~TcpBackend();
 
-    static const QString protocolScheme;
     virtual bool isReadOnly(void) const;
-    virtual QString getConnectionInfo();
-    QString getDevicePath(void) { return devicePath; }
+	virtual QString getConnectionInfo() const;
+	QString getDevicePath(void) const;
+
+	static const QString protocolScheme;
 
 signals:
     void requestData(QString path);
-
-public slots:
-    virtual bool openConnection(QString connectionString);
-    virtual void closeConnection(void);
 
 private slots:
     void socketConnected(void);
@@ -35,11 +30,9 @@ private slots:
     void onTcpError(QAbstractSocket::SocketError err);
 
 private:
-    QHostAddress * hostAddress;
-    qint16 port;
-    QString devicePath;
+	virtual bool doConnectionPreconditionChecking(const QUrl& url);
+	virtual BaseBackend::ConnectionStatus doOpenConnection(QUrl connectionUrl);
 
-    bool connecting;
 };
 
 #endif // TCPBACKEND_H

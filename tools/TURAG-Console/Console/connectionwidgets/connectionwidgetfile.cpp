@@ -36,7 +36,7 @@ void ConnectionWidgetFile::onOpenFile() {
 	  url.setPath(files[0]);
 
       bool save = false;
-	  emit connectionChanged(url.toDisplayString(), &save, nullptr);
+	  emit connectionChanged(url, &save, nullptr);
       if (save) {
 		  saveConnection(url.toDisplayString());
           addRecentConnections();

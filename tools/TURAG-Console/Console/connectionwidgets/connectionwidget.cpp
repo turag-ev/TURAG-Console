@@ -7,12 +7,14 @@
 #include <QGroupBox>
 #include <QMenu>
 #include <QGroupBox>
+#include <QUrl>
 
 #include "libs/elidedbutton.h"
 
 
 ConnectionWidget::ConnectionWidget(QString recentConnectionSpecifier, QWidget *parent) :
-	QWidget(parent), recentConnectionsLayout(nullptr), recentConnectionsContainer(nullptr),  recentConnectionSpecifier_(recentConnectionSpecifier)
+	QWidget(parent), recentConnectionsLayout(nullptr), recentConnectionsContainer(nullptr),
+	recentConnectionSpecifier_(recentConnectionSpecifier), spacingAdded(false)
 {
     recent_files_map_ = new QSignalMapper(this);
     connect(recent_files_map_,SIGNAL(mapped(int)),this,SLOT(onOpenRecentConnection(int)));
@@ -45,9 +47,9 @@ void ConnectionWidget::addRecentConnections() {
 
         for (int i = 0; i < recent_connections.length(); i++) {
             ElidedButton* link = new ElidedButton(" " + recent_connections[i]);
-            link->setElideMode(Qt::ElideMiddle);
-            link->setMinimumWidth(350);
-            link->setMaximumWidth(1024);
+			link->setElideMode(Qt::ElideMiddle);
+			link->setMinimumWidth(350);
+			link->setMaximumWidth(1024);
             link->setToolTip(recent_connections[i]);
             link->setStyleSheet(QString::fromUtf8("text-align:left;"));
 
@@ -60,7 +62,10 @@ void ConnectionWidget::addRecentConnections() {
 	}
 	// Two variants here: place it directly beneath the other widgets with a fixed
 	// spacing:
-	layout->addSpacing(25);
+	if (!spacingAdded) {
+		layout->addSpacing(25);
+		spacingAdded = true;
+	}
 	recentConnectionsLayout->addStretch();
 
 	// or place it at the bottom:
@@ -76,7 +81,7 @@ void ConnectionWidget::addRecentConnections() {
 
 void ConnectionWidget::onOpenRecentConnection(int index) {
     bool save;
-    emit connectionChanged(recent_connections.at(index), &save, nullptr);
+	emit connectionChanged(QUrl(recent_connections.at(index)), &save, nullptr);
     if (save) {
         saveConnection(recent_connections.at(index));
         addRecentConnections();

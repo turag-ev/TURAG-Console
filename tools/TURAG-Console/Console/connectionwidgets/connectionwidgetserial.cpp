@@ -12,8 +12,11 @@
 #include <QDebug>
 #include <QPushButton>
 #include <QFormLayout>
+#include <QUrl>
+#include <QUrlQuery>
 #include <qt/expander-widget/expanderwidget.h>
 #include <libs/keyboardenabledcombobox.h>
+#include <libs/log.h>
 
 #include <QTextEdit>
 
@@ -47,32 +50,32 @@ ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
     }
     baudrate_->setCurrentIndex(default_index);
 
+	// number of data bits
+	dataBits_ = new QComboBox;
+	dataBits_->addItems(QStringList({"5", "6", "7", "8"}));
+	dataBits_->setMaximumWidth(200);
+	dataBits_->setCurrentIndex(3);
 
-
-
-	QComboBox* wordLength_ = new QComboBox;
-	wordLength_->addItems(QStringList({"5", "6", "7", "8"}));
-	wordLength_->setMaximumWidth(200);
-	wordLength_->setCurrentIndex(3);
-
-	QComboBox* numberOfStopBits_ = new QComboBox;
+	// number of stop bits
+	numberOfStopBits_ = new QComboBox;
 	numberOfStopBits_->addItems(QStringList({"1", "1.5", "2"}));
 	numberOfStopBits_->setMaximumWidth(200);
 	numberOfStopBits_->setCurrentIndex(0);
 
-	QComboBox* parityType_ = new QComboBox;
-	parityType_->addItems(QStringList({"Keine", "Even", "Odd", "Space", "Mark"}));
+	// parity type
+	parityType_ = new QComboBox;
+	parityType_->addItems(QStringList({"none", "even", "odd", "space", "mark"}));
 	parityType_->setMaximumWidth(200);
 	parityType_->setCurrentIndex(0);
 
 	QFormLayout* extendedFormLayout = new QFormLayout;
-	extendedFormLayout->addRow("Bit-Zahl", wordLength_);
+	extendedFormLayout->addRow("Bit-Zahl", dataBits_);
 	extendedFormLayout->addRow("Stop-Bits", numberOfStopBits_);
 	extendedFormLayout->addRow("Parität", parityType_);
 
 	QWidget* extendedSettingsWidget = new QWidget;
 	extendedSettingsWidget->setLayout(extendedFormLayout);
-	ExpanderWidget* expander = new ExpanderWidget;
+	expander = new ExpanderWidget;
 	expander->setExpanderTitle("weitere Einstellungen");
 	expander->setExpanded(false);
 	expander->setWidget(extendedSettingsWidget);
@@ -80,9 +83,7 @@ ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
 
 	// create button to connect
     serial_button = new QPushButton("Verbinden");
-//	serial_button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
 	serial_button->setMaximumWidth(200);
-    // connect signals directly to base signal
     connect(serial_button, SIGNAL(clicked()), this, SLOT(connectionChangedInternal()));
 
 
@@ -90,37 +91,38 @@ ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
 	QFormLayout* port_layout = new QFormLayout();
 	port_layout->addRow("Port", port_name_);
 	port_layout->addRow("Baudrate", baudrate_);
+
 	layout->addLayout(port_layout);
-
 	layout->addWidget(expander);
-
 	layout->addSpacing(10);
 	layout->addWidget(serial_button);
-//	layout->setAlignment(serial_button, Qt::AlignRight);
-//    port_layout->addWidget(port_name_, 1);
-//    port_layout->addWidget(baudrate_, 1);
-//    port_layout->addWidget(serial_button, 0);
-//    port_layout->addStretch();
-
-    // vertical layout including the button and a label
 
     addRecentConnections();
 
     connect(&deviceUpdateTimer, SIGNAL(timeout()), this, SLOT(onDeviceUpdate()));
 }
 
-
-
 void ConnectionWidgetSerial::connectionChangedInternal() {
-	QString connectionString = SerialBackend::protocolScheme + port_name_->currentText() + ":" + baudrate_->currentText();
+	QUrl url;
+	url.setHost(""); // fixes small display bug of QUrl
+	url.setScheme(SerialBackend::protocolScheme);
+	url.setPath(port_name_->currentText());
+	url.setFragment(baudrate_->currentText());
+
+	if (expander->isExpanded()) {
+		QUrlQuery query;
+		query.addQueryItem("databits", dataBits_->currentText());
+		query.addQueryItem("stopbits", numberOfStopBits_->currentText());
+		query.addQueryItem("parity", parityType_->currentText());
+		url.setQuery(query);
+	}
 
 	bool save = false;
-	emit connectionChanged(connectionString, &save, nullptr);
+	emit connectionChanged(url, &save, nullptr);
     if (save) {
-		saveConnection(connectionString);
+		saveConnection(url.toDisplayString());
         addRecentConnections();
     }
-
 }
 
 

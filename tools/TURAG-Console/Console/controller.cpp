@@ -95,7 +95,7 @@ Controller::Controller(QWidget *parent) :
         scrollarea->setFrameShape(QFrame::NoFrame);
 
         tabwidget->addTab(scrollarea, iter->objectName());
-        connect(iter,SIGNAL(connectionChanged(QString, bool*,BaseBackend**)),this,SLOT(openConnection(QString, bool*,BaseBackend**)));
+		connect(iter, SIGNAL(connectionChanged(QUrl,bool*,BaseBackend**)), this, SLOT(openConnection(QUrl, bool*,BaseBackend**)));
     }
     layout->addWidget(tabwidget);
     connect(tabwidget, SIGNAL(currentChanged(int)), this, SLOT(onToolboxChangedCurrent(int)));
@@ -233,7 +233,7 @@ void Controller::openConnection(void) {
 }
 
 
-void Controller::openConnection(QString connectionString, bool *success, BaseBackend** openedBackend) {
+void Controller::openConnection(const QUrl &connectionUrl, bool *success, BaseBackend** openedBackend) {
     // show widgets menu
     if (menuBar_) {
         if (widgetMenu_ && menuBar_->actions().contains(widgetMenu_->menuAction())) {
@@ -256,7 +256,7 @@ void Controller::openConnection(QString connectionString, bool *success, BaseBac
 
     auto iter = std::find_if(availableBackends.begin(),
                              availableBackends.end(),
-                             [&](const BaseBackend* b) -> bool { return b->canHandleUrl(connectionString); });
+							 [&](const BaseBackend* b) -> bool { return b->canHandleUrl(connectionUrl); });
 
     if (iter != availableBackends.end()) {
         // we got a backend
@@ -267,7 +267,7 @@ void Controller::openConnection(QString connectionString, bool *success, BaseBac
         connect(currentFrontend, SIGNAL(dataReady(QByteArray)), backend, SLOT(writeData(QByteArray)));
         connect(currentFrontend, SIGNAL(requestData()), this, SLOT(refresh()), Qt::QueuedConnection);
 
-        if (backend->openConnection(connectionString)) {
+		if (backend->openConnection(connectionUrl)) {
             currentBackend = backend;
             setFrontend(currentFrontendIndex, false);
             if (success) *success = true;
@@ -329,10 +329,6 @@ void Controller::setAutoReconnect(bool on) {
 }
 
 void Controller::onConnected(bool readOnly) {
-    if (connectionMenu) {
-        connectionMenu->addActions(currentBackend->getMenuEntries());
-    }
-
     refresh();
 
 	emit connected(readOnly, currentBackend->getDevice());
@@ -342,11 +338,6 @@ void Controller::onDisconnected() {
     if (autoSaveOn) {
         QString file = QDir::toNativeSeparators(QDir::homePath() + "/turag-" + QDateTime::currentDateTime().toString(Qt::ISODate) + ".turag");
         currentBackend->saveBufferToFile(file);
-    }
-    if (connectionMenu) {
-        for (QAction* action : currentBackend->getMenuEntries()) {
-            connectionMenu->removeAction(action);
-        }
     }
 }
 

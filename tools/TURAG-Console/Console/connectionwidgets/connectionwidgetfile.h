@@ -8,16 +8,16 @@
 
 class ConnectionWidgetFile : public ConnectionWidget {
     Q_OBJECT
+public:
+	ConnectionWidgetFile(QWidget *parent = 0);
 
-protected:
+
+private slots:
+	void onOpenFile(void);
+
+private:
     QLineEdit* file_edit;
     QPushButton* file_button;
-
-protected slots:
-    void onOpenFile(void);
-
-public:
-    ConnectionWidgetFile(QWidget *parent = 0);
 
 };
 

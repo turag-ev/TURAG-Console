@@ -5,50 +5,42 @@
 
 
 WebDAVBackend::WebDAVBackend(bool ignoreSslErrors_, QObject *parent) :
-	BaseBackend({"http", "https"}, parent), ignoreSslErrors(ignoreSslErrors_), connecting(false)
+	BaseBackend({"http", "https"}, parent), ignoreSslErrors(ignoreSslErrors_)
 {
 	connect(&webdav, SIGNAL(errorChanged(QString)), this, SLOT(errorOccured(QString)));
 }
 
+WebDAVBackend::~WebDAVBackend() {
+	doCleanUpConnection();
+}
 
-QString WebDAVBackend::getConnectionInfo() {
-	if (connectionString_.isEmpty()) {
+
+
+QString WebDAVBackend::getConnectionInfo() const {
+	if (connectionUrl_.isEmpty()) {
 		return "";
 	} else {
-		QUrl url(connectionString_);
+		QUrl url(connectionUrl_);
 		return url.fileName();
 	}
 }
 
 bool WebDAVBackend::isOpen(void) const {
-	return !stream_.isNull() && !connecting;
+	return !stream_.isNull() && !isConnectionInProgress();
 }
 
-bool WebDAVBackend::openConnection(QString connectionString) {
-	if (!canHandleUrl(connectionString)) {
-		return false;
-	}
+bool WebDAVBackend::doConnectionPreconditionChecking(const QUrl& ) {
+	return true;
+}
 
-	// prevent another connection attempt while already connecting
-	// that's required here because ot the asynchronous character of
-	// underlying tcp socket
-	if (connecting) return false;
-
-	// close connection in case we had one open
-	if (isOpen()) closeConnection();
-
-	QUrl url = QUrl::fromEncoded(connectionString.toLatin1());
-	if (!url.isValid()) {
-		return false;
-	}
-
+BaseBackend::ConnectionStatus WebDAVBackend::doOpenConnection(QUrl url) {
 	QWebdav::QWebdavConnectionType connectionType;
 	if (url.scheme() == "http") {
 		connectionType = QWebdav::HTTP;
 	} else if (url.scheme() == "https") {
 		connectionType = QWebdav::HTTPS;
 	} else {
-		return false;
+		return ConnectionStatus::failed;
 	}
 
 	webdav.setConnectionSettings(connectionType, url.host(), url.path(), url.userName(), url.password(), url.port());
@@ -61,13 +53,11 @@ bool WebDAVBackend::openConnection(QString connectionString) {
 	connect(reply, SIGNAL(finished()), this, SLOT(finished()));
 
 	stream_.reset(reply);
-	connectionString_ = connectionString;
 
-	connecting = true;
-	return true;
+	return ConnectionStatus::ongoing;
 }
 
-void WebDAVBackend::closeConnection(void) {
+void WebDAVBackend::doCleanUpConnection(void) {
 	if (stream_.data() != nullptr) {
 		QNetworkReply* reply = static_cast<QNetworkReply*>(stream_.data());
 
@@ -75,14 +65,11 @@ void WebDAVBackend::closeConnection(void) {
 			reply->abort();
 		}
 	}
-	BaseBackend::closeConnection();
-	stream_.reset();
 }
 
 void WebDAVBackend::onDataReady(void) {
-	if (connecting) {
-		connecting = false;
-		emitConnected();
+	if (isConnectionInProgress()) {
+		connectingSuccessful();
 	}
 
 	emitDataReady();
@@ -92,7 +79,6 @@ void WebDAVBackend::errorOccured(QString msg) {
 	Log::critical(msg);
 
 	closeConnection();
-	connecting = false;
 }
 
 void WebDAVBackend::replyError(QNetworkReply::NetworkError) {
@@ -102,14 +88,12 @@ void WebDAVBackend::replyError(QNetworkReply::NetworkError) {
 	qDebug() << reply->errorString();
 
 	closeConnection();
-	connecting = false;
 }
 
 // workaround for zero-byte files
 void WebDAVBackend::finished(void) {
-	if (connecting) {
-		connecting = false;
-		emitConnected();
+	if (isConnectionInProgress()) {
+		connectingSuccessful();
 	}
 }
 

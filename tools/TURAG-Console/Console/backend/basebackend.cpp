@@ -7,10 +7,10 @@
 #include <initializer_list>
 
 BaseBackend::BaseBackend(std::initializer_list<QString> protocolScheme, QObject *parent) :
-	QObject(parent), deviceShouldBeConnectedString(""), deviceRecoveryActive(false), dataEmissionChunkSize(10240)
+	QObject(parent), connectionInProgress(false), deviceRecoveryActive(false), dataEmissionChunkSize(10240)
 {
 	for (const QString& scheme : protocolScheme) {
-		protocolScheme_.push_back(scheme);
+		supportedProtocolSchemes_.push_back(scheme);
 	}
 
     recoverDeviceTimer.setInterval(500);
@@ -21,7 +21,9 @@ BaseBackend::BaseBackend(std::initializer_list<QString> protocolScheme, QObject 
 }
 
 
-BaseBackend::~BaseBackend() { }
+BaseBackend::~BaseBackend() {
+	closeConnectionInternal();
+}
 
 
 bool BaseBackend::isReadOnly(void) const {
@@ -42,28 +44,92 @@ bool BaseBackend::isOpen(void) const {
     }
 }
 
+bool BaseBackend::isConnectionInProgress(void) const {
+	return connectionInProgress;
+}
+
+bool BaseBackend::openConnection(const QUrl &url) {
+	// check preconditions
+	if (!url.isValid()) {
+		return false;
+	}
+
+	if (!canHandleUrl(url)) {
+		return false;
+	}
+
+	if (!doConnectionPreconditionChecking(url)) {
+		return false;
+	}
+
+	// is there some asynchronous connection process already
+	// running? If so, cancel.
+	if (connectionInProgress) {
+		return false;
+	}
+	connectionInProgress = true;
+
+	// close connection in case we had one open
+	if (isOpen()) closeConnection();
+
+	connectionUrl_ = url;
+
+	// Eventually open the connection.
+	ConnectionStatus result = doOpenConnection(url);
+
+	if (result == ConnectionStatus::failed) {
+		if (connectionInProgress) {
+			connectingFailed();
+		}
+		return false;
+	} else if (result == ConnectionStatus::successful) {
+		if (connectionInProgress) {
+			connectingSuccessful();
+		}
+		return true;
+	} else {
+		return true;
+	}
+}
+
+bool BaseBackend::doConnectionPreconditionChecking(const QUrl&) {
+	return true;
+}
 
 bool BaseBackend::openConnection(void) {
-    if (connectionString_.isEmpty()) {
+	if (connectionUrl_.isEmpty()) {
         return false;
     }
 
-    return openConnection(connectionString_);
+	return openConnection(connectionUrl_);
 }
 
-
 void BaseBackend::closeConnection(void) {
-    if (isOpen() || recoverDeviceTimer.isActive()) {
-        emit disconnected(false);
-    }
+	// call sub-class implementation
+	doCleanUpConnection();
 
-    if (isOpen()) {
-        stream_->close();
-        stream_->disconnect(this);
-    }
+	closeConnectionInternal();
+}
 
-    deviceShouldBeConnectedString = "";
-    recoverDeviceTimer.stop();
+void BaseBackend::doCleanUpConnection(void) {
+
+}
+
+void BaseBackend::closeConnectionInternal(void) {
+	if (isOpen() || recoverDeviceTimer.isActive()) {
+		emit disconnected(false);
+	}
+
+	if (isOpen()) {
+		stream_->close();
+		stream_->disconnect(this);
+	}
+	stream_.reset();
+
+	connectionInProgress = false;
+
+	deviceShouldBeConnectedUrl.clear();
+	recoverDeviceTimer.stop();
 	readTimer.stop();
 }
 
@@ -135,45 +201,56 @@ void BaseBackend::onReadData() {
 }
 
 
-QString BaseBackend::getConnectionInfo() {
-    return connectionString_;
+QString BaseBackend::getConnectionInfo() const {
+	return connectionUrl_.toDisplayString();
 }
 
-QList<QAction*> BaseBackend::getMenuEntries() {
-    return QList<QAction*>();
-}
-
-bool BaseBackend::canHandleUrl(const QString& url) const {
-	for (const QString& scheme : protocolScheme_) {
-		if (url.startsWith(scheme)) {
+bool BaseBackend::canHandleUrl(const QUrl &url) const {
+	for (const QString& scheme : supportedProtocolSchemes_) {
+		if (url.scheme() == scheme) {
 			return true;
 		}
 	}
 	return false;
 }
 
-void BaseBackend::emitConnected() {
+void BaseBackend::connectingSuccessful() {
+	connectionInProgress = false;
+
 	buffer.clear();
 
-    if (deviceShouldBeConnectedString == connectionString_ && deviceRecoveryActive && recoverDeviceTimer.isActive()) {
+	if (deviceShouldBeConnectedUrl == connectionUrl_ && deviceRecoveryActive && recoverDeviceTimer.isActive()) {
         Log::info("Verbindung erfolgreich wiederaufgebaut");
     }
 
-    deviceShouldBeConnectedString = connectionString_;
+	deviceShouldBeConnectedUrl = connectionUrl_;
 	emit connected(isReadOnly());
 
     recoverDeviceTimer.stop();
+}
+
+void BaseBackend::connectingFailed(void) {
+	connectionInProgress = false;
+
+	if (stream_.data()) {
+		if (isOpen()) {
+			stream_->close();
+		}
+		stream_->disconnect(this);
+	}
+	stream_.reset();
 }
 
 void BaseBackend::connectionWasLost(void) {
     if (isOpen()) {
         stream_->close();
         stream_->disconnect(this);
-        emit disconnected(deviceShouldBeConnectedString.size() && deviceRecoveryActive);
+		emit disconnected(!deviceShouldBeConnectedUrl.isEmpty() && deviceRecoveryActive);
     }
-    if (deviceShouldBeConnectedString.size() && deviceRecoveryActive) {
+	if (!deviceShouldBeConnectedUrl.isEmpty() && deviceRecoveryActive) {
         recoverDeviceTimer.start();
     }
+	stream_.reset();
 }
 
 void BaseBackend::onRecoverDevice(void) {
@@ -184,7 +261,7 @@ void BaseBackend::onRecoverDevice(void) {
 void BaseBackend::setDeviceRecovery(bool on) {
     if (!on) {
         recoverDeviceTimer.stop();
-    } else if (on && deviceShouldBeConnectedString.size() && !isOpen()) {
+	} else if (on && !deviceShouldBeConnectedUrl.isEmpty() && !isOpen()) {
         recoverDeviceTimer.start();
     }
 

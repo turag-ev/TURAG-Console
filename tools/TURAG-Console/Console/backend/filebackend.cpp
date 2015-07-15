@@ -14,53 +14,49 @@ FileBackend::FileBackend(QObject *parent) :
     watcher = new QFileSystemWatcher(this);
 }
 
+FileBackend::~FileBackend() {
+	doCleanUpConnection();
+}
 
-bool FileBackend::openConnection(QString connectionString) {
-    if (!canHandleUrl(connectionString)) {
-        return false;
-    }
 
-    // close connection in case we had one open
-    if (isOpen()) closeConnection();
-
-    // extract filename
-	QUrl url(connectionString);
-	if (!url.isValid()) {
+bool FileBackend::doConnectionPreconditionChecking(const QUrl& url) {
+	if (url.path().isEmpty()) {
+		logFilteredErrorMsg("no path specified");
 		return false;
 	}
+	if (!QFile::exists(url.path())) {
+		logFilteredErrorMsg("file does not exist");
+		return false;
+	}
+	return true;
+}
 
-	QString file = url.path();
-
-    // open new file
-	stream_.reset(new QFile(file));
+BaseBackend::ConnectionStatus FileBackend::doOpenConnection(QUrl url) {
+	stream_.reset(new QFile(url.path()));
 
     bool success = stream_->open(QIODevice::ReadOnly);
     if (!success) {
-      logFilteredErrorMsg(QString("Fehler beim Öffnen von Datei: %1").arg(stream_->errorString()));
-      return false;
+		logFilteredErrorMsg(QString("Fehler beim Öffnen von Datei: %1").arg(stream_->errorString()));
+		return ConnectionStatus::failed;
     }
 
-	watcher->addPath(file);
-    connect(watcher,SIGNAL(fileChanged(QString)),this,SLOT(onFileChanged()));
+	watcher->addPath(url.path());
+	connect(watcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged()));
 
-    connectionString_ = connectionString;
-
-    emitConnected();
+	// call connectingSuccessful() because it clears the buffer
+	connectingSuccessful();
 
 	buffer.append(stream_->readAll());
     logFilteredInfoMessage("Datei gelesen");
 
-    return true;
+	return ConnectionStatus::successful;
 }
 
-
-void FileBackend::closeConnection(void) {
-    BaseBackend::closeConnection();
-    watcher->disconnect(this);
-    if (!connectionString_.isEmpty()) {
-		QUrl url(connectionString_);
-		watcher->removePath(url.path());
-    }
+void FileBackend::doCleanUpConnection(void) {
+	watcher->disconnect(this);
+	if (!connectionUrl_.isEmpty()) {
+		watcher->removePath(connectionUrl_.path());
+	}
 }
 
 
@@ -74,12 +70,13 @@ void FileBackend::onFileChanged() {
 }
 
 
-QString FileBackend::getConnectionInfo() {
-    if (connectionString_.isEmpty()) {
+QString FileBackend::getConnectionInfo() const {
+    if (connectionUrl_.isEmpty()) {
         return "";
     } else {
-		QUrl url(connectionString_);
-		QString file = url.path();
+		QString file = connectionUrl_.path();
+
+		// strip filename from path
 		return QFileInfo(file).fileName();
     }
 }

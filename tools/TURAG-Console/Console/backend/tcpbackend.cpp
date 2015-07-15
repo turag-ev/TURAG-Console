@@ -3,107 +3,85 @@
 #include <QDebug>
 #include <QStringList>
 
-const QString TcpBackend::protocolScheme = "tcp://";
+const QString TcpBackend::protocolScheme = "tcp";
+
 
 TcpBackend::TcpBackend (QObject *parent) :
-	BaseBackend({TcpBackend::protocolScheme}, parent), connecting(false)
+	BaseBackend({TcpBackend::protocolScheme}, parent)
 { }
 
-bool TcpBackend::openConnection(QString connectionString) {
-    if (!canHandleUrl(connectionString)) {
-        return false;
-    }
+TcpBackend::~TcpBackend() {
+}
 
-    // prevent another connection attempt while already connecting
-    // that's required here because ot the asynchronous character of
-    // underlying tcp socket
-    if (connecting) return false;
 
-    connecting = true;
+bool TcpBackend::doConnectionPreconditionChecking(const QUrl& url) {
+	if (url.port() == -1) {
+		logFilteredErrorMsg("no port specified");
+		return false;
+	}
+	if (url.host().isEmpty()) {
+		logFilteredErrorMsg("no host specified");
+		return false;
+	}
+	return true;
+}
 
-    // close connection in case we had one open
-    if (isOpen()) closeConnection();
-
-    connectionString_ = connectionString;
-
-    //ich überprüfe den connectionString nicht weiter, da er maschinell erzeugt wird
-    //erstmal protocolScheme wegwerfen:
-    connectionString.remove(0, protocolScheme.length());
-
-    //was ich jetzt noch hab: host:port/path:description
-    int index = connectionString.indexOf("/");
-    int index2 = connectionString.indexOf(":");
-    int index3 = connectionString.indexOf(":", index2 + 1);
-    devicePath = connectionString.mid(index + 1, index3 - index - 1);
-    QString host = connectionString.left(index);
-
-    QStringList addressAndPort = host.split(":");
-
-    hostAddress = new QHostAddress(addressAndPort.at(0));
-    port = addressAndPort.at(1).toInt();
-
-    //und jetzt den Socket erzeugen
+BaseBackend::ConnectionStatus TcpBackend::doOpenConnection(QUrl url) {
 	QTcpSocket* socket = new QTcpSocket;
 	connect(socket, SIGNAL(readyRead()), this, SLOT(emitDataReady()));
 	connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onTcpError(QAbstractSocket::SocketError)));
 	connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
 	connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
 
-    socket->connectToHost( * hostAddress, port);
+	socket->connectToHost(url.host(), url.port());
 
     /*ob die connection erfolgreich war, lässt sich an dieser Stelle leider nicht ermitteln
      *VOID QTcpSocket::connectToHost(), sollte dennoch ein Fehler auftreten, so wird er schlicht
      *ausgegeben */
 
 	stream_.reset(socket);
-    return true;
+
+	return ConnectionStatus::ongoing;
 }
 
 
 void TcpBackend::socketConnected(void) {
-    connecting = false;
-    emitConnected();
+	connectingSuccessful();
 
-    QString connectionString = connectionString_;
-
-    connectionString.remove(0, protocolScheme.length());
-
-    int index = connectionString.indexOf("/");
-    int index2 = connectionString.indexOf(":");
-    int index3 = connectionString.indexOf(":", index2 + 1);
-    QString path = connectionString.mid(index + 1, index3 - index - 1);
-
-    emit requestData(path);
-
+	emit requestData(connectionUrl_.path());
 }
 
 void TcpBackend::socketDisconnected(void) {
-    connecting = false;
+	// when is this called????
+	//connecting = false;
 }
 
 void TcpBackend::onTcpError(QAbstractSocket::SocketError error) {
     switch (error) {
     case QAbstractSocket::ConnectionRefusedError:
-        if (stream_->isOpen() && !connecting) connectionWasLost();
-        connecting = false;
-        stream_->close();
-        stream_->disconnect(this);
+		if (stream_->isOpen() && !isConnectionInProgress()) {
+			connectionWasLost();
+		} else {
+			connectingFailed();
+		}
 
         logFilteredErrorMsg("Connection refused");
         break;
     case QAbstractSocket::HostNotFoundError:
-        if (stream_->isOpen() && !connecting) connectionWasLost();
-        connecting = false;
-        stream_->close();
-        stream_->disconnect(this);
+		if (stream_->isOpen() && !isConnectionInProgress()) {
+			connectionWasLost();
+		} else {
+			connectingFailed();
+		}
 
         logFilteredErrorMsg("Host not found");
         break;
     case QAbstractSocket::RemoteHostClosedError:
-        if (stream_->isOpen() && !connecting) connectionWasLost();
-        connecting = false;
-        stream_->close();
-        stream_->disconnect(this);
+		if (stream_->isOpen() && !isConnectionInProgress()) {
+			connectionWasLost();
+		} else {
+			connectingFailed();
+		}
 
         logFilteredErrorMsg("Remote host closed");
         break;
@@ -111,7 +89,6 @@ void TcpBackend::onTcpError(QAbstractSocket::SocketError error) {
         qDebug() << error << stream_->errorString();
         break;
     }
-
 }
 
 
@@ -124,20 +101,11 @@ bool TcpBackend::isReadOnly(void) const {
 }
 
 
-
-QString TcpBackend::getConnectionInfo() {
-    QString connectionString = connectionString_;
-
-    connectionString.remove(0, protocolScheme.length());
-
-    int index = connectionString.indexOf(":");
-    int index2 = connectionString.indexOf(":", index + 1);
-    QString path = connectionString.right(connectionString.size() - index2 - 1);
-
-    return QString("Debug-Server: %1").arg(path);
+QString TcpBackend::getConnectionInfo() const {
+	return QString("Debug-Server: %1").arg(connectionUrl_.fragment());
 }
 
-void TcpBackend::closeConnection(void) {
-    connecting = false;
-    BaseBackend::closeConnection();
+QString TcpBackend::getDevicePath(void) const {
+	return connectionUrl_.path();
 }
+

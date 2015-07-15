@@ -5,29 +5,26 @@
 
 class QFileSystemWatcher;
 
+
 class FileBackend : public BaseBackend {
     Q_OBJECT
-
 public:
     FileBackend(QObject *parent = 0);
-	virtual ~FileBackend() {
-		closeConnection();
-	}
+	virtual ~FileBackend();
 
-    static const QString protocolScheme;
-    virtual QString getConnectionInfo();
+	virtual QString getConnectionInfo() const override;
 
-public slots:
-    virtual bool openConnection(QString connectionString);
-    virtual void closeConnection(void);
+	static const QString protocolScheme;
 
-protected:
-    QFileSystemWatcher* watcher;
-
-
-protected slots:
+private slots:
     virtual void onFileChanged();
 
+private:
+	virtual bool doConnectionPreconditionChecking(const QUrl& url) override;
+	virtual BaseBackend::ConnectionStatus doOpenConnection(QUrl connectionUrl) override;
+	virtual void doCleanUpConnection(void) override;
+
+	QFileSystemWatcher* watcher;
 
 };
 

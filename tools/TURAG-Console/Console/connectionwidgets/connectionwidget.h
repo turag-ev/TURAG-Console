@@ -22,7 +22,7 @@ public:
     
 signals:
     // the details of the connection were changed
-    void connectionChanged(QString connectionString, bool* saveConnectionString, BaseBackend** openedBackend);
+	void connectionChanged(const QUrl& connectionString, bool* saveConnectionString, BaseBackend** openedBackend);
 
 protected:
     QStringList recent_connections;
@@ -40,6 +40,7 @@ protected slots:
 
 private:
     QSignalMapper* recent_files_map_;
+	bool spacingAdded;
 };
 
 

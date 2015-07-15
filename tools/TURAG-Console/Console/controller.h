@@ -30,14 +30,13 @@ public:
     QString getConnectionInfo();
 
     void setExternalMenuBar(QMenuBar* menubar) { menuBar_ = menubar; }
-    void setExternalConnectionMenu(QMenu* menu) { connectionMenu = menu; }
     void setExternalFrontendMenu(QMenu* menu) { frontendMenu = menu; }
 
     
 public slots:
     void openNewConnection(void);
     void openConnection(void);
-    void openConnection(QString connectionString, bool* success, BaseBackend **openedBackend);
+	void openConnection(const QUrl& connectionUrl, bool* success, BaseBackend **openedBackend);
     void closeConnection(void);
     void cancelNewConnection();
     void setFrontend(int newFrontendIndex);
@@ -70,7 +69,6 @@ protected:
 
     QMenuBar* menuBar_;
     QMenu* widgetMenu_;
-    QMenu* connectionMenu;
     QMenu* frontendMenu;
     QTabWidget* tabwidget;
 

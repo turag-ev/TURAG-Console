@@ -2,8 +2,10 @@
 #include <QtSerialPort/QSerialPort>
 #include <QFileInfo>
 #include <QDebug>
+#include <QUrlQuery>
+#include <QUrl>
 
-const QString SerialBackend::protocolScheme = "serial://";
+const QString SerialBackend::protocolScheme = "serial";
 
 
 SerialBackend::SerialBackend(QObject *parent) :
@@ -14,90 +16,121 @@ SerialBackend::SerialBackend(QObject *parent) :
 	setDataEmissionChunkSize(0);
 }
 
+SerialBackend::~SerialBackend() {
+}
 
-bool SerialBackend::openConnection(QString connectionString) {
-    if (!canHandleUrl(connectionString)) {
-        return false;
-    }
 
-    int colonIndex = connectionString.lastIndexOf(":");
-    if (colonIndex == -1) {
-        return false;
-    }
+bool SerialBackend::doConnectionPreconditionChecking(const QUrl& url) {
+	if (url.path().isEmpty()) {
+		logFilteredErrorMsg("no path specified");
+		return false;
+	}
+	if (!url.hasFragment()) {
+		logFilteredErrorMsg("no baudrate specified");
+		return false;
+	}
+	return true;
+}
 
-    // close connection in case we had one open
-    if (isOpen()) closeConnection();
-
-    // extract arguments
-	QString device = connectionString.mid(protocolScheme.length(),
-								  colonIndex - protocolScheme.length());
-    QString baudrate = connectionString.right(connectionString.size() - colonIndex - 1);
-
-    // open stream
-	QSerialPort* port = new QSerialPort(device);
-
-    bool success = port->open(QIODevice::ReadWrite);
-    if (!success) {
-        logFilteredErrorMsg(QString("Fehler beim Öffnen der seriellen Konsole: %1").arg(port->errorString()));
-        return false;
-    }
-
-    success = port->setBaudRate(baudrate.toInt());
-    if (!success) {
-        logFilteredErrorMsg(QString("Fehler beim Setzen der Baudrate: %1").arg(port->errorString()));
-        port->close();
-        return false;
-    }
-
-    success = port->setDataBits(QSerialPort::Data8);
-    if (!success) {
-        logFilteredErrorMsg(QString("Fehler beim Setzen der Framelänge: %1").arg(port->errorString()));
-        port->close();
-        return false;
-    }
-
-    success = port->setParity(QSerialPort::NoParity);
-    if (!success) {
-        logFilteredErrorMsg(QString("Fehler beim Setzen der Parität: %1").arg(port->errorString()));
-        port->close();
-        return false;
-    }
-
-    success = port->setStopBits(QSerialPort::OneStop);
-    if (!success) {
-        logFilteredErrorMsg(QString("Fehler beim Setzen der Stopp-Bits: %1").arg(port->errorString()));
-        port->close();
-        return false;
-    }
-
-    success = port->setFlowControl(QSerialPort::NoFlowControl);
-    if (!success) {
-        logFilteredErrorMsg(QString("Fehler beim Setzen der Flow-Control: %1").arg(port->errorString()));
-        port->close();
-        return false;
-    }
-
-    connectionString_ = connectionString;
-
+BaseBackend::ConnectionStatus SerialBackend::doOpenConnection(QUrl url) {
+	QSerialPort* port = new QSerialPort(url.path());
 	stream_.reset(port);
+
+	bool success = port->open(QIODevice::ReadWrite);
+    if (!success) {
+		logFilteredErrorMsg(QString("Fehler beim Öffnen der seriellen Konsole: %1").arg(port->errorString()));
+		return ConnectionStatus::failed;
+    }
+
+	success = port->setBaudRate(url.fragment().toInt());
+    if (!success) {
+		logFilteredErrorMsg(QString("Fehler beim Setzen der Baudrate: %1").arg(port->errorString()));
+		return ConnectionStatus::failed;
+    }
+
+	QUrlQuery query(url);
+
+	// set data bit length
+	if (query.hasQueryItem("databits")) {
+		if (query.queryItemValue("databits") == "5") {
+			success = port->setDataBits(QSerialPort::Data5);
+		} else if (query.queryItemValue("databits") == "6") {
+			success = port->setDataBits(QSerialPort::Data6);
+		} else if (query.queryItemValue("databits") == "7") {
+			success = port->setDataBits(QSerialPort::Data7);
+		} else if (query.queryItemValue("databits") == "8") {
+			success = port->setDataBits(QSerialPort::Data8);
+		} else {
+			success = false;
+		}
+	} else {
+		success = port->setDataBits(QSerialPort::Data8);
+	}
+    if (!success) {
+		logFilteredErrorMsg(QString("Fehler beim Setzen der Framelänge: %1").arg(port->errorString()));
+		return ConnectionStatus::failed;
+    }
+
+	// set stop bits length
+	if (query.hasQueryItem("stopbits")) {
+		if (query.queryItemValue("stopbits") == "1") {
+			success = port->setStopBits(QSerialPort::OneStop);
+		} else if (query.queryItemValue("stopbits") == "1.5") {
+			success = port->setStopBits(QSerialPort::OneAndHalfStop);
+		} else if (query.queryItemValue("stopbits") == "2") {
+			success = port->setStopBits(QSerialPort::TwoStop);
+		} else {
+			success = false;
+		}
+	} else {
+		success = port->setStopBits(QSerialPort::OneStop);
+	}
+    if (!success) {
+		logFilteredErrorMsg(QString("Fehler beim Setzen der Stopp-Bits: %1").arg(port->errorString()));
+		return ConnectionStatus::failed;
+    }
+
+	// set parity type
+	if (query.hasQueryItem("parity")) {
+		if (query.queryItemValue("parity") == "none") {
+			success = port->setParity(QSerialPort::NoParity);
+		} else if (query.queryItemValue("parity") == "even") {
+			success = port->setParity(QSerialPort::EvenParity);
+		} else if (query.queryItemValue("parity") == "odd") {
+			success = port->setParity(QSerialPort::OddParity);
+		} else if (query.queryItemValue("parity") == "mark") {
+			success = port->setParity(QSerialPort::MarkParity);
+		} else if (query.queryItemValue("parity") == "space") {
+			success = port->setParity(QSerialPort::SpaceParity);
+		} else {
+			success = false;
+		}
+	} else {
+		success = port->setParity(QSerialPort::NoParity);
+	}
+	if (!success) {
+		logFilteredErrorMsg(QString("Fehler beim Setzen der Parität: %1").arg(port->errorString()));
+		return ConnectionStatus::failed;
+	}
+
+	// set flow control
+	success = port->setFlowControl(QSerialPort::NoFlowControl);
+    if (!success) {
+		logFilteredErrorMsg(QString("Fehler beim Setzen der Flow-Control: %1").arg(port->errorString()));
+		return ConnectionStatus::failed;
+    }
+
 	connect(stream_.data(),SIGNAL(readyRead()),this,SLOT(emitDataReady()));
 	connect(stream_.data(),SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(onError(QSerialPort::SerialPortError)));
 
-    emitConnected();
-
-    return true;
+	return ConnectionStatus::successful;
 }
 
-QString SerialBackend::getConnectionInfo() {
-    if (connectionString_.isEmpty()) {
+QString SerialBackend::getConnectionInfo() const {
+	if (connectionUrl_.isEmpty()) {
         return "";
     } else {
-        int colonIndex = connectionString_.lastIndexOf(":");
-        QString device = connectionString_.mid(protocolScheme_.length(),
-                                      colonIndex - protocolScheme_.length());
-        QString baudrate = connectionString_.right(connectionString_.size() - colonIndex - 1);
-
-        return QFileInfo(device).fileName() + ":" + baudrate;
+		return connectionUrl_.path() + ":" + connectionUrl_.fragment();
     }
 }
 
@@ -105,8 +138,7 @@ QString SerialBackend::getConnectionInfo() {
 void SerialBackend::onError(QSerialPort::SerialPortError error) {
     QString errormsg;
 
-
-    switch (error) {
+	switch (error) {
     case QSerialPort::NoError:
         errormsg = "Kein Fehler, Glück gehabt ;-)."; break;
     case QSerialPort::DeviceNotFoundError:

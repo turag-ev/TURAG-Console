@@ -339,7 +339,7 @@ QString ConnectionWidgetWebDAV::formatFileSize(int size) {
 		unit = i.next();
 		num /= 1024.0;
 	}
-	return QString().setNum(num,'f',2)+" "+unit;
+	return QString().setNum(num,'f',2) + " " + unit;
 }
 
 void ConnectionWidgetWebDAV::fileActivated(int row,	int) {
@@ -361,8 +361,6 @@ void ConnectionWidgetWebDAV::fileActivated(int row,	int) {
 		url.setPassword(webdav.password());
 		url.setPath(webdav.rootPath() + currentFileItem->path() + fileName);
 
-		emit connectionChanged(url.toEncoded(), nullptr, nullptr);
+		emit connectionChanged(url, nullptr, nullptr);
 	}
-
-
 }

@@ -8,6 +8,7 @@
 #include <QList>
 #include <QTimer>
 #include <QScopedPointer>
+#include <QUrl>
 
 class QAction;
 class QIODevice;
@@ -20,15 +21,20 @@ public:
 	virtual ~BaseBackend(void);
 
 	virtual bool isOpen(void) const;
+
     virtual bool isReadOnly(void) const;
-    virtual QString getConnectionInfo();
-    virtual QList<QAction*> getMenuEntries();
+
+	virtual bool isConnectionInProgress(void) const;
+
+	// Checks if backend is capable for this connection.
+	// Simply checks url scheme.
+	bool canHandleUrl(const QUrl& url) const;
+
+	virtual QString getConnectionInfo() const;
+
+
 	QIODevice* getDevice() { return stream_.data(); }
 
-    // Checks if backend is capable for this connection
-    // normally only checks url prefix. This function is thread-safe
-    // and so should be any redefinitions.
-	bool canHandleUrl(const QString& url) const;
 
     void setDeviceRecovery(bool on);
 
@@ -42,28 +48,17 @@ public:
 		dataEmissionChunkSize = size;
 	}
 
-signals:
-    // data was received from the backend
-    void dataReady(QByteArray data);
-	void connected(bool readOnly);
-    void disconnected(bool reconnecting);
-
 
 public slots:
     // reopens a previously closed connection by passing the saved connectionString to
     // `openConnection(QString connectionString)'
-    virtual bool openConnection(void);
+	bool openConnection(void);
 
-    // this function needs to open a stream, if possible, with the provided connectionString
-    // Further it has to emit the appropriate `connected'-signal.
-    virtual bool openConnection(QString connectionString) = 0;
+	// Opens the specified url.
+	bool openConnection(const QUrl& connectionUrl);
 
     // closes a connection and emits `disconnected'-signal
-    virtual void closeConnection(void);
-
-    // call this function as a response to a loss of connection rather than closeConnection().
-    // This will trigger the auto reconnect feature, if enabled.
-    virtual void connectionWasLost(void);
+	void closeConnection(void);
 
     // writes data to opened stream. Assumes that all data can be written. Emits error messages otherwise.
     virtual void writeData(QByteArray data);
@@ -71,9 +66,26 @@ public slots:
     // re-emits the contents of the data buffer
     virtual void reloadData(void);
 
+
+signals:
+	// connection was successfully established
+	void connected(bool readOnly);
+
+	// connection was terminated.
+	void disconnected(bool reconnecting);
+
+	// data was received from the backend.
+	void dataReady(QByteArray data);
+
+
 protected slots:
-    // class this function after successfully opening a connection
-    void emitConnected(void);
+	// call this function after successfully opening a connection
+	void connectingSuccessful(void);
+	void connectingFailed(void);
+	// call this function as a response to a loss of connection rather than closeConnection().
+	// This will trigger the auto reconnect feature, if enabled.
+	void connectionWasLost(void);
+
 
     // Connect this slot to the the readyRead-signal of your data source
     void emitDataReady(void);
@@ -87,11 +99,13 @@ protected slots:
     bool saveBufferToFileInternal(QString fileName);
 
 protected:
+	enum class ConnectionStatus { failed, successful, ongoing };
+
 	// QScopedPointerDeleteLater is safer for some sub classes of
 	// QIODevice
 	QScopedPointer<QIODevice, QScopedPointerDeleteLater> stream_;
-    QString connectionString_;
-	QList<QString> protocolScheme_;
+	QUrl connectionUrl_;
+	QList<QString> supportedProtocolSchemes_;
 	QByteArray buffer;
 
 	// ???
@@ -102,8 +116,34 @@ private slots:
 	void onReadData(void);
 
 private:
-    QTimer recoverDeviceTimer;
-    QString deviceShouldBeConnectedString;
+	// Derived classes can reimplement this function if extra checks
+	// prior to connecting are required. The base implementation does
+	// nothing. This function is called before an old connection is
+	// closed.
+	virtual bool doConnectionPreconditionChecking(const QUrl& url);
+
+	// Derived classes must reimplement this function. It should do the
+	// heavy lifting required to open the connection with the provided
+	// url.
+	virtual ConnectionStatus doOpenConnection(QUrl connectionUrl) = 0;
+
+	// Derived classes can reimplement this function to perform extra
+	// steps when the connection is closed. The base implementation
+	// does nothing.
+	// Derived classes should also call this function in their destructor,
+	// if it reimplements it.
+	// This function is called before the connection itself is closed.
+	virtual void doCleanUpConnection(void);
+
+
+	// internal helper function that does the same as closeConnection()
+	// but does not call doCloseCOnnection().
+	void closeConnectionInternal(void);
+
+	bool connectionInProgress;
+
+	QTimer recoverDeviceTimer;
+	QUrl deviceShouldBeConnectedUrl;
     bool deviceRecoveryActive;
 
 	QTimer readTimer;

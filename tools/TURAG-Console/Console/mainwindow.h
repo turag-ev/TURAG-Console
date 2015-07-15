@@ -25,7 +25,7 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    void openConnection(QString connection_string);
+	void openUrl(QString url);
 
 protected:
     void closeEvent(QCloseEvent *event);

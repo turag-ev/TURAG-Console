@@ -11,18 +11,18 @@ class SerialBackend : public BaseBackend {
 
 public:
     SerialBackend(QObject *parent = 0);
-	virtual ~SerialBackend() {
-		closeConnection();
-	}
+	virtual ~SerialBackend();
 
-    static const QString protocolScheme;
-    virtual QString getConnectionInfo();
+	virtual QString getConnectionInfo() const;
 
-protected slots:
+	static const QString protocolScheme;
+
+private slots:
     void onError(QSerialPort::SerialPortError error);
 
-public slots:
-    virtual bool openConnection(QString connectionString);
+private:
+	virtual bool doConnectionPreconditionChecking(const QUrl& url);
+	virtual BaseBackend::ConnectionStatus doOpenConnection(QUrl connectionUrl);
 };
 
 

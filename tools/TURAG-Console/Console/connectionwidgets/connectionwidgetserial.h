@@ -9,7 +9,7 @@ class QShowEvent;
 class KeyboardEnabledComboBox;
 class QPushButton;
 class QComboBox;
-
+class ExpanderWidget;
 
 
 
@@ -23,7 +23,8 @@ protected:
     KeyboardEnabledComboBox* baudrate_;
     QPushButton* serial_button;
     KeyboardEnabledComboBox* port_name_;
-	QComboBox* wordLength_;
+	ExpanderWidget* expander;
+	QComboBox* dataBits_;
 	QComboBox* numberOfStopBits_;
 	QComboBox* parityType_;
 

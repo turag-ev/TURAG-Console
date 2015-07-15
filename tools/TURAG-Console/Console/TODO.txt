@@ -1,9 +1,16 @@
-Connectionwidgets
------------------------------------
-Connectionstrings auf QUrl umstellen. Dies ist notwendig, damit für
-SerialBackend ohne großen  Aufwand weitere Optionen eingebaut werden können.
 
-ConnectionWidgetSerial um weitere SerialPort-Optionen erweitern
+Backends
+-----------------------------
+von BaseBackend IODeviceBackend ableiten und
+BaseBackend wieder entschlacken --> enthält zuviel
+Funktionalität was auf QIODevice zugeschnitten ist und macht das
+eigentliche Interface zu unübersichtlich
+
+Außerdem ist es unglücklich, dass die abgeleiteten Backends teilweise
+stream_ direkt manipulieren, das sollte nicht notwendig sein, da
+es das Interface verwässert.
+
+
 
 Deployment
 ---------------------------------------
@@ -13,7 +20,7 @@ http://doc.qt.io/qt-5/linux-deployment.html
 
 Plugin-Modell
 -------------------------------------------
-Frontends und Backends als Plugins dynamscih laden
+Frontends und Backends als Plugins dynamisch laden
 
 
 Frontends

@@ -10,16 +10,11 @@ class WebDAVBackend : public BaseBackend
 	Q_OBJECT
 public:
 	WebDAVBackend(bool ignoreSslErrors = false, QObject* parent = nullptr);
-	virtual ~WebDAVBackend() {
-		closeConnection();
-	}
+	virtual ~WebDAVBackend();
 
-	virtual QString getConnectionInfo();
+	virtual QString getConnectionInfo() const;
 	virtual bool isOpen(void) const;
 
-public slots:
-	virtual bool openConnection(QString connectionString);
-	virtual void closeConnection(void);
 
 private slots:
 	void errorOccured(QString msg);
@@ -31,10 +26,13 @@ private slots:
 private:
 	enum class State { unconnected, connecting, error, connected, reconnecting };
 
+	virtual bool doConnectionPreconditionChecking(const QUrl& url);
+	virtual BaseBackend::ConnectionStatus doOpenConnection(QUrl connectionUrl);
+	virtual void doCleanUpConnection(void);
+
 	bool ignoreSslErrors;
 	QWebdav webdav;
 	State state;
-	bool connecting;
 };
 
 #endif // WEBDAVBACKEND_H

@@ -253,7 +253,6 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     controller->setExternalMenuBar(menuBar());
-    controller->setExternalConnectionMenu(connection_menu);
     //controller->setExternalFrontendMenu(frontend_menu);
 
     controller->setAutoSave(save_auto_action->isChecked());
@@ -500,20 +499,30 @@ void MainWindow::closeEvent(QCloseEvent *event) {
   event->accept();
 }
 
-void MainWindow::openConnection(QString connection_string) {
-    if (!connection_string.isEmpty()) {
-        qDebug() << "got connection string" << connection_string;
-        bool success = false;
-        controller->openConnection(connection_string, &success, nullptr);
-        if (!success) {
-            qDebug() << "no suitable backend found -> trying file backend";
-            controller->openConnection("file://" + connection_string, &success, nullptr);
-            if (!success) {
-                printError("Couldn't open specified connection");
-                controller->openNewConnection();
-            }
-        }
-    }
+void MainWindow::openUrl(QString url_string) {
+	if (url_string.isEmpty()) {
+		return;
+	}
+
+	qDebug() << "got url" << url_string;
+
+	QUrl url(QUrl::fromUserInput(url_string));
+
+	if (!url.isValid()) {
+		qDebug() << "Url not parsable, trying file";
+		url.setScheme("file");
+		QFile file(url_string);
+		if (file.exists()) {
+			url.setPath(file.fileName());
+		}
+	}
+
+	bool success = false;
+	controller->openConnection(url, &success, nullptr);
+	if (!success) {
+		printError("Couldn't open specified connection");
+		controller->openNewConnection();
+	}
 }
 
 int main(int argc, char *argv[]) {
@@ -546,7 +555,7 @@ int main(int argc, char *argv[]) {
     w.show();
 
     if (args.size() > 1) {
-        w.openConnection(args.at(1));
+		w.openUrl(args.at(1));
     }
 
     return a.exec();
