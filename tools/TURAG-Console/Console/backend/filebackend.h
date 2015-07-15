@@ -21,7 +21,7 @@ private slots:
 
 private:
 	virtual bool doConnectionPreconditionChecking(const QUrl& url) override;
-	virtual BaseBackend::ConnectionStatus doOpenConnection(QUrl connectionUrl) override;
+	virtual BaseBackend::ConnectionStatus doOpenConnection(const QUrl& connectionUrl) override;
 	virtual void doCleanUpConnection(void) override;
 
 	QFileSystemWatcher* watcher;

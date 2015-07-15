@@ -33,7 +33,7 @@ bool WebDAVBackend::doConnectionPreconditionChecking(const QUrl& ) {
 	return true;
 }
 
-BaseBackend::ConnectionStatus WebDAVBackend::doOpenConnection(QUrl url) {
+BaseBackend::ConnectionStatus WebDAVBackend::doOpenConnection(const QUrl &url) {
 	QWebdav::QWebdavConnectionType connectionType;
 	if (url.scheme() == "http") {
 		connectionType = QWebdav::HTTP;

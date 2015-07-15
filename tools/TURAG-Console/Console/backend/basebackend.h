@@ -125,7 +125,7 @@ private:
 	// Derived classes must reimplement this function. It should do the
 	// heavy lifting required to open the connection with the provided
 	// url.
-	virtual ConnectionStatus doOpenConnection(QUrl connectionUrl) = 0;
+	virtual ConnectionStatus doOpenConnection(const QUrl& connectionUrl) = 0;
 
 	// Derived classes can reimplement this function to perform extra
 	// steps when the connection is closed. The base implementation

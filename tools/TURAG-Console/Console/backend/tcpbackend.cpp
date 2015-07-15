@@ -26,7 +26,7 @@ bool TcpBackend::doConnectionPreconditionChecking(const QUrl& url) {
 	return true;
 }
 
-BaseBackend::ConnectionStatus TcpBackend::doOpenConnection(QUrl url) {
+BaseBackend::ConnectionStatus TcpBackend::doOpenConnection(const QUrl& url) {
 	QTcpSocket* socket = new QTcpSocket;
 	connect(socket, SIGNAL(readyRead()), this, SLOT(emitDataReady()));
 	connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onTcpError(QAbstractSocket::SocketError)));

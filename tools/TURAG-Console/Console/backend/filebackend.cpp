@@ -31,7 +31,7 @@ bool FileBackend::doConnectionPreconditionChecking(const QUrl& url) {
 	return true;
 }
 
-BaseBackend::ConnectionStatus FileBackend::doOpenConnection(QUrl url) {
+BaseBackend::ConnectionStatus FileBackend::doOpenConnection(const QUrl &url) {
 	stream_.reset(new QFile(url.path()));
 
     bool success = stream_->open(QIODevice::ReadOnly);

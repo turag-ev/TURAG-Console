@@ -31,7 +31,7 @@ private slots:
 
 private:
 	virtual bool doConnectionPreconditionChecking(const QUrl& url);
-	virtual BaseBackend::ConnectionStatus doOpenConnection(QUrl connectionUrl);
+	virtual BaseBackend::ConnectionStatus doOpenConnection(const QUrl& connectionUrl);
 
 };
 

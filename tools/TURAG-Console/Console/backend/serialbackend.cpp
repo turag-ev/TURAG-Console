@@ -32,7 +32,7 @@ bool SerialBackend::doConnectionPreconditionChecking(const QUrl& url) {
 	return true;
 }
 
-BaseBackend::ConnectionStatus SerialBackend::doOpenConnection(QUrl url) {
+BaseBackend::ConnectionStatus SerialBackend::doOpenConnection(const QUrl &url) {
 	QSerialPort* port = new QSerialPort(url.path());
 	stream_.reset(port);
 

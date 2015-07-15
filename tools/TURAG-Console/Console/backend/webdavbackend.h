@@ -27,7 +27,7 @@ private:
 	enum class State { unconnected, connecting, error, connected, reconnecting };
 
 	virtual bool doConnectionPreconditionChecking(const QUrl& url);
-	virtual BaseBackend::ConnectionStatus doOpenConnection(QUrl connectionUrl);
+	virtual BaseBackend::ConnectionStatus doOpenConnection(const QUrl& connectionUrl);
 	virtual void doCleanUpConnection(void);
 
 	bool ignoreSslErrors;
