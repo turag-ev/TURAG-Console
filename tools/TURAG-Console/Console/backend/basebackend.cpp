@@ -244,7 +244,6 @@ void BaseBackend::connectingFailed(void) {
 void BaseBackend::connectionWasLost(void) {
     if (isOpen()) {
         stream_->close();
-        stream_->disconnect(this);
 		emit disconnected(!deviceShouldBeConnectedUrl.isEmpty() && deviceRecoveryActive);
     }
 	if (!deviceShouldBeConnectedUrl.isEmpty() && deviceRecoveryActive) {
