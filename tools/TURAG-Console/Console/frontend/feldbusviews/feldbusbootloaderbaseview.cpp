@@ -43,7 +43,7 @@ FeldbusBootloaderBaseView::FeldbusBootloaderBaseView(TURAG::Feldbus::BootloaderA
 
 	layout->addSpacing(30);
 
-	QLabel* writeImageLabel = new QLabel("Binäres Image in Flash schreiben");
+	QLabel* writeImageLabel = new QLabel("Binäres Image/Intel Hexfile in Flash schreiben");
 	QFont label_font = writeImageLabel->font();
 	label_font.setPointSize(14);
 	label_font.setWeight(QFont::Bold);
