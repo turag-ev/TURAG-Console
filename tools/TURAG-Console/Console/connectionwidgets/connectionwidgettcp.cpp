@@ -9,8 +9,7 @@
 ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     ConnectionWidget("Letzte Verbindungen", parent),
     selectedDevice(nullptr),
-	associatedBackend(nullptr),
-	requestDataPending(false)
+	associatedBackend(nullptr)
 {
     setObjectName("Debug Server");
 
@@ -254,13 +253,6 @@ void ConnectionWidgetTcp::handleData() {
                         }
                     }
                     fillDeviceList();
-
-					if (requestDataPending) {
-						requestDataPending = false;
-						if (associatedBackend) {
-							requestData(associatedBackend->getDevicePath());
-						}
-					}
 
                 }
             }
@@ -525,31 +517,6 @@ void ConnectionWidgetTcp::showContextMenu(const QPoint & pos) {
         QPoint globalPos = mapToGlobal(pos);
         contextMenu->popup(globalPos);
     }
-}
-
-void ConnectionWidgetTcp::requestData(QString path) {
-	if (!selectedDevice && associatedBackend) {
-        QString path = associatedBackend->getDevicePath();
-
-        for (device* dev : allDevices) {
-            if (dev->path == path) {
-                selectedDevice = dev;
-                break;
-            }
-        }
-        fillDeviceList();
-    }
-
-    if (selectedDevice && path == selectedDevice->path && socket->isOpen()) {
-        QByteArray data(PRINT_BUFFER);
-        data.append(" ");
-        data.append(selectedDevice->path);
-        data.append(" ");
-        data.append(socket->localAddress().toString());
-        send(data);
-	} else {
-		requestDataPending = true;
-	}
 }
 
 

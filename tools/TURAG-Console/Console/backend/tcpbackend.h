@@ -21,9 +21,6 @@ public:
 
 	static const QString protocolScheme;
 
-signals:
-    void requestData(QString path);
-
 private slots:
     void socketConnected(void);
     void socketDisconnected(void);

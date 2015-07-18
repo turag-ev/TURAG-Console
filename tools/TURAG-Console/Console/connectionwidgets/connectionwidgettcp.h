@@ -40,9 +40,6 @@ public:
     ConnectionWidgetTcp(QWidget *parent = 0);
     ~ConnectionWidgetTcp();
 
-public slots:
-    void requestData(QString path);
-
 protected:
     QMenu* tcpMenu;
     QAction* emergencyStopAction;
@@ -103,8 +100,6 @@ private:
     QList<device * > allDevices;
 
     QMenu* contextMenu;
-
-	bool requestDataPending;
 
 };
 

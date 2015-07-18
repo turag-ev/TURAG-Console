@@ -44,8 +44,7 @@ Controller::Controller(QWidget *parent) :
     // add all available Backends to list with parent this
     availableBackends.append(new FileBackend(this));
     availableBackends.append(new SerialBackend(this));
-    TcpBackend* tcpbackend = new TcpBackend(this);
-    availableBackends.append(tcpbackend);
+	availableBackends.append(new TcpBackend(this));
 	availableBackends.append(new WebDAVBackend(true, this));
 
     // add all available Frontends to list without a parent
@@ -60,8 +59,7 @@ Controller::Controller(QWidget *parent) :
     // add all available connectionWidgets to list without a parent
     availableConnectionWidgets.append(new ConnectionWidgetSerial);
     availableConnectionWidgets.append(new ConnectionWidgetFile);
-    ConnectionWidgetTcp* connectionwidgettcp = new ConnectionWidgetTcp;
-    availableConnectionWidgets.append(connectionwidgettcp);
+	availableConnectionWidgets.append(new ConnectionWidgetTcp);
 	availableConnectionWidgets.append(new ConnectionWidgetWebDAV);
 
 
@@ -78,9 +76,6 @@ Controller::Controller(QWidget *parent) :
         connect(iter,SIGNAL(disconnected(bool)),this,SIGNAL(disconnected(bool)), Qt::QueuedConnection);
     }
 
-
-    // special feature for tcp connections
-    connect(tcpbackend, SIGNAL(requestData(QString)), connectionwidgettcp, SLOT(requestData(QString)));
 
     // build welcome screen
     QVBoxLayout* layout = new QVBoxLayout();

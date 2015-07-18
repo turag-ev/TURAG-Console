@@ -47,8 +47,6 @@ BaseBackend::ConnectionStatus TcpBackend::doOpenConnection(const QUrl& url) {
 
 void TcpBackend::socketConnected(void) {
 	connectingSuccessful();
-
-	emit requestData(connectionUrl_.path());
 }
 
 void TcpBackend::socketDisconnected(void) {

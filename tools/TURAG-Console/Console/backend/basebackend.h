@@ -61,10 +61,10 @@ public slots:
 	void closeConnection(void);
 
     // writes data to opened stream. Assumes that all data can be written. Emits error messages otherwise.
-    virtual void writeData(QByteArray data);
+	void writeData(QByteArray data);
 
     // re-emits the contents of the data buffer
-    virtual void reloadData(void);
+	void reloadData(void);
 
 
 signals:
