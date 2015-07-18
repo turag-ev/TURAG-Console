@@ -134,7 +134,7 @@ die MiniZ-Bibliothek.
 
 CLI-Interface
 -------------------------------------------
-Man könnte die Fleibilität der Console auf ein weiteres Level heben,
+Man könnte die Flexibilität der Console auf ein weiteres Level heben,
 indem CLI-Frontends eingeführt werden. Während die Umsetzung mit der
 QCommandLineParser Klasse gut machbar ist, stellt sich hier eher die Frage
 ob der Vorteil einer zentralen Anwendung für alles (die Console würde dann
@@ -151,7 +151,8 @@ Bug aufspüren, der Funktion in Qt-Versionen > 5.2.0 in Windows behindert!
 der Pakete bestimmen. Antwortpakete werden auch entsprechend ausgewertet. Sollte
 vom Hex-/Hterm-View abgeleitet werden
 
-Sniffing-View: lediglich Darstellung der mitgehörten Pakete
+Sniffing-View: lediglich Darstellung der mitgehörten Pakete --> GEHT NICHT,
+da sich Pakete nicht trennen lassen
 
 
 Optionen

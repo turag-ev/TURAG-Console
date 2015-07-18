@@ -120,7 +120,8 @@ SOURCES +=\
     frontend/scfrontend.cpp \
     ../../../libs/libcintelhex/ihex_copy.c \
     ../../../libs/libcintelhex/ihex_parse.c \
-    ../../../libs/libcintelhex/ihex_record.c
+    ../../../libs/libcintelhex/ihex_record.c \
+    main.cpp
 
 HEADERS  += \
     mainwindow.h \

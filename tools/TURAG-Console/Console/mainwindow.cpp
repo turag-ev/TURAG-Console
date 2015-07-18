@@ -13,7 +13,6 @@
 #include <QMessageBox>
 #include <QLocale>
 #include <QProcess>
-#include <QCoreApplication>
 #include <QImage>
 #include <QTreeWidget>
 #include <QDialog>
@@ -23,16 +22,11 @@
 #include "controller.h"
 #include <libs/checkactionext.h>
 #include <libs/loggerwidget.h>
-#include <libs/log.h>
 #include "connectionwidgets/connectionwidgetfile.h"
 #include "connectionwidgets/connectionwidgetserial.h"
 #include <libs/iconmanager.h>
-
-#if QT_VERSION < 0x050000
-# include <QtGui/QApplication>
-#else
-# include <QApplication>
-#endif
+#include <libs/log.h>
+#include <QApplication>
 
 #define _TO_STRING(x) #x
 #define TO_STRING(x) _TO_STRING(x)
@@ -525,38 +519,3 @@ void MainWindow::openUrl(QString url_string) {
 	}
 }
 
-int main(int argc, char *argv[]) {
-    Log::captureQtDebugMessages(true);
-    IconManager::setFallback(":/images", "png");
-
-    QApplication a(argc, argv);
-	QObject::connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
-	
-    QLocale curLocale(QLocale("de_DE"));
-    QLocale::setDefault(curLocale);
-    setlocale(LC_ALL, "de");
-
-	// make qt cute :)
-	a.setStyleSheet(
-				"QStatusBar { border-top: 1px solid #ddd; }"
-				"QStatusBar::item { border: 0px solid black; } ");
-
-#if QT_VERSION < 0x050000
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
-#endif
-
-    QCoreApplication::setOrganizationName("TURAG");
-    QCoreApplication::setOrganizationDomain("turag.de");
-    QCoreApplication::setApplicationName("Console");
-
-    QStringList args = a.arguments();
-
-    MainWindow w;
-    w.show();
-
-    if (args.size() > 1) {
-		w.openUrl(args.at(1));
-    }
-
-    return a.exec();
-}
