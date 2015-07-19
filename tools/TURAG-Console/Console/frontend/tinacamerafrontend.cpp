@@ -8,7 +8,7 @@
 #include <QDebug>
 
 TinaCameraFrontend::TinaCameraFrontend(QWidget *parent) :
-    BaseFrontend("TinaCameraFrontend", parent)
+	BaseFrontend("TinaCameraFrontend", QIcon(), parent)
 {
     QVBoxLayout* layout = new QVBoxLayout;
 

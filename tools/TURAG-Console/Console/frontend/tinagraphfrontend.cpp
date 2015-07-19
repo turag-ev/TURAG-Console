@@ -8,7 +8,7 @@
 #include <QTreeWidgetItem>
 
 TinaGraphFrontend::TinaGraphFrontend(QWidget *parent) :
-    BaseFrontend("TinaGraphFrontend", parent)
+	BaseFrontend("TinaGraphFrontend", QIcon(), parent)
 {
 	layout = new QHBoxLayout;
 

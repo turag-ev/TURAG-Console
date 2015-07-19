@@ -21,5 +21,11 @@
         <file>images/utilities-log-viewer.png</file>
         <file>images/folder.png</file>
         <file>images/unknown.png</file>
+        <file>images/utilities-terminal.png</file>
+        <file>images/turag-tina.png</file>
+        <file>images/oscilloscope.png</file>
+        <file>images/binary-icon.png</file>
+        <file>images/logo_feldbus.png</file>
+        <file>images/eurobot.png</file>
     </qresource>
 </RCC>

@@ -14,9 +14,10 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QEvent>
+#include <libs/iconmanager.h>
 
 PlainTextFrontend::PlainTextFrontend(QWidget *parent) :
-	BaseFrontend("Text-Konsole (Terminal)", parent), scroll_on_output(true), buffer_(new QByteArray), cleanedBuffer_(new QByteArray)
+	BaseFrontend("Text-Konsole (Terminal)", IconManager::get("utilities-terminal"), parent), scroll_on_output(true), buffer_(new QByteArray), cleanedBuffer_(new QByteArray)
 {
     QVBoxLayout* layout = new QVBoxLayout();
 

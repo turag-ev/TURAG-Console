@@ -13,9 +13,10 @@
 #include <QPlainTextEdit>
 #include <QApplication>
 #include <QClipboard>
+#include <libs/iconmanager.h>
 
 RawFrontend::RawFrontend(QWidget *parent) :
-	BaseFrontend("Raw-Frontend", parent), scroll_on_output(true), rawBuffer_(new QByteArray)
+	BaseFrontend("Raw-Frontend", IconManager::get("binary-icon"), parent), scroll_on_output(true), rawBuffer_(new QByteArray)
 {
     QVBoxLayout* layout = new QVBoxLayout();
 

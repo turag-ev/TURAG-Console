@@ -31,13 +31,6 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 private slots:
-    void onNewWindow();
-    void close();
-
-    void onShowStatusbar(bool show);
-    void onShowMenubar(bool show);
-    void onShowToolbar(bool show);
-
     void about();
     void resetStatusBar();
 
@@ -75,6 +68,7 @@ private:
     QImage* imgLock;
 
     QToolBar* toolbar;
+	QToolBar* frontendToolbar;
 
     LoggerWidget* logger;
 

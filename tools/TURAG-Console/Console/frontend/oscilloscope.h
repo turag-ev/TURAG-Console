@@ -18,6 +18,24 @@ class QByteArray;
 class Oscilloscope : public BaseFrontend {
     Q_OBJECT
 
+public:
+	explicit Oscilloscope(QWidget *parent = 0);
+	~Oscilloscope();
+
+public slots:
+	virtual void writeData(QByteArray data);
+	virtual void clear(void);
+	virtual void onConnected(bool readOnly, QIODevice*);
+
+protected slots:
+	void onStreamTypeChanged(int index);
+	void onDataPointsReady(QList<DataEntry> dataPoints);
+
+	void onTextChannelsDetected(int amount);
+	void onTextSettingsChanged();
+	void onTextSettingsDelimNewLineChanged(bool checked);
+	void onTextSettingsDelimEmptyLineChanged(bool checked);
+
 protected:
     DataGraph* plot;
     QTabWidget* tab;
@@ -34,23 +52,6 @@ protected:
 
     void readSettings();
 
-protected slots:
-    void onStreamTypeChanged(int index);
-    void onDataPointsReady(QList<DataEntry> dataPoints);
-    
-    void onTextChannelsDetected(int amount);
-    void onTextSettingsChanged();
-    void onTextSettingsDelimNewLineChanged(bool checked);
-    void onTextSettingsDelimEmptyLineChanged(bool checked);
-
-public:
-    explicit Oscilloscope(QWidget *parent = 0);
-    ~Oscilloscope();
-
-public slots:
-    virtual void writeData(QByteArray data);
-    virtual void clear(void);
-	virtual void onConnected(bool readOnly, QIODevice*);
 };
 
 

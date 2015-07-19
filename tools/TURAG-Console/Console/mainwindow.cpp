@@ -26,7 +26,9 @@
 #include "connectionwidgets/connectionwidgetserial.h"
 #include <libs/iconmanager.h>
 #include <libs/log.h>
+#include <qt/sidebar/sidebar.h>
 #include <QApplication>
+#include <frontend/basefrontend.h>
 
 #define _TO_STRING(x) #x
 #define TO_STRING(x) _TO_STRING(x)
@@ -77,7 +79,9 @@ MainWindow::MainWindow(QWidget *parent) :
     new_window->setShortcutContext(Qt::ApplicationShortcut);
     new_window->setStatusTip("Neues Konsolen-Fenster öffnen");
     new_window->setIcon(IconManager::get("window-new"));
-    connect(new_window, SIGNAL(triggered()), this, SLOT(onNewWindow()));
+	connect(new_window, &QAction::triggered, [=]() {
+		QProcess::startDetached(QCoreApplication::applicationFilePath());
+	});
 
     QAction *save_action = new QAction("&Speichern...", this);
     save_action->setShortcuts(QKeySequence::Save);
@@ -92,7 +96,10 @@ MainWindow::MainWindow(QWidget *parent) :
     exit_action->setShortcuts(QKeySequence::Quit);
     exit_action->setStatusTip("Programm verlassen");
     //exit_action->setIcon(IconManager::get("application-exit")));
-    connect(exit_action, SIGNAL(triggered()), this, SLOT(close()));
+	connect(exit_action, &QAction::triggered, [this]() {
+		controller->closeConnection();
+		qApp->closeAllWindows();
+	});
 
     QMenu *file_menu = menuBar()->addMenu("&Datei");
     file_menu->addAction(new_window);
@@ -119,10 +126,10 @@ MainWindow::MainWindow(QWidget *parent) :
     auto_reconnect_action->setStatusTip("Versucht automatisch, verlorene Verbindungen wiederaufzubauen");
     connect(auto_reconnect_action, SIGNAL(triggered(bool)), controller, SLOT(setAutoReconnect(bool)));
 
-    new_connection_action = new QAction("&Neue Sitzung...", this);
-    new_connection_action->setStatusTip("Neue Sitzung öffnen");
+	new_connection_action = new QAction("&Verbindungseinstellungen ändern", this);
+	new_connection_action->setStatusTip("Eine neue Verbindung aufbauen oder Verbindungseinstellungen ändern");
     new_connection_action->setShortcuts( QList<QKeySequence>{Qt::Key_F2, QKeySequence::Open});
-    new_connection_action->setIcon(IconManager::get("document-open-remote"));
+	new_connection_action->setIcon(IconManager::get("preferences-system-network"));
     new_connection_action->setCheckable(true);
     connect(new_connection_action, SIGNAL(triggered(bool)), this, SLOT(handleNewConnectionAction(bool)));
     connect(controller, SIGNAL(newConnectionDialogStateChanged(bool)), new_connection_action, SLOT(setChecked(bool)));
@@ -139,33 +146,55 @@ MainWindow::MainWindow(QWidget *parent) :
     // Ansicht
     QAction* show_statusbar = new CheckActionExt("Statusleiste anzeigen", "Statusleiste anzeigen", true, this);
     show_statusbar->setStatusTip("Statusleiste anzeigen");
-    connect(show_statusbar, SIGNAL(triggered(bool)), this, SLOT(onShowStatusbar(bool)));
+	connect(show_statusbar, &QAction::triggered, [show_statusbar, this]() {
+		if (show_statusbar->isChecked()) {
+			statusBar()->show();
+		} else {
+			statusBar()->hide();
+		}
+	});
 
 //    QAction* show_menubar = new CheckActionExt("Menüleiste anzeigen", "Menüleiste anzeigen", true, this);
 //    show_menubar->setStatusTip("Menüleiste anzeigen");
 //    show_menubar->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_M));
 //    connect(show_menubar, SIGNAL(triggered(bool)), this, SLOT(onShowMenubar(bool)));
 
-    QAction* show_toolbar = new CheckActionExt("Toolbar anzeigen", "Toolbar anzeigen", true, this);
-    show_toolbar->setStatusTip("Toolbar anzeigen");
-    show_toolbar->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_T));
-    connect(show_toolbar, SIGNAL(triggered(bool)), this, SLOT(onShowToolbar(bool)));
+	QAction* show_toolbar = new CheckActionExt("Toolbar anzeigen", "Toolbar anzeigen", true, this);
+	show_toolbar->setStatusTip("Toolbar anzeigen");
+	show_toolbar->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_T));
+	connect(show_toolbar, &QAction::triggered, [show_toolbar, this]() {
+		if (show_toolbar->isChecked()) {
+			toolbar->show();
+		} else {
+			toolbar->hide();
+		}
+	});
 
-    QAction* show_logger = new QAction("Logmeldungen...", this);
-    show_logger->setIcon(IconManager::get("utilities-log-viewer"));
+	QAction* show_frontendToolbar = new CheckActionExt("Frontend-Toolbar anzeigen", "Frontend-Toolbar anzeigen", true, this);
+	show_frontendToolbar->setStatusTip("Frontend-Toolbar anzeigen");
+	show_frontendToolbar->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_T));
+	connect(show_frontendToolbar, &QAction::triggered, [show_frontendToolbar, this]() {
+		if (show_frontendToolbar->isChecked()) {
+			frontendToolbar->show();
+		} else {
+			frontendToolbar->hide();
+		}
+	});
+
+	QAction* show_logger = new QAction("Logmeldungen...", this);
+//    show_logger->setIcon(IconManager::get("utilities-log-viewer"));
     show_logger->setCheckable(true);
     show_logger->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_L));
 
     frontendOptions = new QActionGroup(this);
     QSignalMapper* frontendMapper = new QSignalMapper(this);
 
-    QList<QString> frontendList = controller->getAvailableFrontends();
-
     int i = 0;
-    for (auto iter : frontendList) {
-        QAction* frontendAction = new QAction(iter, this);
+	for (BaseFrontend* iter : controller->getAvailableFrontends()) {
+		QAction* frontendAction = new QAction(iter->objectName(), this);
         frontendAction->setCheckable(true);
         if (i==0) frontendAction->setChecked(true);
+		frontendAction->setIcon(iter->getIcon());
         frontendAction->setActionGroup(frontendOptions);
         connect(frontendAction, SIGNAL(triggered()), frontendMapper, SLOT(map()));
         frontendMapper->setMapping(frontendAction, i);
@@ -187,14 +216,14 @@ MainWindow::MainWindow(QWidget *parent) :
 //    view_menu->addAction(show_menubar);
     view_menu->addAction(show_statusbar);
     view_menu->addAction(show_toolbar);
+	view_menu->addAction(show_frontendToolbar);
     view_menu->addAction(show_logger);
     view_menu->addSeparator()->setText("Verfügbare Frontends");
     view_menu->addActions(frontendOptions->actions());
     view_menu->addSeparator();
     view_menu->addAction(refreshAction);
 
-
-    // frontend menu
+	// frontend menu
     //QMenu* frontend_menu = menuBar()->addMenu("frontend");
     //frontend_menu->hide();
 
@@ -212,7 +241,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QAction* about_action = new QAction("&Über", this);
     about_action->setStatusTip("Informationen über TURAG Console");
-    //about_action->setIcon(IconManager::get("dialog-information"));
+	about_action->setIcon(IconManager::get("dialog-information"));
     connect(about_action, SIGNAL(triggered()), this, SLOT(about()));
     help_menu->addAction(about_action);
 
@@ -230,21 +259,44 @@ MainWindow::MainWindow(QWidget *parent) :
     //toolbar->setIconSize(QSize(20, 20));
     toolbar->setFloatable(false);
 
-    for (QAction* action : menuBar()->actions()) {
-        addAction(action);
-        if (action->menu()) {
-            bool iconsAdded = false;
-            for (QAction*  innerAction : action->menu()->actions()) {
-                if (!innerAction->icon().isNull()) {
-                    toolbar->addAction(innerAction);
-                    iconsAdded = true;
-                }
-            }
-            if (iconsAdded) {
-                toolbar->addSeparator();
-            }
-        }
-    }
+	toolbar->addAction(new_window);
+	toolbar->addAction(save_action);
+	toolbar->addSeparator();
+	toolbar->addAction(new_connection_action);
+	toolbar->addAction(connect_action);
+	toolbar->addAction(disconnect_action);
+	toolbar->addSeparator();
+	toolbar->addAction(refreshAction);
+
+//    for (QAction* action : menuBar()->actions()) {
+//        addAction(action);
+//        if (action->menu()) {
+//            bool iconsAdded = false;
+//            for (QAction*  innerAction : action->menu()->actions()) {
+//                if (!innerAction->icon().isNull()) {
+//                    toolbar->addAction(innerAction);
+//                    iconsAdded = true;
+//                }
+//            }
+//            if (iconsAdded) {
+//                toolbar->addSeparator();
+//            }
+//        }
+//	}
+
+	// frontend toolbar
+	frontendToolbar = addToolBar("Frontends");
+	addToolBar(Qt::LeftToolBarArea, frontendToolbar);
+	frontendToolbar->setIconSize(QSize(64, 64));
+	frontendToolbar->setFloatable(false);
+	frontendToolbar->setMovable(false);
+//	frontendToolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+	frontendToolbar->addActions(frontendOptions->actions());
+	QPalette palette = frontendToolbar->palette();
+	QColor clr(Qt::darkGray);
+	palette.setColor(QPalette::Active, QPalette::Window, clr);
+	palette.setColor(QPalette::Inactive, QPalette::Window, clr);
+	frontendToolbar->setPalette(palette);
 
     controller->setExternalMenuBar(menuBar());
     //controller->setExternalFrontendMenu(frontend_menu);
@@ -252,9 +304,9 @@ MainWindow::MainWindow(QWidget *parent) :
     controller->setAutoSave(save_auto_action->isChecked());
     controller->setAutoReconnect(auto_reconnect_action->isChecked());
 
-//    onShowMenubar(show_menubar->isChecked());
-    onShowStatusbar(show_statusbar->isChecked());
-    onShowToolbar(show_toolbar->isChecked());
+	statusBar()->setVisible(show_statusbar->isChecked());
+	toolbar->setVisible(show_toolbar->isChecked());
+	frontendToolbar->setVisible(show_frontendToolbar->isChecked());
 
     setWindowTitle("TURAG-Console");
 	setWindowIcon(QIcon(":/images/turag-55.png"));
@@ -268,7 +320,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QWidget* central_widget = new QWidget;
     QHBoxLayout* mainLayout = new QHBoxLayout;
 	mainLayout->setContentsMargins(2, 2, 2, 2);
-    mainLayout->addWidget(controller);
+	mainLayout->addWidget(controller);
     mainLayout->addWidget(logger);
     logger->hide();
     central_widget->setLayout(mainLayout);
@@ -301,38 +353,6 @@ void MainWindow::about() {
                                        ));
 }
 
-void MainWindow::onNewWindow() {
-    QProcess::startDetached(QCoreApplication::applicationFilePath());
-}
-
-void MainWindow::close() {
-  controller->closeConnection();
-  qApp->closeAllWindows();
-}
-
-void MainWindow::onShowStatusbar(bool show) {
-    if (show) {
-        statusBar()->show();
-    } else {
-        statusBar()->hide();
-    }
-}
-
-void MainWindow::onShowMenubar(bool show) {
-    if (show) {
-        menuBar()->show();
-    } else {
-        menuBar()->hide();
-    }
-}
-
-void MainWindow::onShowToolbar(bool show) {
-    if (show) {
-        toolbar->show();
-    } else {
-        toolbar->hide();
-    }
-}
 
 void MainWindow::printError(const QString &message) {
   QPalette palette;

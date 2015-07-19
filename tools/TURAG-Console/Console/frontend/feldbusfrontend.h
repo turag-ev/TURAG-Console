@@ -36,6 +36,38 @@ class FeldbusFrontend : public BaseFrontend
 {
     Q_OBJECT
 
+public:
+	FeldbusFrontend(QWidget *parent = 0);
+	~FeldbusFrontend();
+
+public slots:
+	virtual void onConnected(bool readOnly, QIODevice*);
+	virtual void onDisconnected(bool reconnecting);
+	virtual void writeData(QByteArray data);
+	virtual void clear(void);
+
+protected slots:
+	void onInquiry(bool boot);
+
+	void onStartInquiry(void);
+	void onDeviceSelected(int row);
+
+	void onStartBootInquiry(void);
+
+	void onStartDynamixelInquiry(void);
+	void onRs485DebugMsg(QString msg);
+
+	void onCheckDeviceAvailability(void);
+
+	void onStartBoot(void);
+	void requestStartBootBroad(void);
+
+	void onUpdateStatistics(void);
+	void onUpdateStatisticsSlave(void);
+
+	void onTwoByteAddressCheckBoxToggled(bool state);
+	void onBootloaderTwoByteAddressCheckBoxToggled(bool state);
+
 protected:
     QWidget* feldbusWidget;
     QListWidget* deviceList_;
@@ -97,38 +129,6 @@ protected:
 
     TURAG::Feldbus::Device::AddressLength deviceAddressLength;
     TURAG::Feldbus::Device::AddressLength bootloaderAddressLength;
-
-protected slots:
-    void onInquiry(bool boot);
-
-    void onStartInquiry(void);
-    void onDeviceSelected(int row);
-
-    void onStartBootInquiry(void);
-
-    void onStartDynamixelInquiry(void);
-    void onRs485DebugMsg(QString msg);
-
-    void onCheckDeviceAvailability(void);
-
-    void onStartBoot(void);
-    void requestStartBootBroad(void);
-
-    void onUpdateStatistics(void);
-    void onUpdateStatisticsSlave(void);
-
-    void onTwoByteAddressCheckBoxToggled(bool state);
-    void onBootloaderTwoByteAddressCheckBoxToggled(bool state);
-
-public:
-    FeldbusFrontend(QWidget *parent = 0);
-    ~FeldbusFrontend();
-
-public slots:
-	virtual void onConnected(bool readOnly, QIODevice*);
-    virtual void onDisconnected(bool reconnecting);
-    virtual void writeData(QByteArray data);
-    virtual void clear(void);
 
 private:
 	void setInquiryWidgetsEnabled(bool enabled);

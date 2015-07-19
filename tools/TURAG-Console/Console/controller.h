@@ -25,7 +25,7 @@ public:
     explicit Controller(QWidget *parent = 0);
     ~Controller();
 
-    QList<QString> getAvailableFrontends(void) const;
+	QList<BaseFrontend*> getAvailableFrontends(void) const;
     bool isConnected(void) const;
     QString getConnectionInfo();
 

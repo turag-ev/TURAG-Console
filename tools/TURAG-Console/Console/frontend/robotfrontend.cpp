@@ -8,10 +8,11 @@
 #include "plaintextfrontend.h"
 #include "util/tinainterface.h"
 #include "tinagraphfrontend.h"
+#include <libs/iconmanager.h>
 
 
 RobotFrontend::RobotFrontend(QWidget *parent) :
-	BaseFrontend("TURAG Roboter-Ansicht (TinA)", parent)
+	BaseFrontend("TURAG Roboter-Ansicht (TinA)", IconManager::get("turag-tina"), parent)
 {
     tabs = new QTabWidget;
     interface = new TinaInterface(this);

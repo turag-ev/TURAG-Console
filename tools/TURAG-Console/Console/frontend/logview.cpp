@@ -16,7 +16,7 @@
 using namespace TURAG::SimEurobot;
 
 RobotLogFrontend::RobotLogFrontend(TinaInterface *interface, QWidget *parent) :
-	BaseFrontend(QStringLiteral("Meldungen"), parent),
+	BaseFrontend(QStringLiteral("Meldungen"), QIcon(), parent),
 	sim_context_(app_context_),
 	robot_context_(sim_context_)
 {

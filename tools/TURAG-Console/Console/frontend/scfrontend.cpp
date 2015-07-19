@@ -7,6 +7,7 @@
 #include <QDockWidget>
 #include <QSettings>
 #include <QTimer>
+#include <libs/iconmanager.h>
 #include <tina/debug/defines.h>
 #include <libsimeurobot/ui/robotlogview.h>
 #include <libsimeurobot/ui/robots.h>
@@ -20,7 +21,7 @@
 using namespace TURAG::SimEurobot;
 
 SCFrontend::SCFrontend(QWidget *parent)
-	: BaseFrontend(QStringLiteral("SystemControl Debug"), parent),
+	: BaseFrontend(QStringLiteral("SystemControl Debug"), IconManager::get("eurobot"), parent),
 	  tina_interface_(nullptr),
 //	  sim_context_(app_context_),
 //	  robot_context_(sim_context_),

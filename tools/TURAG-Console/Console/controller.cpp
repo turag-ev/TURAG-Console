@@ -38,7 +38,7 @@
 
 
 Controller::Controller(QWidget *parent) :
-    QStackedWidget(parent), currentBackend(nullptr), currentFrontendIndex(0),
+	QStackedWidget(parent), currentBackend(nullptr), currentFrontendIndex(0),
     menuBar_(nullptr), widgetMenu_(nullptr), autoSaveOn(false)
 {
     // add all available Backends to list with parent this
@@ -110,10 +110,10 @@ Controller::Controller(QWidget *parent) :
 
 
     // fill stackedWidget base class with frontends and connectionWidgets (which are contained in the welcomeScreen)
-    for (auto iter : availableFrontends) {
-        addWidget(iter);
+	for (auto iter : availableFrontends) {
+		addWidget(iter);
     }
-    addWidget(welcome_screen);
+	addWidget(welcome_screen);
 
     openNewConnection();
 }
@@ -129,14 +129,8 @@ void Controller::onToolboxChangedCurrent(int index) {
     settings.setValue("currentIndex", index);
 }
 
-QList<QString> Controller::getAvailableFrontends(void) const {
-    QList<QString> list;
-
-    for (auto iter : availableFrontends) {
-        list.append(iter->objectName());
-    }
-
-    return list;
+QList<BaseFrontend *> Controller::getAvailableFrontends(void) const {
+	return availableFrontends;
 }
 
 

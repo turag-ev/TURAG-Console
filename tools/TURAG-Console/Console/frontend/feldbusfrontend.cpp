@@ -17,6 +17,7 @@
 #include <libs/checkboxext.h>
 #include <libs/comboboxext.h>
 #include <libs/lineeditext.h>
+#include <libs/iconmanager.h>
 #include <tina++/feldbus/host/farbsensor.h>
 #include <tina++/feldbus/host/aktor.h>
 #include <tina++/feldbus/host/dcmotor.h>
@@ -40,7 +41,7 @@ extern QByteArray turag_rs485_data_buffer;
 
 
 FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
-    BaseFrontend("TURAG Feldbus", parent),
+	BaseFrontend("TURAG Feldbus", IconManager::get("logo_feldbus"), parent),
     fromValidator_(nullptr), toValidator_(nullptr), bootloaderFromValidator_(nullptr),
     bootloaderToValidator_(nullptr), selectedDevice_(nullptr), broadcastBootloader(nullptr),
     deviceAddressLength(Feldbus::Device::AddressLength::byte_),

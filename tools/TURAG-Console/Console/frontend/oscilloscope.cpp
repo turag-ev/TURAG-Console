@@ -5,13 +5,14 @@
 #include <QLabel>
 #include <libs/lineeditext.h>
 #include <libs/checkboxext.h>
+#include <libs/iconmanager.h>
 #include <QWidget>
 #include <QFrame>
 #include <QSettings>
 
 
 Oscilloscope::Oscilloscope(QWidget *parent) :
-    BaseFrontend("Serielles Oszilloskop", parent), interface(nullptr)
+	BaseFrontend("Serielles Oszilloskop", IconManager::get("oscilloscope"), parent), interface(nullptr)
 {
     plot = new DataGraph(this);
     tab = new QTabWidget;

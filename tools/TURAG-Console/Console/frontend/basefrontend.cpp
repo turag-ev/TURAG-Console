@@ -7,8 +7,8 @@
 #include <QFrame>
 #include <QHBoxLayout>
 
-BaseFrontend::BaseFrontend(QString name, QWidget *parent) :
-	QWidget(parent)
+BaseFrontend::BaseFrontend(QString name, const QIcon &icon_, QWidget *parent) :
+	QWidget(parent), icon(icon_)
 {
     setObjectName(name);
 

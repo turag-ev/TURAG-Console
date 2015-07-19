@@ -1,3 +1,26 @@
+defineTest(minQtVersion) {
+    maj = $$1
+    min = $$2
+    patch = $$3
+    isEqual(QT_MAJOR_VERSION, $$maj) {
+        isEqual(QT_MINOR_VERSION, $$min) {
+            isEqual(QT_PATCH_VERSION, $$patch) {
+                return(true)
+            }
+            greaterThan(QT_PATCH_VERSION, $$patch) {
+                return(true)
+            }
+        }
+        greaterThan(QT_MINOR_VERSION, $$min) {
+            return(true)
+        }
+    }
+    greaterThan(QT_MAJOR_VERSION, $$maj) {
+        return(true)
+    }
+    return(false)
+}
+
 #-------------------------------------------------
 #
 # Project created by QtCreator 2013-03-25T00:00:13
@@ -21,6 +44,16 @@ TARGET = turag-console
 TEMPLATE = app
 
 CONFIG += c++11
+
+
+#version check qt
+!minQtVersion(5, 2, 0) {
+    message("Cannot build Qt Creator with Qt version $${QT_VERSION}.")
+    error("Use at least Qt 5.2.0.")
+}
+
+
+
 
 # Schneller als die Standardimplementierung wenn Strings mit + verbunden werden
 DEFINES *= QT_USE_QSTRINGBUILDER
@@ -333,3 +366,4 @@ unix:!mac {
 
 include(../../../libs/libsimeurobot.pri)
 include(../../../libs/qt/expander-widget/expanderwidget.pri)
+

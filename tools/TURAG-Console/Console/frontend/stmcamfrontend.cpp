@@ -8,17 +8,18 @@
 #include "logview.h"
 #include "plaintextfrontend.h"
 #include "util/tinainterface.h"
+#include <libs/iconmanager.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // STMCamFrontend
 
 STMCamFrontend::STMCamFrontend(QWidget *parent) :
-    BaseFrontend("STMCam", parent)
+	BaseFrontend("STMCam", IconManager::get("camera-web"), parent)
 {
     interface = new TinaInterface(this);
-    camview = new TinaCameraFrontend(this);
+	camview = new TinaCameraFrontend(this);
     logview = new RobotLogFrontend(interface);
-    cshell = new PlainTextFrontend(this);
+	cshell = new PlainTextFrontend(this);
 
     // IO box
     QHBoxLayout* IOlayout = new QHBoxLayout;

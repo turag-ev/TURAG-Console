@@ -7,6 +7,7 @@
 #include <QByteArray>
 #include "controller.h"
 #include <QList>
+#include <QIcon>
 
 class QAction;
 class QMenu;
@@ -21,7 +22,7 @@ class BaseFrontend : public QWidget
     Q_OBJECT
 
 public:
-    explicit BaseFrontend(QString name, QWidget *parent = 0);
+	explicit BaseFrontend(QString name, const QIcon& icon = QIcon(), QWidget *parent = 0);
 	virtual ~BaseFrontend() = default;
 
 signals:
@@ -46,11 +47,14 @@ public slots:
 public:
 	void setLayout(QLayout *);
 
+	const QIcon& getIcon() { return icon; }
+
 protected slots:
 
 
 protected:
 	QFrame* scrollFrame;
+	QIcon icon;
 };
 
 #endif // BASEFRONTEND_H

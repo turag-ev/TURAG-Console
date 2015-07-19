@@ -1,3 +1,8 @@
+
+QT       *= gui
+QT       *= widgets
+
+
 SOURCES +=\
     $$PWD/expanderwidget.cpp
     
