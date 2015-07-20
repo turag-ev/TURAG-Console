@@ -9,12 +9,6 @@
 
 class BaseFrontend;
 class BaseBackend;
-class ConnectionWidget;
-class QPushButton;
-class QAction;
-class QMenuBar;
-class QMenu;
-class QTabWidget;
 
 
 class Controller : public QStackedWidget
@@ -29,16 +23,11 @@ public:
     bool isConnected(void) const;
     QString getConnectionInfo();
 
-    void setExternalMenuBar(QMenuBar* menubar) { menuBar_ = menubar; }
-    void setExternalFrontendMenu(QMenu* menu) { frontendMenu = menu; }
-
     
 public slots:
-    void openNewConnection(void);
     void openConnection(void);
 	void openConnection(const QUrl& connectionUrl, bool* success, BaseBackend **openedBackend);
     void closeConnection(void);
-    void cancelNewConnection();
     void setFrontend(int newFrontendIndex);
     void setFrontend(int newFrontendIndex, bool calledManually);
     void saveOutput(void);
@@ -49,10 +38,8 @@ public slots:
 protected slots:
 	void onConnected(bool readOnly);
     void onDisconnected();
-    void onToolboxChangedCurrent(int index);
 
 signals:
-    void newConnectionDialogStateChanged(bool visible);
 	void connected(bool readOnly, QIODevice*);
     void disconnected(bool reconnecting);
 
@@ -60,17 +47,10 @@ signals:
 protected:
     QList<BaseBackend*> availableBackends;
     QList<BaseFrontend*> availableFrontends;
-    QList<ConnectionWidget*> availableConnectionWidgets;
 
     BaseBackend* currentBackend;
     int currentFrontendIndex;
 
-    QPushButton* cancelButton;
-
-    QMenuBar* menuBar_;
-    QMenu* widgetMenu_;
-    QMenu* frontendMenu;
-    QTabWidget* tabwidget;
 
 private:
     bool autoSaveOn;

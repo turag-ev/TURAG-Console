@@ -1,4 +1,10 @@
 
+ConnectionWidgets
+-----------------------------------------
+backend-Parameter bei connectionChanged-Signal entfernen - unnötige
+Kopplung!
+
+
 Backends
 -----------------------------
 von BaseBackend IODeviceBackend ableiten und
@@ -162,3 +168,12 @@ Datagraph für Performance-Probleme gesorgt. Außerdem sorgt es für merkwürdig
 wenn mehr als eine Instanz benutzt wird.
 Vielleicht lieber einen Options-Dialog bereitstellen, in dem Standard-Einstellungen
 bearbeitet werden können, die nicht transparent gespeichert werden können?
+
+
+
+Sonstiges, Überlegeungen,....
+-----------------------------------------------
+- Menü-Einträge der Connection-Widgets entfernt. Das ist mit der Adressleiste nicht
+länger praktisch umsetzbar und ist der Grund einer unnötigen Kopplung. Das Connection-Widget
+soll ausschließlich Ausgabe-Medium sein.
+

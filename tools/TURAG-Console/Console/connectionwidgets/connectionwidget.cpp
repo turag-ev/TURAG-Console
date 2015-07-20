@@ -103,7 +103,3 @@ void ConnectionWidget::saveConnection(QString connectionString) {
     settings.setValue(objectName(), connections);
 }
 
-
-QMenu* ConnectionWidget::getMenu() {
-    return nullptr;
-}

@@ -34,20 +34,7 @@ void ElidedButton::setElideMode(Qt::TextElideMode mode)
       mElideMode = mode;
 
       // Update the elided text
-      QRect textRect;
-
-      QStyle* pStyle = style();
-      if (pStyle != NULL)
-      {
-         QStyleOptionButton option;
-         initStyleOption(&option);
-
-         QRect elementRect = pStyle->subElementRect(QStyle::SE_PushButtonContents, &option, this);
-         int menuButtonSize = pStyle->pixelMetric(QStyle::PM_MenuButtonIndicator, &option, this);
-         textRect = elementRect.adjusted(0, 0, -menuButtonSize, 0);
-      }
-
-      mElidedText = fontMetrics().elidedText(text(), mElideMode, textRect.width());
+	  mPreviousRect = QRect();
 
       // Redraw the button with the updated text
       repaint();
@@ -61,36 +48,41 @@ Qt::TextElideMode ElidedButton::getElideMode() const
 
 void ElidedButton::paintEvent(QPaintEvent*)
 {
-   QStyleOptionButton option;
-   initStyleOption(&option);
+	QStyleOptionButton option;
+	initStyleOption(&option);
 
    bool updateElidedText = false;
    QRect textRect;
 
+   int iconCorrection = 0;
+   if (!icon().isNull()) {
+	   iconCorrection = iconSize().width();
+   }
+
    QStyle* pStyle = style();
    if (pStyle != NULL)
    {
-      QRect elementRect = pStyle->subElementRect(QStyle::SE_PushButtonContents, &option, this);
-      int menuButtonSize = pStyle->pixelMetric(QStyle::PM_MenuButtonIndicator, &option, this);
-      textRect = elementRect.adjusted(0, 0, -menuButtonSize, 0);
+	  QRect elementRect = pStyle->subElementRect(QStyle::SE_PushButtonContents, &option, this);
+	  int menuButtonSize = pStyle->pixelMetric(QStyle::PM_MenuButtonIndicator, &option, this);
+	  textRect = elementRect.adjusted(0, 0, -menuButtonSize - iconCorrection, 0);
    }
 
    if (textRect != mPreviousRect)
    {
-      mPreviousRect = textRect;
-      updateElidedText = true;
+	  mPreviousRect = textRect;
+	  updateElidedText = true;
    }
 
    QString currentText = text();
    if (currentText != mPreviousText)
    {
-      mPreviousText = currentText;
-      updateElidedText = true;
+	  mPreviousText = currentText;
+	  updateElidedText = true;
    }
 
    if (updateElidedText == true)
    {
-      mElidedText = fontMetrics().elidedText(currentText, mElideMode, textRect.width(), Qt::TextShowMnemonic);
+	  mElidedText = fontMetrics().elidedText(currentText, mElideMode, textRect.width(), Qt::TextShowMnemonic);
    }
 
    option.text = mElidedText;
@@ -98,3 +90,4 @@ void ElidedButton::paintEvent(QPaintEvent*)
    QStylePainter p(this);
    p.drawControl(QStyle::CE_PushButton, option);
 }
+

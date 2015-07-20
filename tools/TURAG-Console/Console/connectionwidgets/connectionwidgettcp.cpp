@@ -97,22 +97,6 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     layout->addWidget(splitter);
 
 
-    //tcp menu erstellen
-    tcpMenu = new QMenu("Debug-Server", this);
-    emergencyStopAction = new QAction("Notaus", this);
-    emergencyStopAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
-    emergencyStopAction->setDisabled(true);
-    connect(emergencyStopAction, SIGNAL(triggered()), this, SLOT(emergencyStop()));
-
-    startBootloaderAction = new QAction("&Bootloader starten", this);
-    startBootloaderAction->setShortcut(Qt::CTRL + Qt::Key_B);
-    startBootloaderAction->setDisabled(true);
-    connect(startBootloaderAction, SIGNAL(triggered()), this, SLOT(reset()));
-
-    tcpMenu->addAction(emergencyStopAction);
-    tcpMenu->addAction(startBootloaderAction);
-
-
     setContextMenuPolicy(Qt::CustomContextMenu);
     contextMenu = new QMenu(this);
     connect(this, SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(showContextMenu(QPoint)));
@@ -145,10 +129,6 @@ void ConnectionWidgetTcp::socketConnected(void) {
 
     allDevicesWidget->setEnabled(true);
 
-    tcpMenu->setEnabled(true);
-    emergencyStopAction->setDisabled(true);
-    startBootloaderAction->setEnabled(true);
-
     heartBeatTimer.start();
     timeText->setText("Serverzeit: ");
 
@@ -167,9 +147,6 @@ void ConnectionWidgetTcp::socketDisconnected(void) {
     timeText->setText("");
     hostEdit->setEnabled(true);
     allDevicesWidget->setEnabled(false);
-
-    tcpMenu->setDisabled(true);
-    startBootloaderAction->setEnabled(false);
 
     selectedDevice = nullptr;
     for (device* dev : allDevices) {
@@ -352,7 +329,7 @@ void ConnectionWidgetTcp::heartBeatTimerOccured(void) {
         if (associatedBackend) {
             // if we would use connectionWasLost() here, we could make use of the
             // autoReconnect-feature. The trouble with this is, that most likely the server is offline
-            // which results in connections attempts that time out before failing.
+			// which results in connection attempts that time out before failing.
             // It then becomes nearly impossible to
             // open a new connection. That's why we just close the connection here.
             associatedBackend->closeConnection();
@@ -420,18 +397,7 @@ void ConnectionWidgetTcp::cancel_connecting(void) {
     }
 }
 
-void ConnectionWidgetTcp::emergencyStop() {
-    //steht noch aus hat geringste Priorität
 
-}
-
-
-void ConnectionWidgetTcp::reset() {
-    QByteArray data(RESET_DEVICE);
-    data.append(" ");
-    data.append(selectedDevice->path);
-    send(data);
-}
 
 void ConnectionWidgetTcp::resetFromContextMenu() {
     if (allDevicesWidget->currentRow() >= 0 && allDevicesWidget->currentRow() < allDevicesWidget->count()) {

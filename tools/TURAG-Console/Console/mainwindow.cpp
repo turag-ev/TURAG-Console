@@ -4,6 +4,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QToolBar>
+#include <QToolButton>
 #include <QSettings>
 #include <QCloseEvent>
 #include <QLabel>
@@ -18,25 +19,48 @@
 #include <QDialog>
 #include <QHBoxLayout>
 #include <QDebug>
-#include "mainwindow.h"
-#include "controller.h"
+#include <QComboBox>
+#include <QApplication>
+#include <QScrollArea>
+
 #include <libs/checkactionext.h>
 #include <libs/loggerwidget.h>
-#include "connectionwidgets/connectionwidgetfile.h"
-#include "connectionwidgets/connectionwidgetserial.h"
 #include <libs/iconmanager.h>
 #include <libs/log.h>
+#include <libs/elidedbutton.h>
 #include <qt/sidebar/sidebar.h>
-#include <QApplication>
+
+#include "mainwindow.h"
+#include "controller.h"
 #include <frontend/basefrontend.h>
+
+#include "connectionwidgets/connectionwidgetfile.h"
+#include "connectionwidgets/connectionwidgetserial.h"
+#include "connectionwidgets/connectionwidgettcp.h"
+#include "connectionwidgets/connectionwidgetwebdav.h"
+
 
 #define _TO_STRING(x) #x
 #define TO_STRING(x) _TO_STRING(x)
 
+
+
+
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent)
 {
-    // central class that connects backend with frontend and controls
+	setWindowTitle("TURAG-Console");
+	setWindowIcon(IconManager::get("turag-55"));
+
+
+	// add all available connectionWidgets to list without a parent
+	availableConnectionWidgets.append(new ConnectionWidgetSerial);
+	availableConnectionWidgets.append(new ConnectionWidgetFile);
+	availableConnectionWidgets.append(new ConnectionWidgetTcp);
+	availableConnectionWidgets.append(new ConnectionWidgetWebDAV);
+
+
+	// central class that connects backend with frontend and controls
     // information flow
     controller = new Controller(this);
     connect(Log::get(), SIGNAL(fatalMsgAvailable(QString)), this, SLOT(printError(QString)));
@@ -47,31 +71,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(controller, SIGNAL(disconnected(bool)), this, SLOT(onDisconnected(bool)));
 
 
-    // adjust statusbar
-    status = new QLabel();
-    permanentStatus = new QLabel();
-    permanentStatusImage = new QLabel();
-    permanentReadOnlyImage = new QLabel();
-    permanentReadOnlyImage->setToolTip("Read-Only Zugriff");
-
-
-    statusBar()->addWidget(status);
-    statusBar()->addPermanentWidget(permanentReadOnlyImage);
-    statusBar()->addPermanentWidget(permanentStatusImage);
-    statusBar()->addPermanentWidget(permanentStatus);
-    statusBar()->setSizeGripEnabled(true);
-
-    default_palette = statusBar()->palette();
-    status_bar_timer = new QTimer(this);
-    status_bar_timer->setSingleShot(true);
-    connect(status_bar_timer, SIGNAL(timeout()), this, SLOT(resetStatusBar()));
-
-    imgTick = new QImage(":/images/ok.png");
-    imgCross = new QImage(":/images/nok.png");
-    imgLock = new QImage(":/images/lock.png");
-
-
     // create menu structure
+	// ---------------------------------------
 
     // Datei
     QAction *new_window = new QAction("&Neues Fenster", this);
@@ -101,22 +102,16 @@ MainWindow::MainWindow(QWidget *parent) :
 		qApp->closeAllWindows();
 	});
 
-    QMenu *file_menu = menuBar()->addMenu("&Datei");
-    file_menu->addAction(new_window);
-    file_menu->addSeparator();
-    file_menu->addAction(save_action);
-    file_menu->addAction(save_auto_action);
-    file_menu->addSeparator();
-    file_menu->addAction(exit_action);
-
     // Verbindung
-    connect_action = new QAction("&Verbinden", this);
+	connect_action = new QAction("&Verbinden (Strg+Y)", this);
     connect_action->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Y));
     connect_action->setStatusTip("Letzte Verbindung wiederaufbauen");
     connect_action->setIcon(IconManager::get("call-start"));
-    connect(connect_action, SIGNAL(triggered()), controller, SLOT(openConnection()));
+	connect(connect_action, &QAction::triggered, [this]() {
+		controller->openConnection(addressBar->currentText(), nullptr, nullptr);
+	});
 
-    disconnect_action = new QAction("&Trennen", this);
+	disconnect_action = new QAction("&Trennen (Strg+X)", this);
     disconnect_action->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_X));
     disconnect_action->setStatusTip("Aktive Verbindung trennen");
     disconnect_action->setIcon(IconManager::get("call-stop"));
@@ -126,22 +121,13 @@ MainWindow::MainWindow(QWidget *parent) :
     auto_reconnect_action->setStatusTip("Versucht automatisch, verlorene Verbindungen wiederaufzubauen");
     connect(auto_reconnect_action, SIGNAL(triggered(bool)), controller, SLOT(setAutoReconnect(bool)));
 
-	new_connection_action = new QAction("&Verbindungseinstellungen ändern", this);
+	new_connection_action = new QAction("&Verbindungseinstellungen ändern (F2)", this);
 	new_connection_action->setStatusTip("Eine neue Verbindung aufbauen oder Verbindungseinstellungen ändern");
     new_connection_action->setShortcuts( QList<QKeySequence>{Qt::Key_F2, QKeySequence::Open});
 	new_connection_action->setIcon(IconManager::get("preferences-system-network"));
-    new_connection_action->setCheckable(true);
+	new_connection_action->setCheckable(true);
+	new_connection_action->setChecked(true);
     connect(new_connection_action, SIGNAL(triggered(bool)), this, SLOT(handleNewConnectionAction(bool)));
-    connect(controller, SIGNAL(newConnectionDialogStateChanged(bool)), new_connection_action, SLOT(setChecked(bool)));
-
-    QMenu *connection_menu = menuBar()->addMenu("&Verbindung");
-    connection_menu->addAction(new_connection_action);
-    connection_menu->addSeparator();
-    connection_menu->addAction(connect_action);
-    connection_menu->addAction(disconnect_action);
-    connection_menu->addSeparator();
-    connection_menu->addAction(auto_reconnect_action);
-    connection_menu->addSeparator();
 
     // Ansicht
     QAction* show_statusbar = new CheckActionExt("Statusleiste anzeigen", "Statusleiste anzeigen", true, this);
@@ -154,37 +140,10 @@ MainWindow::MainWindow(QWidget *parent) :
 		}
 	});
 
-//    QAction* show_menubar = new CheckActionExt("Menüleiste anzeigen", "Menüleiste anzeigen", true, this);
-//    show_menubar->setStatusTip("Menüleiste anzeigen");
-//    show_menubar->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_M));
-//    connect(show_menubar, SIGNAL(triggered(bool)), this, SLOT(onShowMenubar(bool)));
-
-	QAction* show_toolbar = new CheckActionExt("Toolbar anzeigen", "Toolbar anzeigen", true, this);
-	show_toolbar->setStatusTip("Toolbar anzeigen");
-	show_toolbar->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_T));
-	connect(show_toolbar, &QAction::triggered, [show_toolbar, this]() {
-		if (show_toolbar->isChecked()) {
-			toolbar->show();
-		} else {
-			toolbar->hide();
-		}
-	});
-
-	QAction* show_frontendToolbar = new CheckActionExt("Frontend-Toolbar anzeigen", "Frontend-Toolbar anzeigen", true, this);
-	show_frontendToolbar->setStatusTip("Frontend-Toolbar anzeigen");
-	show_frontendToolbar->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_T));
-	connect(show_frontendToolbar, &QAction::triggered, [show_frontendToolbar, this]() {
-		if (show_frontendToolbar->isChecked()) {
-			frontendToolbar->show();
-		} else {
-			frontendToolbar->hide();
-		}
-	});
 
 	QAction* show_logger = new QAction("Logmeldungen...", this);
 //    show_logger->setIcon(IconManager::get("utilities-log-viewer"));
     show_logger->setCheckable(true);
-    show_logger->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_L));
 
     frontendOptions = new QActionGroup(this);
     QSignalMapper* frontendMapper = new QSignalMapper(this);
@@ -205,118 +164,201 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     connect(frontendMapper, SIGNAL(mapped(int)), controller, SLOT(setFrontend(int)));
 
-	refreshAction = new QAction("Refresh", this);
+	refreshAction = new QAction("Daten neu laden (F5)", this);
     refreshAction->setShortcut(QKeySequence(Qt::Key_F5));
     refreshAction->setIcon(IconManager::get("view-refresh"));
 	refreshAction->setStatusTip("Daten aus lokalem Puffer neu laden");
 	refreshAction->setEnabled(false);
     connect(refreshAction, SIGNAL(triggered()), controller, SLOT(refresh()));
 
-    QMenu* view_menu = menuBar()->addMenu("&Ansicht");
-//    view_menu->addAction(show_menubar);
-    view_menu->addAction(show_statusbar);
-    view_menu->addAction(show_toolbar);
-	view_menu->addAction(show_frontendToolbar);
-    view_menu->addAction(show_logger);
-    view_menu->addSeparator()->setText("Verfügbare Frontends");
-    view_menu->addActions(frontendOptions->actions());
-    view_menu->addSeparator();
-    view_menu->addAction(refreshAction);
-
-	// frontend menu
-    //QMenu* frontend_menu = menuBar()->addMenu("frontend");
-    //frontend_menu->hide();
 
     // Hilfe
-    QMenu* help_menu = menuBar()->addMenu("&Hilfe");
+	QAction* about_action = new QAction("&Über", this);
+	about_action->setStatusTip("Informationen über TURAG Console");
+	about_action->setIcon(IconManager::get("dialog-information"));
+	connect(about_action, SIGNAL(triggered()), this, SLOT(about()));
+
 
 #   ifdef QT_DEBUG
-        QMenu* debug_menu = menuBar()->addMenu("&Debug");
         QAction* objecttree_action = new QAction("Print Objecttree", this);
         objecttree_action->setStatusTip("QT-Objecttree anzeigen");
         connect(objecttree_action, SIGNAL(triggered()), this, SLOT(dumpAllObjectTrees()));
-        debug_menu->addAction(objecttree_action);
 #   endif
 
 
-    QAction* about_action = new QAction("&Über", this);
-    about_action->setStatusTip("Informationen über TURAG Console");
-	about_action->setIcon(IconManager::get("dialog-information"));
-    connect(about_action, SIGNAL(triggered()), this, SLOT(about()));
-    help_menu->addAction(about_action);
-
-    QAction* about_qt_action = new QAction("Über &Qt", this);
-    about_qt_action->setStatusTip("Zeigt Information über die Qt Bibliothek");
-    connect(about_qt_action, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-    help_menu->addAction(about_qt_action);
+	// toolbar
+	// ---------------------------------------
+	toolbar = addToolBar("toolbar");
+//	toolbar->setIconSize(QSize(20, 20));
+	toolbar->setFloatable(false);
+	toolbar->setMovable(false);
 
 
-    // context menu
-    setContextMenuPolicy(Qt::ActionsContextMenu);
+	QMenu* main_menu = new QMenu(this);
+	main_menu->addAction(new_window);
+	main_menu->addAction(save_action);
+	main_menu->addAction(about_action);
+	main_menu->addSeparator();
+	main_menu->addAction(exit_action);
+#   ifdef QT_DEBUG
+		main_menu->addAction(objecttree_action);
+#   endif
+	main_menu->addSeparator();
+	main_menu->addAction(save_auto_action);
+	main_menu->addAction(auto_reconnect_action);
+	main_menu->addAction(show_statusbar);
+	main_menu->addAction(show_logger);
 
-    // toolbar
-    toolbar = addToolBar("toolbar");
-    //toolbar->setIconSize(QSize(20, 20));
-    toolbar->setFloatable(false);
+	QToolButton* hamburger_button = new QToolButton;
+	hamburger_button->setIcon(IconManager::get("hamburger"));
+	hamburger_button->setMenu(main_menu);
+	hamburger_button->setPopupMode(QToolButton::InstantPopup);
+//	QAction* hamburger_action = new QAction("Menu", this);
+//	hamburger_action->setIcon(IconManager::get("hamburger"));
+//	hamburger_action->setMenu(complete_menu);
+//	connect(hamburger_action, &QAction::triggered, [this,complete_menu]() {
+//		complete_menu->popup(toolbar->mapToGlobal(QPoint(0, toolbar->height())));
+//	});
 
-	toolbar->addAction(new_window);
-	toolbar->addAction(save_action);
+	// address bar
+	addressBar = new QComboBox;
+	addressBar->setEditable(true);
+	addressBar->setMinimumWidth(250);
+	addressBar->setMaximumWidth(1000);
+	addressBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+	addressBar->lineEdit()->setPlaceholderText("Insert URL here... (press Ctrl+L to focus)");
+	connect(addressBar->lineEdit(), SIGNAL(returnPressed()), connect_action, SLOT(trigger()));
+	QAction* focusAddressbarAction = new QAction(this);
+	addressBar->addAction(focusAddressbarAction);
+	focusAddressbarAction->setShortcut(Qt::CTRL | Qt::Key_L);
+	connect(focusAddressbarAction, &QAction::triggered, [this]() {
+		addressBar->setFocus();
+		addressBar->lineEdit()->selectAll();
+	});
+
+	QWidget* spacerWidget = new QWidget;
+	spacerWidget->setMinimumWidth(30);
+
+	QMenu* frontendButtonMenu = new QMenu(this);
+	frontendButtonMenu->addActions(frontendOptions->actions());
+	ElidedButton* frontendButton = new ElidedButton;
+	frontendButton->setElideMode(Qt::ElideMiddle);
+	frontendButton->setText(frontendOptions->checkedAction()->text());
+	frontendButton->setIcon(frontendOptions->checkedAction()->icon());
+	frontendButton->setMenu(frontendButtonMenu);
+	frontendButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+	frontendButton->setMinimumWidth(150);
+	frontendButton->setMaximumWidth(350);
+	frontendButton->setIconSize(toolbar->iconSize());
+	frontendButton->setToolTip("Verfügbare Frontends");
+	connect(frontendOptions, &QActionGroup::triggered, [this, frontendButton]() {
+		frontendButton->setText(frontendOptions->checkedAction()->text());
+		frontendButton->setIcon(frontendOptions->checkedAction()->icon());
+	});
+
+
+	// assemble toolbar
+	toolbar->addWidget(hamburger_button);
 	toolbar->addSeparator();
 	toolbar->addAction(new_connection_action);
+	toolbar->addWidget(addressBar);
 	toolbar->addAction(connect_action);
 	toolbar->addAction(disconnect_action);
 	toolbar->addSeparator();
 	toolbar->addAction(refreshAction);
+	toolbar->addWidget(spacerWidget);
+	toolbar->addSeparator();
+	toolbar->addWidget(frontendButton);
 
-//    for (QAction* action : menuBar()->actions()) {
-//        addAction(action);
-//        if (action->menu()) {
-//            bool iconsAdded = false;
-//            for (QAction*  innerAction : action->menu()->actions()) {
-//                if (!innerAction->icon().isNull()) {
-//                    toolbar->addAction(innerAction);
-//                    iconsAdded = true;
-//                }
-//            }
-//            if (iconsAdded) {
-//                toolbar->addSeparator();
-//            }
-//        }
-//	}
 
 	// frontend toolbar
-	frontendToolbar = addToolBar("Frontends");
-	addToolBar(Qt::LeftToolBarArea, frontendToolbar);
-	frontendToolbar->setIconSize(QSize(64, 64));
-	frontendToolbar->setFloatable(false);
-	frontendToolbar->setMovable(false);
-//	frontendToolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-	frontendToolbar->addActions(frontendOptions->actions());
-	QPalette palette = frontendToolbar->palette();
-	QColor clr(Qt::darkGray);
-	palette.setColor(QPalette::Active, QPalette::Window, clr);
-	palette.setColor(QPalette::Inactive, QPalette::Window, clr);
-	frontendToolbar->setPalette(palette);
+//	frontendToolbar = new QToolBar("Frontends");
+//	addToolBar(Qt::LeftToolBarArea, frontendToolbar);
+//	frontendToolbar->setIconSize(QSize(64, 64));
+//	frontendToolbar->setFloatable(false);
+//	frontendToolbar->setMovable(false);
+//	frontendToolbar->addActions(frontendOptions->actions());
+//	QPalette palette = frontendToolbar->palette();
+//	QColor clr(Qt::darkGray);
+//	palette.setColor(QPalette::Active, QPalette::Window, clr);
+//	palette.setColor(QPalette::Inactive, QPalette::Window, clr);
+//	frontendToolbar->setPalette(palette);
 
-    controller->setExternalMenuBar(menuBar());
-    //controller->setExternalFrontendMenu(frontend_menu);
 
-    controller->setAutoSave(save_auto_action->isChecked());
-    controller->setAutoReconnect(auto_reconnect_action->isChecked());
+	// adjust statusbar
+	// ---------------------------------------
+	status = new QLabel();
+	permanentStatus = new QLabel();
+	permanentStatusImage = new QLabel();
+	permanentReadOnlyImage = new QLabel();
+	permanentReadOnlyImage->setToolTip("Read-Only Zugriff");
 
+
+	statusBar()->addWidget(status);
+	statusBar()->addPermanentWidget(permanentReadOnlyImage);
+	statusBar()->addPermanentWidget(permanentStatusImage);
+	statusBar()->addPermanentWidget(permanentStatus);
+	statusBar()->setSizeGripEnabled(true);
 	statusBar()->setVisible(show_statusbar->isChecked());
-	toolbar->setVisible(show_toolbar->isChecked());
-	frontendToolbar->setVisible(show_frontendToolbar->isChecked());
 
-    setWindowTitle("TURAG-Console");
-	setWindowIcon(QIcon(":/images/turag-55.png"));
+	default_palette = statusBar()->palette();
+	status_bar_timer = new QTimer(this);
+	status_bar_timer->setSingleShot(true);
+	connect(status_bar_timer, SIGNAL(timeout()), this, SLOT(resetStatusBar()));
 
-    onDisconnected(false);
-    connect_action->setEnabled(false);
+	imgTick = new QImage(":/images/ok.png");
+	imgCross = new QImage(":/images/nok.png");
+	imgLock = new QImage(":/images/lock.png");
 
-    logger = new LoggerWidget;
+
+	// build welcome screen
+	// -------------------------------------------------
+	QVBoxLayout* layout = new QVBoxLayout();
+	QWidget* welcome_screen = new QWidget();
+
+	tabwidget = new QTabWidget;
+
+	for (ConnectionWidget* iter : availableConnectionWidgets) {
+		QScrollArea* scrollarea = new QScrollArea;
+		scrollarea->setWidgetResizable(true);
+		scrollarea->setWidget(iter);
+		scrollarea->setFrameShape(QFrame::NoFrame);
+
+		tabwidget->addTab(scrollarea, iter->objectName());
+		connect(iter, SIGNAL(connectionChanged(QUrl,bool*,BaseBackend**)), controller, SLOT(openConnection(QUrl, bool*,BaseBackend**)));
+		connect(iter, SIGNAL(connectionChanged(QUrl,bool*,BaseBackend**)), this, SLOT(updateUrl(QUrl,bool*)));
+	}
+	layout->addWidget(tabwidget);
+	connect(tabwidget, &QTabWidget::currentChanged, [this]() {
+		QSettings settings;
+		settings.beginGroup("Controller");
+		settings.setValue("currentIndex", tabwidget->currentIndex());
+	});
+
+	if (tabwidget->count() > 0) {
+		QSettings settings;
+		settings.beginGroup("Controller");
+		tabwidget->setCurrentIndex(settings.value("currentIndex", 0).toInt());
+	}
+
+	cancelButton = new QPushButton("Abbrechen");
+	layout->addSpacing(5);
+	layout->addWidget(cancelButton, 0, Qt::AlignLeft);
+	connect(cancelButton, &QPushButton::pressed, [this]() {
+		new_connection_action->setChecked(false);
+		centralStackWidget->setCurrentIndex(1);
+	});
+
+	welcome_screen->setLayout(layout);
+
+
+
+	// build central widget
+	// ---------------------------------------
+	logger = new LoggerWidget;
     connect(show_logger, SIGNAL(triggered(bool)), logger, SLOT(setVisible(bool)));
 
+	centralStackWidget = new QStackedWidget;
     QWidget* central_widget = new QWidget;
     QHBoxLayout* mainLayout = new QHBoxLayout;
 	mainLayout->setContentsMargins(2, 2, 2, 2);
@@ -324,33 +366,46 @@ MainWindow::MainWindow(QWidget *parent) :
     mainLayout->addWidget(logger);
     logger->hide();
     central_widget->setLayout(mainLayout);
-    setCentralWidget(central_widget);
+	centralStackWidget->addWidget(welcome_screen);
+	centralStackWidget->addWidget(central_widget);
+
+	setCentralWidget(centralStackWidget);
 
 
+
+	controller->setAutoSave(save_auto_action->isChecked());
+	controller->setAutoReconnect(auto_reconnect_action->isChecked());
+
+	onDisconnected(false);
 	readSettings();
-    controller->openNewConnection();
 }
 
 
 void MainWindow::about() {
-    QMessageBox::about(this, QString::fromUtf8("Über TURAG-Console"),
-                     QString::fromUtf8("<b>TURAG-Console v" TO_STRING(PACKAGE_VERSION) "</b><br />"
-                                       "compiled on " __DATE__ " " __TIME__
-                                   #ifdef __GNUC__
-                                       "<br />gcc " __VERSION__
-                                   #endif
-                                       "<br /><br />"
-                                       "Entwickelt von/für die <a href=\"http://www.turag.de\">TURAG e.V.</a>"
-                                       "<br />"
-                                       "insbesondere von:<br/><br />"
-                                       "&nbsp; Richard Liebscher<br />"
-                                       "&nbsp; Martin Oemus<br />"
-									   "&nbsp; Pascal Below<br />"
-									   "&nbsp; Kevin Seidel<br />"
-									   "&nbsp; Florian Völker<br /><br />"
-									   "Copyright © 2013 - 2015 TURAG e.V.<br /><br />"
-                                       "Based in part on the work of the <a href=\"http://qwt.sf.net\">Qwt project</href>."
-                                       ));
+	QString aboutText(QString::fromUtf8("<b>TURAG-Console v" TO_STRING(PACKAGE_VERSION) "</b><br />"
+										"compiled on " __DATE__ " " __TIME__
+									#ifdef __GNUC__
+										"<br />with gcc " __VERSION__
+									#endif
+										"<br />built with Qt v" QT_VERSION_STR
+										"<br />running on Qt v%1"
+										"<br /><br />"
+										"Entwickelt von/für die <a href=\"http://www.turag.de\">TURAG e.V.</a>"
+										"<br />"
+										"insbesondere von:<br/><br />"
+										"&nbsp; Richard Liebscher<br />"
+										"&nbsp; Martin Oemus<br />"
+										"&nbsp; Pascal Below<br />"
+										"&nbsp; Kevin Seidel<br />"
+										"&nbsp; Florian Völker<br /><br />"
+										"Copyright © 2013 - 2015 TURAG e.V.<br /><br />"
+										"Based in part on the work of the <a href=\"http://qwt.sf.net\">Qwt project</href>."
+										).arg(qVersion()));
+
+	QMessageBox aboutBox(QMessageBox::Information, QString("About %1").arg(qApp->applicationName()), aboutText, QMessageBox::Ok, this);
+	QPushButton* aboutQtButton = aboutBox.addButton("About Qt...", QMessageBox::HelpRole);
+	connect(aboutQtButton, SIGNAL(pressed()), qApp, SLOT(aboutQt()));
+	aboutBox.exec();
 }
 
 
@@ -378,9 +433,13 @@ void MainWindow::resetStatusBar() {
 
 void MainWindow::onConnected(bool readOnly) {
     connect_action->setEnabled(false);
+//	connect_action->setVisible(false);
     disconnect_action->setEnabled(true);
+//	disconnect_action->setVisible(true);
 	refreshAction->setEnabled(true);
     frontendOptions->setEnabled(true);
+	new_connection_action->setChecked(false);
+	centralStackWidget->setCurrentIndex(1);
 
     status->setText(controller->getConnectionInfo());
     setWindowTitle(controller->getConnectionInfo());
@@ -396,18 +455,24 @@ void MainWindow::onConnected(bool readOnly) {
     }
 }
 
-void MainWindow::handleNewConnectionAction(bool triggered) {
-    if (triggered) {
-        controller->openNewConnection();
+void MainWindow::handleNewConnectionAction(bool ) {
+	if (new_connection_action->isChecked()) {
+		centralStackWidget->setCurrentIndex(0);
     } else {
-        controller->cancelNewConnection();
-    }
+		centralStackWidget->setCurrentIndex(1);
+	}
+}
+
+void MainWindow::updateUrl(const QUrl& url, bool* ) {
+	addressBar->lineEdit()->setText(url.toDisplayString());
 }
 
 void MainWindow::onDisconnected(bool reconnecting) {
     if (!reconnecting) {
         connect_action->setEnabled(true);
-        disconnect_action->setEnabled(false);
+//		connect_action->setVisible(true);
+		disconnect_action->setEnabled(false);
+//		disconnect_action->setVisible(false);
 		refreshAction->setEnabled(false);
     }
     status->setText("");
@@ -535,7 +600,7 @@ void MainWindow::openUrl(QString url_string) {
 	controller->openConnection(url, &success, nullptr);
 	if (!success) {
 		printError("Couldn't open specified connection");
-		controller->openNewConnection();
+		centralStackWidget->setCurrentIndex(0);
 	}
 }
 

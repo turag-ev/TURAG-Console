@@ -34,20 +34,12 @@ public:
         QString path;
         QString port;
         QString description;
-        bool       onlineStatus;
+		bool    onlineStatus;
     };
 
     ConnectionWidgetTcp(QWidget *parent = 0);
     ~ConnectionWidgetTcp();
 
-protected:
-    QMenu* tcpMenu;
-    QAction* emergencyStopAction;
-    QAction* startBootloaderAction;
-    QAction* bootloaderContextAction;
-    QAction* reload;
-
-    virtual QMenu* getMenu() { return tcpMenu; }
 
 protected slots:
     virtual void onOpenRecentConnection(int index);
@@ -55,8 +47,6 @@ protected slots:
 private slots:
     void connectToServer();
     void cancel_connecting(void);
-    void emergencyStop();
-    void reset();
     void resetFromContextMenu();
     void receive();
     void startDataChannel(QListWidgetItem * item);
@@ -100,6 +90,7 @@ private:
     QList<device * > allDevices;
 
     QMenu* contextMenu;
+	QAction* bootloaderContextAction;
 
 };
 

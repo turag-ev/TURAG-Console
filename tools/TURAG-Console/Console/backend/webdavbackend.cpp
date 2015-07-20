@@ -84,7 +84,7 @@ void WebDAVBackend::errorOccured(QString msg) {
 void WebDAVBackend::replyError(QNetworkReply::NetworkError) {
 	QNetworkReply* reply = static_cast<QNetworkReply*>(stream_.data());
 
-	Log::critical(reply->error() + ": " + reply->errorString());
+	Log::critical(QString("Error %1: %2").arg(reply->error()).arg(reply->errorString()));
 	qDebug() << reply->errorString();
 
 	closeConnection();

@@ -17,6 +17,10 @@ class QFont;
 class QImage;
 class QToolBar;
 class LoggerWidget;
+class QComboBox;
+class ConnectionWidget;
+class QTabWidget;
+class QStackedWidget;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -41,13 +45,20 @@ private slots:
     void onDisconnected(bool reconnecting);
 
     void handleNewConnectionAction(bool triggered);
+	void updateUrl(const QUrl& url, bool* saveConnectionString);
 
 #   ifdef QT_DEBUG
         void dumpAllObjectTrees(void);
 #   endif
 
 private:
-    Controller* controller;
+	void writeSettings();
+	void readSettings();
+
+
+	Controller* controller;
+	QList<ConnectionWidget*> availableConnectionWidgets;
+
 
     QAction *connect_action;
     QAction *disconnect_action;
@@ -69,11 +80,13 @@ private:
 
     QToolBar* toolbar;
 	QToolBar* frontendToolbar;
+	QComboBox* addressBar;
 
     LoggerWidget* logger;
 
-    void writeSettings();
-    void readSettings();
+	QTabWidget* tabwidget;
+	QPushButton* cancelButton;
+	QStackedWidget* centralStackWidget;
 };
 
 #endif // MAINWINDOW_H

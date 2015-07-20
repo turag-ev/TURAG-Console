@@ -27,5 +27,6 @@
         <file>images/binary-icon.png</file>
         <file>images/logo_feldbus.png</file>
         <file>images/eurobot.png</file>
+        <file>images/hamburger.png</file>
     </qresource>
 </RCC>

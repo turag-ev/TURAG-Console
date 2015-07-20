@@ -18,11 +18,10 @@ public:
     static const int MAX_RECENT_CONNECTIONS = 10;
 
     explicit ConnectionWidget(QString recentConnectionSpecifier, QWidget *parent = 0);
-    virtual QMenu* getMenu();
     
 signals:
     // the details of the connection were changed
-	void connectionChanged(const QUrl& connectionString, bool* saveConnectionString, BaseBackend** openedBackend);
+	void connectionChanged(const QUrl& url, bool* saveConnectionString, BaseBackend** openedBackend);
 
 protected:
     QStringList recent_connections;

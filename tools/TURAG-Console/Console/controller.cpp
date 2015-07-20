@@ -13,33 +13,20 @@
 #include "frontend/rawfrontend.h"
 #include "frontend/scfrontend.h"
 
-#include "connectionwidgets/connectionwidgetfile.h"
-#include "connectionwidgets/connectionwidgetserial.h"
-#include "connectionwidgets/connectionwidgettcp.h"
-#include "connectionwidgets/connectionwidgetwebdav.h"
-
 #include <libs/log.h>
 
-#include <QVBoxLayout>
-#include <QFrame>
-#include <QPushButton>
-#include <QMenu>
-#include <QTabWidget>
 #include <QLabel>
 #include <QSettings>
-#include <QMenuBar>
 #include <QDateTime>
 #include <QFileDialog>
 #include <QDir>
 #include <QFile>
 #include <QByteArray>
-#include <QFrame>
-#include <QScrollArea>
 
 
 Controller::Controller(QWidget *parent) :
 	QStackedWidget(parent), currentBackend(nullptr), currentFrontendIndex(0),
-    menuBar_(nullptr), widgetMenu_(nullptr), autoSaveOn(false)
+	autoSaveOn(false)
 {
     // add all available Backends to list with parent this
     availableBackends.append(new FileBackend(this));
@@ -56,12 +43,6 @@ Controller::Controller(QWidget *parent) :
 	availableFrontends.append(new RawFrontend);
 	availableFrontends.append(new SCFrontend);
 
-    // add all available connectionWidgets to list without a parent
-    availableConnectionWidgets.append(new ConnectionWidgetSerial);
-    availableConnectionWidgets.append(new ConnectionWidgetFile);
-	availableConnectionWidgets.append(new ConnectionWidgetTcp);
-	availableConnectionWidgets.append(new ConnectionWidgetWebDAV);
-
 
     // ---------------------------------------------------------------
     // ---------------------------------------------------------------
@@ -77,57 +58,16 @@ Controller::Controller(QWidget *parent) :
     }
 
 
-    // build welcome screen
-    QVBoxLayout* layout = new QVBoxLayout();
-    QWidget* welcome_screen = new QWidget();
-
-    tabwidget = new QTabWidget;
-
-    for (ConnectionWidget* iter : availableConnectionWidgets) {
-        QScrollArea* scrollarea = new QScrollArea;
-        scrollarea->setWidgetResizable(true);
-        scrollarea->setWidget(iter);
-        scrollarea->setFrameShape(QFrame::NoFrame);
-
-        tabwidget->addTab(scrollarea, iter->objectName());
-		connect(iter, SIGNAL(connectionChanged(QUrl,bool*,BaseBackend**)), this, SLOT(openConnection(QUrl, bool*,BaseBackend**)));
-    }
-    layout->addWidget(tabwidget);
-    connect(tabwidget, SIGNAL(currentChanged(int)), this, SLOT(onToolboxChangedCurrent(int)));
-
-    if (tabwidget->count() > 0) {
-        QSettings settings;
-        settings.beginGroup("Controller");
-        tabwidget->setCurrentIndex(settings.value("currentIndex", 0).toInt());
-    }
-
-    cancelButton = new QPushButton("Abbrechen");
-    layout->addSpacing(5);
-    layout->addWidget(cancelButton, 0, Qt::AlignLeft);
-    connect(cancelButton, SIGNAL(clicked()), this, SLOT(cancelNewConnection()));
-
-    welcome_screen->setLayout(layout);
-
-
-    // fill stackedWidget base class with frontends and connectionWidgets (which are contained in the welcomeScreen)
+	// fill stackedWidget base class with frontends
 	for (auto iter : availableFrontends) {
 		addWidget(iter);
     }
-	addWidget(welcome_screen);
-
-    openNewConnection();
 }
 
 
 Controller::~Controller() {
 }
 
-
-void Controller::onToolboxChangedCurrent(int index) {
-    QSettings settings;
-    settings.beginGroup("Controller");
-    settings.setValue("currentIndex", index);
-}
 
 QList<BaseFrontend *> Controller::getAvailableFrontends(void) const {
 	return availableFrontends;
@@ -180,7 +120,6 @@ void Controller::setFrontend(int newFrontendIndex, bool calledManually) {
     }
 
     setCurrentIndex(currentFrontendIndex);
-    emit newConnectionDialogStateChanged(false);
 }
 
 
@@ -223,20 +162,6 @@ void Controller::openConnection(void) {
 
 
 void Controller::openConnection(const QUrl &connectionUrl, bool *success, BaseBackend** openedBackend) {
-    // show widgets menu
-    if (menuBar_) {
-        if (widgetMenu_ && menuBar_->actions().contains(widgetMenu_->menuAction())) {
-            menuBar_->removeAction(widgetMenu_->menuAction());
-        }
-        ConnectionWidget * connectionWidget = static_cast<ConnectionWidget * >(sender());
-        if (connectionWidget) {
-            widgetMenu_ = connectionWidget->getMenu();
-            if (widgetMenu_) {
-                menuBar_->addMenu(widgetMenu_);
-            }
-        }
-    }
-
 
     closeConnection();
 
@@ -298,16 +223,6 @@ void Controller::saveOutput(void) {
 
         currentBackend->saveBufferToFile(filename);
     }
-}
-
-void Controller::openNewConnection(void) {
-    setCurrentIndex(availableFrontends.size());
-    emit newConnectionDialogStateChanged(true);
-}
-
-void Controller::cancelNewConnection() {
-    setCurrentIndex(currentFrontendIndex);
-    emit newConnectionDialogStateChanged(false);
 }
 
 
