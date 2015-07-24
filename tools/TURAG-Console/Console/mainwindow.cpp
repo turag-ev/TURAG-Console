@@ -22,6 +22,8 @@
 #include <QComboBox>
 #include <QApplication>
 #include <QScrollArea>
+#include <QtNetwork>
+#include <QtWidgets>
 
 #include <libs/checkactionext.h>
 #include <libs/loggerwidget.h>
@@ -96,7 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QAction *exit_action = new QAction("&Beenden", this);
     exit_action->setShortcuts(QKeySequence::Quit);
     exit_action->setStatusTip("Programm verlassen");
-    //exit_action->setIcon(IconManager::get("application-exit")));
+	exit_action->setIcon(IconManager::get("application-exit"));
 	connect(exit_action, &QAction::triggered, [this]() {
 		controller->closeConnection();
 		qApp->closeAllWindows();
@@ -199,15 +201,15 @@ MainWindow::MainWindow(QWidget *parent) :
 	main_menu->addAction(save_action);
 	main_menu->addAction(about_action);
 	main_menu->addSeparator();
-	main_menu->addAction(exit_action);
+	main_menu->addAction(show_statusbar);
+	main_menu->addAction(show_logger);
+	main_menu->addAction(auto_reconnect_action);
+	main_menu->addAction(save_auto_action);
 #   ifdef QT_DEBUG
 		main_menu->addAction(objecttree_action);
 #   endif
 	main_menu->addSeparator();
-	main_menu->addAction(save_auto_action);
-	main_menu->addAction(auto_reconnect_action);
-	main_menu->addAction(show_statusbar);
-	main_menu->addAction(show_logger);
+	main_menu->addAction(exit_action);
 
 	QToolButton* hamburger_button = new QToolButton;
 	hamburger_button->setIcon(IconManager::get("hamburger"));
@@ -241,8 +243,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	QMenu* frontendButtonMenu = new QMenu(this);
 	frontendButtonMenu->addActions(frontendOptions->actions());
-	ElidedButton* frontendButton = new ElidedButton;
-	frontendButton->setElideMode(Qt::ElideMiddle);
+	frontendButton = new ElidedButton;
+	frontendButton->setElideMode(Qt::ElideRight);
 	frontendButton->setText(frontendOptions->checkedAction()->text());
 	frontendButton->setIcon(frontendOptions->checkedAction()->icon());
 	frontendButton->setMenu(frontendButtonMenu);
@@ -251,7 +253,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	frontendButton->setMaximumWidth(350);
 	frontendButton->setIconSize(toolbar->iconSize());
 	frontendButton->setToolTip("Verfügbare Frontends");
-	connect(frontendOptions, &QActionGroup::triggered, [this, frontendButton]() {
+	connect(frontendOptions, &QActionGroup::triggered, [this]() {
 		frontendButton->setText(frontendOptions->checkedAction()->text());
 		frontendButton->setIcon(frontendOptions->checkedAction()->icon());
 	});
@@ -316,7 +318,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	QVBoxLayout* layout = new QVBoxLayout();
 	QWidget* welcome_screen = new QWidget();
 
-	tabwidget = new QTabWidget;
+	connectionTabWidget = new QTabWidget;
 
 	for (ConnectionWidget* iter : availableConnectionWidgets) {
 		QScrollArea* scrollarea = new QScrollArea;
@@ -324,29 +326,31 @@ MainWindow::MainWindow(QWidget *parent) :
 		scrollarea->setWidget(iter);
 		scrollarea->setFrameShape(QFrame::NoFrame);
 
-		tabwidget->addTab(scrollarea, iter->objectName());
+		connectionTabWidget->addTab(scrollarea, iter->objectName());
 		connect(iter, SIGNAL(connectionChanged(QUrl,bool*,BaseBackend**)), controller, SLOT(openConnection(QUrl, bool*,BaseBackend**)));
 		connect(iter, SIGNAL(connectionChanged(QUrl,bool*,BaseBackend**)), this, SLOT(updateUrl(QUrl,bool*)));
 	}
-	layout->addWidget(tabwidget);
-	connect(tabwidget, &QTabWidget::currentChanged, [this]() {
+	layout->addWidget(connectionTabWidget);
+	connect(connectionTabWidget, &QTabWidget::currentChanged, [this]() {
 		QSettings settings;
 		settings.beginGroup("Controller");
-		settings.setValue("currentIndex", tabwidget->currentIndex());
+		settings.setValue("currentIndex", connectionTabWidget->currentIndex());
 	});
 
-	if (tabwidget->count() > 0) {
+	if (connectionTabWidget->count() > 0) {
 		QSettings settings;
 		settings.beginGroup("Controller");
-		tabwidget->setCurrentIndex(settings.value("currentIndex", 0).toInt());
+		connectionTabWidget->setCurrentIndex(settings.value("currentIndex", 0).toInt());
 	}
 
 	cancelButton = new QPushButton("Abbrechen");
 	layout->addSpacing(5);
 	layout->addWidget(cancelButton, 0, Qt::AlignLeft);
-	connect(cancelButton, &QPushButton::pressed, [this]() {
+	connect(cancelButton, &QPushButton::clicked, [this]() {
 		new_connection_action->setChecked(false);
 		centralStackWidget->setCurrentIndex(1);
+		frontendButton->setEnabled(true);
+		refreshAction->setEnabled(true);
 	});
 
 	welcome_screen->setLayout(layout);
@@ -370,6 +374,49 @@ MainWindow::MainWindow(QWidget *parent) :
 	centralStackWidget->addWidget(central_widget);
 
 	setCentralWidget(centralStackWidget);
+	frontendButton->setEnabled(false);
+	refreshAction->setEnabled(false);
+
+
+
+
+//	QTabWidget* tabWidget = new QTabWidget;
+//	QAction* closeTabAction = new QAction(this);
+//	closeTabAction->setShortcut(Qt::CTRL | Qt::Key_W);
+//	connect(closeTabAction, &QAction::triggered, [tabWidget]() {
+//		if (tabWidget->count() > 1) {
+//			tabWidget->removeTab(tabWidget->currentIndex());
+//		}
+//	});
+//	tabWidget->addAction(closeTabAction);
+//	tabWidget->setMovable(true);
+
+//	connect(tabWidget->tabBar(), &QTabBar::tabCloseRequested, [tabWidget](int index) {
+//		if (tabWidget->count() > 1) {
+//			tabWidget->removeTab(index);
+//		}
+//	});
+//	tabWidget->tabBar()->setAutoHide(true);
+//	QToolButton *tb = new QToolButton();
+//	tb->setIcon(IconManager::get("tab-new"));
+//	tb->setAutoRaise(true);
+//	tb->setIconSize(QSize(16,16));
+//	QAction* newTabAction = new QAction(this);
+//	connect(newTabAction, &QAction::triggered, [tabWidget]() {
+//		int newIndex = tabWidget->currentIndex() + 1;
+//		tabWidget->insertTab(tabWidget->currentIndex() + 1, new QWidget, "Neuer Tab");
+//		tabWidget->setCurrentIndex(newIndex);
+//	});
+//	newTabAction->setShortcut(Qt::CTRL | Qt::Key_T);
+//	tabWidget->addAction(newTabAction);
+//	connect(tb, SIGNAL(clicked()), newTabAction, SLOT(trigger()));
+
+//	tabWidget->setCornerWidget(tb, Qt::TopRightCorner);
+//	tabWidget->setTabsClosable(true);
+//	tabWidget->insertTab(tabWidget->count() - 1, new QWidget, "Neuer Tab");
+//	tabWidget->setCurrentIndex(tabWidget->count() - 2);
+
+//	setCentralWidget(tabWidget);
 
 
 
@@ -437,9 +484,11 @@ void MainWindow::onConnected(bool readOnly) {
     disconnect_action->setEnabled(true);
 //	disconnect_action->setVisible(true);
 	refreshAction->setEnabled(true);
-    frontendOptions->setEnabled(true);
+//    frontendOptions->setEnabled(true);
 	new_connection_action->setChecked(false);
 	centralStackWidget->setCurrentIndex(1);
+	frontendButton->setEnabled(true);
+	refreshAction->setEnabled(true);
 
     status->setText(controller->getConnectionInfo());
     setWindowTitle(controller->getConnectionInfo());
@@ -458,8 +507,12 @@ void MainWindow::onConnected(bool readOnly) {
 void MainWindow::handleNewConnectionAction(bool ) {
 	if (new_connection_action->isChecked()) {
 		centralStackWidget->setCurrentIndex(0);
-    } else {
+		frontendButton->setEnabled(false);
+		refreshAction->setEnabled(false);
+	} else {
 		centralStackWidget->setCurrentIndex(1);
+		frontendButton->setEnabled(true);
+		refreshAction->setEnabled(true);
 	}
 }
 
@@ -553,6 +606,8 @@ void MainWindow::readSettings() {
 
   int currentFrontend = settings.value("currentFrontend", 0).toInt();
   frontendOptions->actions().at(currentFrontend)->setChecked(true);
+  frontendButton->setText(frontendOptions->checkedAction()->text());
+  frontendButton->setIcon(frontendOptions->checkedAction()->icon());
   controller->setFrontend(currentFrontend);
 }
 

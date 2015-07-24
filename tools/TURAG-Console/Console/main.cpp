@@ -31,13 +31,13 @@ int main(int argc, char *argv[]) {
 	// set up our options parser with all options we need.
 	QCommandLineParser parser;
 	parser.setApplicationDescription("TURAG-Console is a Eierlegende-Wollmilchsau.");
-	parser.addOptions({
+//	parser.addOptions({
 						  /*{"list-backends", "Lists all available backends and the schemes they support for opening."},
 						  {"list-frontends", "Lists all available CLI-frontends."},
 						  {"frontend", "Opens the supplied URL with the the given <frontend>", "frontend"},
 						  {"frontend-args", "Arguments which are redirected to the selected frontend", "arg-string"},
 						  {"frontend-help", "Displays the usage info of the specified CLI-frontend.", "frontend"},*/
-					  });
+//					  });
 	parser.addPositionalArgument("url", "URL to open. If this arguments is not accompanied by any of the options above, the application will run in GUI mode.");
 	parser.addHelpOption();
 	parser.addVersionOption();

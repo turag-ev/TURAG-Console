@@ -66,6 +66,7 @@ private:
 	QAction* refreshAction;
 
     QActionGroup* frontendOptions;
+	ElidedButton* frontendButton;
 
     // status bar
     QLabel* status;
@@ -84,7 +85,7 @@ private:
 
     LoggerWidget* logger;
 
-	QTabWidget* tabwidget;
+	QTabWidget* connectionTabWidget;
 	QPushButton* cancelButton;
 	QStackedWidget* centralStackWidget;
 };

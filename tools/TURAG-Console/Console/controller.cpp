@@ -86,7 +86,7 @@ void Controller::setFrontend(int newFrontendIndex, bool calledManually) {
 	//   but it is not shown just now or we want to set a new
 	//   frontend
     if (newFrontendIndex >= availableFrontends.size() ||
-            (newFrontendIndex == currentFrontendIndex && currentFrontendIndex == currentIndex())) {
+			(newFrontendIndex == currentFrontendIndex && calledManually)) {
         return;
     }
 

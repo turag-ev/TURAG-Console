@@ -28,5 +28,7 @@
         <file>images/logo_feldbus.png</file>
         <file>images/eurobot.png</file>
         <file>images/hamburger.png</file>
+        <file>images/tab-new.png</file>
+        <file>images/tab-new-background.png</file>
     </qresource>
 </RCC>

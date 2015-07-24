@@ -64,7 +64,7 @@ Meldungen/Log
  - sowas in der Art wie die Notification-Anzeige in KDE wäre cool
 
 
-Verbessertes Interface für Sitzungsverwaltung
+Interface-Overhaul
 --------------------------------------------------
 es scheint nicht klar zu sein, wie das ganze System der Console
 funktioniert, "Neu Sitzung öffnen" sollte eher sowas wie "Verbindung ändern"
@@ -76,6 +76,23 @@ intelligenter verhalten würde und nicht immer dumm das letzte Frontend
  - speichern, mit welchem Frontend eine bestimmte URL geöffnet wurde
  - einem Backend ein bestimmtes Standard-Frontend zuordnen
 --> beides mit eigenen Vor- und Nachteilen
+
+Hamburger-Menü mit großen Icons wie in Firefox
+
+Frontend-menü auch mit großen Icons
+
+Adressleiste mit Autocompletion-Feature wie in Browsern. Dafür evt.:
+http://www.qtcentre.org/threads/27777-Customize-QListWidgetItem-how-to
+Für den Anfang könnte auch die Standard-ComboBox reichen. Man muss sich Gedanken
+machen, wie man am besten die Daten speichert.
+
+Idee: Favoriten/Lesezeichen wie in einem Browser, die besonders prominent
+gelistet werden.
+
+Vielfacher Wunsch: Tab-Unterstützung. Macht vor allem Sinn, wenn man einen Tab
+in ein neues Fenster ziehen kann. Ist aber etwas aufwendiger
+
+Connection-Widget noch klarer herausstellen
 
 
 
