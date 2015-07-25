@@ -9,19 +9,16 @@
 #include <QLocale>
 #include <QStringList>
 #include <QDebug>
-
-#define _TO_STRING(x) #x
-#define TO_STRING(x) _TO_STRING(x)
+#include <tina/helper/macros.h>
 
 
 int main(int argc, char *argv[]) {
-	QCoreApplication::setApplicationName(TO_STRING(PACKAGE_NAME));
+	QCoreApplication::setApplicationName(TURAG_STRINGIFY(PACKAGE_NAME));
 	QCoreApplication::setOrganizationName("TURAG");
 	QCoreApplication::setOrganizationDomain("turag.de");
-	QCoreApplication::setApplicationVersion("v" TO_STRING(PACKAGE_VERSION));
+	QCoreApplication::setApplicationVersion("v" TURAG_STRINGIFY(PACKAGE_VERSION));
 
-	QLocale curLocale(QLocale("de_DE"));
-	QLocale::setDefault(curLocale);
+	QLocale::setDefault(QLocale("de_DE"));
 	setlocale(LC_ALL, "de");
 
 	Log::captureQtDebugMessages(true);

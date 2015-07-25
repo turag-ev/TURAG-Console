@@ -30,7 +30,8 @@
 #include <libs/iconmanager.h>
 #include <libs/log.h>
 #include <libs/elidedbutton.h>
-#include <qt/sidebar/sidebar.h>
+//#include <qt/sidebar/sidebar.h>
+#include <tina/helper/macros.h>
 
 #include "mainwindow.h"
 #include "controller.h"
@@ -40,13 +41,6 @@
 #include "connectionwidgets/connectionwidgetserial.h"
 #include "connectionwidgets/connectionwidgettcp.h"
 #include "connectionwidgets/connectionwidgetwebdav.h"
-
-
-#define _TO_STRING(x) #x
-#define TO_STRING(x) _TO_STRING(x)
-
-
-
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent)
@@ -429,7 +423,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 void MainWindow::about() {
-	QString aboutText(QString::fromUtf8("<b>TURAG-Console v" TO_STRING(PACKAGE_VERSION) "</b><br />"
+	QString aboutText(QString::fromUtf8("<b>TURAG-Console v" TURAG_STRINGIFY(PACKAGE_VERSION) "</b><br />"
 										"compiled on " __DATE__ " " __TIME__
 									#ifdef __GNUC__
 										"<br />with gcc " __VERSION__
