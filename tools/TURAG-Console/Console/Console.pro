@@ -154,7 +154,8 @@ SOURCES +=\
     ../../../libs/libcintelhex/ihex_copy.c \
     ../../../libs/libcintelhex/ihex_parse.c \
     ../../../libs/libcintelhex/ihex_record.c \
-    main.cpp
+    main.cpp \
+    ../../../tina/tina/debug/debug_time.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -303,7 +304,8 @@ HEADERS  += \
     libs/iconmanager.h \
     frontend/scfrontend.h \
     ../../../libs/libcintelhex/cintelhex.h \
-    ../../../libs/libcintelhex/config.h
+    ../../../libs/libcintelhex/config.h \
+    ../../../tina/tina/debug/debug_time.h
 
 INCLUDEPATH += \
     ../../../tina \
