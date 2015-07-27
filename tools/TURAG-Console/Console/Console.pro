@@ -130,7 +130,7 @@ SOURCES +=\
     libs/loggerwidget.cpp \
     libs/log.cpp \
     ../../../tina/tina/debug/image.c \
-    ../../../tina/tina/debug/print.c \
+    ../../../tina/tina/debug/print.cpp \
     ../../../tina/tina++/feldbus/host/bootloader_tina.cpp \
     ../../../tina/platform/desktop/thread.cpp \
     frontend/feldbusviews/feldbusbootloaderatmegaview.cpp \
@@ -304,7 +304,7 @@ HEADERS  += \
     frontend/scfrontend.h \
     ../../../libs/libcintelhex/cintelhex.h \
     ../../../libs/libcintelhex/config.h \
-    ../../../tina/tina/debug/debug_time.h
+    ../../../tina/tina/debug/game_time.h
 
 INCLUDEPATH += \
     ../../../tina \
