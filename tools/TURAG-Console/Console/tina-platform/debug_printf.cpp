@@ -4,13 +4,9 @@
 #include <QString>
 
 extern "C"
-void turag_debug_printf(const char* fmt, ...) {
+void turag_debug_vprintf(const char* fmt, va_list vargs) {
     QString buffer;
-
-    va_list args;
-    va_start(args, fmt);
-    buffer.vsprintf(fmt, args);
-    va_end(args);
+	buffer.vsprintf(fmt, vargs);
 
     /*char* pChar = buffer;
     while(*pChar) {

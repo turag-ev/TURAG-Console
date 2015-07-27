@@ -154,8 +154,7 @@ SOURCES +=\
     ../../../libs/libcintelhex/ihex_copy.c \
     ../../../libs/libcintelhex/ihex_parse.c \
     ../../../libs/libcintelhex/ihex_record.c \
-    main.cpp \
-    ../../../tina/tina/debug/debug_time.cpp
+    main.cpp
 
 HEADERS  += \
     mainwindow.h \
