@@ -31,5 +31,6 @@
         <file>images/tab-new.png</file>
         <file>images/tab-new-background.png</file>
         <file>images/preferences-system-network.png</file>
+        <file>images/camera-web.png</file>
     </qresource>
 </RCC>
