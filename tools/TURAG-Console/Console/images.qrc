@@ -30,5 +30,6 @@
         <file>images/hamburger.png</file>
         <file>images/tab-new.png</file>
         <file>images/tab-new-background.png</file>
+        <file>images/preferences-system-network.png</file>
     </qresource>
 </RCC>
