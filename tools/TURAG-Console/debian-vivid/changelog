@@ -1,3 +1,15 @@
+turag-console (3.0~git20150805~vivid-1) vivid; urgency=medium
+
+  * new upstream release
+
+ -- TURAG Developers <dev-team@turag.de>  Wed, 05 Aug 2015 17:29:15 +0200
+
+turag-console (3.0~git20150802~vivid-1) vivid; urgency=medium
+
+  * new upstream release
+
+ -- TURAG Developers <dev-team@turag.de>  Sun, 02 Aug 2015 11:42:06 +0200
+
 turag-console (2.14~git20150505~vivid-1) vivid; urgency=medium
 
   * new upstream release

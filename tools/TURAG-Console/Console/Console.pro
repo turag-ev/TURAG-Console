@@ -79,7 +79,10 @@ win32: {
 }
 
 QMAKE_CFLAGS += -std=c99
+
+QMAKE_CFLAGS_RELEASE += -flto
 QMAKE_CXXFLAGS_RELEASE += -flto
+QMAKE_LFLAGS_RELEASE += -flto
 
 SOURCES +=\
         mainwindow.cpp \
@@ -154,7 +157,10 @@ SOURCES +=\
     ../../../libs/libcintelhex/ihex_copy.c \
     ../../../libs/libcintelhex/ihex_parse.c \
     ../../../libs/libcintelhex/ihex_record.c \
-    main.cpp
+    main.cpp \
+    ../../../tina/tina++/geometry/circle.cpp \
+    ../../../tina/tina++/geometry/rect.cpp \
+    ../../../tina/tina++/geometry/geometry.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -260,7 +266,6 @@ HEADERS  += \
     ../../../tina/tina++/geometry/units/math.h \
     ../../../tina/tina++/geometry/units/unit.h \
     ../../../tina/tina++/geometry/units/units.h \
-    ../../../tina/tina++/geometry/fieldpose.h \
     ../../../tina/tina++/geometry/geometry.h \
     ../../../tina/tina++/geometry/units.h \
     ../../../tina/tina++/helper/locked.h \
@@ -304,7 +309,26 @@ HEADERS  += \
     frontend/scfrontend.h \
     ../../../libs/libcintelhex/cintelhex.h \
     ../../../libs/libcintelhex/config.h \
-    ../../../tina/tina/debug/game_time.h
+    ../../../tina/tina/debug/game_time.h \
+    ../../../tina/tina++/container/stack.h \
+    ../../../tina/tina++/container/queue.h \
+    ../../../tina/tina++/container/array_ref.h \
+    ../../../tina/tina++/container/rolling_buffer.h \
+    ../../../src/common/global/eurobot.h \
+    ../../../src/common/global/global.h \
+    ../../../tina/tina++/helper/uninitialized.h \
+    ../../../tina/tina++/helper/tmp_length.h \
+    ../../../tina/tina++/helper/normalize_type_traits.h \
+    ../../../tina/tina++/helper/traits_algorithms.h \
+    ../../../tina/tina++/geometry/spline.h \
+    ../../../tina/tina++/geometry/rect.h \
+    ../../../tina/tina++/geometry/circle.h \
+    ../../../src/common/global/motion_control.h \
+    ../../../src/common/global/powerplane.h \
+    ../../../src/common/global/localisation.h \
+    ../../../src/common/global/userinterface.h \
+    ../../../src/common/global/system_control.h \
+    ../../../src/common/global/stmcam_interface.h
 
 INCLUDEPATH += \
     ../../../tina \
@@ -316,7 +340,11 @@ INCLUDEPATH += \
 
 DISTR_FILES += \
     $$files(images/*.png) \
-    turag-console.desktop
+    turag-console.desktop \
+    ../../../libs/libsimeurobot.pri \
+    ../../../libs/libsimeurobot/plugin/libsimeurobot-plugin.pri \
+    ../../../libs/qt/expander-widget/expanderwidget.pri \
+    Console.pro
 
 RESOURCES += \
     images.qrc
@@ -324,6 +352,9 @@ RESOURCES += \
 OTHER_FILES += \
     TODO.txt \
     images/turag-55.png
+
+include(../../../libs/libsimeurobot.pri)
+include(../../../libs/qt/expander-widget/expanderwidget.pri)
 
 # install
 unix:!mac {
@@ -349,22 +380,27 @@ unix:!mac {
   INSTALLS += target pixmaps desktop mime
 
   # own make dist :P -> make distr
-  PACKAGE_STRING = $(TARGET)-$${VERSION}$${EXT_VERSION}
+  PACKAGE_STRING = $${TARGET}-$${VERSION}$${EXT_VERSION}
   TMP_DIR = .tmp
-  DIST_DIR = $${TMP_DIR}/$${PACKAGE_STRING}
-  DISTFILES += $${SOURCES} $${HEADERS} $${RESOURCES} $${FORMS} $${DISTR_FILES} Console.pro
+  DIST_DIR = $${TMP_DIR}/$${PACKAGE_STRING}/tools/TURAG-Console/Console
+  DISTRFILES += $${SOURCES} $${HEADERS} $${RESOURCES} $${FORMS} $${DISTR_FILES}
 
-  distr.commands = (test -d $${DIST_DIR}/src || mkdir -p $${DIST_DIR}/src) && \
-                   $(COPY_FILE) --parents $${DISTFILES} $${DIST_DIR}/src && \
+  distr.commands =
+  distr.depends = $${PACKAGE_STRING}.tar.gz
+  distr.target = distr
+
+  pack.input = DISTRFILES
+  pack.output = $${PACKAGE_STRING}.tar.gz
+  pack.CONFIG = combine no_link explicit_dependencies
+  pack.dependency_type = TYPE_C
+  pack.commands =  (test -d $${DIST_DIR} || mkdir -p $${DIST_DIR}) && \
+                   $(COPY_FILE) --parents ${QMAKE_FILE_IN} $${DIST_DIR} && \
                    (cd $${TMP_DIR} && \
                     $(TAR) $${PACKAGE_STRING}.tar $${PACKAGE_STRING} && \
                     $(COMPRESS) $${PACKAGE_STRING}.tar) && \
                    $(MOVE) $${TMP_DIR}/$${PACKAGE_STRING}.tar.gz . && \
-                   $(DEL_FILE) -r $${DIST_DIR}
+                   $(DEL_FILE) -r $${TMP_DIR}
 
+  QMAKE_EXTRA_COMPILERS += pack
   QMAKE_EXTRA_TARGETS += distr
 }
-
-include(../../../libs/libsimeurobot.pri)
-include(../../../libs/qt/expander-widget/expanderwidget.pri)
-

@@ -11,3 +11,6 @@ HEADERS  += \
     
 RESOURCES += \
     $$PWD/expanderwidget.qrc
+
+DISTR_FILES += \
+    $$files($$PWD/*.png)
