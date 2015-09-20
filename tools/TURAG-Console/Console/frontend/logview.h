@@ -20,7 +20,7 @@ class RobotLogFrontend : public BaseFrontend {
 
 public:
   explicit
-  RobotLogFrontend(TinaInterface* interface, QWidget *parent = 0);
+  RobotLogFrontend(TinaInterface* tinaInterface, QWidget *parent = 0);
 
   virtual ~RobotLogFrontend();
 

@@ -27,7 +27,7 @@ public slots:
     void onDisconnected(bool reconnecting) override;
 
 protected:
-    TinaInterface* interface;
+    TinaInterface* tinaInterface;
     TinaCameraFrontend* camview;
     RobotLogFrontend* logview;
     PlainTextFrontend* cshell;

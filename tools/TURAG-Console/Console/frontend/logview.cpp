@@ -15,7 +15,7 @@
 
 using namespace TURAG::SimEurobot;
 
-RobotLogFrontend::RobotLogFrontend(TinaInterface *interface, QWidget *parent) :
+RobotLogFrontend::RobotLogFrontend(TinaInterface *tinaInterface, QWidget *parent) :
 	BaseFrontend(QStringLiteral("Meldungen"), QIcon(), parent),
 	sim_context_(app_context_),
 	robot_context_(sim_context_)
@@ -31,7 +31,7 @@ RobotLogFrontend::RobotLogFrontend(TinaInterface *interface, QWidget *parent) :
     setLayout(layout);
 
     // connect to input source TinaInterface
-    connect(interface, SIGNAL(tinaPackageReady(QByteArray)), this, SLOT(writeLine(QByteArray)));
+    connect(tinaInterface, SIGNAL(tinaPackageReady(QByteArray)), this, SLOT(writeLine(QByteArray)));
 
 	connect(&refresh_log_timer_, SIGNAL(timeout()), this, SLOT(onUpdateLog()));
 

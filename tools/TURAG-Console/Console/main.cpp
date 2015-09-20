@@ -76,5 +76,6 @@ int main(int argc, char *argv[]) {
 		parser.process(a);
 	}
 
+    return 0;
 }
 

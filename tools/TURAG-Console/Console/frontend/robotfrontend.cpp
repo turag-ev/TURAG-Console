@@ -15,8 +15,8 @@ RobotFrontend::RobotFrontend(QWidget *parent) :
 	BaseFrontend("TURAG Roboter-Ansicht (TinA)", IconManager::get("turag-tina"), parent)
 {
     tabs = new QTabWidget;
-    interface = new TinaInterface(this);
-    logview = new RobotLogFrontend(interface);
+    tinaInterface = new TinaInterface(this);
+    logview = new RobotLogFrontend(tinaInterface);
     cmenu = new PlainTextFrontend();
     graphView = new TinaGraphFrontend;
     graphView->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
@@ -36,25 +36,25 @@ RobotFrontend::RobotFrontend(QWidget *parent) :
     tabs->addTab(graphView, "Diagramme");
 
 
-    connect(interface, SIGNAL(cmenuDataReady(QByteArray)), cmenu, SLOT(writeData(QByteArray)));
+    connect(tinaInterface, SIGNAL(cmenuDataReady(QByteArray)), cmenu, SLOT(writeData(QByteArray)));
 
     // connect outputs of logview and cmenu to own dataReadySignal
     connect(logview, SIGNAL(dataReady(QByteArray)), this, SIGNAL(dataReady(QByteArray)));
     connect(cmenu, SIGNAL(dataReady(QByteArray)), this, SIGNAL(dataReady(QByteArray)));
     connect(logview, SIGNAL(activatedMessage(char,QString)), this, SLOT(activatedMessage(char,QString)));
-    connect(interface, SIGNAL(tinaPackageReady(QByteArray)), graphView, SLOT(writeLine(QByteArray)));
+    connect(tinaInterface, SIGNAL(tinaPackageReady(QByteArray)), graphView, SLOT(writeLine(QByteArray)));
 }
 
 
 void RobotFrontend::writeData(QByteArray data) {
-    interface->dataInput(data);
+    tinaInterface->dataInput(data);
 }
 
 void RobotFrontend::clear(void) {
     logview->clear();
     cmenu->clear();
     graphView->clear();
-    interface->clear();
+    tinaInterface->clear();
 }
 
 void RobotFrontend::onConnected(bool readOnly, QIODevice* dev) {

@@ -31,7 +31,7 @@ private slots:
     void activatedMessage(char, QString message);
 
 private:
-    TinaInterface* interface;
+    TinaInterface* tinaInterface;
     RobotLogFrontend* logview;
     PlainTextFrontend* cmenu;
     TinaGraphFrontend* graphView;

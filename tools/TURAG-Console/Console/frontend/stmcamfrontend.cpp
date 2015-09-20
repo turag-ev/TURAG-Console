@@ -16,9 +16,9 @@
 STMCamFrontend::STMCamFrontend(QWidget *parent) :
 	BaseFrontend("STMCam", IconManager::get("camera-web"), parent)
 {
-    interface = new TinaInterface(this);
+    tinaInterface = new TinaInterface(this);
 	camview = new TinaCameraFrontend(this);
-    logview = new RobotLogFrontend(interface);
+    logview = new RobotLogFrontend(tinaInterface);
 	cshell = new PlainTextFrontend(this);
 
     // IO box
@@ -49,8 +49,8 @@ STMCamFrontend::STMCamFrontend(QWidget *parent) :
     // set main box as layout
     setLayout(viewlayout);
 
-    connect(interface, SIGNAL(cmenuDataReady(QByteArray)), cshell, SLOT(writeData(QByteArray)));
-    connect(interface, SIGNAL(tinaPackageReady(QByteArray)), camview, SLOT(writeLine(QByteArray)));
+    connect(tinaInterface, SIGNAL(cmenuDataReady(QByteArray)), cshell, SLOT(writeData(QByteArray)));
+    connect(tinaInterface, SIGNAL(tinaPackageReady(QByteArray)), camview, SLOT(writeLine(QByteArray)));
 
     // connect outputs of logview and cmenu to own dataReadySignal
     connect(camview, SIGNAL(dataReady(QByteArray)), this, SIGNAL(dataReady(QByteArray)));
@@ -59,14 +59,14 @@ STMCamFrontend::STMCamFrontend(QWidget *parent) :
 }
 
 void STMCamFrontend::writeData(QByteArray data) {
-    interface->dataInput(data);
+    tinaInterface->dataInput(data);
 }
 
 void STMCamFrontend::clear(void) {
     logview->clear();
     cshell->clear();
     camview->clear();
-    interface->clear();
+    tinaInterface->clear();
 }
 
 void STMCamFrontend::onConnected(bool readOnly, QIODevice* dev) {
