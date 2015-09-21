@@ -25,14 +25,8 @@
 #include "cintelhex.h"
 
 #include <stdio.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <string.h>
 
-#include <sys/stat.h>
-#ifdef HAVE_SYS_MMAN_H
-#include <sys/mman.h>
-#endif
 
 #define IHEX_CHR_RECORDMARK 0x3A
 
@@ -54,77 +48,60 @@ static int ihex_parse_single_record(ihex_rdata_t data, unsigned int length, ihex
 
 ihex_recordset_t* ihex_rs_from_file(const char* filename)
 {
-	struct stat s;
-	int         fd;
-	ulong_t     l;
-	char*       c;
+    FILE * pFile;
+    long lSize;
+    char * buffer;
+    size_t result;
 	
 	ihex_recordset_t* r;
 	
-	fd = open(filename, O_RDONLY);
-	if (fd < 0)
-	{
-		IHEX_SET_ERROR(IHEX_ERR_NO_INPUT, "Input file %s does not exist", filename);
-		goto open_failed;
-	}
-	
-	if (fstat (fd, &s) != 0)
-	{
-		IHEX_SET_ERROR(IHEX_ERR_NO_INPUT, "Could not stat input file %s", filename);
-		goto stat_failed;
-	}
-	
-	l = s.st_size;
-#ifdef HAVE_MMAP
-	if ((c = (char*) mmap(NULL, l, PROT_READ, MAP_PRIVATE, fd, 0)) == (void*) -1)
-	{
-		IHEX_SET_ERROR(IHEX_ERR_MMAP_FAILED, "Could not map file %s", filename);
-		goto mmap_failed;
-	}
-#else
-	if ((c = (char*) malloc(l)) == NULL)
-	{
-		IHEX_SET_ERROR(IHEX_ERR_READ_FAILED, "Could not allocate memory for reading file %s", filename);
-		goto malloc_failed;
-	}
+    pFile = fopen ( filename , "rb" );
+    if (pFile == NULL) {
+        IHEX_SET_ERROR(IHEX_ERR_NO_INPUT, "Input file %s does not exist", filename);
+        goto open_failed;
+    }
 
-	ulong_t rest = l;
-	while (rest > 0)
-	{
-		ssize_t bytes = read(fd, c + (l - rest), rest);
-		if (bytes < 0)
-		{
-			IHEX_SET_ERROR(IHEX_ERR_READ_FAILED, "Could not read file %s", filename);
-			goto read_failed;
-		}
-		else if (bytes == 0) break;	//end of file
-		rest -= bytes;
-	}
-#endif
-	
-	r = ihex_rs_from_mem(c, l);
+    // obtain file size:
+    if (fseek (pFile , 0 , SEEK_END) != 0) {
+        IHEX_SET_ERROR(IHEX_ERR_NO_INPUT, "Could not stat input file %s", filename);
+        goto stat_failed;
+    }
+    lSize = ftell (pFile);
+    if (lSize == -1L) {
+        IHEX_SET_ERROR(IHEX_ERR_NO_INPUT, "Could not stat input file %s", filename);
+        goto stat_failed;
+    }
+    rewind (pFile);
+
+    // allocate memory to contain the whole file:
+    buffer = (char*) malloc (sizeof(char)*lSize);
+    if (buffer == NULL) {
+        IHEX_SET_ERROR(IHEX_ERR_READ_FAILED, "Could not allocate memory for reading file %s", filename);
+        goto malloc_failed;
+    }
+
+    // copy the file into the buffer:
+    result = fread (buffer, 1, lSize, pFile);
+    if ((long)result != lSize) {
+        IHEX_SET_ERROR(IHEX_ERR_READ_FAILED, "Could not read file %s", filename);
+        goto read_failed;
+    }
+
+    r = ihex_rs_from_mem(buffer, lSize);
 	
 	// No special error treatment necessary, we need to unmap and close
 	// the file anyway.
-#ifdef HAVE_MMAP
-	munmap((void*) c, l);
-#else
-	free(c);
-#endif
-	close(fd);
+    free(buffer);
+    fclose(pFile);
 	
 	return r;
 	
 	// Clean up on error.
-#ifdef HAVE_MMAP
-	mmap_failed:
-#else
 	read_failed:
-		free(c);
+        free(buffer);
 	malloc_failed:
-#endif
 	stat_failed:
-		close(fd);
+        fclose(pFile);
 	open_failed:
 	
 	return NULL;

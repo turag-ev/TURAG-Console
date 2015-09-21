@@ -4,6 +4,18 @@ ConnectionWidgets
 backend-Parameter bei connectionChanged-Signal entfernen - unnötige
 Kopplung!
 
+parameter wird an sich nur im TcpConnectionWidget für 2 Dinge benötigt:
+ - heartbeat-Feature
+ - Synchronisation des Verbindungsstatus von ConnectionWidget
+   und Backend
+
+Das Heartbeat-Feature kann fürs Backend nicht länger benutzt werden.
+--> nochmal prüfen ob es wirklich zu lange dauert bis die Verbindung
+timeoutet
+--> nach neuen Lösungen suchen
+
+Synchronisation ist eigentlich nicht nötig und kann entfallen.
+
 
 Backends
 -----------------------------
