@@ -26,7 +26,7 @@ public:
     
 public slots:
     void openConnection(void);
-	void openConnection(const QUrl& connectionUrl, bool* success, BaseBackend **openedBackend);
+	void openConnection(const QUrl& connectionUrl, bool* success);
     void closeConnection(void);
     void setFrontend(int newFrontendIndex);
     void setFrontend(int newFrontendIndex, bool calledManually);

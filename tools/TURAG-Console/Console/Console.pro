@@ -160,7 +160,8 @@ SOURCES +=\
     main.cpp \
     ../../../tina/tina++/geometry/circle.cpp \
     ../../../tina/tina++/geometry/rect.cpp \
-    ../../../tina/tina++/geometry/geometry.cpp
+    ../../../tina/tina++/geometry/geometry.cpp \
+    libs/tcpsocketext.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -328,7 +329,8 @@ HEADERS  += \
     ../../../src/common/global/localisation.h \
     ../../../src/common/global/userinterface.h \
     ../../../src/common/global/system_control.h \
-    ../../../src/common/global/stmcam_interface.h
+    ../../../src/common/global/stmcam_interface.h \
+    libs/tcpsocketext.h
 
 INCLUDEPATH += \
     ../../../tina \

@@ -118,7 +118,7 @@ void ConnectionWidgetSerial::connectionChangedInternal() {
 	}
 
 	bool save = false;
-	emit connectionChanged(url, &save, nullptr);
+	emit connectionChanged(url, &save);
     if (save) {
 		saveConnection(url.toDisplayString());
         addRecentConnections();

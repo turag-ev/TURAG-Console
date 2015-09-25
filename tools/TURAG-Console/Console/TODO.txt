@@ -1,22 +1,4 @@
 
-ConnectionWidgets
------------------------------------------
-backend-Parameter bei connectionChanged-Signal entfernen - unnötige
-Kopplung!
-
-parameter wird an sich nur im TcpConnectionWidget für 2 Dinge benötigt:
- - heartbeat-Feature
- - Synchronisation des Verbindungsstatus von ConnectionWidget
-   und Backend
-
-Das Heartbeat-Feature kann fürs Backend nicht länger benutzt werden.
---> nochmal prüfen ob es wirklich zu lange dauert bis die Verbindung
-timeoutet
---> nach neuen Lösungen suchen
-
-Synchronisation ist eigentlich nicht nötig und kann entfallen.
-
-
 Backends
 -----------------------------
 von BaseBackend IODeviceBackend ableiten und
@@ -34,6 +16,11 @@ Deployment
 ---------------------------------------
 mal versuchen Linux-Binaries mit Libs + Start-Skript bereitzustellen
 http://doc.qt.io/qt-5/linux-deployment.html
+-->https://intern.turag.de/forum/viewtopic.php?f=62&t=832&start=30#p17596
+scheint sich ganz gut zu eignen
+
+Angepeilte Qt-Version: 5.5 wegen offiziellem Windows 10-Support
+--> vorher muss Feldbus-Bug gelöst werden
 
 
 Plugin-Modell
@@ -198,11 +185,4 @@ wenn mehr als eine Instanz benutzt wird.
 Vielleicht lieber einen Options-Dialog bereitstellen, in dem Standard-Einstellungen
 bearbeitet werden können, die nicht transparent gespeichert werden können?
 
-
-
-Sonstiges, Überlegeungen,....
------------------------------------------------
-- Menü-Einträge der Connection-Widgets entfernt. Das ist mit der Adressleiste nicht
-länger praktisch umsetzbar und ist der Grund einer unnötigen Kopplung. Das Connection-Widget
-soll ausschließlich Ausgabe-Medium sein.
 

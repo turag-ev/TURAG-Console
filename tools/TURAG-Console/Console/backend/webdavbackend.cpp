@@ -12,6 +12,17 @@ WebDAVBackend::WebDAVBackend(bool ignoreSslErrors_, QObject *parent) :
 
 WebDAVBackend::~WebDAVBackend() {
 	doCleanUpConnection();
+
+	// We need to call this function here, because stream_ is actually
+	// a child of webdav. That's why stream_ is invalidated, once
+	// WebDAVBackend is destructed which happens before destructing
+	// BaseBackend. But in ~BaseBackend closeConnection is called, too.
+	// Then we would try to free invalidated memory which is why we need
+	// to call this function earlier (before webdav is destructed).
+	// Note that the call to doCleanUpConnection() is not redundant, as
+	// the destrcutor ignores virtual overloaded functions and calls its own
+	// implementation of doCleanUpConnection() from closeConnection().
+	closeConnection();
 }
 
 

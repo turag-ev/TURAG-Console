@@ -21,7 +21,7 @@ public:
     
 signals:
     // the details of the connection were changed
-	void connectionChanged(const QUrl& url, bool* saveConnectionString, BaseBackend** openedBackend);
+	void connectionChanged(const QUrl& url, bool* saveConnectionString);
 
 protected:
     QStringList recent_connections;

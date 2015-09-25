@@ -104,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect_action->setStatusTip("Letzte Verbindung wiederaufbauen");
     connect_action->setIcon(IconManager::get("call-start"));
 	connect(connect_action, &QAction::triggered, [this]() {
-		controller->openConnection(addressBar->currentText(), nullptr, nullptr);
+		controller->openConnection(addressBar->currentText(), nullptr);
 	});
 
 	disconnect_action = new QAction("&Trennen (Strg+X)", this);
@@ -321,8 +321,8 @@ MainWindow::MainWindow(QWidget *parent) :
 		scrollarea->setFrameShape(QFrame::NoFrame);
 
 		connectionTabWidget->addTab(scrollarea, iter->objectName());
-		connect(iter, SIGNAL(connectionChanged(QUrl,bool*,BaseBackend**)), controller, SLOT(openConnection(QUrl, bool*,BaseBackend**)));
-		connect(iter, SIGNAL(connectionChanged(QUrl,bool*,BaseBackend**)), this, SLOT(updateUrl(QUrl,bool*)));
+		connect(iter, SIGNAL(connectionChanged(QUrl,bool*)), controller, SLOT(openConnection(QUrl, bool*)));
+		connect(iter, SIGNAL(connectionChanged(QUrl,bool*)), this, SLOT(updateUrl(QUrl)));
 	}
 	layout->addWidget(connectionTabWidget);
 	connect(connectionTabWidget, &QTabWidget::currentChanged, [this]() {
@@ -510,7 +510,7 @@ void MainWindow::handleNewConnectionAction(bool ) {
 	}
 }
 
-void MainWindow::updateUrl(const QUrl& url, bool* ) {
+void MainWindow::updateUrl(const QUrl& url) {
 	addressBar->lineEdit()->setText(url.toDisplayString());
 }
 
@@ -646,7 +646,7 @@ void MainWindow::openUrl(QString url_string) {
 	}
 
 	bool success = false;
-	controller->openConnection(url, &success, nullptr);
+	controller->openConnection(url, &success);
 	if (!success) {
 		printError("Couldn't open specified connection");
 		centralStackWidget->setCurrentIndex(0);

@@ -1,4 +1,5 @@
 #include "tcpbackend.h"
+#include <libs/tcpsocketext.h>
 
 #include <QDebug>
 #include <QStringList>
@@ -27,18 +28,13 @@ bool TcpBackend::doConnectionPreconditionChecking(const QUrl& url) {
 }
 
 BaseBackend::ConnectionStatus TcpBackend::doOpenConnection(const QUrl& url) {
-	QTcpSocket* socket = new QTcpSocket;
+	TcpSocketExt* socket = new TcpSocketExt(true);
 	connect(socket, SIGNAL(readyRead()), this, SLOT(emitDataReady()));
 	connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onTcpError(QAbstractSocket::SocketError)));
 	connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
 	connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
 
-	socket->connectToHost(url.host(), url.port());
-
-    /*ob die connection erfolgreich war, lässt sich an dieser Stelle leider nicht ermitteln
-     *VOID QTcpSocket::connectToHost(), sollte dennoch ein Fehler auftreten, so wird er schlicht
-     *ausgegeben */
-
+	socket->connectToHost(url.host(), url.port(), QIODevice::ReadWrite | QIODevice::Unbuffered);
 	stream_.reset(socket);
 
 	return ConnectionStatus::ongoing;

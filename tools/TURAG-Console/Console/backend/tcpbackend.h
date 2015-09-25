@@ -6,7 +6,7 @@
 
 #include <QString>
 #include <QtNetwork/QHostAddress>
-#include <QtNetwork/QTcpSocket>
+#include <QtNetwork/QAbstractSocket>
 
 class TcpBackend : public BaseBackend {
     Q_OBJECT

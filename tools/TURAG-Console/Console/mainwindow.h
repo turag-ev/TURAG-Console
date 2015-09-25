@@ -45,7 +45,7 @@ private slots:
     void onDisconnected(bool reconnecting);
 
     void handleNewConnectionAction(bool triggered);
-	void updateUrl(const QUrl& url, bool* saveConnectionString);
+	void updateUrl(const QUrl& url);
 
 #   ifdef QT_DEBUG
         void dumpAllObjectTrees(void);

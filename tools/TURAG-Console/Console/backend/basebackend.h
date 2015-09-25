@@ -137,7 +137,7 @@ private:
 
 
 	// internal helper function that does the same as closeConnection()
-	// but does not call doCloseCOnnection().
+	// but does not call doCleanUpConnection().
 	void closeConnectionInternal(void);
 
 	bool connectionInProgress;

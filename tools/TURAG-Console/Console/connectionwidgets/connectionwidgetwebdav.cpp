@@ -361,6 +361,6 @@ void ConnectionWidgetWebDAV::fileActivated(int row,	int) {
 		url.setPassword(webdav.password());
 		url.setPath(webdav.rootPath() + currentFileItem->path() + fileName);
 
-		emit connectionChanged(url, nullptr, nullptr);
+		emit connectionChanged(url, nullptr);
 	}
 }

@@ -4,6 +4,7 @@
 #include "connectionwidget.h"
 #include <Debug_Server/debugserver_protocol.h>
 #include "../backend/tcpbackend.h"
+#include <libs/tcpsocketext.h>
 
 #include <QLineEdit>
 #include <QPushButton>
@@ -56,9 +57,7 @@ private slots:
     void socketError(QAbstractSocket::SocketError error);
 
     void showContextMenu(const QPoint & pos);
-    void heartBeatTimerOccured(void);
 
-    void backendConnected();
 
 private:
     void fillDeviceList(void);
@@ -69,15 +68,10 @@ private:
     void send(QByteArray data);
     void send(QString string);
 
-    QTimer heartBeatTimer;
-
-    device * selectedDevice;
-    TcpBackend* associatedBackend;
-
     QLineEdit * hostEdit;
     QPushButton * connect_button;
     QPushButton * connect_cancel_button;
-    QTcpSocket * socket;
+	QAbstractSocket * socket;
 
     QListWidget * allDevicesWidget;
 

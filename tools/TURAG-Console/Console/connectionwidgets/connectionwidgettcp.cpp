@@ -5,20 +5,13 @@
 #include <QSplitter>
 #include <libs/fastlistwidget.h>
 #include <libs/log.h>
+#include <QBuffer>
 
 ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
-    ConnectionWidget("Letzte Verbindungen", parent),
-    selectedDevice(nullptr),
-	associatedBackend(nullptr)
+	ConnectionWidget("Letzte Verbindungen", parent),
+	socket(nullptr)
 {
     setObjectName("Debug Server");
-
-    socket = new  QTcpSocket(this);
-    connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
-    connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
-    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
-    connect(socket, SIGNAL(readyRead()), this, SLOT(receive()));
-
 
     QSettings settings;
     settings.beginGroup("ConnectionWidgetTcp");
@@ -104,9 +97,6 @@ ConnectionWidgetTcp::ConnectionWidgetTcp (QWidget *parent) :
     connect(bootloaderContextAction, SIGNAL(triggered()), this, SLOT(resetFromContextMenu()));
     contextMenu->addAction(bootloaderContextAction);
 
-    heartBeatTimer.setInterval(3 * HEARTBEAT_SEND_PERIOD);
-    connect(&heartBeatTimer, SIGNAL(timeout()), this, SLOT(heartBeatTimerOccured()));
-
     addRecentConnections();
 }
 
@@ -129,7 +119,6 @@ void ConnectionWidgetTcp::socketConnected(void) {
 
     allDevicesWidget->setEnabled(true);
 
-    heartBeatTimer.start();
     timeText->setText("Serverzeit: ");
 
     saveConnection(hostEdit->text());
@@ -148,7 +137,6 @@ void ConnectionWidgetTcp::socketDisconnected(void) {
     hostEdit->setEnabled(true);
     allDevicesWidget->setEnabled(false);
 
-    selectedDevice = nullptr;
     for (device* dev : allDevices) {
         delete dev;
     }
@@ -294,10 +282,6 @@ void ConnectionWidgetTcp::fillDeviceList(void) {
             item->setTextColor(Qt::red);
         }
 
-        if (currentDevice == selectedDevice) {
-            descr.append(" <aktiv>");
-        }
-
         item->setText(descr);
 
         allDevicesWidget->addItem(item);
@@ -323,23 +307,9 @@ void ConnectionWidgetTcp::send(QString string) {
  *
  *SLOTS
  */
-void ConnectionWidgetTcp::heartBeatTimerOccured(void) {
-    if (socket->isOpen()) {
-        socket->close();
-        if (associatedBackend) {
-            // if we would use connectionWasLost() here, we could make use of the
-            // autoReconnect-feature. The trouble with this is, that most likely the server is offline
-			// which results in connection attempts that time out before failing.
-            // It then becomes nearly impossible to
-            // open a new connection. That's why we just close the connection here.
-            associatedBackend->closeConnection();
-        }
-        heartBeatTimer.stop();
-    }
-}
 
 void ConnectionWidgetTcp::connectToServer() {
-    if (!socket->isOpen()) {
+	if (socket == nullptr) {
         QSettings settings;
         settings.beginGroup("ConnectionWidgetTcp");
         settings.setValue("host", hostEdit->text());
@@ -375,19 +345,24 @@ void ConnectionWidgetTcp::connectToServer() {
         hostEdit->setEnabled(false);
         if (recentConnectionsContainer) recentConnectionsContainer->setEnabled(false);
 
+		socket = new TcpSocketExt(true, 5, 1, this);
+		connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
+		connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
+		connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
+		connect(socket, SIGNAL(readyRead()), this, SLOT(receive()));
 		socket->connectToHost(hostAddress, port);
     } else {
         socket->close();
-        if (associatedBackend) {
-            associatedBackend->closeConnection();
-        }
-        heartBeatTimer.stop();
-    }
+		socket->deleteLater();
+		socket = nullptr;
+	}
 }
 
 void ConnectionWidgetTcp::cancel_connecting(void) {
     if (socket) {
         socket->abort();
+		socket->deleteLater();
+		socket = nullptr;
         connect_button->setEnabled(true);
         connect_button->setVisible(true);
         connect_cancel_button->setVisible(false);
@@ -419,11 +394,12 @@ void ConnectionWidgetTcp::resetFromContextMenu() {
 }
 
 void ConnectionWidgetTcp::receive() {
-    // restart heartbeat timer because we received something
-    heartBeatTimer.start();
+	QByteArray inarray(socket->readAll());
+	QBuffer indata(&inarray);
+	indata.open(QIODevice::ReadOnly);
 
-    while (socket->canReadLine()) {
-        QByteArray data(socket->readLine(150));
+	while (indata.canReadLine()) {
+		QByteArray data(indata.readLine(500));
         data.chop(1);
         if (data == QByteArray(TERMINATE)) {
             handleData();
@@ -439,35 +415,18 @@ void ConnectionWidgetTcp::startDataChannel(QListWidgetItem * item) {
     if (newSelectedDevice->onlineStatus == false) {
         return;
     }
-	selectedDevice = newSelectedDevice;
-	fillDeviceList();
-
-	if (associatedBackend) {
-		disconnect(associatedBackend, SIGNAL(connected(bool)), this, SLOT(backendConnected()));
-		disconnect(associatedBackend, SIGNAL(dataReady(QByteArray)), &heartBeatTimer, SLOT(start()));
-
-		// tcp backend might be in auto reconnect mode - in that case we couldn't do a manual reconnect
-		// so we have to do a manual disconnect
-		associatedBackend->closeConnection();
-	}
 
 	QUrl url;
 	url.setScheme("tcp");
 	url.setHost(socket->peerAddress().toString());
-	url.setPort(selectedDevice->port.toInt());
-	url.setPath(selectedDevice->path);
-	url.setFragment(selectedDevice->description);
+	url.setPort(newSelectedDevice->port.toInt());
+	url.setPath(newSelectedDevice->path);
+	url.setFragment(newSelectedDevice->description);
 
 	//Signal emitten mit der URL;
 	//save connectionString hat hier keine Bedeutung,
 	// da der Host schon früher gespeichert wird
-	BaseBackend* backend;
-	emit connectionChanged(url, nullptr, &backend);
-    if (backend) {
-        associatedBackend = dynamic_cast<TcpBackend*>(backend);
-		connect(associatedBackend, SIGNAL(connected(bool)), this, SLOT(backendConnected()));
-        connect(associatedBackend, SIGNAL(dataReady(QByteArray)), &heartBeatTimer, SLOT(start()), Qt::UniqueConnection);
-    }
+	emit connectionChanged(url, nullptr);
 }
 
 
@@ -493,10 +452,3 @@ void ConnectionWidgetTcp::onOpenRecentConnection(int index) {
     }
 }
 
-// this slot is important for the case that the datachannel is connected
-// before the control channel
-void ConnectionWidgetTcp::backendConnected() {
-    if (!socket->isOpen()) {
-        connectToServer();
-    }
-}

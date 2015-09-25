@@ -161,7 +161,7 @@ void Controller::openConnection(void) {
 }
 
 
-void Controller::openConnection(const QUrl &connectionUrl, bool *success, BaseBackend** openedBackend) {
+void Controller::openConnection(const QUrl &connectionUrl, bool *success) {
 
     closeConnection();
 
@@ -185,7 +185,6 @@ void Controller::openConnection(const QUrl &connectionUrl, bool *success, BaseBa
             currentBackend = backend;
             setFrontend(currentFrontendIndex, false);
             if (success) *success = true;
-            if (openedBackend) *openedBackend = currentBackend;
             return;
         }
 
@@ -198,7 +197,6 @@ void Controller::openConnection(const QUrl &connectionUrl, bool *success, BaseBa
 	}
 
     if (success) *success = false;
-    if (openedBackend) *openedBackend = currentBackend;
 }
 
 
