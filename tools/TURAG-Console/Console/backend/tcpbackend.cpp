@@ -34,8 +34,8 @@ BaseBackend::ConnectionStatus TcpBackend::doOpenConnection(const QUrl& url) {
 	connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
 	connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
 
-	socket->connectToHost(url.host(), url.port());
-	stream_.reset(socket);
+    stream_.reset(socket);
+    socket->connectToHost(url.host(), url.port());
 
 	return ConnectionStatus::ongoing;
 }
@@ -51,7 +51,7 @@ void TcpBackend::socketDisconnected(void) {
 }
 
 void TcpBackend::onTcpError(QAbstractSocket::SocketError error) {
-	qDebug() << error << stream_->errorString();
+    qDebug() << error << stream_->errorString();
 
     switch (error) {
     case QAbstractSocket::ConnectionRefusedError:

@@ -76,6 +76,10 @@ win32: {
   # don't use broken -mms-bitfields flag for windows
   QMAKE_CFLAGS += -mno-ms-bitfields
   QMAKE_CXXFLAGS += -mno-ms-bitfields
+
+  # winsocks2 library is required for tcp keepalive in
+  # tcp backend
+  LIBS += -lws2_32
 }
 
 QMAKE_CFLAGS += -std=c99
