@@ -34,7 +34,7 @@ BaseBackend::ConnectionStatus TcpBackend::doOpenConnection(const QUrl& url) {
 	connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
 	connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
 
-	socket->connectToHost(url.host(), url.port(), QIODevice::ReadWrite | QIODevice::Unbuffered);
+	socket->connectToHost(url.host(), url.port());
 	stream_.reset(socket);
 
 	return ConnectionStatus::ongoing;
@@ -51,36 +51,23 @@ void TcpBackend::socketDisconnected(void) {
 }
 
 void TcpBackend::onTcpError(QAbstractSocket::SocketError error) {
+	qDebug() << error << stream_->errorString();
+
     switch (error) {
     case QAbstractSocket::ConnectionRefusedError:
+	case QAbstractSocket::HostNotFoundError:
+	case QAbstractSocket::RemoteHostClosedError:
+	case QAbstractSocket::NetworkError:
+		logFilteredErrorMsg(stream_->errorString());
 		if (stream_->isOpen() && !isConnectionInProgress()) {
 			connectionWasLost();
 		} else {
 			connectingFailed();
 		}
 
-        logFilteredErrorMsg("Connection refused");
         break;
-    case QAbstractSocket::HostNotFoundError:
-		if (stream_->isOpen() && !isConnectionInProgress()) {
-			connectionWasLost();
-		} else {
-			connectingFailed();
-		}
 
-        logFilteredErrorMsg("Host not found");
-        break;
-    case QAbstractSocket::RemoteHostClosedError:
-		if (stream_->isOpen() && !isConnectionInProgress()) {
-			connectionWasLost();
-		} else {
-			connectingFailed();
-		}
-
-        logFilteredErrorMsg("Remote host closed");
-        break;
     default:
-        qDebug() << error << stream_->errorString();
         break;
     }
 }

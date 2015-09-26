@@ -149,32 +149,42 @@ void ConnectionWidgetTcp::socketDisconnected(void) {
 
 void ConnectionWidgetTcp::socketError(QAbstractSocket::SocketError error) {
     qDebug() << error << socket->errorString();
-    connect_button->setEnabled(true);
-    connect_button->setVisible(true);
-    connect_cancel_button->setVisible(false);
-    if (recentConnectionsContainer) recentConnectionsContainer->setEnabled(true);
-    hostEdit->setEnabled(true);
 
     switch (error) {
     case QAbstractSocket::ConnectionRefusedError:
-        if (socket->isOpen()) socket->close();
+//        if (socket->isOpen()) socket->close();
         Log::critical("Connection refused");
         break;
+
     case QAbstractSocket::HostNotFoundError:
-        if (socket->isOpen()) socket->close();
+//        if (socket->isOpen()) socket->close();
         Log::critical("Host not found");
         break;
+
     case QAbstractSocket::RemoteHostClosedError:
-        if (socket->isOpen()) socket->close();
+//        if (socket->isOpen()) socket->close();
         Log::critical("Remote host closed");
         break;
+
     case QAbstractSocket::NetworkError:
-        if (socket->isOpen()) socket->close();
+//        if (socket->isOpen()) socket->close();
         Log::critical("Host unreachebale");
         break;
+
     default:
+		Log::warning(socket->errorString());
         break;
     }
+
+	connect_button->setEnabled(true);
+	connect_button->setVisible(true);
+	connect_cancel_button->setVisible(false);
+	if (recentConnectionsContainer) recentConnectionsContainer->setEnabled(true);
+	hostEdit->setEnabled(true);
+
+	socket->abort();
+	socket->deleteLater();
+	socket = nullptr;
 
 }
 
@@ -446,7 +456,7 @@ void ConnectionWidgetTcp::showContextMenu(const QPoint & pos) {
 
 
 void ConnectionWidgetTcp::onOpenRecentConnection(int index) {
-    if (!socket->isOpen()) {
+	if (!socket) {
         hostEdit->setText(recent_connections.at(index));
         connectToServer();
     }

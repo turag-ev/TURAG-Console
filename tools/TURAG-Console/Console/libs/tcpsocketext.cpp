@@ -24,45 +24,36 @@ TcpSocketExt::TcpSocketExt(bool keepAlive, int keepAliveTime, int keepAliveInter
 #include <netinet/tcp.h>
 
 TcpSocketExt::TcpSocketExt(bool keepAlive, int keepAliveTime, int keepAliveInterval, QObject *parent) :
-	QAbstractSocket(QAbstractSocket::TcpSocket, parent)
+	QTcpSocket(parent)
 {
-	int s;
-	int optval;
-	socklen_t optlen = sizeof(optval);
-
-	/* Create the socket */
-	if ((s = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
-		qCritical() << "Couldn't create socket";
-		return;
-	}
-	setSocketDescriptor(s, QAbstractSocket::UnconnectedState, QIODevice::NotOpen);
-
 	if (keepAlive) {
-		/* Set the option active */
-		optval = 1;
-		optlen = sizeof(optval);
-		if (setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, &optval, optlen) < 0) {
-		   qWarning() << "Couldn't enable tcp keep alive";
-		   return;
-		}
+		connect(this, &TcpSocketExt::connected, [this, keepAliveTime, keepAliveInterval]() {
+			int enableKeepAlive = 1;
+			int fd = socketDescriptor();
+			if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &enableKeepAlive, sizeof(enableKeepAlive)) < 0) {
+				qWarning() << "Couldn't set socket opt";
+				return;
+			}
 
-		// set keep alive time
-		optval = keepAliveTime;
-		optlen = sizeof(optval);
-		if (setsockopt(s, SOL_TCP, TCP_KEEPIDLE, &optval, optlen) < 0) {
-		   qWarning() << "Couldn't set keep alive time";
-		   return;
-		}
+			if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, &keepAliveTime, sizeof(keepAliveTime)) < 0) {
+				qWarning() << "Couldn't set socket opt";
+				return;
+			}
 
-		// set keep alive interval
-		optval = keepAliveInterval;
-		optlen = sizeof(optval);
-		if (setsockopt(s, SOL_TCP, TCP_KEEPINTVL, &optval, optlen) < 0) {
-		   qWarning() << "Couldn't set keep alive time";
-		   return;
-		}
+			int count = 3; // send up to 3 keepalive packets out, then disconnect if no response
+			if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT, &count, sizeof(count)) < 0) {
+				qWarning() << "Couldn't set socket opt";
+				return;
+			}
+
+			if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, &keepAliveInterval, sizeof(keepAliveInterval)) < 0) {
+				qWarning() << "Couldn't set socket opt";
+				return;
+			}
+		});
 	}
 }
+
 
 #endif // _WIN32
 

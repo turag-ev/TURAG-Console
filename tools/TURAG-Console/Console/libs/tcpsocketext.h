@@ -2,9 +2,9 @@
 #define TCPSOCKETEXT_H
 
 
-#include <QtNetwork/QAbstractSocket>
+#include <QtNetwork/QTcpSocket>
 
-class TcpSocketExt : public QAbstractSocket {
+class TcpSocketExt : public QTcpSocket {
 public:
 	explicit TcpSocketExt(bool keepAlive = false, int keepAliveTime = 5, int keepAliveInterval = 1, QObject* parent = 0);
 
