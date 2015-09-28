@@ -1,4 +1,16 @@
 
+=====================================================
+=====================================================
+HÖCHSTE PRIORITÄT
+=====================================================
+=====================================================
+
+=====================================================
+=====================================================
+MEDIUM PRIORITÄT
+=====================================================
+=====================================================
+
 Backends
 -----------------------------
 von BaseBackend IODeviceBackend ableiten und
@@ -59,16 +71,6 @@ DataGraph
 
 Sich irgendwas mit den Icons einfallen lassen, also wie man die Menüeinträge auch als Icon anzeigen kann
 und ob das überhaupt sinnvoll ist.
-
-Meldungen/Log
------------------------------
- - Anzeige beschleunigen --> übliche Performance-Probleme bei großen Anzahlen
-   und hohem Meldungsaufkommen
- - Anzeige moderner gestalten, Auftritt einer Meldung deutlicher machen
- - sowas in der Art wie die Notification-Anzeige in KDE wäre cool
---> aber sehr aufwändig
---> und wohl von geringem praktischen Nutzen
-
 
 Interface-Overhaul
 --------------------------------------------------
@@ -205,5 +207,23 @@ Datagraph für Performance-Probleme gesorgt. Außerdem sorgt es für merkwürdig
 wenn mehr als eine Instanz benutzt wird.
 Vielleicht lieber einen Options-Dialog bereitstellen, in dem Standard-Einstellungen
 bearbeitet werden können, die nicht transparent gespeichert werden können?
+
+
+
+=====================================================
+=====================================================
+GERINGE PRIORITÄT
+=====================================================
+=====================================================
+
+Meldungen/Log
+-----------------------------
+ - Anzeige beschleunigen --> übliche Performance-Probleme bei großen Anzahlen
+   und hohem Meldungsaufkommen
+ - Anzeige moderner gestalten, Auftritt einer Meldung deutlicher machen
+ - sowas in der Art wie die Notification-Anzeige in KDE wäre cool
+--> aber sehr aufwändig
+--> und wohl von geringem praktischen Nutzen
+--> derzeitiger Stand sollte ausreichen
 
 
