@@ -11,76 +11,72 @@
 #include <QTextStream>
 
 
-
-class LogModel : public QAbstractTableModel
-{
-    Q_OBJECT
-
-public:
-    enum class MessageType {
-        Debug,
-        Info,
-        Warning,
-        Critical,
-        Fatal
-    };
-
-    explicit LogModel(QObject *parent = 0);
-    ~LogModel(void);
-
-    int rowCount(const QModelIndex & parent = QModelIndex()) const override;
-    int columnCount(const QModelIndex & parent = QModelIndex()) const override;
-    QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-
-    void appendLogMessage(MessageType type, const QString& msg, const QString& context, QTime time);
-    void appendLogMessage(MessageType type, const QString& msg, const QString& context);
-    void clear(void);
-
-private:
-    struct LogData {
-        MessageType type;
-        QString msg;
-        QTime time;
-        QString context;
-    };
-
-	QList<LogData> logData;
-};
-
+class LogModel;
 
 /**
  * @brief Vereinheitlicht die Ausgabe von Debug-Informationen
  * und Fehlermeldungen.
  *
- * Diese Klasse sammelt Debugmeldungen sowie an den Benutzer gerichtete Ausgaben in
- * einem Modell. Dazu übernimmt sie die Ausgabe von Debugmeldungen, die über qDebug(),
- * qWarning(), qCritical() oder qFatal() ausgegeben werden und fügt Informationen über
- * Zeitpunkt und Ort des Auftretens hinzu.
+ * Grundsätzlich wird zwischen Debugmeldungen und Logmeldungen unterschieden. Erstere
+ * werden von den Qt-Makros qDebug(), qInfo(), qWarning(), qCritical() oder qFatal()
+ * erzeugt, Logmeldungen durch die Makros logInfo(), logWarning() und logCritical().
  *
- * Für die Ausgabe von für den Benutzer vorgesehenen Meldungen gibt es die statischen Funktionen
- * info(), warning(), critical() und fatal(). Die über diese Funktionen ausgegebenen Meldungen
- * werden ebenfalls im Log gespeichert und weiterhin über Signale ausgegeben. Die Anwendung
- * kann dann in verbundenen Slots die Meldungen auf passende Art und Weise in der GUI anzeigen.
+ * Sämtliche Ausgaben werden von dieser Klasse gesammelt und bis zu 3 Ausgabekanälen
+ * zugeführt:
+ * - LogModel-Instanz
+ * - stderr
+ * - Emission über spezifische Signale
  *
- * Die Gesamtheit aller Meldungen kann mit einem Model-View an passender Stelle angeboten werden.
+ * Die Ausgabekanäle sind konfigurierbar. Standardmäßig gilt:
+ * - LogModel: Debug- und Logmeldungen
+ * - stderr: Debug- und Logmeldungen
+ * - Signale: Logmeldungen
+ *
+ * Damit Debugmeldungen erfasst werden können, muss die Funktion
+ * captureQtDebugMessages() aufgerufen werden.
+ *
+ * Zur vereinfachten Erzeugung von Logmeldungen existieren die Makros
+ * logInfo(), logWarning() und logCritical().
+ *
+ * Wird die Log-Klasse in einer Multithread-Anwendung benutzt, so sollte
+ * die Funktion setThreadsafeLogging() aufgerufen werden und zwar im Kontext
+ * desjenigen Threads, in dem die Log-Instanz existieren soll. Dies muss
+ * vor der ersten Verwendung der Klasse geschehen, damit die Instanz innerhalb
+ * des korrekten Threads erzeugt wird. Von diesem Thread aus kann dann auch auf
+ * das Modell zugegriffen werden und Logmeldungen werden direkt verarbeitet.
+ * Werden Logmeldungen von einem anderen Thread erzeugt, so werden diese
+ * über die EventQueue verarbeitet.
+ *
+ * Das thread-sichere Verhalten ist aus Performancegründen standardmäßig
+ * deaktiviert.
  */
 class Log : public QObject
 {
     Q_OBJECT
 
 public:  
+	enum class MessageType {
+		Debug,
+		Info,
+		Warning,
+		Critical,
+		Fatal
+	};
+
 	/**
 	 * @brief Aktiviert oder deaktiviert die Verarbeitung von Debug-Nachrichten.
 	 * @param on Aktivieren oder deaktivieren.
 	 *
-	 * Wird die Verarbeitung aktiviert, so werden Nachrichten die mit qDebug(), qWarning(),
-	 * qCritical() oder qFatal() ausgegeben werden, um Informationen erweitert auf der
-	 * Standardausgabe ausgegeben, sowie im Log gespeichert.
-	 *
-	 * Wird qFatal() benutzt, so wird das Programm mit abort() beendet.
+	 * Aktiviert die Verarbeitung von Debugnachrichten, die mit qDebug(), qInfo(), qWarning(),
+	 * qCritical() oder qFatal() erzeugt werden.
 	 */
     static void captureQtDebugMessages(bool on);
+
+	/**
+	 * @brief Gibt einen Pointer auf die Instanz zurück.
+	 * @return Pointer auf die Log-Instanz.
+	 */
+	static Log* get(void);
 
 	/**
 	 * @brief Gibt das Modell zur Anzeige der Logmeldungen
@@ -89,42 +85,54 @@ public:
 	 */
     static QAbstractItemModel* model(void);
 
-	/**
-	 * @brief Gibt einen Pointer auf die Instanz zurück.
-	 * @return Pointer auf die Log-Instanz.
-	 */
-    static Log* get(void);
+	static void setDebugOutput(bool outputToModel, bool outputToStderr, bool outputToSignals);
+	static void setLogOutput(bool outputToModel, bool outputToStderr, bool outputToSignals);
+
+	static void setThreadsafeLogging(bool on);
 
 	/**
 	 * @brief Gibt eine Info-Meldung für den Benutzer aus.
+	 * @param file Name der Quelldatei, die die Meldung erzeugt.
+	 * @param line Zeilennumer.
+	 * @param function Info über die Funktion, die die Meldung erzeugt.
 	 * @param msg Info-Nachricht.
 	 */
-    static void info(const QString& msg);
+	static void info(const char * file, int line, const char * function, const char* msg);
+	static void info(const char * file, int line, const char * function, const QString& msg);
 
 	/**
 	 * @brief Gibt dem Benutzer eine Warnmeldung aus.
+	 * @param file Name der Quelldatei, die die Meldung erzeugt.
+	 * @param line Zeilennumer.
+	 * @param function Info über die Funktion, die die Meldung erzeugt.
 	 * @param msg Warnmeldung.
 	 */
-    static void warning(const QString& msg);
+	static void warning(const char * file, int line, const char * function, const char* msg);
+	static void warning(const char * file, int line, const char * function, const QString& msg);
 
 	/**
 	 * @brief Informiert den Benutzer über den Auftritt eines kritischen Fehlers.
+	 * @param file Name der Quelldatei, die die Meldung erzeugt.
+	 * @param line Zeilennumer.
+	 * @param function Info über die Funktion, die die Meldung erzeugt.
 	 * @param msg Fehlertext.
 	 */
-    static void critical(const QString& msg);
+	static void critical(const char * file, int line, const char * function, const char* msg);
+	static void critical(const char * file, int line, const char * function, const QString& msg);
 
-	/**
-	 * @brief Informiert den Benutzer über den Auftritt eines fatalen Fehlers.
-	 * @param msg Fehlertext.
-	 */
-    static void fatal(const QString& msg);
 
 signals:
+	/**
+	 * @brief Signalisiert den Auftritt einer Debug-Nachricht.
+	 * @param msg Debugtext.
+	 */
+	void debugMsgAvailable(const QString& msg);
+
 	/**
 	 * @brief Signalisiert den Auftritt einer Info-Nachricht.
 	 * @param msg Infotext.
 	 */
-    void infoMsgAvailable(const QString& msg);
+	void infoMsgAvailable(const QString& msg);
 
 	/**
 	 * @brief Signalisiert den Auftritt einer Warnung.
@@ -136,27 +144,73 @@ signals:
 	 * @brief Signalisiert den Auftritt eines kritischen Fehlers.
 	 * @param msg Beschreibung des Fehlers.
 	 */
-    void criticalMsgAvailable(const QString& msg);
+	void criticalMsgAvailable(const QString& msg);
 
 	/**
 	 * @brief Signalisiert den Auftritt eines fatalen Fehlers.
 	 * @param msg Beschreibung des Fehlers.
 	 */
-    void fatalMsgAvailable(const QString& msg);
+	void fatalMsgAvailable(const QString& msg);
+
+
+private slots:
+	void handleGotMsg(bool isDebug, MessageType type, const char * file, int line, const char * function, const char* msg);
 
 private:
     explicit Log(void);
     ~Log(void);
 
-    void emitInfoMsgAvailable(const QString& msg);
-    void emitWarningMsgAvailable(const QString& msg);
-    void emitCriticalMsgAvailable(const QString& msg);
-    void emitFatalMsgAvailable(const QString& msg);
-
     static void messageHandler(QtMsgType, const QMessageLogContext &, const QString &);
+	void gotMsg(bool isDebug, MessageType type, const char * file, int line, const char * function, const char* msg);
 
-	LogModel model_;
+	LogModel* model_;
+
+	bool outputDebugToStderr;
+	bool outputDebugToSignals;
+	bool outputDebugToModel;
+
+	bool outputLogToStderr;
+	bool outputLogToSignals;
+	bool outputLogToModel;
+
+	bool threadsafeLogging;
 };
+
+
+#define logInfo(msg) Log::info(__FILE__, __LINE__, Q_FUNC_INFO, msg)
+#define logWarning(msg) Log::warning(__FILE__, __LINE__, Q_FUNC_INFO, msg)
+#define logCritical(msg) Log::critical(__FILE__, __LINE__, Q_FUNC_INFO, msg)
+
+
+
+class LogModel : public QAbstractTableModel
+{
+	Q_OBJECT
+
+public:
+	explicit LogModel(QObject *parent = 0);
+	~LogModel(void);
+
+	int rowCount(const QModelIndex & parent = QModelIndex()) const override;
+	int columnCount(const QModelIndex & parent = QModelIndex()) const override;
+	QVariant data(const QModelIndex & index, int role = Qt::DisplayRole) const override;
+	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+
+	void appendLogMessage(Log::MessageType type, const QString& msg, const QString& context, QTime time);
+	void appendLogMessage(Log::MessageType type, const QString& msg, const QString& context);
+	void clear(void);
+
+private:
+	struct LogData {
+		Log::MessageType type;
+		QString msg;
+		QTime time;
+		QString context;
+	};
+
+	QList<LogData> logData;
+};
+
 
 
 

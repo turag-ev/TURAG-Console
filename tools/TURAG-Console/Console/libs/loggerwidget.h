@@ -6,6 +6,7 @@
 class QTableView;
 class QComboBox;
 class QPushButton;
+class QCloseEvent;
 
 
 class LoggerWidget : public QWidget
@@ -17,6 +18,9 @@ public:
 signals:
 
 public slots:
+
+protected:
+	void closeEvent(QCloseEvent *event);
 
 private:
     QTableView* log;

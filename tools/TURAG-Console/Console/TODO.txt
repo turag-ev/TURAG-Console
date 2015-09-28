@@ -19,8 +19,12 @@ http://doc.qt.io/qt-5/linux-deployment.html
 -->https://intern.turag.de/forum/viewtopic.php?f=62&t=832&start=30#p17596
 scheint sich ganz gut zu eignen
 
-Angepeilte Qt-Version: 5.5 wegen offiziellem Windows 10-Support
+Angepeilte Qt-Version: 5.5:
+ - wegen offiziellem Windows 10-Support
+ - wegen Verfügbarkeit von qInfo
 --> vorher muss Feldbus-Bug gelöst werden
+--> auf Release von 5.5.1 warten!
+
 
 
 Plugin-Modell
@@ -58,9 +62,12 @@ und ob das überhaupt sinnvoll ist.
 
 Meldungen/Log
 -----------------------------
- - beschleunigen, derzeit viel zu langsam -> Anzeige nur bei Bedarf
+ - Anzeige beschleunigen --> übliche Performance-Probleme bei großen Anzahlen
+   und hohem Meldungsaufkommen
  - Anzeige moderner gestalten, Auftritt einer Meldung deutlicher machen
  - sowas in der Art wie die Notification-Anzeige in KDE wäre cool
+--> aber sehr aufwändig
+--> und wohl von geringem praktischen Nutzen
 
 
 Interface-Overhaul
@@ -115,6 +122,20 @@ sind, dass sich da kein wirklicher Vorteil erkennen lässt...
 --> Sowas bringt aber unheimlich viel Mehraufwand. Das gesamte Interface müsste für
 mehrere Verbindungen ausgebaut werden. Und irgendwie muss das ganze auch noch intuitiv
 und angenehm bedienbar bleiben.
+
+Am einfachsten erscheint mir folgendes: ein Multiplex-Backend, was beliebig viele konventionelle Backends
+öffnen kann. Die Datenstöme aller Datenquellen werden kombiniert.
+Sämtliche Logik steckt im Backend, was, ähnlich dem Controller, das öffnen der Einzelbackends
+übernimmt.
+Das ConnectionWidget könnte einfach Buttons zum hinzufügen einer Datenquelle anbieten, was ein
+Fenster mit allen anderen ConnectionWidgets öffnet. Hat man eine Quelle hinzugefügt, erscheint
+ein weiterer Button, um das ganze zu wiederholen.
+--> Das dürfte die am schnellsten umsetzbare Lösung sein. Erfordert lediglich von seiten der
+Roboter-Software, dass die Debug-Level der Boards sich nicht überschneiden, aber das sollte eine
+annehmbare Einschränkung sein.
+--> Problematisch wird hier wieder das Testmenü...zumindest theoretisch. In der Praxis
+dürfte es klappen.
+--> Einfache Lösung, aber Support für mehrere getrennte Streams wäre wohl eleganter O:-)
 
 
 

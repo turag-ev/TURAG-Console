@@ -191,9 +191,9 @@ void Controller::openConnection(const QUrl &connectionUrl, bool *success) {
         // destroy signal-slot connection if connecting failed
         backend->disconnect(currentFrontend);
         currentFrontend->disconnect(backend);
-		Log::critical("connection failed");
+		logCritical("connection failed");
 	} else {
-		Log::warning("no suitable backend available");
+		logWarning("no suitable backend available");
 	}
 
     if (success) *success = false;

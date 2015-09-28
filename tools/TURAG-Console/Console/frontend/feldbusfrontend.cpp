@@ -30,7 +30,7 @@
 #include "feldbusviews/feldbusasebview.h"
 #include "feldbusviews/feldbusbootloaderatmegaview.h"
 #include "feldbusviews/feldbusbootloaderxmegaview.h"
-#include <debugprintclass.h>
+#include <libs/debugprintclass.h>
 #include "plaintextfrontend.h"
 #include <cmath>
 
@@ -38,6 +38,7 @@ using namespace TURAG;
 
 extern QIODevice* turag_rs485_io_device;
 extern QByteArray turag_rs485_data_buffer;
+extern DebugPrintClass rs485Debug;
 
 
 FeldbusFrontend::FeldbusFrontend(QWidget *parent) :

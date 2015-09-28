@@ -24,6 +24,7 @@
 #include <QScrollArea>
 #include <QtNetwork>
 #include <QtWidgets>
+#include <QShortcut>
 
 #include <libs/checkactionext.h>
 #include <libs/loggerwidget.h>
@@ -43,7 +44,7 @@
 #include "connectionwidgets/connectionwidgetwebdav.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-  QMainWindow(parent)
+  QMainWindow(parent), logger(nullptr)
 {
 	setWindowTitle("TURAG-Console");
 	setWindowIcon(IconManager::get("turag-55"));
@@ -138,8 +139,24 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 	QAction* show_logger = new QAction("Logmeldungen...", this);
+	show_logger->setCheckable(true);
 //    show_logger->setIcon(IconManager::get("utilities-log-viewer"));
-    show_logger->setCheckable(true);
+	connect(show_logger, &QAction::triggered, [show_logger, this] {
+		if (show_logger->isChecked()) {
+			logger = new LoggerWidget;
+			logger->setAttribute(Qt::WA_DeleteOnClose, true);
+			connect(logger, &QWidget::destroyed, [show_logger, this] {
+				logger = nullptr;
+				show_logger->setChecked(false);
+			});
+			logger->show();
+		} else {
+			logger->close();
+			logger->deleteLater();
+			logger = nullptr;
+		}
+	});
+
 
     frontendOptions = new QActionGroup(this);
     QSignalMapper* frontendMapper = new QSignalMapper(this);
@@ -222,7 +239,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	addressBar->setMinimumWidth(250);
 	addressBar->setMaximumWidth(1000);
 	addressBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-	addressBar->lineEdit()->setPlaceholderText("Insert URL here... (press Ctrl+L to focus)");
+	addressBar->lineEdit()->setPlaceholderText("Insert URL here... (press Ctrl+L or F6 to focus)");
 	connect(addressBar->lineEdit(), SIGNAL(returnPressed()), connect_action, SLOT(trigger()));
 	QAction* focusAddressbarAction = new QAction(this);
 	addressBar->addAction(focusAddressbarAction);
@@ -231,6 +248,8 @@ MainWindow::MainWindow(QWidget *parent) :
 		addressBar->setFocus();
 		addressBar->lineEdit()->selectAll();
 	});
+	QShortcut* focusAddressbarActionF6Shortcut = new QShortcut(Qt::Key_F6, this);
+	connect(focusAddressbarActionF6Shortcut, SIGNAL(activated()), focusAddressbarAction, SLOT(trigger()));
 
 	QWidget* spacerWidget = new QWidget;
 	spacerWidget->setMinimumWidth(30);
@@ -353,19 +372,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	// build central widget
 	// ---------------------------------------
-	logger = new LoggerWidget;
-    connect(show_logger, SIGNAL(triggered(bool)), logger, SLOT(setVisible(bool)));
-
 	centralStackWidget = new QStackedWidget;
-    QWidget* central_widget = new QWidget;
-    QHBoxLayout* mainLayout = new QHBoxLayout;
-	mainLayout->setContentsMargins(2, 2, 2, 2);
-	mainLayout->addWidget(controller);
-    mainLayout->addWidget(logger);
-    logger->hide();
-    central_widget->setLayout(mainLayout);
 	centralStackWidget->addWidget(welcome_screen);
-	centralStackWidget->addWidget(central_widget);
+	centralStackWidget->addWidget(controller);
 
 	setCentralWidget(centralStackWidget);
 	frontendButton->setEnabled(false);
@@ -623,8 +632,14 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-  writeSettings();
-  event->accept();
+	if (logger) {
+		logger->close();
+		logger->deleteLater();
+		logger = nullptr;
+	}
+
+	writeSettings();
+	event->accept();
 }
 
 void MainWindow::openUrl(QString url_string) {

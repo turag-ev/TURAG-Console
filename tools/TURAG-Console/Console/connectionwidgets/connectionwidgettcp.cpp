@@ -153,26 +153,26 @@ void ConnectionWidgetTcp::socketError(QAbstractSocket::SocketError error) {
     switch (error) {
     case QAbstractSocket::ConnectionRefusedError:
 //        if (socket->isOpen()) socket->close();
-        Log::critical("Connection refused");
+		logCritical("Connection refused");
         break;
 
     case QAbstractSocket::HostNotFoundError:
 //        if (socket->isOpen()) socket->close();
-        Log::critical("Host not found");
+		logCritical("Host not found");
         break;
 
     case QAbstractSocket::RemoteHostClosedError:
 //        if (socket->isOpen()) socket->close();
-        Log::critical("Remote host closed");
+		logCritical("Remote host closed");
         break;
 
     case QAbstractSocket::NetworkError:
 //        if (socket->isOpen()) socket->close();
-        Log::critical("Host unreachebale");
+		logCritical("Host unreachebale");
         break;
 
     default:
-		Log::warning(socket->errorString());
+		logWarning(socket->errorString());
         break;
     }
 

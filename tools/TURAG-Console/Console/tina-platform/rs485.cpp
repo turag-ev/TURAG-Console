@@ -7,13 +7,14 @@
 #include <QDebug>
 #include <QCoreApplication>
 #include <QByteArray>
-#include <debugprintclass.h>
+#include <libs/debugprintclass.h>
 
 
 static TuragSystemTime rs485_timeout;
 
 QIODevice* turag_rs485_io_device;
 QByteArray turag_rs485_data_buffer;
+DebugPrintClass rs485Debug;
 
 
 extern "C" bool turag_rs485_init(uint32_t baud_rate, TuragSystemTime timeout) {

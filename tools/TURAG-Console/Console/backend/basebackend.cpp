@@ -139,9 +139,9 @@ void BaseBackend::writeData(QByteArray data) {
         int result =  stream_->write(data);
 
         if (result < data.size()) {
-            Log::warning("Es wurden weniger Bytes geschrieben als angefordert");
+			logWarning("Es wurden weniger Bytes geschrieben als angefordert");
         } else if (result == -1) {
-            Log::critical(QString("Fehler beim Schreiben: %1").arg(stream_->errorString()));
+			logCritical(QString("Fehler beim Schreiben: %1").arg(stream_->errorString()));
         }
 
         qDebug() << "writeData:" << data;
@@ -220,7 +220,7 @@ void BaseBackend::connectingSuccessful() {
 	buffer.clear();
 
 	if (deviceShouldBeConnectedUrl == connectionUrl_ && deviceRecoveryActive && recoverDeviceTimer.isActive()) {
-        Log::info("Verbindung erfolgreich wiederaufgebaut");
+		logInfo("Verbindung erfolgreich wiederaufgebaut");
     }
 
 	deviceShouldBeConnectedUrl = connectionUrl_;
@@ -253,7 +253,7 @@ void BaseBackend::connectionWasLost(void) {
 }
 
 void BaseBackend::onRecoverDevice(void) {
-    Log::info("Versuche wiederzuverbinden...");
+	logInfo("Versuche wiederzuverbinden...");
     openConnection();
 }
 
@@ -269,13 +269,13 @@ void BaseBackend::setDeviceRecovery(bool on) {
 
 void BaseBackend::logFilteredErrorMsg(QString msg) {
     if (!recoverDeviceTimer.isActive()) {
-        Log::critical(msg);
+		logCritical(msg);
     }
 }
 
 void BaseBackend::logFilteredInfoMessage(QString msg) {
     if (!recoverDeviceTimer.isActive()) {
-        Log::info(msg);
+		logInfo(msg);
     }
 
 }
@@ -292,21 +292,21 @@ bool BaseBackend::saveBufferToFileInternal(QString fileName) {
     }
 
     if (!savefile.open(QIODevice::WriteOnly)) {
-        Log::critical("Saving output failed: couldn't open file.");
+		logCritical("Saving output failed: couldn't open file.");
         return false;
     }
 
     if (!savefile.isWritable()) {
-        Log::critical("Saving output failed: file is not writable.");
+		logCritical("Saving output failed: file is not writable.");
         return false;
     }
 
 	if (savefile.write(buffer) == -1) {
-        Log::critical("Saving output failed: error while writing.");
+		logCritical("Saving output failed: error while writing.");
         return false;
     }
 
-    Log::info("Ausgabe erfolgreich geschrieben");
+	logInfo("Ausgabe erfolgreich geschrieben");
     return true;
 }
 

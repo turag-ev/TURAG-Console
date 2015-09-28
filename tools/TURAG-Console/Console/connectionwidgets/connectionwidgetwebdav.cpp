@@ -193,13 +193,13 @@ void ConnectionWidgetWebDAV::parseData(void) {
 void ConnectionWidgetWebDAV::errorOccured(QString errorMsg) {
 	enterUnconnectedState(true);
 
-	Log::critical(errorMsg);
+	logCritical(errorMsg);
 }
 
 void ConnectionWidgetWebDAV::sslError(const QList<QSslError> &errors) {
 	QSslError error = errors.value(0);
 	if (error.certificate().isNull()) {
-		Log::critical(error.errorString());
+		logCritical(error.errorString());
 		enterUnconnectedState(true);
 		return;
 	}

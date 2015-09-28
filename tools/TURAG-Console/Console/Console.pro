@@ -110,7 +110,6 @@ SOURCES +=\
     connectionwidgets/connectionwidgetserial.cpp \
     connectionwidgets/connectionwidgettcp.cpp \
     controller.cpp \
-    debugprintclass.cpp \
     frontend/basefrontend.cpp \
     frontend/feldbusfrontend.cpp \
     frontend/feldbusviews/dynamixelview.cpp \
@@ -223,7 +222,6 @@ HEADERS  += \
     connectionwidgets/connectionwidgetserial.h \
     connectionwidgets/connectionwidgettcp.h \
     controller.h \
-    debugprintclass.h \
     frontend/basefrontend.h \
     frontend/feldbusfrontend.h \
     frontend/feldbusviews/dynamixelview.h \
@@ -334,7 +332,8 @@ HEADERS  += \
     ../../../src/common/global/userinterface.h \
     ../../../src/common/global/system_control.h \
     ../../../src/common/global/stmcam_interface.h \
-    libs/tcpsocketext.h
+    libs/tcpsocketext.h \
+    libs/debugprintclass.h
 
 INCLUDEPATH += \
     ../../../tina \
