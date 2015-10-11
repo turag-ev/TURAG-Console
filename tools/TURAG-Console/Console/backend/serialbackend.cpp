@@ -158,11 +158,14 @@ void SerialBackend::onError(QSerialPort::SerialPortError error) {
         logFilteredErrorMsg("Fehler: " + errormsg);
         break;
     case QSerialPort::ReadError:
+		// This error used to make a call to connectionWasLost(). But I have
+		// a funny adapter which raises this error two times after opening
+		// and works totally fine afterwards, so I removed the call.
         errormsg = "An I/O error occurred while reading the data.";
-        logFilteredErrorMsg("Fehler: " + errormsg);
-        connectionWasLost();
         break;
     case QSerialPort::ResourceError:
+		// This error occurs when a serial USB adapter is removed and thus the call
+		// to connectionWasLost() is required.
         errormsg = "An I/O error occurred when a resource becomes unavailable, e.g. when the device is unexpectedly removed from the system.";
         logFilteredErrorMsg("Fehler: " + errormsg);
         connectionWasLost();
@@ -176,5 +179,7 @@ void SerialBackend::onError(QSerialPort::SerialPortError error) {
 
     default: break;
     }
+
+	qWarning() << errormsg;
 }
 
