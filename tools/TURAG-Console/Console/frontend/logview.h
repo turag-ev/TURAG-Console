@@ -48,7 +48,7 @@ private:
   TURAG::SimEurobot::RobotLogView* log_view_;
 
   TURAG::SimEurobot::AppContext app_context_;
-  TURAG::SimEurobot::SimContext sim_context_;
+  TURAG::SimEurobot::Simulation sim_context_;
   TURAG::SimEurobot::RobotContext robot_context_;
 
   QTimer refresh_log_timer_;
