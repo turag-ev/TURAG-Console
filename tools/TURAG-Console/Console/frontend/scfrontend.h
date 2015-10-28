@@ -5,6 +5,7 @@
 #include <libsimeurobot/appcontext.h>
 #include <libsimeurobot/simulation.h>
 #include <libsimeurobot/robotcontext.h>
+#include <libsimeurobot/robotbase.h>
 #include <QTimer>
 
 #include "basefrontend.h"
@@ -33,6 +34,9 @@ public slots:
 
 	void writeLine(QByteArray line);
 
+private slots:
+	void seek();
+
 private:
 	TinaInterface tina_interface_;
 
@@ -41,14 +45,14 @@ private:
 	TURAG::SimEurobot::RobotsTreeModel* robot_model_tree_model_;
 	TURAG::SimEurobot::Scene* scene_;
 	QMainWindow* dock_area_;
-/*
-	TURAG::SimEurobot::AppContext app_context_;
-	TURAG::SimEurobot::SimContext sim_context_;*/
-	TURAG::SimEurobot::SceneManager sim_manager_;
-	TURAG::SimEurobot::RobotModule& robot_;
-	TURAG::SimEurobot::RobotContext& robot_context_;
+
+	TURAG::SimEurobot::AppContext appcontext_;
+	TURAG::SimEurobot::Simulation simcontext_;
+	TURAG::SimEurobot::RobotBase robot_;
 
 	QTimer refresh_log_timer_;
+
+	void advance();
 };
 
 #endif // SCFRONTEND_H

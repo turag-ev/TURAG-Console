@@ -128,7 +128,9 @@ bool handleGraphMessage(DebugMessage& input)
 
 void RobotLogFrontend::writeLine(QByteArray line)
 {
-	DebugMessage message = parseDebugMessagePayload(line);
+	DebugMessage message;
+	if (!parseDebugMessagePayload(line, message))
+		return;
 
 	if (robot_context_.handle(message))
 		return;

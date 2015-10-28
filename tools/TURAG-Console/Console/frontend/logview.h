@@ -7,7 +7,7 @@
 #include <tina++/tina.h>
 #include <libsimeurobot/fwd.h>
 #include <libsimeurobot/appcontext.h>
-#include <libsimeurobot/simcontext.h>
+#include <libsimeurobot/simulation.h>
 #include <libsimeurobot/robotcontext.h>
 #include "basefrontend.h"
 
