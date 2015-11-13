@@ -48,7 +48,6 @@ SCFrontend::SCFrontend(QWidget *parent)
 {
 	// Scene
 	scene_ = new Scene(simcontext_);
-	robot_.init(new UnknownRobot);
 
 	// dock area
 	dock_area_ = new QMainWindow;
