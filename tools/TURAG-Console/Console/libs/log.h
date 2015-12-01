@@ -97,7 +97,6 @@ public:
 	 * @param function Info über die Funktion, die die Meldung erzeugt.
 	 * @param msg Info-Nachricht.
 	 */
-	static void info(const char * file, int line, const char * function, const char* msg);
 	static void info(const char * file, int line, const char * function, const QString& msg);
 
 	/**
@@ -107,7 +106,6 @@ public:
 	 * @param function Info über die Funktion, die die Meldung erzeugt.
 	 * @param msg Warnmeldung.
 	 */
-	static void warning(const char * file, int line, const char * function, const char* msg);
 	static void warning(const char * file, int line, const char * function, const QString& msg);
 
 	/**
@@ -117,7 +115,6 @@ public:
 	 * @param function Info über die Funktion, die die Meldung erzeugt.
 	 * @param msg Fehlertext.
 	 */
-	static void critical(const char * file, int line, const char * function, const char* msg);
 	static void critical(const char * file, int line, const char * function, const QString& msg);
 
 
@@ -154,14 +151,14 @@ signals:
 
 
 private slots:
-	void handleGotMsg(bool isDebug, MessageType type, const char * file, int line, const char * function, const char* msg);
+    void handleGotMsg(bool isDebug, MessageType type, const char * file, int line, const char * function, const QString& msg);
 
 private:
     explicit Log(void);
     ~Log(void);
 
     static void messageHandler(QtMsgType, const QMessageLogContext &, const QString &);
-	void gotMsg(bool isDebug, MessageType type, const char * file, int line, const char * function, const char* msg);
+    void gotMsg(bool isDebug, MessageType type, const char * file, int line, const char * function, const QString &msg);
 
 	LogModel* model_;
 

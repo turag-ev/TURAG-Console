@@ -81,17 +81,17 @@ void Log::messageHandler(QtMsgType type, const QMessageLogContext & context, con
 	get()->gotMsg(true, logType, context.file, context.line, context.function, localMsg);
 }
 
-void Log::gotMsg(bool isDebug, MessageType type, const char * file, int line, const char * function, const char* msg) {
+void Log::gotMsg(bool isDebug, MessageType type, const char * file, int line, const char * function, const QString& msg) {
 	if (threadsafeLogging) {
-		static QMetaMethod method = get()->metaObject()->method(get()->metaObject()->indexOfSlot("handleGotMsg(bool,MessageType,const char*,int,const char*,const char*)"));
-		method.invoke(get(), Q_ARG(bool, isDebug), Q_ARG(MessageType, type), Q_ARG(const char*, file), Q_ARG(int, line), Q_ARG(const char*, function), Q_ARG(const char*, msg));
+        static QMetaMethod method = get()->metaObject()->method(get()->metaObject()->indexOfSlot("handleGotMsg(bool,MessageType,const char*,int,const char*,QString)"));
+        method.invoke(get(), Q_ARG(bool, isDebug), Q_ARG(MessageType, type), Q_ARG(const char*, file), Q_ARG(int, line), Q_ARG(const char*, function), Q_ARG(QString, msg));
 	} else {
 		handleGotMsg(isDebug, type, file, line, function, msg);
 	}
 }
 
 // not thread-safe. Should only be called from the thread containing the instance.
-void Log::handleGotMsg(bool isDebug, MessageType type, const char * file, int line, const char * function, const char* msg) {
+void Log::handleGotMsg(bool isDebug, MessageType type, const char* file, int line, const char* function, const QString& msg) {
 		// add message to model
 	if ((isDebug && outputDebugToModel) || (!isDebug && outputLogToModel)) {
 		get()->model_->appendLogMessage(type, msg, QStringLiteral("%1: %2").arg(file).arg(line));
@@ -109,9 +109,9 @@ void Log::handleGotMsg(bool isDebug, MessageType type, const char * file, int li
 		}
 
 		if (file) {
-			fprintf(stderr, "%s %s (%s:%u, %s)\n", typeString, msg, file, line, function);
+            fprintf(stderr, "%s %s (%s:%u, %s)\n", typeString, msg.toUtf8().constData(), file, line, function);
 		} else {
-			fprintf(stderr, "%s %s\n", typeString, msg);
+            fprintf(stderr, "%s %s\n", typeString, msg.toUtf8().constData());
 		}
 	}
 
@@ -127,25 +127,16 @@ void Log::handleGotMsg(bool isDebug, MessageType type, const char * file, int li
 	}
 }
 
-void Log::info(const char *file, int line, const char *function, const char *msg) {
-	get()->gotMsg(false, MessageType::Info, file, line, function, msg);
-}
 void Log::info(const char *file, int line, const char *function, const QString& msg) {
-	get()->gotMsg(false, MessageType::Info, file, line, function, msg.toLocal8Bit());
+    get()->gotMsg(false, MessageType::Info, file, line, function, msg);
 }
 
-void Log::warning(const char *file, int line, const char *function, const char *msg) {
-	get()->gotMsg(false, MessageType::Warning, file, line, function, msg);
-}
 void Log::warning(const char *file, int line, const char *function, const QString& msg) {
-	get()->gotMsg(false, MessageType::Warning, file, line, function, msg.toLocal8Bit());
+    get()->gotMsg(false, MessageType::Warning, file, line, function, msg);
 }
 
-void Log::critical(const char *file, int line, const char *function, const char *msg) {
-	get()->gotMsg(false, MessageType::Critical, file, line, function, msg);
-}
 void Log::critical(const char *file, int line, const char *function, const QString& msg) {
-	get()->gotMsg(false, MessageType::Critical, file, line, function, msg.toLocal8Bit());
+    get()->gotMsg(false, MessageType::Critical, file, line, function, msg);
 }
 
 
