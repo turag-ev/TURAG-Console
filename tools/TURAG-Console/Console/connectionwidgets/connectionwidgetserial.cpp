@@ -105,9 +105,16 @@ ConnectionWidgetSerial::ConnectionWidgetSerial(QWidget *parent) :
 void ConnectionWidgetSerial::connectionChangedInternal() {
 	QUrl url;
 	url.setHost(""); // fixes small display bug of QUrl
-	url.setScheme(SerialBackend::protocolScheme);
-	url.setPath(port_name_->currentText());
-	url.setFragment(baudrate_->currentText());
+    url.setScheme(SerialBackend::protocolScheme);
+
+#ifdef Q_OS_WIN32
+    // required to make the URL valid
+    url.setPath("/" + port_name_->currentText());
+#else
+    url.setPath(port_name_->currentText());
+#endif
+
+    url.setFragment(baudrate_->currentText());
 
 	if (expander->isExpanded()) {
 		QUrlQuery query;
@@ -131,7 +138,7 @@ void ConnectionWidgetSerial::onDeviceUpdate(void) {
     if (QSerialPortInfo::availablePorts().count() != port_name_->count()) {
         port_name_->clear();
         for (const QSerialPortInfo& info : QSerialPortInfo::availablePorts()) {
-            port_name_->addItem(info.systemLocation());
+            port_name_->addItem(info.portName());
         }
     }
 }
@@ -140,7 +147,7 @@ void ConnectionWidgetSerial::onDeviceUpdate(void) {
 void ConnectionWidgetSerial::showEvent ( QShowEvent * event ) {
     port_name_->clear();
     for (const QSerialPortInfo& info : QSerialPortInfo::availablePorts()) {
-        port_name_->addItem(info.systemLocation());
+        port_name_->addItem(info.portName());
     }
 
     deviceUpdateTimer.start(500);

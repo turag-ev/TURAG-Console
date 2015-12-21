@@ -33,7 +33,20 @@ bool SerialBackend::doConnectionPreconditionChecking(const QUrl& url) {
 }
 
 BaseBackend::ConnectionStatus SerialBackend::doOpenConnection(const QUrl &url) {
-	QSerialPort* port = new QSerialPort(url.path());
+    QString portPath = url.path();
+
+#ifdef Q_OS_WIN32
+    // connectionWIdgetSerial adds a leading '/' to make a valid URL.
+    while(portPath.size() && portPath.startsWith('/')) {
+        portPath.remove(0, 1);
+    }
+    // see: https://support.microsoft.com/en-us/kb/115831
+    if (!portPath.startsWith("\\\\.\\")) {
+        portPath = "\\\\.\\" + portPath;
+    }
+#endif
+
+    QSerialPort* port = new QSerialPort(portPath);
 	stream_.reset(port);
 
 	bool success = port->open(QIODevice::ReadWrite);
@@ -130,7 +143,14 @@ QString SerialBackend::getConnectionInfo() const {
 	if (connectionUrl_.isEmpty()) {
         return "";
     } else {
-		return connectionUrl_.path() + ":" + connectionUrl_.fragment();
+        QString path = connectionUrl_.path();
+#ifdef Q_OS_WIN32
+    // connectionWIdgetSerial adds a leading '/' to make a valid URL.
+    while(path.size() && path.startsWith('/')) {
+        path.remove(0, 1);
+    }
+#endif
+        return path + ":" + connectionUrl_.fragment();
     }
 }
 
