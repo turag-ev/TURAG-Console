@@ -17,6 +17,7 @@
 #include <libsimeurobot/scenes/eurobot2015.h>
 #include <libsimeurobot/parser.h>
 #include <libsimeurobot/robots/unknownrobot.h>
+#include <libsimeurobot/ui/logcontext.h>
 
 using namespace TURAG::SimEurobot;
 
@@ -74,7 +75,7 @@ SCFrontend::SCFrontend(QWidget *parent)
 	dock_widget = new QDockWidget("Nachrichten", dock_area_);
 	dock_widget->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::RightDockWidgetArea);
 	dock_widget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-	log_view_ = new RobotLogView(robot_.getRobotContext());
+	log_view_ = new RobotLogView(LogContext(filter_, robot_.getLogSources(), robot_.getTimeProvider(), robot_.getSimulation().getAppContext()));
 	dock_widget->setWidget(log_view_);
 	dock_area_->addDockWidget(Qt::BottomDockWidgetArea, dock_widget);
 
@@ -110,14 +111,14 @@ void SCFrontend::readSettings()
 {
 	QSettings settings;
 	settings.beginGroup("SCFrontend");
-	robot_.getRobotContext().readSettings(&settings);
+	filter_.readSettings(&settings);
 }
 
 void SCFrontend::writeSettings()
 {
 	QSettings settings;
 	settings.beginGroup("SCFrontend");
-	robot_.getRobotContext().writeSettings(&settings);
+	filter_.writeSettings(&settings);
 }
 
 void SCFrontend::onConnected(bool readOnly, QIODevice* dev)

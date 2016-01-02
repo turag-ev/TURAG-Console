@@ -4,8 +4,8 @@
 #include <libsimeurobot/fwd.h>
 #include <libsimeurobot/appcontext.h>
 #include <libsimeurobot/simulation.h>
-#include <libsimeurobot/robotcontext.h>
 #include <libsimeurobot/robotbase.h>
+#include <libsimeurobot/logsourcefilter.h>
 #include <QTimer>
 
 #include "basefrontend.h"
@@ -49,6 +49,7 @@ private:
 	TURAG::SimEurobot::AppContext appcontext_;
 	TURAG::SimEurobot::Simulation simcontext_;
 	TURAG::SimEurobot::RobotBase robot_;
+	TURAG::SimEurobot::LogSourcesFilter filter_;
 
 	QTimer refresh_log_timer_;
 

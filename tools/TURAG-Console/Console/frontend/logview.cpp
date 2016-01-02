@@ -10,17 +10,16 @@
 #include <libsimeurobot/ui/robotlogview.h>
 #include <libsimeurobot/ui/robotlogmodel.h>
 #include <libsimeurobot/parser.h>
+#include <libsimeurobot/ui/logcontext.h>
 
 #include "util/tinainterface.h"
 
 using namespace TURAG::SimEurobot;
 
 RobotLogFrontend::RobotLogFrontend(TinaInterface *tinaInterface, QWidget *parent) :
-	BaseFrontend(QStringLiteral("Meldungen"), QIcon(), parent),
-	sim_context_(app_context_),
-	robot_context_(sim_context_)
-{
-	log_view_ = new RobotLogView(robot_context_);
+	BaseFrontend(QStringLiteral("Meldungen"), QIcon(), parent)
+{	
+	log_view_ = new RobotLogView(LogContext(filter_, sources_, time_, app_context_));
 	connect(log_view_, SIGNAL(activated(QModelIndex)),
 			this, SLOT(activated(QModelIndex)));
 
@@ -47,14 +46,14 @@ void RobotLogFrontend::readSettings()
 {
 	QSettings settings;
 	settings.beginGroup("RobotLogFrontend");
-	robot_context_.readSettings(&settings);
+	filter_.readSettings(&settings);
 }
 
 void RobotLogFrontend::writeSettings()
 {
 	QSettings settings;
 	settings.beginGroup("RobotLogFrontend");
-	robot_context_.writeSettings(&settings);
+	filter_.writeSettings(&settings);
 }
 
 void RobotLogFrontend::onUpdateLog()
@@ -132,7 +131,10 @@ void RobotLogFrontend::writeLine(QByteArray line)
 	if (!parseDebugMessagePayload(line, message))
 		return;
 
-	if (robot_context_.handle(message))
+	if (time_.handle(message))
+		return;
+
+	if (sources_.handle(message))
 		return;
 
 	// Graphen

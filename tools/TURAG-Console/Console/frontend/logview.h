@@ -8,7 +8,9 @@
 #include <libsimeurobot/fwd.h>
 #include <libsimeurobot/appcontext.h>
 #include <libsimeurobot/simulation.h>
-#include <libsimeurobot/robotcontext.h>
+#include <libsimeurobot/logsourcefilter.h>
+#include <libsimeurobot/logsources.h>
+#include <libsimeurobot/timeprovider.h>
 #include "basefrontend.h"
 
 class TinaInterface;
@@ -48,8 +50,9 @@ private:
   TURAG::SimEurobot::RobotLogView* log_view_;
 
   TURAG::SimEurobot::AppContext app_context_;
-  TURAG::SimEurobot::Simulation sim_context_;
-  TURAG::SimEurobot::RobotContext robot_context_;
+  TURAG::SimEurobot::LogSourcesFilter filter_;
+  TURAG::SimEurobot::LogSources sources_;
+  TURAG::SimEurobot::TimeProvider time_;
 
   QTimer refresh_log_timer_;
 };
