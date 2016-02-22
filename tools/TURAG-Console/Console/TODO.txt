@@ -175,6 +175,34 @@ abzuschließen. Was tun? Warten? Mit Dummy-Byte auffüllen?)
 
 Für letzteres könnte die QByteArray::qCompress-Funktion benutzt werden, für ersteres
 die MiniZ-Bibliothek.
+--> Implementierung der qCompress-Funktion erscheint mir nicht koscher, daher besser für
+alles miniZ benutzen.
+
+
+Der DebugServer sollte für jeden Datenkanal noch einen komprimierten aufmachen.
+Gepuffert werden dann komprimierte und unkomprimierte Daten.
+Die Blockerkennung sollte zeitgesteuert passieren, mit einer maximalen Blockgröße:
+Block wird ab Erreichen einer gewissen Datenmenge oder nach Ablauf einer bestimmten
+Zeit abgeschlossen.
+Blöcke bestehen aus 0xFF 0xFF <Länge, 2 Byte, MSB markiert Kompression ja/nein> <deflate data>
+Kompression macht wahrscheinlich erst ab 0,5 - 1 KB Sinn. Größenvergleich vorher nachher
+ist sicher auch nicht ganz verkehrt.
+
+Kompression sollte über das DeviceFile konfigurierbar sein:
+ - aktiv/deaktiv
+ - maximale Blockgröße (optional)
+ - timeout (optional)
+ - maximale Größe des komprimierten Puffers
+
+Die Änderung sollte abwärtskompatibel sein: alte Clients sollten einfach die
+unkomprimierten Kanäle weiter benutzen können. Das lässt sich nur erreichen,
+indem die nötigen Infos separat in einem eigenen "compressed-devices"-Block
+überträgt.
+In neuen Versionen kann mit einem Häkchen im ConnectionWidget die Kompression
+aktiviert werden.
+Da das tcpBackend allein keine Möglichkeit hat die Kompressio zu erkennen, muss
+dies im connectionString codiert werden, wahrscheinlich mit einem Parameter
+der Art: compression=1
 
 
 CLI-Interface

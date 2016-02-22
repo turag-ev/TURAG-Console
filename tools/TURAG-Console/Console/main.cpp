@@ -44,7 +44,8 @@ int main(int argc, char *argv[]) {
 	// we want to create a QCoreApplication rather than a full blown QApplication. To do
 	// so, we have to parse the options before creating the required application class instance.
 	// Our distinguishing feature is whether the user supplied any of the named options from
-	// above.
+	// above. This is alsow why we need to set the ParseAsLongOptions flag because otherwise
+	// we would possibly get a wrong result.
 	QStringList arguments;
 	for (int i = 0; i < argc; ++i) {
 		arguments.append(argv[i]);
