@@ -145,7 +145,7 @@ QString SerialBackend::getConnectionInfo() const {
     } else {
         QString path = connectionUrl_.path();
 #ifdef Q_OS_WIN32
-    // connectionWIdgetSerial adds a leading '/' to make a valid URL.
+	// connectionWidgetSerial adds a leading '/' to make a valid URL.
     while(path.size() && path.startsWith('/')) {
         path.remove(0, 1);
     }

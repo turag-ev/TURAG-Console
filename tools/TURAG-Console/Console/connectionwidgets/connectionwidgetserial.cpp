@@ -138,8 +138,12 @@ void ConnectionWidgetSerial::onDeviceUpdate(void) {
     if (QSerialPortInfo::availablePorts().count() != port_name_->count()) {
         port_name_->clear();
         for (const QSerialPortInfo& info : QSerialPortInfo::availablePorts()) {
-            port_name_->addItem(info.portName());
-        }
+#ifdef Q_OS_WIN32
+		port_name_->addItem(info.portName());
+#else
+		port_name_->addItem(info.systemLocation());
+#endif
+		}
     }
 }
 
@@ -147,7 +151,11 @@ void ConnectionWidgetSerial::onDeviceUpdate(void) {
 void ConnectionWidgetSerial::showEvent ( QShowEvent * event ) {
     port_name_->clear();
     for (const QSerialPortInfo& info : QSerialPortInfo::availablePorts()) {
-        port_name_->addItem(info.portName());
+#ifdef Q_OS_WIN32
+		port_name_->addItem(info.portName());
+#else
+		port_name_->addItem(info.systemLocation());
+#endif
     }
 
     deviceUpdateTimer.start(500);
