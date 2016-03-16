@@ -52,8 +52,7 @@ texec mv "${SRC_TAR}" "${DEB_TAR}"
 texec tar zxf "${DEB_TAR}"
 texec cd "turag-console-${SRC_VERSION}"
 
-texec mkdir debian
-texec cp -r "${ROOT_DIR}/debian-${LSB}/*" -t debian
+texec cp -r "${ROOT_DIR}/debian-${LSB}" debian
 texec dch -d "new upstream release" -D "${LSB}"
 texec cp -r debian/* -t "${ROOT_DIR}/debian-${LSB}"
 
