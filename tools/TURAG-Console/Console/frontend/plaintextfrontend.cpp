@@ -365,12 +365,20 @@ bool PlainTextFrontend::eventFilter(QObject *obj, QEvent *event) {
 			}
 			break;
 
-			// convert carriage return on enter to line feed
-		case Qt::Key_Return:
-		case Qt::Key_Enter:
-			emit dataReady("\x0a");
-			qDebug() << "Sent line feed";
-			break;
+// Das war hier mal drin, weil ich dachte, dass es logischer wäre wenn die Enter-Taste
+// ein Newline (0x0A) sendet, weil das in Linux als Zeilenende benutzt wird. Im oben
+// erwähnten VT100-Protokoll wird allerdings per default für die Enter-/Returntaste nur
+// ein Carriage Return (0x0D) sendet, so wie Qt es standardmäßig macht und wie es
+// scheinbar auch das Testmenü korrekterweise erwartet. Daher muss diese Anpassung weg.
+//
+//    	Martin Oemus, 22.04.2016
+
+//			// convert carriage return on enter to line feed
+//		case Qt::Key_Return:
+//		case Qt::Key_Enter:
+//			emit dataReady("\x0a");
+//			qDebug() << "Sent line feed";
+//			break;
 
 		default:
 			QByteArray text(keyEvent->text().toUtf8());
