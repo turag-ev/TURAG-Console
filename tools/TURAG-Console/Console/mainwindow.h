@@ -82,6 +82,8 @@ private:
     QToolBar* toolbar;
 	QToolBar* frontendToolbar;
 	QComboBox* addressBar;
+	QColor addressBarColorBase;
+	QColor addressBarColorText;
 
     LoggerWidget* logger;
 

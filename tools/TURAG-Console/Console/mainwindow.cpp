@@ -240,6 +240,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	addressBar->setMaximumWidth(1000);
 	addressBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 	addressBar->lineEdit()->setPlaceholderText("Insert URL here... (press Ctrl+L or F6 to focus)");
+	addressBarColorBase = addressBar->palette().color(QPalette::Base);
+	addressBarColorText = addressBar->palette().color(QPalette::Text);
 	connect(addressBar->lineEdit(), SIGNAL(returnPressed()), connect_action, SLOT(trigger()));
 	QAction* focusAddressbarAction = new QAction(this);
 	addressBar->addAction(focusAddressbarAction);
@@ -505,6 +507,36 @@ void MainWindow::onConnected(bool readOnly) {
         permanentStatus->setText("Verbunden");
         permanentReadOnlyImage->setPixmap(QPixmap());
     }
+
+	QPalette pal = addressBar->palette();
+	pal.setColor(QPalette::Active, QPalette::Base, Qt::darkGreen);
+	pal.setColor(QPalette::Inactive, QPalette::Base, Qt::darkGreen);
+	pal.setColor(QPalette::Active, QPalette::Text, Qt::white);
+	addressBar->setPalette(pal);
+	addressBar->lineEdit()->setReadOnly(true);
+}
+
+void MainWindow::onDisconnected(bool reconnecting) {
+	if (!reconnecting) {
+		connect_action->setEnabled(true);
+//		connect_action->setVisible(true);
+		disconnect_action->setEnabled(false);
+//		disconnect_action->setVisible(false);
+		refreshAction->setEnabled(false);
+	}
+	status->setText("");
+	permanentStatus->setText("Getrennt");
+
+	permanentStatusImage->setPixmap(QPixmap::fromImage(*imgCross));
+	permanentReadOnlyImage->setPixmap(QPixmap());
+
+	QPalette pal = addressBar->palette();
+	pal.setColor(QPalette::Active, QPalette::Base, addressBarColorBase);
+	pal.setColor(QPalette::Inactive, QPalette::Base, addressBarColorBase);
+	pal.setColor(QPalette::Active, QPalette::Text, addressBarColorText);
+	addressBar->setPalette(pal);
+	addressBar->lineEdit()->setReadOnly(false);
+
 }
 
 void MainWindow::handleNewConnectionAction(bool ) {
@@ -521,21 +553,6 @@ void MainWindow::handleNewConnectionAction(bool ) {
 
 void MainWindow::updateUrl(const QUrl& url) {
 	addressBar->lineEdit()->setText(url.toDisplayString());
-}
-
-void MainWindow::onDisconnected(bool reconnecting) {
-    if (!reconnecting) {
-        connect_action->setEnabled(true);
-//		connect_action->setVisible(true);
-		disconnect_action->setEnabled(false);
-//		disconnect_action->setVisible(false);
-		refreshAction->setEnabled(false);
-    }
-    status->setText("");
-    permanentStatus->setText("Getrennt");
-
-    permanentStatusImage->setPixmap(QPixmap::fromImage(*imgCross));
-    permanentReadOnlyImage->setPixmap(QPixmap());
 }
 
 #   ifdef QT_DEBUG
