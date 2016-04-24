@@ -450,7 +450,7 @@ void MainWindow::about() {
 										"&nbsp; Pascal Below<br />"
 										"&nbsp; Kevin Seidel<br />"
 										"&nbsp; Florian Völker<br /><br />"
-										"Copyright © 2013 - 2015 TURAG e.V.<br /><br />"
+										"Copyright © 2013 - 2016 TURAG e.V.<br /><br />"
 										"Based in part on the work of the <a href=\"http://qwt.sf.net\">Qwt project</href>."
 										).arg(qVersion()));
 
