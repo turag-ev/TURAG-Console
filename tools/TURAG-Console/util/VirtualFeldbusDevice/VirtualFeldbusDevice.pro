@@ -30,7 +30,8 @@ SOURCES += \
     ../../../../libs/qt/signal_handler/signalhandler.cpp \
     feldbusdevice.cpp \
     ../../../../tina/tina/feldbus/slave/feldbus.c \
-    ../../../../tina/tina/crc/crc_checksum.c
+    ../../../../tina/tina/crc/crc_checksum.c \
+    ../../../../tina/tina/feldbus/slave/feldbus_stellantriebe.c
 
 HEADERS += \
     ../../../../libs/qt/signal_handler/signalhandler.h \

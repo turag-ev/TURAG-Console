@@ -3,12 +3,316 @@
 #include <iostream>
 #include <QSerialPort>
 #include "feldbusdevice.h"
-#include <slave/feldbus.h>
+#include <slave/feldbus_stellantriebe.h>
 #include <QMetaObject>
 
 using namespace std;
 
 FeldbusDevice* dev;
+
+int32_t tmp1 = 8, tmp2 = 5;
+
+static feldbus_stellantriebe_command_t command_set[] = {
+	{ // RS485_STELLANTRIEBE_KEY_CURRENT_ANGLE
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_NO_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_LONG,
+		.factor =  1.0f
+	},
+	{ // RS485_STELLANTRIEBE_KEY_DESIRED_ANGLE
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_LONG,
+		.factor =  1.0f
+	},
+	{ // RS485_STELLANTRIEBE_KEY_MAX_ANGLE
+		.value = &tmp1,
+		.write_access = 0,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_NONE_TEXT,
+		.factor =  1.0f
+	},
+	{ // RS485_STELLANTRIEBE_KEY_MIN_ANGLE
+		.value = &tmp1,
+		.write_access = 0,
+		.length = 0,
+		.factor =  1.0f
+	},
+	{ // RS485_STELLANTRIEBE_KEY_CURRENT_VELOCITY
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_NO_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor =  1.0f
+	},
+	{ // RS485_STELLANTRIEBE_KEY_DESIRED_VELOCITY
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor =  1.0f
+	},
+	{ // RS485_STELLANTRIEBE_KEY_MAX_VELOCITY
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_LONG,
+		.factor =  1.0f
+	},
+	{ // RS485_STELLANTRIEBE_KEY_CURRENT_CURRENT
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_NO_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor =  1.0f
+	},
+	{ // RS485_STELLANTRIEBE_KEY_DESIRED_CURRENT
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_NONE_TEXT,
+		.factor =  1.0f
+	},
+	{ // RS485_STELLANTRIEBE_KEY_MAX_CURRENT
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor =  1.0f
+	},
+	{ // RS485_STELLANTRIEBE_KEY_CURRENT_PWM
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_NO_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor =  1.0f
+	},
+	{ // RS485_STELLANTRIEBE_KEY_DESIRED_PWM
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor =  1.0f
+	},
+	{ // RS485_STELLANTRIEBE_KEY_MAX_PWM
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor =  1.0f
+	},
+	{ // RS485_STELLANTRIEBE_KEY_VOLTAGE
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_NO_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor =  1.0f
+	},
+	{ // RS485_STELLANTRIEBE_KEY_STATUS
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_NO_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_CHAR,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{ // RS485_STELLANTRIEBE_KEY_CONTROL_STATE
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_CHAR,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{ // RS485_STELLANTRIEBE_DC_KEY_SWITCH_STATUS
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_NO_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_CHAR,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{ // RS485_STELLANTRIEBE_DC_KEY_RETURN_TO_HOME
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor =  1.0f
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_NO_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_NO_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_SHORT,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_CHAR,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_CHAR,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_CHAR,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_CHAR,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_CHAR,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_CHAR,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_CHAR,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+	{
+		.value = &tmp1,
+		.write_access = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_ACCESS_WRITE_ACCESS,
+		.length = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_LENGTH_CHAR,
+		.factor = TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE
+	},
+
+};
+
+const char currentAngle_string[]   = "current Angle[mrad]";
+const char desiredAngle_string[]   = "desired Angle[mrad]";
+const char maxAngle_string[]   = "Velocities:";
+const char minAngle_string[]   = "min Angle[mrad]";
+const char currentVelocity_string[]   = "current Velocity[mrad/s]";
+const char desiredVelocity_string[]   = "desired Velocity[mrad/s]";
+const char maxVelocity_string[]   = "max Velocity[mrad/s]";
+const char currentCurrent_string[]   = " ";
+const char desiredCurrent_string[]   = " ";
+const char maxCurrent_string[]   = "max Current[mA]";
+const char currentPwm_string[]   = "current PWM[%]";
+const char desiredPwm_string[]   = "desired PWM[%]";
+const char maxPwm_string[]   = "max PWM[%]";
+const char voltage_string[]   = "voltage[mV]";
+const char status_string[]   = "status";
+const char controlstate_string[]   = "control state";
+const char switch_string[]   = "switch status";
+const char home_string[]   = "drive home";
+const char curP_string[]   = "current P";
+const char curI_string[]   = "current I";
+const char current_gain_p_string[]   = "current gain P";
+const char current_gain_i_string[]   = "current gain I";
+const char velocity_gain_p_inv_string[]   = "velocity_gain_p_inv";
+const char velocity_gain_i_inv_string[]   = "velocity_gain_i_inv";
+const char position_gain_p_string[]   = "position_gain_p";
+const char position_gain_p_inv_string[]   = "position_gain_p_inv";
+const char position_gain_i_string[]   = "position_gain_i";
+const char position_gain_i_inv_string[]   = "position_gain_i_inv";
+const char ctrl_pos_flag_samples_required_string[]   = "ctrl_pos_flag_samples_required";
+const char ctrl_pos_flag_samples_max_string[]   = "ctrl_pos_flag_samples_max";
+const char ctrl_vel_flag_samples_required_string[]   = "ctrl_vel_flag_samples_required";
+const char ctrl_vel_flag_samples_max_string[]   = "ctrl_vel_flag_samples_max";
+const char ctrl_cur_flag_samples_required_string[]   = "ctrl_cur_flag_samples_required";
+const char ctrl_cur_flag_samples_max_string[]   = "ctrl_cur_flag_samples_max";
+const char ctrl_error_delay_required_string[]   = "ctrl_error_delay_required";
+const char ctrl_error_samples_max_string[]   = "ctrl_error_samples_max";
+
+
+const char* string_table[] = {
+	currentAngle_string,
+	desiredAngle_string,
+	maxAngle_string,
+	minAngle_string,
+	currentVelocity_string,
+	desiredVelocity_string,
+	maxVelocity_string,
+	currentCurrent_string,
+	desiredCurrent_string,
+	maxCurrent_string,
+	currentPwm_string,
+	desiredPwm_string,
+	maxPwm_string,
+	voltage_string,
+	status_string,
+	controlstate_string,
+	switch_string,
+	home_string,
+	// current controller
+	curP_string,
+	curI_string,
+	current_gain_p_string,
+	current_gain_i_string,
+	// velocity controller
+	velocity_gain_p_inv_string,
+	velocity_gain_i_inv_string,
+	// position controller
+	position_gain_p_string,
+	position_gain_p_inv_string,
+	position_gain_i_string,
+	position_gain_i_inv_string,
+	// error flags
+	ctrl_pos_flag_samples_required_string,
+	ctrl_pos_flag_samples_max_string,
+	ctrl_vel_flag_samples_required_string,
+	ctrl_vel_flag_samples_max_string,
+	ctrl_cur_flag_samples_required_string,
+	ctrl_cur_flag_samples_max_string,
+	ctrl_error_delay_required_string,
+	ctrl_error_samples_max_string
+};
+
 
 
 int main(int argc, char *argv[])
@@ -87,7 +391,8 @@ bool FeldbusDevice::init(QString portString) {
     connect(port, SIGNAL(readyRead()), this, SLOT(dataReceived()));
     connect(port, SIGNAL(bytesWritten(qint64)), this, SLOT(dataSend(qint64)));
 
-    turag_feldbus_slave_init();
+//    turag_feldbus_slave_init();
+	turag_feldbus_stellantriebe_init(command_set, string_table, sizeof(command_set) / sizeof(command_set[0]));
 
     connect(&uptimeCounter, &QTimer::timeout, [&](void){turag_feldbus_slave_increase_uptime_counter();});
     uptimeCounter.start(10);
@@ -166,6 +471,10 @@ void FeldbusDevice::dataRegisterEmpty(void) {
     }
 }
 
-extern "C" FeldbusSize_t turag_feldbus_slave_process_package(uint8_t*, FeldbusSize_t, uint8_t*) {
-    return TURAG_FELDBUS_IGNORE_PACKAGE;
+extern "C" FeldbusSize_t turag_feldbus_stellantriebe_process_package(uint8_t* message, FeldbusSize_t message_length, uint8_t* response) {
+	return 0;
+}
+
+extern "C" void turag_feldbus_stellantriebe_value_changed(uint8_t key) {
+
 }

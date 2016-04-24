@@ -36,7 +36,7 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     vlayout->setStretch(1,100);
     setLayout(vlayout);
 
-    updateDeviceValues = new QPushButton("Werte zurücksetzen");
+	updateDeviceValues = new QPushButton("Werte aktualisieren/zurücksetzen");
     connect(updateDeviceValues, SIGNAL(clicked()), this, SLOT(onUpdateDeviceValues()));
 
     QFrame* scrollframe = new QFrame;
@@ -77,6 +77,7 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     QHBoxLayout* radio_layout = new QHBoxLayout;
     settings_layout->addLayout(radio_layout);
     cyclicDataUpdate = new QRadioButton("zyklische Datenaktualisierung");
+	cyclicDataUpdate->setChecked(true);
     radio_layout->addWidget(cyclicDataUpdate);
     oneShotDataUpdate = new QRadioButton("einmalige Datenaktualisierung");
     radio_layout->addWidget(oneShotDataUpdate);
@@ -145,8 +146,20 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
 
     char command_name[256];
 
-    for (unsigned i = 0; i < commandsetLength; ++i) {
-        if (commandset[i].length != Aktor::Command_t::CommandLength::none) {
+	unsigned i = 0;
+	for (i = 0; i < commandsetLength; ++i) {
+		if (commandset[i].length == Aktor::Command_t::CommandLength::text) {
+			QLabel* text = new QLabel;
+
+			if (actor->getCommandName(i+1, command_name)) {
+				text->setText(QString("<b>%1</b>").arg(command_name));
+			} else {
+				text->setText("<b>\?\?\?</b>");
+			}
+
+			value_grid->addWidget(text, i, 0, 1, -1, Qt::AlignBottom);
+			value_grid->setRowMinimumHeight(i, 25);
+		} else if (commandset[i].length != Aktor::Command_t::CommandLength::none) {
             CommandsetEntry entry;
             entry.key = i+1;
             entry.label = new QLabel;
@@ -177,16 +190,20 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
             entry.checkbox = new QCheckBox;
             connect(entry.checkbox, SIGNAL(stateChanged(int)), this, SLOT(onCheckboxChanged()));
 
-            value_grid->addWidget(entry.label, i, 0);
-            value_grid->addWidget(entry.value, i, 1);
+			value_grid->addWidget(entry.label, i, 0, Qt::AlignVCenter);
+			value_grid->addWidget(entry.value, i, 1, Qt::AlignVCenter);
             if (entry.button) {
-                value_grid->addWidget(entry.button, i, 2);
+				value_grid->addWidget(entry.button, i, 2, Qt::AlignVCenter);
             }
-            value_grid->addWidget(entry.checkbox, i, 3);
+			value_grid->addWidget(entry.checkbox, i, 3, Qt::AlignVCenter);
 
             commandsetGrid.append(entry);
-        }
-    }
+		}
+	}
+	QWidget* spacer = new QWidget;
+	spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	value_grid->addWidget(spacer, i, 0);
+
     onUpdateDeviceValues();
 }
 
