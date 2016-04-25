@@ -6,6 +6,7 @@
 #include <QHBoxLayout>
 #include <QDebug>
 #include <QSettings>
+#include <QTableView>
 #include <tina/debug/defines.h>
 #include <libsimeurobot/ui/robotlogview.h>
 #include <libsimeurobot/ui/robotlogmodel.h>
@@ -20,7 +21,7 @@ RobotLogFrontend::RobotLogFrontend(TinaInterface *tinaInterface, QWidget *parent
 	BaseFrontend(QStringLiteral("Meldungen"), QIcon(), parent)
 {	
 	log_view_ = new RobotLogView(LogContext(filter_, sources_, time_, app_context_));
-	connect(log_view_, SIGNAL(activated(QModelIndex)),
+    connect(log_view_->getTable(), SIGNAL(activated(QModelIndex)),
 			this, SLOT(activated(QModelIndex)));
 
     // build gui
