@@ -194,12 +194,22 @@ void SerialBackend::onError(QSerialPort::SerialPortError error) {
         errormsg = "The requested device operation is not supported or prohibited by the running operating system.";
         logFilteredErrorMsg("Fehler: " + errormsg);
         break;
+    case QSerialPort::TimeoutError:
+        #ifdef Q_OS_WIN32
+            // in windows the feldbusfrontend causes an enormous
+            // amount of timeout errors. I don't see how to prevent
+            // that, so mute the error message.
+            return;
+        #else
+            errormsg = "A timeout error occurred."; break;
+        #endif
+
     case QSerialPort::UnknownError:
         errormsg = "An unidentified error occurred."; break;
 
     default: break;
     }
 
-	qWarning() << errormsg;
+    qWarning() << error << ":" << errormsg;
 }
 
