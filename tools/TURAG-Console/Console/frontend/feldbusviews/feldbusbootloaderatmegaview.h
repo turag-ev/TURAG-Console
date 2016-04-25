@@ -8,7 +8,7 @@ class FeldbusBootloaderAtmegaView : public FeldbusBootloaderBaseView
 {
 	Q_OBJECT
 public:
-	explicit FeldbusBootloaderAtmegaView(TURAG::Feldbus::BootloaderAtmega *bootloader, QWidget *parent = 0);
+    explicit FeldbusBootloaderAtmegaView(TURAG::Feldbus::BootloaderAtmega *bootloader, FeldbusFrontend* bus_, QWidget *parent = 0);
 
 };
 

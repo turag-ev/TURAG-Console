@@ -4,8 +4,8 @@
 #include <QDebug>
 
 
-FeldbusBootloaderXmegaView::FeldbusBootloaderXmegaView(TURAG::Feldbus::BootloaderXmega *bootloader, QWidget *parent) :
-	FeldbusBootloaderBaseView(bootloader, parent)
+FeldbusBootloaderXmegaView::FeldbusBootloaderXmegaView(TURAG::Feldbus::BootloaderXmega *bootloader, FeldbusFrontend *bus_, QWidget *parent) :
+    FeldbusBootloaderBaseView(bootloader, bus_, parent)
 {
 	QLineEdit* revisionId = new QLineEdit;
 	setDisabledTheme(revisionId);

@@ -1,4 +1,5 @@
 #include "feldbusbootloaderbaseview.h"
+#include "../feldbusfrontend.h"
 #include <QVBoxLayout>
 #include <QFormLayout>
 #include <QHBoxLayout>
@@ -21,8 +22,8 @@ extern "C" TuragSystemTime turag_rs485_get_timeout(void);
 extern "C" void turag_rs485_set_timeout(TuragSystemTime timeout);
 
 
-FeldbusBootloaderBaseView::FeldbusBootloaderBaseView(TURAG::Feldbus::BootloaderAvrBase *bootloader, QWidget *parent) :
-	QWidget(parent), bootloader_(bootloader)
+FeldbusBootloaderBaseView::FeldbusBootloaderBaseView(TURAG::Feldbus::BootloaderAvrBase *bootloader, FeldbusFrontend *bus_, QWidget *parent) :
+    QWidget(parent), bus(bus_), bootloader_(bootloader)
 {
 	QVBoxLayout* layout = new QVBoxLayout;
 
@@ -288,8 +289,8 @@ void FeldbusBootloaderBaseView::flashImageFile(void) {
 	QCoreApplication::processEvents();
 
 	// the bootloader might take a little longer to reply
-	TuragSystemTime originalTimeout = turag_rs485_get_timeout();
-	turag_rs485_set_timeout(turag_ms_to_ticks(100));
+    unsigned originalTimeout = bus->getFeldbusTimeout();
+    bus->setFeldbusTimeout(100);
 
 	TURAG::Feldbus::BootloaderAtmega::ErrorCode result = bootloader_->writeFlash(0, dataLength, rawData);
 
@@ -301,7 +302,7 @@ void FeldbusBootloaderBaseView::flashImageFile(void) {
 		msg.exec();
 	}
 
-	turag_rs485_set_timeout(originalTimeout);
+    bus->setFeldbusTimeout(originalTimeout);
 
 	this->setEnabled(true);
 }
@@ -335,8 +336,8 @@ void FeldbusBootloaderBaseView::readImageFile(void) {
 	QCoreApplication::processEvents();
 
 	// the bootloader might take a little longer to reply
-	TuragSystemTime originalTimeout = turag_rs485_get_timeout();
-	turag_rs485_set_timeout(turag_ms_to_ticks(100));
+    unsigned originalTimeout = bus->getFeldbusTimeout();
+    bus->setFeldbusTimeout(100);
 
 	uint32_t sizeToRead = bootloader_->getFlashSize(true);
 
@@ -346,7 +347,7 @@ void FeldbusBootloaderBaseView::readImageFile(void) {
 	if (errorCode != TURAG::Feldbus::BootloaderAtmega::ErrorCode::success) {
 		QMessageBox msg(QMessageBox::Critical, bootloader_->errorName(errorCode), bootloader_->errorDescription(errorCode), QMessageBox::Ok);
 		msg.exec();
-		turag_rs485_set_timeout(originalTimeout);
+        bus->setFeldbusTimeout(originalTimeout);
 		this->setEnabled(true);
 		delete[] buffer;
 		return;
@@ -368,7 +369,7 @@ void FeldbusBootloaderBaseView::readImageFile(void) {
 		msg.exec();
 	}
 
-	turag_rs485_set_timeout(originalTimeout);
+    bus->setFeldbusTimeout(originalTimeout);
 	this->setEnabled(true);
 	delete[] buffer;
 }

@@ -91,8 +91,8 @@ QMAKE_LFLAGS_RELEASE += -flto
 SOURCES +=\
         mainwindow.cpp \
     ../../../tina/tina/crc/crc_checksum.c \
-    ../../../tina/tina/feldbus/dynamixel/dxl_hal.c \
-    ../../../tina/tina/feldbus/dynamixel/dynamixel.c \
+    ../../../tina/tina++/feldbus/dynamixel/dxl_hal.cpp \
+    ../../../tina/tina++/feldbus/dynamixel/dynamixel.c \
     ../../../tina/tina/utils/base64.c \
     ../../../tina/tina++/feldbus/dynamixel/dynamixeldevice.cpp \
     ../../../tina/tina++/feldbus/host/aktor_tina.cpp \
@@ -132,7 +132,6 @@ SOURCES +=\
     libs/keyboardenabledcombobox.cpp \
     libs/lineeditext.cpp \
     tina-platform/debug_printf.cpp \
-    tina-platform/rs485.cpp \
     libs/loggerwidget.cpp \
     libs/log.cpp \
     ../../../tina/tina/debug/image.c \
@@ -175,8 +174,8 @@ HEADERS  += \
     ../../../tina/tina/debug.h \
     ../../../tina/tina/debug/defines.h \
     ../../../tina/tina/debug/print.h \
-    ../../../tina/tina/feldbus/dynamixel/dxl_hal.h \
-    ../../../tina/tina/feldbus/dynamixel/dynamixel.h \
+    ../../../tina/tina++/feldbus/dynamixel/dxl_hal.h \
+    ../../../tina/tina++/feldbus/dynamixel/dynamixel.h \
     ../../../tina/tina/feldbus/protocol/turag_feldbus_bus_protokoll.h \
     ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_aseb.h \
     ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h \
@@ -278,7 +277,6 @@ HEADERS  += \
     ../../../tina/tina++/utils/timer.h \
     libs/comboboxext.h \
     config_tina.h \
-    ../../../tina/tina/feldbus/host/rs485.h \
     ../../../tina/tina/helper/static_assert.h \
     ../../../tina/tina++/debug/binary.h \
     ../../../tina/platform/desktop/public/tina/can.h \
@@ -333,7 +331,8 @@ HEADERS  += \
     ../../../src/common/global/system_control.h \
     ../../../src/common/global/stmcam_interface.h \
     libs/tcpsocketext.h \
-    libs/debugprintclass.h
+    ../../../tina/tina++/feldbus/host/feldbusabstraction.h
+
 
 INCLUDEPATH += \
     ../../../tina \

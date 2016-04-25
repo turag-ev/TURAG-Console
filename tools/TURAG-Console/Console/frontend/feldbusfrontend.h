@@ -2,12 +2,14 @@
 #define FELDBUSFRONTEND_H
 
 #include "basefrontend.h"
+#include "util/feldbusdevicefactory.h"
+
 #include <tina++/feldbus/host/device.h>
 #include <tina++/feldbus/host/bootloader.h>
-#include <QList>
-#include "util/feldbusdevicefactory.h"
 #include <tina++/feldbus/dynamixel/dynamixeldevice.h>
 #include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
+
+#include <QList>
 #include <QTimer>
 #include <QCheckBox>
 
@@ -32,13 +34,19 @@ class QTabWidget;
 using namespace TURAG;
 
 
-class FeldbusFrontend : public BaseFrontend
+class FeldbusFrontend : public BaseFrontend, public Feldbus::FeldbusAbstraction
 {
     Q_OBJECT
 
 public:
 	FeldbusFrontend(QWidget *parent = 0);
 	~FeldbusFrontend();
+
+    virtual bool transceive(uint8_t *transmit, int *transmit_length, uint8_t *receive, int *receive_length, bool delayTransmission);
+    virtual void clearBuffer(void);
+    void setFeldbusTimeout(unsigned milliSeconds);
+    unsigned getFeldbusTimeout(void);
+
 
 public slots:
 	virtual void onConnected(bool readOnly, QIODevice*);
@@ -143,9 +151,12 @@ private:
 
 	bool inquiryRunning;
 	bool bootloaderActivationRunning;
+    bool connected;
 
     TURAG::Feldbus::Device* dev;
-
+    QByteArray busDataBuffer;
+    QTimer feldbusReceiveTimer;
+    unsigned feldbusTimeout;
 };
 
 #endif // FELDBUSFRONTEND_H
