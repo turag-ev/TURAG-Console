@@ -31,11 +31,13 @@ http://doc.qt.io/qt-5/linux-deployment.html
 -->https://intern.turag.de/forum/viewtopic.php?f=62&t=832&start=30#p17596
 scheint sich ganz gut zu eignen
 
-Angepeilte Qt-Version: 5.5:
- - wegen offiziellem Windows 10-Support
+Angepeilte Qt-Version: 5.5.1:
  - wegen Verfügbarkeit von qInfo
---> vorher muss Feldbus-Bug gelöst werden
---> auf Release von 5.5.1 warten!
+ - in Ubuntu 16.04 als Paket
+
+Evt. auch Qt 5.6 wegen LTS-Support?
+- wegen offiziellem Windows 10-Support
+--> auf 5.6.1 warten.
 
 
 
@@ -218,7 +220,14 @@ als die genannten Mini-Programme.
 
 Feldbus
 ----------------------------------------
-Bug aufspüren, der Funktion in Qt-Versionen > 5.2.0 in Windows behindert!
+Feldbus-Bug in Windows (waitForReady kriegt einen timeout, obwohl Daten da sind)
+wurde umgangen, sodass jetzt auch neuere Qt-Versionen möglich sind.
+Allerdings ist das Ganze nicht sehr elegant. Abhilfe wird wohl erst eine Variante
+der Console schaffen, wo die Backends in einem dedizierten Thread laufen. Dann wäre
+es möglich, den Frontends Daten über zwei Varianten bereitzustellen: herkömmlich über
+das Signal-Slot-Modell oder alternativ über zwei FIFOs, deren Zugriff mit Mutexes
+synchronsiert wird und für das Frontend mit Condition Variablen blockierend gestaltet
+werden kann.
 
 - Standardview, was Adresse und Checksumme übernimmt. Der User kann dann den Datenteil
 der Pakete bestimmen. Antwortpakete werden auch entsprechend ausgewertet. Sollte
