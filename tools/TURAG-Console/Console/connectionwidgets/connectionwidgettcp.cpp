@@ -457,7 +457,7 @@ void ConnectionWidgetTcp::showContextMenu(const QPoint & pos) {
 
 void ConnectionWidgetTcp::onOpenRecentConnection(int index) {
 	if (!socket) {
-        hostEdit->setText(recent_connections.at(index));
+        hostEdit->setText(recent_connections[index]);
         connectToServer();
     }
 }

@@ -11,16 +11,16 @@
 
 #include "libs/elidedbutton.h"
 
-
 ConnectionWidget::ConnectionWidget(QString recentConnectionSpecifier, QWidget *parent) :
 	QWidget(parent), recentConnectionsLayout(nullptr), recentConnectionsContainer(nullptr),
-	recentConnectionSpecifier_(recentConnectionSpecifier), spacingAdded(false)
+    recentConnectionSpecifier_(recentConnectionSpecifier), spacingAdded(false)
 {
+    recent_connections.setMaxNumber(MAX_RECENT_CONNECTIONS);
+
     recent_files_map_ = new QSignalMapper(this);
     connect(recent_files_map_,SIGNAL(mapped(int)),this,SLOT(onOpenRecentConnection(int)));
 
-    layout = new QVBoxLayout();
-    setLayout(layout);
+    layout = new QVBoxLayout(this);
 }
 
 void ConnectionWidget::addRecentConnections() {
@@ -38,14 +38,14 @@ void ConnectionWidget::addRecentConnections() {
 
     QSettings settings;
     settings.beginGroup("RecentConnections");
-    recent_connections = settings.value(objectName()).toStringList();
+    recent_connections.loadFromSettings(objectName(), settings);
 
     if (!recent_connections.empty()) {
 		recentConnectionsContainer = new QGroupBox(recentConnectionSpecifier_ + ":");
 		recentConnectionsContainer->setFlat(true);
 		QVBoxLayout* innerLayout = new QVBoxLayout;
 
-        for (int i = 0; i < recent_connections.length(); i++) {
+        for (int i = 0; i < recent_connections.size(); i++) {
             ElidedButton* link = new ElidedButton(" " + recent_connections[i]);
 			link->setElideMode(Qt::ElideMiddle);
 			link->setMinimumWidth(350);
@@ -79,27 +79,23 @@ void ConnectionWidget::addRecentConnections() {
 
 }
 
-void ConnectionWidget::onOpenRecentConnection(int index) {
+void ConnectionWidget::onOpenRecentConnection(int index)
+{
     bool save;
-	emit connectionChanged(QUrl(recent_connections.at(index)), &save);
+    emit connectionChanged(QUrl(recent_connections[index]), &save);
     if (save) {
-        saveConnection(recent_connections.at(index));
+        saveConnection(recent_connections[index]);
         addRecentConnections();
     }
 }
 
 
-void ConnectionWidget::saveConnection(QString connectionString) {
+void ConnectionWidget::saveConnection(QString connectionString)
+{
+    recent_connections.add(connectionString);
+
     QSettings settings;
     settings.beginGroup("RecentConnections");
-
-    QStringList connections = settings.value(objectName()).toStringList();
-    connections.removeAll(connectionString);
-    connections.prepend(connectionString);
-    while (connections.size() > MAX_RECENT_CONNECTIONS) {
-        connections.removeLast();
-    }
-
-    settings.setValue(objectName(), connections);
+    recent_connections.saveToSettings(objectName(), settings);
 }
 

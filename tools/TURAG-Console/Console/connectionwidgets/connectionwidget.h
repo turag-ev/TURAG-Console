@@ -5,11 +5,17 @@
 #include <QString>
 #include <QBoxLayout>
 
+#include <libsimeurobot/ui/common/recent.h>
+
 class QVBoxLayout;
 class QSignalMapper;
 class QMenu;
 class BaseBackend;
 class QGroupBox;
+
+namespace TURAG { namespace SimEurobot {
+class RecentFiles;
+}}
 
 class ConnectionWidget : public QWidget {
     Q_OBJECT
@@ -24,7 +30,7 @@ signals:
 	void connectionChanged(const QUrl& url, bool* saveConnectionString);
 
 protected:
-    QStringList recent_connections;
+    TURAG::SimEurobot::RecentFiles recent_connections;
 	QVBoxLayout* recentConnectionsLayout;
 	QGroupBox* recentConnectionsContainer;
     QVBoxLayout* layout;

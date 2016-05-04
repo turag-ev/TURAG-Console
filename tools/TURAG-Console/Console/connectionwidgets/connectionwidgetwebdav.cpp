@@ -244,7 +244,7 @@ void ConnectionWidgetWebDAV::authRequired(void) {
 
 void ConnectionWidgetWebDAV::onOpenRecentConnection(int index) {
 	if (status == Status::unconnected) {
-		hostEdit->setText(recent_connections.at(index));
+        hostEdit->setText(recent_connections[index]);
 		connectToServer();
 	}
 }
