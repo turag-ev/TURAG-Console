@@ -5,6 +5,7 @@
 
 DEB_BUILDDIR=tools/TURAG-Console/Console
 export QT_SELECT=qt5
+export PREFIX=/usr
 
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/qmake.mk

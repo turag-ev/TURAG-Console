@@ -363,7 +363,7 @@ include(../../../libs/qt/expander-widget/expanderwidget.pri)
 
 # install
 unix:!mac {
-  isEmpty(PREFIX):PREFIX = /usr
+  isEmpty(PREFIX):PREFIX = /usr/local
   
   BINDIR = $$PREFIX/bin
   DATADIR = $$PREFIX/share
