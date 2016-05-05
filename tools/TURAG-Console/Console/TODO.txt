@@ -4,6 +4,17 @@
 HÖCHSTE PRIORITÄT
 =====================================================
 =====================================================
+Umbau der Console sodass:
+ - GUI-/CLI-Betrieb möglich wird (stärkere Controllerabstraktion)
+ - Backends in eigenen Thread, damit Threaded-Fifo als alternativer
+   Datentransport für Feldbus möglich wird
+ - Controller erweitern, sodass mehrere Verbindungen gleichzeitig
+   geöffnet werden können
+ - Kompression ist unbedingt mit in die Überlegungen einzubeziehen!
+ - in dem Zusammenhang auch die Backend-Hierarchie erweitern und
+   Interface-Verletzungen eliminieren, soweit praktikabel
+   (siehe Backends)
+
 
 =====================================================
 =====================================================
@@ -140,6 +151,31 @@ annehmbare Einschränkung sein.
 --> Problematisch wird hier wieder das Testmenü...zumindest theoretisch. In der Praxis
 dürfte es klappen.
 --> Einfache Lösung, aber Support für mehrere getrennte Streams wäre wohl eleganter O:-)
+==> GEHT NICHT, da an keiner Stelle garantiert wird, das tina-Pakete nicht vermengt werden
+würden.
+==> Support für mehrere getrennte Streams unverzichtbar
+
+
+Neuer Ansatz:
+In einem ConnectionString können beliebig viele Verbindungen codiert werden. Der Controller
+öffnet die entsprechenden Backends. Für den Datenaustausch wird ein Kanalindex eingeführt,
+der die Datenquelle/-herkunft kennzeichnet. Den Frontends bleibt es überlassen, was sie mit
+den Daten tun. Um die Schnittstelle zum Frontend simpel zu halten, werden die Backends alle
+mit dem Controller verbunden, welcher alle Daten an das Frontend weiterleitet, sodass wie
+gehabt nur eine Signal-Slot-Verbindung pro Richtung für das Frontend nötig ist.
+Multiple Verbindungen passen auch wunderbar zum generischen Anspruch der Console.
+Multiple Frontends sind wahrscheinlich überflüssig, da diese zu verschieden sind und man dann
+auch einfach zwei Consolen-Instanzen öffnen könnte.
+Der Mehraufwand im Interface ist dann gar nicht so groß. Allenfalls wäre eine Anzeige sinnvoll,
+ob das aktuell gewählte Frontend alle Datenströme verarbeiten kann, bzw. eine Anzeige wieviele
+gerade offen sind (wäre für Plaintextfrontend und so interessant).
+Indem man den Frontends die Entscheidung überlässt, ist auch das Testmenu-Problem gelöst:
+bei 3 Kanälen werden entsprechend 3 Tabs anegzeigt, die man durchschalten kann und die Eingabe
+geht immer zum richtigen Board.
+Bei dem threadedFifo-Transport müsste man sich überlegen, ob und wie auch da mehrere Verbindungen
+möglich/nötig sind.
+Achja, lustig wäre noch so eine Ansicht mit einem kleinen Bandbreitendiagramm... (für jede
+Verbindung).
 
 
 
