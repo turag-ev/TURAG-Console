@@ -10,7 +10,7 @@ class LineEditExt;
 class QPushButton;
 class QCheckBox;
 
-using namespace TURAG::Feldbus;
+using namespace TURAG::Feldbus; // FIXME: evil!
 
 
 class DynamixelView : public QWidget

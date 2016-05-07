@@ -8,7 +8,7 @@
 #include <QByteArray>
 #include <QString>
 
-using namespace TURAG;
+using namespace TURAG; // FIXME: evil!
 
 class FeldbusDeviceInfoExt {
 public:

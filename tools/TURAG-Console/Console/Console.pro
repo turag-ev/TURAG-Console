@@ -39,6 +39,8 @@ QT     += xml
 # camera stuff
 QT     += multimedia
 QT     += multimediawidgets
+
+TINA   += feldbus-host feldbus-dynamixel feldbus-protocol crc base64 debug geometry
     
 TARGET = turag-console
 TEMPLATE = app
@@ -90,17 +92,6 @@ QMAKE_LFLAGS_RELEASE += -flto
 
 SOURCES +=\
         mainwindow.cpp \
-    ../../../tina/tina/crc/crc_checksum.c \
-    ../../../tina/tina/feldbus/dynamixel/dxl_hal.c \
-    ../../../tina/tina/feldbus/dynamixel/dynamixel.c \
-    ../../../tina/tina/utils/base64.c \
-    ../../../tina/tina++/feldbus/dynamixel/dynamixeldevice.cpp \
-    ../../../tina/tina++/feldbus/host/aktor_tina.cpp \
-    ../../../tina/tina++/feldbus/host/aseb_tina.cpp \
-    ../../../tina/tina++/feldbus/host/dcmotor_tina.cpp \
-    ../../../tina/tina++/feldbus/host/device_tina.cpp \
-    ../../../tina/tina++/feldbus/host/farbsensor_tina.cpp \
-    ../../../tina/tina++/feldbus/host/servo_tina.cpp \
     backend/basebackend.cpp \
     backend/filebackend.cpp \
     backend/serialbackend.cpp \
@@ -135,21 +126,11 @@ SOURCES +=\
     tina-platform/rs485.cpp \
     libs/loggerwidget.cpp \
     libs/log.cpp \
-    ../../../tina/tina/debug/image.c \
-    ../../../tina/tina/debug/print.cpp \
-    ../../../tina/tina++/feldbus/host/bootloader_tina.cpp \
-    ../../../tina/platform/desktop/thread.cpp \
     frontend/feldbusviews/feldbusbootloaderatmegaview.cpp \
     frontend/feldbusviews/feldbusbootloaderbaseview.cpp \
     frontend/feldbusviews/feldbusbootloaderxmegaview.cpp \
-    ../../../tina/tina/debug/binary.cpp \
     frontend/rawfrontend.cpp \
     frontend/robotfrontend.cpp \
-    ../../../tina/tina/debug/graph.cpp \
-    ../../../libs/qt/qwebdav/qwebdavlib/qnaturalsort.cpp \
-    ../../../libs/qt/qwebdav/qwebdavlib/qwebdav.cpp \
-    ../../../libs/qt/qwebdav/qwebdavlib/qwebdavdirparser.cpp \
-    ../../../libs/qt/qwebdav/qwebdavlib/qwebdavitem.cpp \
     connectionwidgets/connectionwidgetwebdav.cpp \
     libs/logindialog.cpp \
     backend/webdavbackend.cpp \
@@ -157,62 +138,11 @@ SOURCES +=\
     connectionwidgets/connectionwidgetwebdav/webdavtreemodel.cpp \
     libs/iconmanager.cpp \
     frontend/scfrontend.cpp \
-    ../../../libs/libcintelhex/ihex_copy.c \
-    ../../../libs/libcintelhex/ihex_parse.c \
-    ../../../libs/libcintelhex/ihex_record.c \
     main.cpp \
-    ../../../tina/tina++/geometry/circle.cpp \
-    ../../../tina/tina++/geometry/rect.cpp \
-    ../../../tina/tina++/geometry/geometry.cpp \
     libs/tcpsocketext.cpp
 
 HEADERS  += \
     mainwindow.h \
-    ../../../tina/platform/desktop/public/tina++/thread.h \
-    ../../../tina/tina/bytes.h \
-    ../../../tina/tina/crc/crc_checksum.h \
-    ../../../tina/tina/crc/xor_checksum.h \
-    ../../../tina/tina/debug.h \
-    ../../../tina/tina/debug/defines.h \
-    ../../../tina/tina/debug/print.h \
-    ../../../tina/tina/feldbus/dynamixel/dxl_hal.h \
-    ../../../tina/tina/feldbus/dynamixel/dynamixel.h \
-    ../../../tina/tina/feldbus/protocol/turag_feldbus_bus_protokoll.h \
-    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_aseb.h \
-    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h \
-    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_lokalisierungssensoren.h \
-    ../../../tina/tina/feldbus/protocol/turag_feldbus_fuer_stellantriebe.h \
-    ../../../tina/tina/helper/macros.h \
-    ../../../tina/tina/helper/normalize.h \
-    ../../../tina/tina/helper/types.h \
-    ../../../tina/tina/math.h \
-    ../../../tina/tina/tina.h \
-    ../../../tina/tina/utils/base64.h \
-    ../../../tina/tina++/algorithm.h \
-    ../../../tina/tina++/crc/crc.h \
-    ../../../tina/tina++/crc/xor.h \
-    ../../../tina/tina++/debug.h \
-    ../../../tina/tina++/feldbus/dynamixel/dynamixeldevice.h \
-    ../../../tina/tina++/feldbus/host/aktor.h \
-    ../../../tina/tina++/feldbus/host/aseb.h \
-    ../../../tina/tina++/feldbus/host/dcmotor.h \
-    ../../../tina/tina++/feldbus/host/device.h \
-    ../../../tina/tina++/feldbus/host/farbsensor.h \
-    ../../../tina/tina++/feldbus/host/sensor.h \
-    ../../../tina/tina++/feldbus/host/servo.h \
-    ../../../tina/tina++/helper/construct.h \
-    ../../../tina/tina++/helper/init.h \
-    ../../../tina/tina++/helper/integer.h \
-    ../../../tina/tina++/helper/macros.h \
-    ../../../tina/tina++/helper/normalize.h \
-    ../../../tina/tina++/helper/packed.h \
-    ../../../tina/tina++/helper/scoped_lock.h \
-    ../../../tina/tina++/math.h \
-    ../../../tina/tina++/range/algorithm.h \
-    ../../../tina/tina++/time.h \
-    ../../../tina/tina++/tina.h \
-    ../../../tina/tina++/utils/base64.h \
-    ../../Debug-Server/Debug_Server/debugserver_protocol.h \
     backend/basebackend.h \
     backend/filebackend.h \
     backend/serialbackend.h \
@@ -251,58 +181,14 @@ HEADERS  += \
     libs/splitterext.h \
     libs/loggerwidget.h \
     libs/log.h \
-    ../../../tina/tina/helper/config_tina_default.h \
-    ../../../tina/tina/helper/locked_type.h \
-    ../../../tina/tina/debug/image.h \
-    ../../../tina/tina/utils/bit_macros.h \
-    ../../../tina/tina++/crc.h \
-    ../../../tina/tina++/geometry.h \
-    ../../../tina/tina++/statemachine.h \
-    ../../../tina/tina++/feldbus/host/bootloader.h \
-    ../../../tina/tina++/container/array_buffer.h \
-    ../../../tina/tina++/container/array_storage.h \
-    ../../../tina/tina++/container/circular_buffer.h \
-    ../../../tina/tina++/container/container.h \
-    ../../../tina/tina++/container/thread_fifo.h \
-    ../../../tina/tina++/container/variant_class.h \
-    ../../../tina/tina++/geometry/units/config.h \
-    ../../../tina/tina++/geometry/units/math.h \
-    ../../../tina/tina++/geometry/units/unit.h \
-    ../../../tina/tina++/geometry/units/units.h \
-    ../../../tina/tina++/geometry/geometry.h \
-    ../../../tina/tina++/geometry/units.h \
-    ../../../tina/tina++/helper/locked.h \
-    ../../../tina/tina++/helper/static_const.h \
-    ../../../tina/tina++/utils/flags.h \
-    ../../../tina/tina++/utils/misc-doc.h \
-    ../../../tina/tina++/utils/timer.h \
     libs/comboboxext.h \
     config_tina.h \
-    ../../../tina/tina/feldbus/host/rs485.h \
-    ../../../tina/tina/helper/static_assert.h \
-    ../../../tina/tina++/debug/binary.h \
-    ../../../tina/platform/desktop/public/tina/can.h \
-    ../../../tina/platform/desktop/public/tina/debugprint.h \
-    ../../../tina/platform/desktop/public/tina/thread.h \
-    ../../../tina/platform/desktop/public/tina/time.h \
-    ../../../tina/platform/desktop/public/tina/timetype.h \
-    ../../../tina/platform/desktop/public/tina/config_tina_platform.h \
-    ../../../tina/platform/desktop/public/tina++/can.h \
     frontend/feldbusviews/feldbusbootloaderatmegaview.h \
 	libs/buttongroupext.h \
     frontend/feldbusviews/feldbusbootloaderbaseview.h \
     frontend/feldbusviews/feldbusbootloaderxmegaview.h \
-    ../../../tina/tina/debug/binary.h \
-    ../../../tina/tina/debug/internal-debug.h \
-    ../../../tina/tina/debug/log-source.h \
     frontend/rawfrontend.h \
     frontend/robotfrontend.h \
-    ../../../tina/tina++/debug/graph.h \
-    ../../../libs/qt/qwebdav/qwebdavlib/qnaturalsort.h \
-    ../../../libs/qt/qwebdav/qwebdavlib/qwebdav_global.h \
-    ../../../libs/qt/qwebdav/qwebdavlib/qwebdav.h \
-    ../../../libs/qt/qwebdav/qwebdavlib/qwebdavdirparser.h \
-    ../../../libs/qt/qwebdav/qwebdavlib/qwebdavitem.h \
     connectionwidgets/connectionwidgetwebdav.h \
     libs/logindialog.h \
     backend/webdavbackend.h \
@@ -310,38 +196,12 @@ HEADERS  += \
     connectionwidgets/connectionwidgetwebdav/webdavtreemodel.h \
     libs/iconmanager.h \
     frontend/scfrontend.h \
-    ../../../libs/libcintelhex/cintelhex.h \
-    ../../../libs/libcintelhex/config.h \
-    ../../../tina/tina/debug/game_time.h \
-    ../../../tina/tina++/container/stack.h \
-    ../../../tina/tina++/container/queue.h \
-    ../../../tina/tina++/container/array_ref.h \
-    ../../../tina/tina++/container/rolling_buffer.h \
-    ../../../src/common/global/eurobot.h \
-    ../../../src/common/global/global.h \
-    ../../../tina/tina++/helper/uninitialized.h \
-    ../../../tina/tina++/helper/tmp_length.h \
-    ../../../tina/tina++/helper/normalize_type_traits.h \
-    ../../../tina/tina++/helper/traits_algorithms.h \
-    ../../../tina/tina++/geometry/spline.h \
-    ../../../tina/tina++/geometry/rect.h \
-    ../../../tina/tina++/geometry/circle.h \
-    ../../../src/common/global/motion_control.h \
-    ../../../src/common/global/powerplane.h \
-    ../../../src/common/global/localisation.h \
-    ../../../src/common/global/userinterface.h \
-    ../../../src/common/global/system_control.h \
-    ../../../src/common/global/stmcam_interface.h \
     libs/tcpsocketext.h \
     libs/debugprintclass.h
 
 INCLUDEPATH += \
-    ../../../tina \
-    ../../../tina/platform/desktop/public \
     tina-platform/public \
-    ../../Debug-Server \
-    . \
-    ../../../libs
+    .
 
 DISTR_FILES += \
     $$files(images/*.png) \
@@ -360,6 +220,12 @@ OTHER_FILES += \
 
 include(../../../libs/libsimeurobot.pri)
 include(../../../libs/qt/expander-widget/expanderwidget.pri)
+include(../../../libs/libcintelhex.pri)
+include(../../../libs/qwebdav.pri)
+include(../../Debug-Server/Debug-Server-Protocol.pri)
+include(../../../src/common/TURAG-common.pri)
+include(../../../tina/tina.pri)
+include(../../../tina/platform/desktop/tina-desktop.pri)
 
 # install
 unix:!mac {

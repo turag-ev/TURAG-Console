@@ -29,7 +29,7 @@ class QGroupBox;
 class QTabWidget;
 
 
-using namespace TURAG;
+using namespace TURAG; // FIXME: evil!
 
 
 class FeldbusFrontend : public BaseFrontend

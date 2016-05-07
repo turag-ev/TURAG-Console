@@ -18,7 +18,7 @@ class DataGraph;
 class LineEditExt;
 
 
-using namespace TURAG::Feldbus;
+using namespace TURAG::Feldbus; // FIXME: evil!
 
 
 

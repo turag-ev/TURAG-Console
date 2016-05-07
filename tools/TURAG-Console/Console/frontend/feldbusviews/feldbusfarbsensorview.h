@@ -10,7 +10,7 @@ class QTimer;
 class QTime;
 class QGraphicsScene;
 
-using namespace TURAG::Feldbus;
+using namespace TURAG::Feldbus; // FIXME: evil!
 
 class FeldbusFarbsensorView : public QWidget
 {
