@@ -85,7 +85,7 @@ SCFrontend::SCFrontend(QWidget *parent)
     layout->setMargin(0);
     setLayout(layout);
 
-	simcontext_.setPlayingArea(std::make_shared<EuroBot2015>());
+	simcontext_.setPlayingArea(std::make_shared<EuroBot2015>()); // FIXME: set playing area from robot info
 	scene_->addRobot(&robot_);
 
 	// connect to input source TinaInterface
