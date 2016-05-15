@@ -153,7 +153,7 @@ void SCFrontend::writeLine(QByteArray line)
 
 void SCFrontend::seek()
 {
-	robot_.goToTime(simcontext_.getSimulationCurrentTime());
+	robot_.update();
 }
 
 void SCFrontend::writeData(QByteArray data)

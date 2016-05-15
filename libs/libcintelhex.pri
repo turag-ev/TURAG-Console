@@ -10,3 +10,5 @@ SOURCES += \
 HEADERS  += \
     $$PWD/libcintelhex/cintelhex.h \
     $$PWD/libcintelhex/config.h
+
+DISTR_FILES += $$PWD/libcintelhex.pri

@@ -44,12 +44,12 @@ cd "${WORKING_DIR}"
 techo "Quellcodepaket erstellen"
 texec "${SCRIPT_DIR}/make_dist.sh ${LSB}"
 
-SRC_TAR="$(ls -t turag-console-*.tar.gz | head -n 1)"
-SRC_VERSION="$(echo ${SRC_TAR} | sed 's/turag-console-\(.*\).tar.gz/\1/')"
-DEB_TAR="turag-console_${SRC_VERSION}.orig.tar.gz"
+SRC_TAR="$(ls -t turag-console-*.tar.bz2 | head -n 1)"
+SRC_VERSION="$(echo ${SRC_TAR} | sed 's/turag-console-\(.*\).tar.bz2/\1/')"
+DEB_TAR="turag-console_${SRC_VERSION}.orig.tar.bz2"
 
 texec mv "${SRC_TAR}" "${DEB_TAR}"
-texec tar zxf "${DEB_TAR}"
+texec tar -axf "${DEB_TAR}"
 texec cd "turag-console-${SRC_VERSION}"
 
 texec cp -r "${ROOT_DIR}/debian-${LSB}" debian

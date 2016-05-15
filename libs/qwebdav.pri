@@ -17,3 +17,5 @@ HEADERS  += \
     $$PWD/qt/qwebdav/qwebdavlib/qwebdav_global.h \
     $$PWD/qt/qwebdav/qwebdavlib/qwebdavdirparser.h \
     $$PWD/qt/qwebdav/qwebdavlib/qwebdavitem.h
+
+DISTR_FILES += $$PWD/qwebdav.pri

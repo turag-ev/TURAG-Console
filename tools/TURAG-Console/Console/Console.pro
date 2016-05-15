@@ -205,56 +205,54 @@ INCLUDEPATH += \
 
 DISTR_FILES += \
     $$files(images/*.png) \
-    turag-console.desktop \
-    ../../../libs/libsimeurobot.pri \
-    ../../../libs/libsimeurobot/plugin/libsimeurobot-plugin.pri \
-    ../../../libs/qt/expander-widget/expanderwidget.pri \
     Console.pro
 
 RESOURCES += \
     images.qrc
 
-OTHER_FILES += \
-    TODO.txt \
-    images/turag-55.png
+OTHER_FILES += TODO.txt
 
-include(../../../libs/libsimeurobot.pri)
-include(../../../libs/qt/expander-widget/expanderwidget.pri)
-include(../../../libs/libcintelhex.pri)
-include(../../../libs/qwebdav.pri)
-include(../../Debug-Server/Debug-Server-Protocol.pri)
-include(../../../src/common/TURAG-common.pri)
-include(../../../tina/tina.pri)
-include(../../../tina/platform/desktop/tina-desktop.pri)
+PIXMAPS      = images/turag-55.png
+APPLICATIONS = turag-console.desktop
+MIMES        = turag-console.xml
 
-# install
+TURAG_REPRO = ../../..
+include($$TURAG_REPRO/libs/libsimeurobot.pri)
+include($$TURAG_REPRO/libs/qt/expander-widget/expanderwidget.pri)
+include($$TURAG_REPRO/libs/libcintelhex.pri)
+include($$TURAG_REPRO/libs/qwebdav.pri)
+include($$TURAG_REPRO/tools/Debug-Server/Debug-Server-Protocol.pri)
+include($$TURAG_REPRO/src/common/TURAG-common.pri)
+include($$TURAG_REPRO/tina/tina.pri)
+include($$TURAG_REPRO/tina/platform/desktop/tina-desktop.pri)
+
+# install & distr
 unix:!mac {
+
+  #
+  # paths
+
+  PREFIX = $$(PREFIX)
   isEmpty(PREFIX):PREFIX = /usr/local
   
   BINDIR = $$PREFIX/bin
   DATADIR = $$PREFIX/share
-  PKGDATADIR = $$DATADIR/minitube
-    
-  target.path = $$PREFIX/bin
-  
-  sources.files = $$SOURCES $$HEADERS $$RESOURCES $$FORMS Console.pro
+  PKGDATADIR = $$DATADIR/turag-console
 
-  pixmaps.path = $$DATADIR/pixmaps
-  pixmaps.files += images/turag-55.png
+  #
+  # make distr (own make dist)
 
-  desktop.path = $$DATADIR/applications
-  desktop.files += turag-console.desktop
-  
-  mime.path = $$DATADIR/mime/packages
-  mime.files += turag-console.xml
+  DISTRFILES = \
+    $${SOURCES} $${HEADERS} $${RESOURCES} $${FORMS} \
+    $${DISTR_FILES} $${DIST_FILES} $${DISTFILES} $${OTHER_FILES} \
+    $${PIXMAPS} $${APPLICATIONS} $${MIMES}
+  DISTRFILES = $$unique(DISTRFILES)
 
-  INSTALLS += target pixmaps desktop mime
+  sources.files = $$DISTRFILES
 
-  # own make dist :P -> make distr
   PACKAGE_STRING = $${TARGET}-$${VERSION}$${EXT_VERSION}
-  TMP_DIR = .tmp
+  TMP_DIR = $$(PWD)/.tmp
   DIST_DIR = $${TMP_DIR}/$${PACKAGE_STRING}/tools/TURAG-Console/Console
-  DISTRFILES += $${SOURCES} $${HEADERS} $${RESOURCES} $${FORMS} $${DISTR_FILES}
 
   distr.commands =
   distr.depends = $${PACKAGE_STRING}.tar.gz
@@ -264,14 +262,27 @@ unix:!mac {
   pack.output = $${PACKAGE_STRING}.tar.gz
   pack.CONFIG = combine no_link explicit_dependencies
   pack.dependency_type = TYPE_C
-  pack.commands =  (test -d $${DIST_DIR} || mkdir -p $${DIST_DIR}) && \
-                   $(COPY_FILE) --parents ${QMAKE_FILE_IN} $${DIST_DIR} && \
-                   (cd $${TMP_DIR} && \
-                    $(TAR) $${PACKAGE_STRING}.tar $${PACKAGE_STRING} && \
-                    $(COMPRESS) $${PACKAGE_STRING}.tar) && \
-                   $(MOVE) $${TMP_DIR}/$${PACKAGE_STRING}.tar.gz . && \
-                   $(DEL_FILE) -r $${TMP_DIR}
+
+  pack.commands = \
+    realpath --relative-to $$PWD/$$TURAG_REPRO ${QMAKE_FILE_IN} | \
+    tar -acf $${PACKAGE_STRING}.tar.bz2 --xform='s%^%$${PACKAGE_STRING}/%' -C $$PWD/$$TURAG_REPRO -T -
 
   QMAKE_EXTRA_COMPILERS += pack
   QMAKE_EXTRA_TARGETS += distr
+
+  #
+  # make install
+
+  target.path = $$PREFIX/bin
+
+  pixmaps.path = $$DATADIR/pixmaps
+  pixmaps.files += $${PIXMAPS}
+
+  desktop.path = $$DATADIR/applications
+  desktop.files += $${APPLICATIONS}
+
+  mime.path = $$DATADIR/mime/packages
+  mime.files += $${MIMES}
+
+  INSTALLS += target pixmaps desktop mime
 }

@@ -4,13 +4,13 @@ Priority: extra
 Maintainer: Richard Liebscher <richard_liebscher@turag.de>
 Build-Depends: cdbs, 
                debhelper (>= 7.0.50~),
+               qt5-default,
                qtbase5-dev,
                qtmultimedia5-dev,
-               qtchooser,
-               qt5-qmake,
-               qtbase5-dev-tools,
-               libqwt6-qt5-dev,
-               libqt5serialport5-dev
+               libqt5svg5-dev,
+               libqt5serialport5-dev,
+               libqwt-qt5-dev,
+               libqt5opengl5-dev
 Standards-Version: 3.9.5
 Homepage: http://www.turag.de
 

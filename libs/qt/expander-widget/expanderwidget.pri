@@ -13,4 +13,5 @@ RESOURCES += \
     $$PWD/expanderwidget.qrc
 
 DISTR_FILES += \
+    $$PWD/expanderwidget.pri \
     $$files($$PWD/*.png)
