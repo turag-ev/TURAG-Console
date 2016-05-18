@@ -33,6 +33,15 @@ Außerdem ist es unglücklich, dass die abgeleiteten Backends teilweise
 stream_ direkt manipulieren, das sollte nicht notwendig sein, da
 es das Interface verwässert.
 
+Unbedingt wieder die Unterscheidung in sequential/non-sequential
+einführen und Frontends bereitstellen! Es ist nicht möglich, beide
+Datenquellen-Typen in einem Abwasch zu behandeln und für manche
+Frontends ist dies eine kritische Information.
+(Was die Frage aufwirft was passiert, wenn mehrere Verbindungen
+parallel geöffnet werden und seqentielle mit nicht-sequentiellen
+Datenquellen vermischt werden. Aber wahrscheinlich sollte man das
+wie so oft den Frontends selbst überlassen. Und in den meisten
+Fällen würde so ein Szenario auch überhaupt keinen Sinn machen.)
 
 
 Deployment

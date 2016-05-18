@@ -36,8 +36,11 @@ void TextDataPointInterface::setFirstChannelIsTime(bool isTime) {
 }
 
 void TextDataPointInterface::writeData(QByteArray data) {
-    // append new data to already buffered data, removing all line feeds
+	// append new data to already buffered data, removing all carriage returns
     buffer.append(data.replace("\r", ""));
+
+	int currentBufferIndex = 0;
+	int nextDelimIndex = 0;
 
     // start time if that is a fresh package
     if (detectChannels && !firstChannelIsTime_) {
@@ -45,20 +48,24 @@ void TextDataPointInterface::writeData(QByteArray data) {
     }
 
     // search for packet delim
-    while (buffer.contains(delim_)) {
-        if (detectChannels) {
-            if (buffer.count(delim_) > 1) {
-                buffer = buffer.remove(0, buffer.indexOf(delim_) + delim_.size());
-            } else {
-                break;
-            }
-        }
+	while ((nextDelimIndex = buffer.indexOf(delim_, currentBufferIndex)) != -1) {
+
+		// The following code removes the first set of data.
+		// This is important because for sequential devices
+		// the first line could be incomplete thus rendering
+		// the channel detection faulty.
+		// FIXME: do this only for sequential devices.
+		if (detectChannels) {
+			// search for a second delim
+			currentBufferIndex = nextDelimIndex + delim_.size();
+			if ((nextDelimIndex = buffer.indexOf(delim_, currentBufferIndex)) == -1) {
+				return;
+			}
+		}
 
         QByteArray packet;
-
-        int index = buffer.indexOf(delim_);
-        packet = buffer.left(index);
-        buffer.remove(0, index + delim_.length());
+		packet = buffer.mid(currentBufferIndex, nextDelimIndex - currentBufferIndex);
+		currentBufferIndex = nextDelimIndex + delim_.size();
 
         QList<QByteArray> parts = packet.split(channelDelim_.at(0));
 
@@ -101,6 +108,7 @@ void TextDataPointInterface::writeData(QByteArray data) {
         }
         emit dataPointsReady(list);
     }
+	buffer.remove(0, currentBufferIndex);
 }
 
 void TextDataPointInterface::clear() {
