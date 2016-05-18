@@ -7,6 +7,7 @@
 #include <QDockWidget>
 #include <QSettings>
 #include <QTimer>
+#include <QDebug>
 #include <libs/iconmanager.h>
 #include <tina/debug/defines.h>
 #include <libsimeurobot/ui/robotlogview.h>
@@ -19,11 +20,34 @@
 #include <libsimeurobot/parser.h>
 #include <libsimeurobot/robots/unknownrobot.h>
 #include <libsimeurobot/ui/logcontext.h>
+#include <libsimeurobot/vis/robotui.h>
 
 using namespace TURAG::SimEurobot;
 
+namespace  {
+
+class ConsoleRobotUI : public DefaultRobotUserInterface
+{
+public:
+    explicit ConsoleRobotUI(SCFrontend& scf)
+        : scf_(scf)
+    { }
+
+    void onRobotChanged(std::uint8_t id, std::int16_t playingarea_id) override
+    {
+        DefaultRobotUserInterface::onRobotChanged(id, playingarea_id);
+        scf_.setPlayingArea(playingarea_id);
+    }
+
+private:
+    SCFrontend& scf_;
+};
+
+} // namespace
+
 SCFrontend::SCFrontend(QWidget *parent)
-	: BaseFrontend(QStringLiteral("SystemControl Debug"), IconManager::get("eurobot"), parent),
+    : BaseFrontend(QStringLiteral("SystemControl Debug"),
+                   IconManager::get("eurobot"), parent),
 	  tina_interface_(nullptr),
 	  appcontext_(),
 	  simcontext_(appcontext_),
@@ -69,7 +93,9 @@ SCFrontend::SCFrontend(QWidget *parent)
     layout->setMargin(0);
     setLayout(layout);
 
-	simcontext_.setPlayingArea(std::make_shared<EuroBot2015>()); // FIXME: set playing area from robot info
+    // backend
+    robot_.getVisualization().setRobotModel(new ConsoleRobotUI(*this));
+    simcontext_.setPlayingArea(PlayingArea::fromId(PlayingArea::getLastestId()));
 	scene_->addRobot(&robot_);
 
 	// connect to input source TinaInterface
@@ -82,7 +108,7 @@ SCFrontend::SCFrontend(QWidget *parent)
     readSettings();
 
 	connect(&simcontext_, SIGNAL(seeked()), this, SLOT(seek()));
-	simcontext_.registerAdvanceCallback(std::bind(&SCFrontend::seek, this));
+    simcontext_.registerAdvanceCallback([=](){ seek(); });
 }
 
 
@@ -114,7 +140,7 @@ void SCFrontend::onConnected(bool readOnly, QIODevice* dev)
 	refresh_log_timer_.start(500);
 	simcontext_.resumeSimulation();
 	simcontext_.setRobotsPrepared();
-	simcontext_.beginGame();
+    //simcontext_.beginGame();
 }
 
 void SCFrontend::onDisconnected(bool reconnecting)
@@ -132,7 +158,14 @@ void SCFrontend::writeLine(QByteArray line)
 		return;
 
 	robot_.log(dm);
-	log_view_->insertRow(dm);
+    log_view_->insertRow(dm);
+}
+
+void SCFrontend::setPlayingArea(int id)
+{
+    auto pa = PlayingArea::fromId(id);
+    if (pa)
+        simcontext_.setPlayingArea(std::move(pa));
 }
 
 void SCFrontend::seek()

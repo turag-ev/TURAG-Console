@@ -34,6 +34,8 @@ public slots:
 
 	void writeLine(QByteArray line);
 
+     void setPlayingArea(int id);
+
 private slots:
 	void seek();
 
