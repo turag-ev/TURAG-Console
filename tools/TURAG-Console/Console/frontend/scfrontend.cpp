@@ -12,7 +12,8 @@
 #include <libsimeurobot/ui/robotlogview.h>
 #include <libsimeurobot/ui/robots.h>
 #include <libsimeurobot/ui/treemodel/treemodel.h>
-#include <libsimeurobot/ui/treemodel/treeitem.h>
+#include <libsimeurobot/ui/treemodel/logitem.h>
+#include <libsimeurobot/ui/treemodel/layeritem.h>
 #include <libsimeurobot/ui/scene.h>
 #include <libsimeurobot/scenes/eurobot2015.h>
 #include <libsimeurobot/parser.h>
@@ -20,25 +21,6 @@
 #include <libsimeurobot/ui/logcontext.h>
 
 using namespace TURAG::SimEurobot;
-
-namespace {
-
-class PlaybackRobotItem : public TreeItem {
-public:
-	PlaybackRobotItem()
-	{
-
-	}
-
-	QVariant data(int column, int role) const override;
-};
-
-QVariant PlaybackRobotItem::data(int column, int role) const
-{
-	return QVariant();
-}
-
-}
 
 SCFrontend::SCFrontend(QWidget *parent)
 	: BaseFrontend(QStringLiteral("SystemControl Debug"), IconManager::get("eurobot"), parent),
@@ -65,7 +47,9 @@ SCFrontend::SCFrontend(QWidget *parent)
 
 	robot_model_tree_model_ = new RobotsTreeModel(this);
 	TreeItem* root_item = robot_model_tree_model_->getRoot();
-	root_item->appendChild(new PlaybackRobotItem());
+    root_item->appendChild(new LayerGroup(robot_.getVisualization().getLayers()));
+    root_item->appendChild(new LogSourcesGroup(robot_.getLogSources(), filter_));
+
 	robot_model_ = new RobotModelsView(dock_widget);
 	robot_model_->setModel(robot_model_tree_model_);
 	dock_widget->setWidget(robot_model_);
@@ -153,7 +137,7 @@ void SCFrontend::writeLine(QByteArray line)
 
 void SCFrontend::seek()
 {
-	robot_.update();
+    robot_.update();
 }
 
 void SCFrontend::writeData(QByteArray data)

@@ -74,6 +74,9 @@ DEFINES += PACKAGE_NAME=$$TARGET
 
 #DEFINES += DEBUG_WEBDAV
 
+QMAKE_CXXFLAGS += -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast \
+    -Wcast-align -Wunused -Winit-self -Woverloaded-virtual -Wno-unused-parameter
+
 win32: {
   # don't use broken -mms-bitfields flag for windows
   QMAKE_CFLAGS += -mno-ms-bitfields
