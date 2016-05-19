@@ -20,7 +20,7 @@ class LoggerWidget;
 class QComboBox;
 class ConnectionWidget;
 class QTabWidget;
-class QStackedWidget;
+class QStackedLayout;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -50,6 +50,9 @@ private slots:
 #   ifdef QT_DEBUG
         void dumpAllObjectTrees(void);
 #   endif
+
+	void showConnectionWidgetOverlay(void);
+	void hideConnectionWidgetOverlay(void);
 
 private:
 	void writeSettings();
@@ -89,7 +92,7 @@ private:
 
 	QTabWidget* connectionTabWidget;
 	QPushButton* cancelButton;
-	QStackedWidget* centralStackWidget;
+	QStackedLayout* centralStackLayout;
 };
 
 #endif // MAINWINDOW_H

@@ -1,30 +1,34 @@
-#include <QFont>
-#include <QTextCodec>
 #include <QAction>
+#include <QApplication>
+#include <QCloseEvent>
+#include <QComboBox>
+#include <QDebug>
+#include <QDialog>
+#include <QFont>
+#include <QGraphicsBlurEffect>
+#include <QHBoxLayout>
+#include <QImage>
+#include <QLabel>
+#include <QLocale>
 #include <QMenu>
 #include <QMenuBar>
+#include <QMessageBox>
+#include <QProcess>
+#include <QScrollArea>
+#include <QSettings>
+#include <QShortcut>
+#include <QSizeGrip>
+#include <QSignalMapper>
+#include <QStackedLayout>
+#include <QStatusBar>
+#include <QTextCodec>
+#include <QTimer>
 #include <QToolBar>
 #include <QToolButton>
-#include <QSettings>
-#include <QCloseEvent>
-#include <QLabel>
-#include <QStatusBar>
-#include <QSignalMapper>
-#include <QTimer>
-#include <QMessageBox>
-#include <QLocale>
-#include <QProcess>
-#include <QImage>
 #include <QTreeWidget>
-#include <QDialog>
-#include <QHBoxLayout>
-#include <QDebug>
-#include <QComboBox>
-#include <QApplication>
-#include <QScrollArea>
+
 #include <QtNetwork>
 #include <QtWidgets>
-#include <QShortcut>
 
 #include <libs/checkactionext.h>
 #include <libs/loggerwidget.h>
@@ -205,7 +209,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //	toolbar->setIconSize(QSize(20, 20));
 	toolbar->setFloatable(false);
 	toolbar->setMovable(false);
-
+	toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
 
 	QMenu* main_menu = new QMenu(this);
 	main_menu->addAction(new_window);
@@ -243,13 +247,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	addressBarColorBase = addressBar->palette().color(QPalette::Base);
 	addressBarColorText = addressBar->palette().color(QPalette::Text);
 	connect(addressBar->lineEdit(), SIGNAL(returnPressed()), connect_action, SLOT(trigger()));
+	connect(addressBar->lineEdit(), SIGNAL(cursorPositionChanged(int,int)), this, SLOT(showConnectionWidgetOverlay()));
 	QAction* focusAddressbarAction = new QAction(this);
 	addressBar->addAction(focusAddressbarAction);
 	focusAddressbarAction->setShortcut(Qt::CTRL | Qt::Key_L);
-	connect(focusAddressbarAction, &QAction::triggered, [this]() {
-		addressBar->setFocus();
-		addressBar->lineEdit()->selectAll();
-	});
+	connect(focusAddressbarAction, SIGNAL(triggered(bool)), this, SLOT(showConnectionWidgetOverlay()));
 	QShortcut* focusAddressbarActionF6Shortcut = new QShortcut(Qt::Key_F6, this);
 	connect(focusAddressbarActionF6Shortcut, SIGNAL(activated()), focusAddressbarAction, SLOT(trigger()));
 
@@ -330,8 +332,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	// build welcome screen
 	// -------------------------------------------------
-	QVBoxLayout* layout = new QVBoxLayout();
-	QWidget* welcome_screen = new QWidget();
+	QVBoxLayout* welcome_layout = new QVBoxLayout;
+	QWidget* welcome_screen = new QWidget;
+	QWidget* outer_welcome_screen = new QWidget;
+	QVBoxLayout* outer_welcome_layout = new QVBoxLayout;
 
 	connectionTabWidget = new QTabWidget;
 
@@ -345,7 +349,7 @@ MainWindow::MainWindow(QWidget *parent) :
 		connect(iter, SIGNAL(connectionChanged(QUrl,bool*)), controller, SLOT(openConnection(QUrl, bool*)));
 		connect(iter, SIGNAL(connectionChanged(QUrl,bool*)), this, SLOT(updateUrl(QUrl)));
 	}
-	layout->addWidget(connectionTabWidget);
+	welcome_layout->addWidget(connectionTabWidget);
 	connect(connectionTabWidget, &QTabWidget::currentChanged, [this]() {
 		QSettings settings;
 		settings.beginGroup("Controller");
@@ -359,30 +363,44 @@ MainWindow::MainWindow(QWidget *parent) :
 	}
 
 	cancelButton = new QPushButton("Abbrechen");
-	layout->addSpacing(5);
-	layout->addWidget(cancelButton, 0, Qt::AlignLeft);
-	connect(cancelButton, &QPushButton::clicked, [this]() {
-		new_connection_action->setChecked(false);
-		centralStackWidget->setCurrentIndex(1);
-		frontendButton->setEnabled(true);
-		refreshAction->setEnabled(true);
-	});
+	welcome_layout->addSpacing(5);
+	welcome_layout->addWidget(cancelButton, 0, Qt::AlignLeft);
+	connect(cancelButton, &QPushButton::clicked, this, &MainWindow::hideConnectionWidgetOverlay);
 
-	welcome_screen->setLayout(layout);
+	QSizeGrip* sizeGrip = new QSizeGrip(welcome_screen);
+	welcome_layout->addWidget(sizeGrip, 0, Qt::AlignBottom | Qt::AlignRight);
 
+	welcome_screen->setLayout(welcome_layout);
+	welcome_screen->setAutoFillBackground(true);
+	welcome_screen->setWindowFlags(Qt::SubWindow);
+
+
+	outer_welcome_screen->setLayout(outer_welcome_layout);
+	outer_welcome_layout->setContentsMargins(42, 0, 50, 100);
+	outer_welcome_layout->addWidget(welcome_screen);
+
+	QWidget* gray_overlay = new QWidget;
+	gray_overlay->setAutoFillBackground(true);
+	QPalette overlay_palette = gray_overlay->palette();
+	overlay_palette.setColor(QPalette::Window, QColor(0, 0, 0, 100));
+	gray_overlay->setPalette(overlay_palette);
 
 
 	// build central widget
 	// ---------------------------------------
-	centralStackWidget = new QStackedWidget;
-	centralStackWidget->addWidget(welcome_screen);
-	centralStackWidget->addWidget(controller);
+	QWidget* centralStackWidget = new QWidget;
+	centralStackLayout = new QStackedLayout;
+	centralStackLayout->setStackingMode(QStackedLayout::StackAll);
+	centralStackLayout->addWidget(outer_welcome_screen);
+	centralStackLayout->addWidget(gray_overlay);
+	centralStackLayout->addWidget(controller);
+	centralStackWidget->setLayout(centralStackLayout);
 
 	setCentralWidget(centralStackWidget);
 	frontendButton->setEnabled(false);
 	refreshAction->setEnabled(false);
 
-
+	showConnectionWidgetOverlay();
 
 
 //	QTabWidget* tabWidget = new QTabWidget;
@@ -490,10 +508,7 @@ void MainWindow::onConnected(bool readOnly) {
 //	disconnect_action->setVisible(true);
 	refreshAction->setEnabled(true);
 //    frontendOptions->setEnabled(true);
-	new_connection_action->setChecked(false);
-	centralStackWidget->setCurrentIndex(1);
-	frontendButton->setEnabled(true);
-	refreshAction->setEnabled(true);
+	hideConnectionWidgetOverlay();
 
     status->setText(controller->getConnectionInfo());
     setWindowTitle(controller->getConnectionInfo());
@@ -513,7 +528,6 @@ void MainWindow::onConnected(bool readOnly) {
 	pal.setColor(QPalette::Inactive, QPalette::Base, Qt::darkGreen);
 	pal.setColor(QPalette::Active, QPalette::Text, Qt::white);
 	addressBar->setPalette(pal);
-	addressBar->lineEdit()->setReadOnly(true);
 }
 
 void MainWindow::onDisconnected(bool reconnecting) {
@@ -535,19 +549,14 @@ void MainWindow::onDisconnected(bool reconnecting) {
 	pal.setColor(QPalette::Inactive, QPalette::Base, addressBarColorBase);
 	pal.setColor(QPalette::Active, QPalette::Text, addressBarColorText);
 	addressBar->setPalette(pal);
-	addressBar->lineEdit()->setReadOnly(false);
 
 }
 
 void MainWindow::handleNewConnectionAction(bool ) {
 	if (new_connection_action->isChecked()) {
-		centralStackWidget->setCurrentIndex(0);
-		frontendButton->setEnabled(false);
-		refreshAction->setEnabled(false);
+		showConnectionWidgetOverlay();
 	} else {
-		centralStackWidget->setCurrentIndex(1);
-		frontendButton->setEnabled(true);
-		refreshAction->setEnabled(true);
+		hideConnectionWidgetOverlay();
 	}
 }
 
@@ -560,8 +569,8 @@ void MainWindow::dumpAllObjectTrees(void) {
     class TreeDialog : public QDialog {
 
     public:
-        explicit TreeDialog(QWidget *parent = 0) :
-            QDialog(parent)
+		explicit TreeDialog(QWidget *parent_ = 0) :
+			QDialog(parent_)
         {
             tree = new QTreeWidget;
             tree->setColumnCount(3);
@@ -681,7 +690,31 @@ void MainWindow::openUrl(QString url_string) {
 	controller->openConnection(url, &success);
 	if (!success) {
 		printError("Couldn't open specified connection");
-		centralStackWidget->setCurrentIndex(0);
+		centralStackLayout->setCurrentIndex(0);
 	}
 }
 
+
+void MainWindow::showConnectionWidgetOverlay(void) {
+	disconnect(addressBar->lineEdit(), SIGNAL(cursorPositionChanged(int,int)), this, SLOT(showConnectionWidgetOverlay()));
+
+	new_connection_action->setChecked(true);
+	controller->setGraphicsEffect(new QGraphicsBlurEffect);
+	centralStackLayout->setCurrentIndex(1);
+	centralStackLayout->setCurrentIndex(0);
+	frontendButton->setEnabled(false);
+	refreshAction->setEnabled(false);
+	addressBar->lineEdit()->selectAll();
+}
+
+void MainWindow::hideConnectionWidgetOverlay(void) {
+	connect(addressBar->lineEdit(), SIGNAL(cursorPositionChanged(int,int)), this, SLOT(showConnectionWidgetOverlay()));
+
+	new_connection_action->setChecked(false);
+	controller->setGraphicsEffect(nullptr);
+	centralStackLayout->setCurrentIndex(2);
+	frontendButton->setEnabled(true);
+	refreshAction->setEnabled(true);
+	addressBar->lineEdit()->deselect();
+	addressBar->lineEdit()->clearFocus();
+}
