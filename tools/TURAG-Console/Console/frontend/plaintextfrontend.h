@@ -12,13 +12,13 @@ class PlainTextFrontend : public BaseFrontend
     Q_OBJECT
 
 public:
-    enum class STYLE {
-        BLACK_ON_WHITE,
-        GREY_ON_BLACK,
-        GREEN_ON_BLACK,
-        BLUE_ON_BLACK,
-        RASPBERRY_ON_BLACK,
-        DEFAULT = STYLE::GREY_ON_BLACK
+    enum class Style {
+        BlackOnWhite,
+        GrayOnBlack,
+        GreenOnBlack,
+        BlueOnBlack,
+        RaspberryOnBlack,
+        Default = Style::GrayOnBlack
     };
 
 public:
@@ -39,7 +39,7 @@ public slots:
 
 
     virtual void setScrollOnOutput(bool on);
-    virtual void setStyle(STYLE style);
+    virtual void setStyle(Style style);
     virtual void setAutoWrap(bool on);
     virtual void onPaste();
 
@@ -59,7 +59,7 @@ protected:
 	QPlainTextEdit* textbox;
     bool scroll_on_output;
     bool auto_wrap;
-    STYLE selectedStyle;
+    Style selectedStyle;
 
     // menu actions
     QAction* clear_action;

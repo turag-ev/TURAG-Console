@@ -252,7 +252,7 @@ void FeldbusAktorView::onStartStopDataUpdate(void) {
         for (CommandsetEntry& entry : commandsetGrid) {
             if (entry.checkbox->isChecked()) {
                 outputTable.push_back(entry.key);
-                plot->addChannel(entry.label->text(), (qreal)(updateLength->text().toFloat() * updateInterval->text().toFloat()));
+                plot->addChannel(entry.label->text(), static_cast<qreal>(updateLength->text().toFloat() * updateInterval->text().toFloat()));
             }
         }
         actor->setStructuredOutputTable(outputTable);
@@ -363,7 +363,7 @@ void FeldbusAktorView::onCheckboxChanged(void) {
         }
     }
 
-    if (numberOfCheckedValues > 0 && (int)numberOfCheckedValues <= actor->getStructuredOutputTableLength()) {
+    if (numberOfCheckedValues > 0 && static_cast<int>(numberOfCheckedValues) <= actor->getStructuredOutputTableLength()) {
         startStopDataUpdate->setEnabled(true);
     } else {
         startStopDataUpdate->setDisabled(true);

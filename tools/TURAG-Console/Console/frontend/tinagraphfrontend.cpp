@@ -193,7 +193,7 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
                         stream >> encoded;
 
                         float time;
-                        if (encoded.size() != TURAG::Base64::encodeLength(sizeof(time))) {
+                        if (encoded.size() != static_cast<int>(TURAG::Base64::encodeLength(sizeof(time)))) {
                             qDebug() << "Error: couldn't decode time";
                             return;
                         }

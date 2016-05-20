@@ -122,52 +122,52 @@ PlainTextFrontend::~PlainTextFrontend() {
 
 
 void PlainTextFrontend::onStyleBlackOnWhite() {
-    setStyle(STYLE::BLACK_ON_WHITE);
+    setStyle(Style::BlackOnWhite);
 }
 
 void PlainTextFrontend::onStyleGreyOnBlack() {
-    setStyle(STYLE::GREY_ON_BLACK);
+    setStyle(Style::GrayOnBlack);
 }
 
 void PlainTextFrontend::onStyleGreenOnBlack() {
-    setStyle(STYLE::GREEN_ON_BLACK);
+    setStyle(Style::GreenOnBlack);
 }
 
 void PlainTextFrontend::onStyleBlueOnBlack() {
-    setStyle(STYLE::BLUE_ON_BLACK);
+    setStyle(Style::BlueOnBlack);
 }
 
 void PlainTextFrontend::onStyleRaspberryOnBlack() {
-    setStyle(STYLE::RASPBERRY_ON_BLACK);
+    setStyle(Style::RaspberryOnBlack);
 }
 
-void PlainTextFrontend::setStyle(STYLE style) {
+void PlainTextFrontend::setStyle(Style style) {
     selectedStyle = style;
 
     QPalette p = textbox->palette();
 
     switch (style) {
-    case STYLE::BLACK_ON_WHITE:
+    case Style::BlackOnWhite:
         p.setColor(QPalette::Base, Qt::white);
         p.setColor(QPalette::Text, Qt::black);
         break;
 
-    case STYLE::GREEN_ON_BLACK:
+    case Style::GreenOnBlack:
         p.setColor(QPalette::Base, Qt::black);
         p.setColor(QPalette::Text, Qt::green);
         break;
 
-    case STYLE::GREY_ON_BLACK:
+    case Style::GrayOnBlack:
         p.setColor(QPalette::Base, Qt::black);
         p.setColor(QPalette::Text, QColor(178,178,178));
         break;
 
-    case STYLE::BLUE_ON_BLACK:
+    case Style::BlueOnBlack:
         p.setColor(QPalette::Base, Qt::black);
         p.setColor(QPalette::Text, QColor(23,74,240));
         break;
 
-    case STYLE::RASPBERRY_ON_BLACK:
+    case Style::RaspberryOnBlack:
         p.setColor(QPalette::Base, Qt::black);
         p.setColor(QPalette::Text, QColor(0xcc,0x00,0x99));
         break;
@@ -305,18 +305,18 @@ void PlainTextFrontend::readSettings() {
     setScrollOnOutput(settings.value("scrollOnOutput", true).toBool());
     wrap_action->setChecked(settings.value("autoWrap", true).toBool());
     setAutoWrap(settings.value("autoWrap", true).toBool());
-    setStyle((STYLE)settings.value("Style", (int)STYLE::DEFAULT).toInt());
+    setStyle(static_cast<Style>(settings.value("Style", static_cast<int>(Style::Default)).toInt()));
 
-    switch ((STYLE)settings.value("Style", (int)STYLE::DEFAULT).toInt()) {
-    case STYLE::BLACK_ON_WHITE:
+    switch (static_cast<Style>(settings.value("Style", static_cast<int>(Style::Default)).toInt())) {
+    case Style::BlackOnWhite:
         black_on_white_action->setChecked(true); break;
-    case STYLE::GREEN_ON_BLACK:
+    case Style::GreenOnBlack:
         green_on_black_action->setChecked(true); break;
-    case STYLE::GREY_ON_BLACK:
+    case Style::GrayOnBlack:
         white_on_black_action->setChecked(true); break;
-    case STYLE::BLUE_ON_BLACK:
+    case Style::BlueOnBlack:
         blue_on_black_action->setChecked(true); break;
-    case STYLE::RASPBERRY_ON_BLACK:
+    case Style::RaspberryOnBlack:
         raspberry_on_black_action->setChecked(true); break;
     }
 }
@@ -326,7 +326,7 @@ void PlainTextFrontend::writeSettings() {
     settings.beginGroup(objectName());
     settings.setValue("scrollOnOutput", scroll_action->isChecked());
     settings.setValue("autoWrap", wrap_action->isChecked());
-    settings.setValue("Style", (int)selectedStyle);
+    settings.setValue("Style", static_cast<int>(selectedStyle));
 }
 
 bool PlainTextFrontend::eventFilter(QObject *obj, QEvent *event) {
@@ -386,7 +386,7 @@ bool PlainTextFrontend::eventFilter(QObject *obj, QEvent *event) {
 				emit dataReady(text);
 
 				for (char i : text) {
-					qDebug() << "Sent" << (uint8_t)i;
+                    qDebug() << "Sent" << static_cast<uint8_t>(i);
 				}
 			}
 			break;

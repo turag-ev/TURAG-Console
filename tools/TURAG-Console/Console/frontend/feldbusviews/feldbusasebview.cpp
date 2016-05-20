@@ -392,28 +392,28 @@ void FeldbusAsebView::updateGraph(void) {
 
     for (LabelCheckboxCombo& combo : digitalInputs_) {
         if (combo.select_checkbox->isChecked()) {
-            plot->addChannel(combo.label->text(), (qreal)(updateLength->text().toFloat() * updateInterval->text().toFloat()));
+            plot->addChannel(combo.label->text(), static_cast<qreal>(updateLength->text().toFloat() * updateInterval->text().toFloat()));
             ++channel;
         }
     }
 
     for (LabelLineeditCombo& combo : analogInputs_) {
         if (combo.select_checkbox->isChecked()) {
-            plot->addChannel(combo.label->text(), (qreal)(updateLength->text().toFloat() * updateInterval->text().toFloat()));
+            plot->addChannel(combo.label->text(), static_cast<qreal>(updateLength->text().toFloat() * updateInterval->text().toFloat()));
             ++channel;
         }
     }
 
     for (LabelCheckboxCombo& combo : digitalOutputs_) {
         if (combo.select_checkbox->isChecked()) {
-            plot->addChannel(combo.label->text(), (qreal)(updateLength->text().toFloat() * updateInterval->text().toFloat()));
+            plot->addChannel(combo.label->text(), static_cast<qreal>(updateLength->text().toFloat() * updateInterval->text().toFloat()));
             ++channel;
         }
     }
 
     for (LabelLineeditCombo& combo : pwmOutputs_) {
         if (combo.select_checkbox->isChecked()) {
-            plot->addChannel(combo.label->text(), (qreal)(updateLength->text().toFloat() * updateInterval->text().toFloat()));
+            plot->addChannel(combo.label->text(), static_cast<qreal>(updateLength->text().toFloat() * updateInterval->text().toFloat()));
             ++channel;
         }
     }

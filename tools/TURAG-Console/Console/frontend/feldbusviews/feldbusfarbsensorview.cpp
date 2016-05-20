@@ -37,13 +37,13 @@ FeldbusFarbsensorView::FeldbusFarbsensorView(Farbsensor *farbsensor, QWidget *pa
 
     setLayout(layout);
 
-    rgbGraph->addChannel("R", (qreal)5, (qreal)0, (qreal)256);
-    rgbGraph->addChannel("G", (qreal)5, (qreal)0, (qreal)256);
-    rgbGraph->addChannel("B", (qreal)5, (qreal)0, (qreal)256);
+    rgbGraph->addChannel("R", static_cast<qreal>(5), static_cast<qreal>(0), static_cast<qreal>(256));
+    rgbGraph->addChannel("G", static_cast<qreal>(5), static_cast<qreal>(0), static_cast<qreal>(256));
+    rgbGraph->addChannel("B", static_cast<qreal>(5), static_cast<qreal>(0), static_cast<qreal>(256));
 
-    hsvGraph->addChannel("H", (qreal)5, (qreal)0, (qreal)256);
-    hsvGraph->addChannel("S", (qreal)5, (qreal)0, (qreal)256);
-    hsvGraph->addChannel("V", (qreal)5, (qreal)0, (qreal)256);
+    hsvGraph->addChannel("H", static_cast<qreal>(5), static_cast<qreal>(0), static_cast<qreal>(256));
+    hsvGraph->addChannel("S", static_cast<qreal>(5), static_cast<qreal>(0), static_cast<qreal>(256));
+    hsvGraph->addChannel("V", static_cast<qreal>(5), static_cast<qreal>(0), static_cast<qreal>(256));
 
     time_ = new QTime();
     time_->start();

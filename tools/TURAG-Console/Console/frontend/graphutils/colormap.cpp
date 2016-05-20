@@ -10,7 +10,7 @@ QColor ColorMapDiscrete::getColor(int index) {
     // we calculate how many times we have to divide the three
     // rgb color parts to get a sufficient amount of colors.
     // we increase the amount by one, because we exclude white.
-    int base = (int)::ceil(cbrt((float)(numberOfColors_ + 1)));
+    int base = static_cast<int>(::ceil(cbrt(static_cast<float>(numberOfColors_ + 1))));
 
     // calculate color parts
     int red = index / (base * base);
@@ -19,9 +19,9 @@ QColor ColorMapDiscrete::getColor(int index) {
 
     // stretch color parts to rgb color area
     float stretch_factor = 255.0f / (base - 1);
-    red = (int)((float)red * stretch_factor);
-    green = (int)((float)green * stretch_factor);
-    blue = (int)((float)blue * stretch_factor);
+    red = static_cast<int>(static_cast<float>(red) * stretch_factor);
+    green = static_cast<int>(static_cast<float>(green) * stretch_factor);
+    blue = static_cast<int>(static_cast<float>(blue) * stretch_factor);
 
     return QColor(red, green, blue);
 }
@@ -32,7 +32,7 @@ QColor ColorMapDiscrete2::getColor(int index) {
         return QColor(Qt::black);
     }
 
-    int base = (int)(cbrt((float)(numberOfColors_ + 1)));
+    int base = static_cast<int>(cbrt(static_cast<float>(numberOfColors_ + 1)));
     int base_red = 0, base_green = 0, base_blue = 0;
     if (numberOfColors_ + 1 <= base * base * base) {
         base_blue = base;
@@ -62,9 +62,9 @@ QColor ColorMapDiscrete2::getColor(int index) {
     int blue = index - red * base_blue * base_green - green * base_blue;
 
     // stretch color parts to rgb color area
-    red = (int)((float)red * 255.0f / (base_red - 1));
-    green = (int)((float)green * 255.0f / (base_green - 1));
-    blue = (int)((float)blue * 255.0f / (base_blue - 1));
+    red = static_cast<int>(static_cast<float>(red) * 255.0f / (base_red - 1));
+    green = static_cast<int>(static_cast<float>(green) * 255.0f / (base_green - 1));
+    blue = static_cast<int>(static_cast<float>(blue) * 255.0f / (base_blue - 1));
 
     return QColor(red, green, blue);
 }
@@ -76,12 +76,12 @@ QColor ColorMapLinear::getColor(int index) {
         return QColor(Qt::black);
     }
 
-    float color_value = 256.0f * 256.0f * 256.0f / (float)numberOfColors_ * (float)index;
+    float color_value = 256.0f * 256.0f * 256.0f / static_cast<float>(numberOfColors_) * static_cast<float>(index);
 
     // calculate color parts
-    int red = (int)(color_value / (256.0f * 256.0f));
-    int green = (int)((color_value - (float)red * 256.0f * 256.0f) / 256.0f);
-    int blue = (int)(color_value - (float)red * 256.0f * 256.0f - (float)green * 256.0f);
+    int red = static_cast<int>(color_value / (256.0f * 256.0f));
+    int green = static_cast<int>((color_value - static_cast<float>(red) * 256.0f * 256.0f) / 256.0f);
+    int blue = static_cast<int>(color_value - static_cast<float>(red) * 256.0f * 256.0f - static_cast<float>(green) * 256.0f);
 
     return QColor(red, green, blue);
 }
@@ -94,16 +94,16 @@ QColor ColorMapLinear2::getColor(int index) {
 
     int red = 0, green = 0, blue = 0;
 
-    int number_per_color = roundf((float)numberOfColors_ / 3.0f);
+    int number_per_color = roundf(static_cast<float>(numberOfColors_) / 3.0f);
     int red_border = number_per_color;
     int green_border = number_per_color * 2;
 
     if (index < red_border) {
-        red = (int)((float)index / (float)(number_per_color - 1) * 255.0f);
+        red = static_cast<int>(static_cast<float>(index) / static_cast<float>(number_per_color - 1) * 255.0f);
     } else if (index < green_border) {
-        green = (int)((float)(index - red_border) / (float)(number_per_color - 1) * 255.0f);
+        green = static_cast<int>(static_cast<float>(index - red_border) / static_cast<float>(number_per_color - 1) * 255.0f);
     } else {
-        blue = (int)((float)(index - green_border) / (float)(numberOfColors_ - green_border - 1) * 255.0f);
+        blue = static_cast<int>(static_cast<float>(index - green_border) / static_cast<float>(numberOfColors_ - green_border - 1) * 255.0f);
     }
 
     return QColor(red, green, blue);

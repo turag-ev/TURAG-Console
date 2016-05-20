@@ -119,52 +119,52 @@ RawFrontend::~RawFrontend() {
 
 
 void RawFrontend::onStyleBlackOnWhite() {
-    setStyle(STYLE::BLACK_ON_WHITE);
+    setStyle(Style::BlackOnWhite);
 }
 
 void RawFrontend::onStyleGreyOnBlack() {
-    setStyle(STYLE::GREY_ON_BLACK);
+    setStyle(Style::GrayOnBlack);
 }
 
 void RawFrontend::onStyleGreenOnBlack() {
-    setStyle(STYLE::GREEN_ON_BLACK);
+    setStyle(Style::GreenOnBlack);
 }
 
 void RawFrontend::onStyleBlueOnBlack() {
-    setStyle(STYLE::BLUE_ON_BLACK);
+    setStyle(Style::BlueOnBlack);
 }
 
 void RawFrontend::onStyleRaspberryOnBlack() {
-    setStyle(STYLE::RASPBERRY_ON_BLACK);
+    setStyle(Style::RaspberryOnBlack);
 }
 
-void RawFrontend::setStyle(STYLE style) {
+void RawFrontend::setStyle(Style style) {
     selectedStyle = style;
 
     QPalette p = textbox->palette();
 
     switch (style) {
-    case STYLE::BLACK_ON_WHITE:
+    case Style::BlackOnWhite:
         p.setColor(QPalette::Base, Qt::white);
         p.setColor(QPalette::Text, Qt::black);
         break;
 
-    case STYLE::GREEN_ON_BLACK:
+    case Style::GreenOnBlack:
         p.setColor(QPalette::Base, Qt::black);
         p.setColor(QPalette::Text, Qt::green);
         break;
 
-    case STYLE::GREY_ON_BLACK:
+    case Style::GrayOnBlack:
         p.setColor(QPalette::Base, Qt::black);
         p.setColor(QPalette::Text, QColor(178,178,178));
         break;
 
-    case STYLE::BLUE_ON_BLACK:
+    case Style::BlueOnBlack:
         p.setColor(QPalette::Base, Qt::black);
         p.setColor(QPalette::Text, QColor(23,74,240));
         break;
 
-    case STYLE::RASPBERRY_ON_BLACK:
+    case Style::RaspberryOnBlack:
         p.setColor(QPalette::Base, Qt::black);
         p.setColor(QPalette::Text, QColor(0xcc,0x00,0x99));
         break;
@@ -191,7 +191,11 @@ void RawFrontend::onUpdate(void) {
 
 		static int count = 0;
 		for (char byte : *rawBuffer_) {
-			temp.append(QString("%1 ").arg(((long)byte) & 0xff, (int)2, (int)16, (QChar)'0'));
+            temp.append(QString("%1 ").arg(
+                            static_cast<long>(byte) & 0xff,
+                            static_cast<int>(2),
+                            static_cast<int>(16),
+                            static_cast<QChar>('0')));
 			++count;
 			if (count == 20) {
 				temp.append("\n");
@@ -278,18 +282,18 @@ void RawFrontend::readSettings() {
     setScrollOnOutput(settings.value("scrollOnOutput", true).toBool());
     wrap_action->setChecked(settings.value("autoWrap", true).toBool());
     setAutoWrap(settings.value("autoWrap", true).toBool());
-    setStyle((STYLE)settings.value("Style", (int)STYLE::DEFAULT).toInt());
+    setStyle(static_cast<Style>(settings.value("Style", static_cast<int>(Style::Default)).toInt()));
 
-    switch ((STYLE)settings.value("Style", (int)STYLE::DEFAULT).toInt()) {
-    case STYLE::BLACK_ON_WHITE:
+    switch (static_cast<Style>(settings.value("Style", static_cast<int>(Style::Default)).toInt())) {
+    case Style::BlackOnWhite:
         black_on_white_action->setChecked(true); break;
-    case STYLE::GREEN_ON_BLACK:
+    case Style::GreenOnBlack:
         green_on_black_action->setChecked(true); break;
-    case STYLE::GREY_ON_BLACK:
+    case Style::GrayOnBlack:
         white_on_black_action->setChecked(true); break;
-    case STYLE::BLUE_ON_BLACK:
+    case Style::BlueOnBlack:
         blue_on_black_action->setChecked(true); break;
-    case STYLE::RASPBERRY_ON_BLACK:
+    case Style::RaspberryOnBlack:
         raspberry_on_black_action->setChecked(true); break;
     }
 }
@@ -299,5 +303,5 @@ void RawFrontend::writeSettings() {
     settings.beginGroup(objectName());
     settings.setValue("scrollOnOutput", scroll_action->isChecked());
     settings.setValue("autoWrap", wrap_action->isChecked());
-    settings.setValue("Style", (int)selectedStyle);
+    settings.setValue("Style", static_cast<int>(selectedStyle));
 }

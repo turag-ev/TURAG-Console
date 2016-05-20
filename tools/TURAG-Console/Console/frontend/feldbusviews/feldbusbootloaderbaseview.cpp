@@ -278,7 +278,7 @@ void FeldbusBootloaderBaseView::flashImageFile(void) {
 		dataLength = size;
 
 	} else if (imagePathEdit->text().endsWith(".bin")) {
-		rawData = (uint8_t*)data.constData();
+        rawData = reinterpret_cast<uint8_t*>(const_cast<char*>(data.constData()));
 		dataLength = data.size();
 	} else {
 		return;
@@ -356,7 +356,7 @@ void FeldbusBootloaderBaseView::readImageFile(void) {
 
 	bool success = outfile.open(QIODevice::WriteOnly);
 	if (success) {
-		success = outfile.write((const char*)buffer, sizeToRead);
+        success = outfile.write(const_cast<const char*>(reinterpret_cast<char*>(buffer)), sizeToRead);
 		outfile.close();
 	}
 
