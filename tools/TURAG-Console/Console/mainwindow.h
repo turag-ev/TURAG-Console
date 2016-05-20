@@ -3,24 +3,24 @@
 
 #include <QMainWindow>
 
+class ConnectionWidget;
 class Controller;
-class QSettings;
+class ElidedButton;
+class LoggerWidget;
+class PopupContainerWidget;
+class QActionGroup;
+class QComboBox;
+class QFont;
+class QFrame;
+class QImage;
 class QLabel;
-class QSignalMapper;
 class QLineEdit;
 class QPushButton;
+class QSettings;
 class QSignalMapper;
-class QFrame;
-class ElidedButton;
-class QActionGroup;
-class QFont;
-class QImage;
-class QToolBar;
-class LoggerWidget;
-class QComboBox;
-class ConnectionWidget;
-class QTabWidget;
 class QStackedLayout;
+class QTabWidget;
+class QToolBar;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -44,13 +44,13 @@ private slots:
     void onConnected(bool readOnly);
     void onDisconnected(bool reconnecting);
 
-    void handleNewConnectionAction(bool triggered);
 	void updateUrl(const QUrl& url);
 
 #   ifdef QT_DEBUG
         void dumpAllObjectTrees(void);
 #   endif
 
+	void handleNewConnectionAction(bool checked);
 	void showConnectionWidgetOverlay(void);
 	void hideConnectionWidgetOverlay(void);
 
@@ -91,8 +91,8 @@ private:
     LoggerWidget* logger;
 
 	QTabWidget* connectionTabWidget;
-	QPushButton* cancelButton;
-	QStackedLayout* centralStackLayout;
+//	QPushButton* cancelButton;
+	PopupContainerWidget* popupContainer;
 };
 
 #endif // MAINWINDOW_H
