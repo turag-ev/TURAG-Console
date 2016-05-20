@@ -27,7 +27,7 @@ defineTest(minQtVersion) {
 #
 #-------------------------------------------------
 
-VERSION = 3.1.0
+VERSION = 3.1.1
 
 CONFIG +=  qwt
 QT     += core gui
@@ -142,7 +142,11 @@ SOURCES +=\
     libs/iconmanager.cpp \
     frontend/scfrontend.cpp \
     main.cpp \
-    libs/tcpsocketext.cpp
+    libs/tcpsocketext.cpp \
+    libs/popup/resizableframe.cpp \
+    libs/popup/popupwidget.cpp \
+    libs/popup/popupcontainerwidget.cpp \
+    libs/popup/popuptoolbutton.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -200,7 +204,11 @@ HEADERS  += \
     libs/iconmanager.h \
     frontend/scfrontend.h \
     libs/tcpsocketext.h \
-    libs/debugprintclass.h
+    libs/debugprintclass.h \
+    libs/popup/resizableframe.h \
+    libs/popup/popupwidget.h \
+    libs/popup/popupcontainerwidget.h \
+    libs/popup/popuptoolbutton.h
 
 INCLUDEPATH += \
     tina-platform/public \

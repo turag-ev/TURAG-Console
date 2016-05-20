@@ -8,8 +8,8 @@ class CheckActionExt : public QAction
 {
     Q_OBJECT
 public:
-	explicit CheckActionExt(const QString& identifier, const QString &text, bool standardValue, QObject* parent, bool persistent_ = true) :
-		QAction(text, parent), persistent(persistent_)
+	explicit CheckActionExt(const QString& identifier, const QString &text_, bool standardValue, QObject* parent, bool persistent_ = true) :
+		QAction(text_, parent), persistent(persistent_)
     {
         setCheckable(true);
 
