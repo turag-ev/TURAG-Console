@@ -229,6 +229,7 @@ include($$TURAG_REPRO/src/common/TURAG-common.pri)
 include($$TURAG_REPRO/tina/tina.pri)
 include($$TURAG_REPRO/tina/platform/desktop/tina-desktop.pri)
 
+
 # install & distr
 unix:!mac {
 
@@ -245,13 +246,11 @@ unix:!mac {
   #
   # make distr (own make dist)
 
-  DISTRFILES = \
+  MAKEDISTRFILES = \
     $${SOURCES} $${HEADERS} $${RESOURCES} $${FORMS} \
     $${DISTR_FILES} $${DIST_FILES} $${DISTFILES} $${OTHER_FILES} \
     $${PIXMAPS} $${APPLICATIONS} $${MIMES}
-  DISTRFILES = $$unique(DISTRFILES)
-
-  sources.files = $$DISTRFILES
+  MAKEDISTRFILES = $$unique(MAKEDISTRFILES)
 
   PACKAGE_STRING = $${TARGET}-$${VERSION}$${EXT_VERSION}
   TMP_DIR = $$(PWD)/.tmp
@@ -261,10 +260,9 @@ unix:!mac {
   distr.depends = $${PACKAGE_STRING}.tar.gz
   distr.target = distr
 
-  pack.input = DISTRFILES
+  pack.input = MAKEDISTRFILES
   pack.output = $${PACKAGE_STRING}.tar.gz
   pack.CONFIG = combine no_link explicit_dependencies
-  pack.dependency_type = TYPE_C
 
   pack.commands = \
     realpath --relative-to $$PWD/$$TURAG_REPRO ${QMAKE_FILE_IN} | \
