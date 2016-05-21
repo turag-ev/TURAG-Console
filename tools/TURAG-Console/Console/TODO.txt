@@ -72,7 +72,7 @@ Frontends
  - Stmcam-Frontend in TinA-Frontend integrieren -> gehört zur Roboteransicht
  - Suche im Terminal-Frontend/Plaintextfrontend
  - Plaintext-Frontend und Terminal-Frontend trennen -> wenn möglich Terminal von plaintext erben lassen? Prüfen,
- ob Plaintext-Frontend überhaupt notwendig, oder ob überall Terminal-Frontend benutzt werden kann
+   ob Plaintext-Frontend überhaupt notwendig, oder ob überall Terminal-Frontend benutzt werden kann
  - Scrolling im Terminal/plaintextfrontend mit Shift+Cursor Up/Down, sowie Page Up/Down
  - Farben im Roboterfrontend
  - flexiblere Möglichkeiten Logquellen im Logview zu filtern
@@ -80,19 +80,29 @@ Frontends
  - Informationen einblenden (wieviele Zeilen insgesamt, wieviele gefiltert...)
 
 
-DataGraph
+DataGraph/Graphenausgabe
 --------------------------------------------------------
  - Performance optimieren (angeblich bei hohen Update-Frequenzen nicht mehr benutzbar)
  - CSV-Export
- - prüfen, ob statt qwt  QCustomPlot benutzt werden könnte (weniger Abhängigkeiten, einfacheres
- compilen)
  - CodeBasis bisschen aufräumen, dokumentieren, Features vervollständigen
  - komische Bugs beim hervorheben fixen
  - Datentabelle optimieren
  - 3D-Graphen anzeigbar machen/Zeitinfo in 2D-Plots
+ - Ausgabe von binären Kanälen ermöglichen um Bandbreite zu sparen (TinA-Debug)
+ - Auswahl der ChannelGroups in Datagraph übernehmen und mit Checkboxen umsetzen
+ - vertikale Marker ebenfalls in DataGraph integrieren oder Support vielleicht
+   ganz fallen lassen (braucht ja keiner)
+ - im TinA-Frontend Auswahl und Anzeige mehrerer Graphen ermöglichen
+ - Navigations-Tools optimieren: Zoom/Drag wie in Eagle, GraphPanner entfernen
+ - für beide y-Achsen unabhängigen autoZoom ermöglichen
+ - tooltip über ChannelButtons, um das mit der rechten y-Achse zu erklären
 
-Sich irgendwas mit den Icons einfallen lassen, also wie man die Menüeinträge auch als Icon anzeigen kann
-und ob das überhaupt sinnvoll ist.
+erstmal nicht so wichtig:
+ - Sich irgendwas mit den Icons einfallen lassen, also wie man die Menüeinträge auch als Icon anzeigen kann
+   und ob das überhaupt sinnvoll ist.
+ - prüfen, ob statt qwt QCustomPlot benutzt werden könnte (weniger Abhängigkeiten, einfacheres
+   compilen)
+
 
 Interface-Overhaul
 --------------------------------------------------
