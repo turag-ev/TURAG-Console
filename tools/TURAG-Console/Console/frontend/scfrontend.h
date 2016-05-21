@@ -34,8 +34,6 @@ public slots:
 
 	void writeLine(QByteArray line);
 
-     void setPlayingArea(int id);
-
 private slots:
 	void seek();
 
@@ -56,6 +54,8 @@ private:
 	QTimer refresh_log_timer_;
 
 	void advance();
+
+    friend class ConsoleRobotVis;
 };
 
 #endif // SCFRONTEND_H
