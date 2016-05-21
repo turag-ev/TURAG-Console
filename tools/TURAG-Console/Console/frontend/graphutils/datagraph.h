@@ -48,7 +48,6 @@ public:
 
     int getNumberOfChannels() const;
     QString getChannelTitle(int index) const;
-    QList<QAction *> getActions(void) { return actions(); }
     void setTitle (const QString & title) {
         plot->setTitle(title);
     }
@@ -81,7 +80,7 @@ public slots:
 	/**
 	 * @brief Löscht alle Daten des Diagramms.
 	 *
-	 * Metadaten wie Channel udn Channelgruppen bleiben erahlten.
+	 * Metadaten wie Channel und Channelgruppen bleiben erahlten.
 	 */
 	virtual void clearData(void);
 

@@ -31,7 +31,6 @@ class FeldbusAktorView : public QWidget
 public:
     explicit FeldbusAktorView(Aktor* aktor, QWidget *parent = 0);
     ~FeldbusAktorView(void);
-    QList<QAction *> getActions(void) { return plot->getActions(); }
 
 protected slots:
     void onUpdateDeviceValues(void);

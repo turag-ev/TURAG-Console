@@ -91,7 +91,6 @@ private:
     LoggerWidget* logger;
 
 	QTabWidget* connectionTabWidget;
-//	QPushButton* cancelButton;
 	PopupContainerWidget* popupContainer;
 };
 

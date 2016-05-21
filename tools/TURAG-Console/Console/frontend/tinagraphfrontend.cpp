@@ -281,8 +281,10 @@ void TinaGraphFrontend::activateItem(QTreeWidgetItem* item) {
 
     int graphIndex = -1;
     if (!item->parent()) {
+        // first layer in tree hierarchy
         graphIndex = item->treeWidget()->indexOfTopLevelItem(item);
     } else {
+        // channel group entries in tree hierarchy
         if (item->parent()->parent()) {
             graphIndex = item->treeWidget()->indexOfTopLevelItem(item->parent()->parent());
         }

@@ -76,8 +76,6 @@ Oscilloscope::Oscilloscope(QWidget *parent) :
 
     // this function constructs a DataPointInterface-Object in interface
     readSettings();
-
-    addActions(plot->getActions());
 }
 
 Oscilloscope::~Oscilloscope() {

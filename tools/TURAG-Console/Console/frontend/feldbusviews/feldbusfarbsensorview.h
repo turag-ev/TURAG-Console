@@ -18,7 +18,6 @@ class FeldbusFarbsensorView : public QWidget
 public:
     explicit FeldbusFarbsensorView(Farbsensor* farbsensor, QWidget *parent = 0);
     ~FeldbusFarbsensorView();
-    QList<QAction *> getActions(void) { return rgbGraph->getActions(); }
 
 protected slots:
     void mainIntervalTimeout();

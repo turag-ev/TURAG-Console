@@ -626,7 +626,6 @@ void FeldbusFrontend::onDeviceSelected(int row) {
                 feldbusWidget = new FeldbusFarbsensorView(farbsensor);
                 splitter->addWidget(feldbusWidget);
 				splitter->setStretchFactor(1,2);
-                addActions(static_cast<FeldbusFarbsensorView*>(feldbusWidget)->getActions());
                 return;
             }
 
@@ -636,7 +635,6 @@ void FeldbusFrontend::onDeviceSelected(int row) {
                 feldbusWidget = new FeldbusAktorView(dcmotor);
                 splitter->addWidget(feldbusWidget);
                 splitter->setStretchFactor(1,2);
-                addActions(static_cast<FeldbusAktorView*>(feldbusWidget)->getActions());
                 return;
             }
 
@@ -646,7 +644,6 @@ void FeldbusFrontend::onDeviceSelected(int row) {
                 feldbusWidget = new FeldbusAktorView(servo);
                 splitter->addWidget(feldbusWidget);
                 splitter->setStretchFactor(1,2);
-                addActions(static_cast<FeldbusAktorView*>(feldbusWidget)->getActions());
                 return;
             }
 
@@ -656,7 +653,6 @@ void FeldbusFrontend::onDeviceSelected(int row) {
                 feldbusWidget = new FeldbusAsebView(aseb);
                 splitter->addWidget(feldbusWidget);
                 splitter->setStretchFactor(1,2);
-                addActions(static_cast<FeldbusAsebView*>(feldbusWidget)->getActions());
                 return;
             }
 
@@ -678,7 +674,6 @@ void FeldbusFrontend::onDeviceSelected(int row) {
 				return;
 			}
 
-			// TODO: create more views
 
         }
     } else if (row >= devices_.size() && row < devices_.size() + dynamixelDevices_.size()) {

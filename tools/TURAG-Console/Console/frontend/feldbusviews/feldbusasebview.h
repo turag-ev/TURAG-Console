@@ -29,7 +29,6 @@ class FeldbusAsebView : public QWidget
 public:
     explicit FeldbusAsebView(Aseb* aseb, QWidget *parent = 0);
     ~FeldbusAsebView(void);
-    QList<QAction *> getActions(void) { return plot->getActions(); }
 
 protected slots:
     void onResetOutputs(void);
