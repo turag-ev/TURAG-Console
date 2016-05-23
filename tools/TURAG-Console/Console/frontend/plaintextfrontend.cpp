@@ -197,7 +197,7 @@ void PlainTextFrontend::onUpdate(void) {
         // clean input stream
         const char* data = buffer_->constBegin();
         while (data != buffer_->constEnd()) {
-            if ((*data >= 0x20 && *data <= 0x7E) || *data == '\n' || *data == '\t' || *data < 0) {
+			if ((*data >= 0x20 && *data <= 0x7E) || *data == '\n' || *data == '\r' || *data == '\t' || *data < 0) {
 				// printable characters, utf-8 characters (checked with: *data < 0)
 				// and newlines are piped through
                 cleanedBuffer_->append(*data);
@@ -213,10 +213,14 @@ void PlainTextFrontend::onUpdate(void) {
 				// das klappt nicht bei \r\n
 				// Für Bus-Pirate muss außerdem Esc[2K behandelt werden
 				// siehe http://ascii-table.com/ansi-escape-sequences-vt-100.php
-				// Bleibt die Frage, man weiter um QPlainTextEdit drumrumbaut oder auf ein
+				// Bleibt die Frage, ob man weiter um QPlainTextEdit drumrumbaut oder auf ein
 				// simpleres Widget aufsetzt. Aber ersteres ist wohl das beste. zB bei auftreten von \r
 				// aufs nächste Zeichen warten und abhängig davon das richtige tun, das sollte gehen.
 
+				// Edit 23.05.2016: Da ich weiter unten bei Enter nur noch '\r' sende, sollte
+				// das in der Anzeige auch für einen Zeilenumbruch sorgen (was QPlainTextEdit auch
+				// per default so macht). Daher hab ich was wieder oben ins Kriterium für nicht
+				// näher zu behandelnde Zeichen reingenommen.
 //			} else if (*data == '\r') {
 //				// handling of carriage return: delete line
 //				int indexOfNewline = cleanedBuffer_->lastIndexOf('\n');
