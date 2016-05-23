@@ -1,13 +1,15 @@
 #include "scfrontend.h"
 
 #include <QTextStream>
-#include <tina++/algorithm.h>
 #include <QHBoxLayout>
 #include <QMainWindow>
 #include <QDockWidget>
 #include <QSettings>
 #include <QTimer>
 #include <QDebug>
+
+#include <tina++/algorithm.h>
+#include <tina++/time.h>
 #include <libs/iconmanager.h>
 #include <tina/debug/defines.h>
 #include <libsimeurobot/ui/robotlogview.h>
@@ -23,6 +25,7 @@
 #include <libsimeurobot/vis/visualization.h>
 
 using namespace TURAG::SimEurobot;
+using namespace TURAG;
 
 class ConsoleRobotVis : public RobotVisualization
 {
@@ -40,12 +43,12 @@ public:
 
     void onPrepared() override
     {
-        scf_.simcontext_.setRobotsPrepared(true);
+		//scf_.simcontext_.setRobotsPrepared(true);
     }
 
     void onGameStarted() override
     {
-        scf_.simcontext_.beginGame();
+		//scf_.simcontext_.beginGame();
     }
 
     void onExtraTimeStarted() override
@@ -55,7 +58,7 @@ public:
 
     void onGameStopped() override
     {
-        scf_.simcontext_.endGame();
+		//scf_.simcontext_.endGame();
     }
 
 private:
@@ -124,7 +127,6 @@ SCFrontend::SCFrontend(QWidget *parent)
     readSettings();
 
 	connect(&simcontext_, SIGNAL(seeked()), this, SLOT(seek()));
-    simcontext_.registerAdvanceCallback([=](){ seek(); });
 }
 
 
@@ -173,6 +175,14 @@ void SCFrontend::writeLine(QByteArray line)
 
 	robot_.log(dm);
     log_view_->insertRow(dm);
+
+	if (!simcontext_.isPlaybackRunning()
+		&& !simcontext_.isSimulationPaused())
+	{
+		SystemTime robot_time = robot_.getTimeProvider().getTime() + robot_.getRobotTimeOffset();
+		if (robot_time > simcontext_.getSimulationPresentTime())
+			simcontext_.seekTo(robot_time);
+	}
 }
 
 void SCFrontend::seek()
