@@ -31,7 +31,7 @@ PopupContainerWidget::PopupContainerWidget(QWidget *mainWidget_, QWidget *parent
 	specialOverlay->installEventFilter(this);
 	specialOverlay->setAutoFillBackground(true);
 	QPalette overlay_palette = specialOverlay->palette();
-	overlay_palette.setColor(QPalette::Window, QColor(0, 0, 0, 220));
+	overlay_palette.setColor(QPalette::Window, QColor(0, 0, 0, 180));
 	specialOverlay->setPalette(overlay_palette);
 	specialOverlay->hide();
 

@@ -357,6 +357,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 	PopupWidget* welcomePopup = new PopupWidget(connectionTabWidget, QSize(1050, 700), "welcomePopup");
+	welcomePopup->setResizeBorders(ResizableFrame::ResizeBorder::right_bottom);
 	newConnectionPopupButton->setPopup(welcomePopup,
 									   PopupContainerWidget::DisplayDirection::toBottom,
 									   PopupContainerWidget::DisplayType::special);

@@ -18,10 +18,30 @@ ResizableFrame::ResizableFrame(QWidget *mainWidget_, bool movable_, QWidget *par
 	setLayout(layout);
 	setBorderGripSize(std::max(layout->spacing() - 2, 1));
 
+	resizeBorders = ResizeBorder::all;
 	setMouseTracking(true);
 }
 
 ResizableFrame::~ResizableFrame() {
+}
+
+void ResizableFrame::setResizeBorders(ResizableFrame::ResizeBorder resizeBorders_)
+{
+	resizeBorders = resizeBorders_;
+
+	if (resizeBorders == ResizeBorder::none) {
+		setMouseTracking(false);
+	} else {
+		setMouseTracking(true);
+	}
+}
+
+bool ResizableFrame::isResizeBorderSet(ResizableFrame::ResizeBorder borders)
+{
+	int setBorders = static_cast<int>(resizeBorders);
+	int compareBorders = static_cast<int>(borders);
+
+	return ((setBorders & compareBorders) == compareBorders);
 }
 
 void ResizableFrame::mousePressEvent(QMouseEvent *event) {
@@ -49,28 +69,36 @@ void ResizableFrame::mouseMoveEvent(QMouseEvent *event) {
 	if (!(event->buttons() & Qt::LeftButton)) {
 	// No drag, just change the cursor and return
 
-		if (event->x() <= borderSize && event->y() <= borderSize) {
+		if (event->x() <= borderSize && event->y() <= borderSize &&
+				isResizeBorderSet(ResizeBorder::left_top)) {
 			startPos = StartPositions::topleft;
 			setCursor(Qt::SizeFDiagCursor);
-		} else if (event->x() <= borderSize && event->y() >= height() - borderSize) {
+		} else if (event->x() <= borderSize && event->y() >= height() - borderSize &&
+				   isResizeBorderSet(ResizeBorder::left_bottom)) {
 			startPos = StartPositions::bottomleft;
 			setCursor(Qt::SizeBDiagCursor);
-		} else if (event->x() >= width() - borderSize && event->y() <= borderSize) {
+		} else if (event->x() >= width() - borderSize && event->y() <= borderSize &&
+				   isResizeBorderSet(ResizeBorder::top_right)) {
 			startPos = StartPositions::topright;
 			setCursor(Qt::SizeBDiagCursor);
-		} else if (event->x() >= width() - borderSize && event->y() >= height() - borderSize) {
+		} else if (event->x() >= width() - borderSize && event->y() >= height() - borderSize &&
+				   isResizeBorderSet(ResizeBorder::right_bottom)) {
 			startPos = StartPositions::bottomright;
 			setCursor(Qt::SizeFDiagCursor);
-		} else if (event->x() <= borderSize) {
+		} else if (event->x() <= borderSize &&
+				   isResizeBorderSet(ResizeBorder::left)) {
 			startPos = StartPositions::left;
 			setCursor(Qt::SizeHorCursor);
-		} else if (event->x() >= width() - borderSize) {
+		} else if (event->x() >= width() - borderSize &&
+				   isResizeBorderSet(ResizeBorder::right)) {
 			startPos = StartPositions::right;
 			setCursor(Qt::SizeHorCursor);
-		} else if (event->y() <= borderSize) {
+		} else if (event->y() <= borderSize &&
+				   isResizeBorderSet(ResizeBorder::top)) {
 			startPos = StartPositions::top;
 			setCursor(Qt::SizeVerCursor);
-		} else if (event->y() >= height() - borderSize) {
+		} else if (event->y() >= height() - borderSize &&
+				   isResizeBorderSet(ResizeBorder::bottom)) {
 			startPos = StartPositions::bottom;
 			setCursor(Qt::SizeVerCursor);
 		} else {
@@ -168,3 +196,4 @@ void ResizableFrame::mouseMoveEvent(QMouseEvent *event) {
 		break;
 	}
 }
+
