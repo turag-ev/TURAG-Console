@@ -20,7 +20,7 @@ CanvasPicker::CanvasPicker( QwtPlot *plot ):
 {
     overlay = new SymbolOverlay(19, plot->canvas());
 
-    setEnabled(true);
+//    setEnabled(true);
 
     // We want the focus, but no focus rect. The
     // selected point will be highlighted instead.
@@ -60,9 +60,9 @@ bool CanvasPicker::eventFilter( QObject *object, QEvent *event ) {
         const QMouseEvent *mouseEvent = static_cast<QMouseEvent *>( event );
         if (mouseEvent->button() == Qt::LeftButton) {
             selectManually( mouseEvent->pos() );
-        }
-        return true;
-        break;
+			return true;
+		}
+		break;
     }
 
     case QEvent::KeyPress: {
@@ -72,12 +72,10 @@ bool CanvasPicker::eventFilter( QObject *object, QEvent *event ) {
         case Qt::Key_Up:
             emit nextPlotCurveSuggested();
             return true;
-            break;
 
         case Qt::Key_Down:
             emit previuosPlotCurveSuggested();
             return true;
-            break;
 
         case Qt::Key_Right:
         case Qt::Key_Plus:
@@ -98,7 +96,6 @@ bool CanvasPicker::eventFilter( QObject *object, QEvent *event ) {
                 emit previuosPlotCurveSuggested();
             }
             return true;
-            break;
 
         case Qt::Key_Left:
         case Qt::Key_Minus:
@@ -118,12 +115,12 @@ bool CanvasPicker::eventFilter( QObject *object, QEvent *event ) {
                 emit nextPlotCurveSuggested();
             }
             return true;
-            break;
 
         default:
             break;
         }
         }
+		break;
 
     default:
         break;

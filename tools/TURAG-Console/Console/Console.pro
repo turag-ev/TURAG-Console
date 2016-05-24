@@ -27,7 +27,7 @@ defineTest(minQtVersion) {
 #
 #-------------------------------------------------
 
-VERSION = 3.1.2
+VERSION = 3.1.3
 
 CONFIG +=  qwt
 QT     += core gui
@@ -146,7 +146,8 @@ SOURCES +=\
     libs/popup/resizableframe.cpp \
     libs/popup/popupwidget.cpp \
     libs/popup/popupcontainerwidget.cpp \
-    libs/popup/popuptoolbutton.cpp
+    libs/popup/popuptoolbutton.cpp \
+    frontend/graphutils/plotmagnifier.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -208,7 +209,8 @@ HEADERS  += \
     libs/popup/resizableframe.h \
     libs/popup/popupwidget.h \
     libs/popup/popupcontainerwidget.h \
-    libs/popup/popuptoolbutton.h
+    libs/popup/popuptoolbutton.h \
+    frontend/graphutils/plotmagnifier.h
 
 INCLUDEPATH += \
     tina-platform/public \

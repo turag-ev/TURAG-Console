@@ -38,6 +38,7 @@
 #include <QHeaderView>
 #include <qwt_plot_marker.h>
 #include <libs/iconmanager.h>
+#include "plotmagnifier.h"
 
 
 
@@ -68,7 +69,11 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
 	setContextMenuPolicy(Qt::ActionsContextMenu);
 
     panner = new QwtPlotPanner( plot->canvas() );
+	panner->setMouseButton(Qt::MiddleButton);
+
     zoomer = new QwtPlotZoomer(plot->canvas());
+	zoomer->setMousePattern(QwtEventPattern::MouseSelect3, Qt::MidButton, Qt::ControlModifier);
+	zoomer->setMousePattern(QwtEventPattern::MouseSelect2, Qt::MidButton, Qt::AltModifier);
 
     picker = new CanvasPicker( plot );
     connect(picker, SIGNAL(dataPointSuggested(int)), this, SLOT(showEntryInDatatable(int)));
@@ -77,7 +82,7 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
 
 
     // zoom in/out with the wheel
-    QwtPlotMagnifier* magnifier = new QwtPlotMagnifier( plot->canvas() );
+	PlotMagnifier* magnifier = new PlotMagnifier( plot->canvas() );
     magnifier->setWheelFactor(1.2);
     magnifier->setMouseButton(Qt::NoButton);
 
@@ -172,18 +177,18 @@ DataGraph::DataGraph(QString title, QWidget *parent) :
     connect(zoom_box_zoom_action, SIGNAL(triggered()), &userInputModeMapper, SLOT(map()));
     userInputModeMapper.setMapping(zoom_box_zoom_action, 0);
 
-	CheckActionExt* zoom_drag_action = new CheckActionExt("Datagraphzoom_drag_action", "Activate graph panner", false, this, false);
-    zoom_drag_action->setActionGroup(zoom_group);
-    zoom_drag_action->setIcon(IconManager::get("transform-move"));
-    connect(zoom_drag_action, SIGNAL(triggered()), &userInputModeMapper, SLOT(map()));
-    userInputModeMapper.setMapping(zoom_drag_action, 1);
+//	CheckActionExt* zoom_drag_action = new CheckActionExt("Datagraphzoom_drag_action", "Activate graph panner", false, this, false);
+//    zoom_drag_action->setActionGroup(zoom_group);
+//    zoom_drag_action->setIcon(IconManager::get("transform-move"));
+//    connect(zoom_drag_action, SIGNAL(triggered()), &userInputModeMapper, SLOT(map()));
+//    userInputModeMapper.setMapping(zoom_drag_action, 1);
 
     QAction* canvas_pick_action = new QAction("Activate plot picker", this);
     canvas_pick_action->setActionGroup(zoom_group);
     canvas_pick_action->setCheckable(true);
     canvas_pick_action->setIcon(IconManager::get("edit-node"));
     connect(canvas_pick_action, SIGNAL(triggered()), &userInputModeMapper, SLOT(map()));
-    userInputModeMapper.setMapping(canvas_pick_action, 2);
+	userInputModeMapper.setMapping(canvas_pick_action, 1);
 
     QAction* separator_action = new QAction(this);
     separator_action->setSeparator(true);
@@ -374,20 +379,14 @@ void DataGraph::setUserInputMode(int index) {
     switch (index) {
     case 0:
         zoomer->setEnabled(true);
-        panner->setEnabled(false);
+		panner->setEnabled(true);
         picker->setEnabled(false);
         zoomer->setZoomBase();
         break;
 
-    case 1:
+	case 1:
         zoomer->setEnabled(false);
-        panner->setEnabled(true);
-        picker->setEnabled(false);
-        break;
-
-    case 2:
-        zoomer->setEnabled(false);
-        panner->setEnabled(false);
+		panner->setEnabled(true);
         picker->setEnabled(true);
         showDataTable(true);
         show_datatable_action->setChecked(true);
