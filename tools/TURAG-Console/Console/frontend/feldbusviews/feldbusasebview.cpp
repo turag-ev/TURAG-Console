@@ -148,7 +148,7 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
     asebSyncBuffer_ = new uint8_t[syncSize];
 
     if (aseb_->initialize(asebSyncBuffer_, syncSize, asebAnalogInputSet_, analogInSize, asebPwmOutputSet_, pwmOutSize)) {
-        QLabel* label;
+		QLabel* caption;
         QCheckBox* checkbox;
         QLineEdit* lineedit;
         QCheckBox* select_checkbox;
@@ -166,14 +166,14 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
         for (int i = 0; i < digInSize; ++i) {
             name[0] = 0;
             aseb_->getCommandName(i + TURAG_FELDBUS_ASEB_INDEX_START_DIGITAL_INPUT, name);
-			label = new QLabel(QString("%1: %2").arg(i).arg(name));
+			caption = new QLabel(QString("%1: %2").arg(i).arg(name));
             checkbox = new QCheckBox;
             checkbox->setEnabled(false);
             select_checkbox = new QCheckBox;
             connect(select_checkbox, SIGNAL(toggled(bool)), this, SLOT(updateGraph()));
 
-            digitalInputs_.push_back(LabelCheckboxCombo(label, checkbox, select_checkbox));
-            detail_layout->addWidget(label, row, 0);
+			digitalInputs_.push_back(LabelCheckboxCombo(caption, checkbox, select_checkbox));
+			detail_layout->addWidget(caption, row, 0);
             detail_layout->addWidget(checkbox, row, 1);
             detail_layout->addWidget(select_checkbox, row, 2);
             ++row;
@@ -182,13 +182,13 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
         for (int i = 0; i < analogInSize; ++i) {
             name[0] = 0;
             aseb_->getCommandName(i + TURAG_FELDBUS_ASEB_INDEX_START_ANALOG_INPUT, name);
-			label = new QLabel(QString("%1: %2").arg(i).arg(name));
+			caption = new QLabel(QString("%1: %2").arg(i).arg(name));
 
             unsigned resolution = 0;
             if (aseb_->getAnalogResolution(&resolution)) {
-                label->setText(label->text() + QString("\n%1 Bit").arg(resolution));
+				caption->setText(caption->text() + QString("\n%1 Bit").arg(resolution));
             } else {
-                label->setText("ERROR");
+				caption->setText("ERROR");
             }
 
             lineedit = new QLineEdit;
@@ -201,8 +201,8 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
             select_checkbox = new QCheckBox;
             connect(select_checkbox, SIGNAL(toggled(bool)), this, SLOT(updateGraph()));
 
-            analogInputs_.push_back(LabelLineeditCombo(label, lineedit, select_checkbox));
-            detail_layout->addWidget(label, row, 0);
+			analogInputs_.push_back(LabelLineeditCombo(caption, lineedit, select_checkbox));
+			detail_layout->addWidget(caption, row, 0);
             detail_layout->addWidget(lineedit, row, 1);
             detail_layout->addWidget(select_checkbox, row, 2);
             ++row;
@@ -218,13 +218,13 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
         for (int i = 0; i < digOutSize; ++i) {
             name[0] = 0;
             aseb_->getCommandName(i + TURAG_FELDBUS_ASEB_INDEX_START_DIGITAL_OUTPUT, name);
-			label = new QLabel(QString("%1: %2").arg(i).arg(name));
+			caption = new QLabel(QString("%1: %2").arg(i).arg(name));
 			checkbox = new QCheckBox;
             select_checkbox = new QCheckBox;
             connect(select_checkbox, SIGNAL(toggled(bool)), this, SLOT(updateGraph()));
 
-            digitalOutputs_.push_back(LabelCheckboxCombo(label, checkbox, select_checkbox));
-            detail_layout->addWidget(label, row, 0);
+			digitalOutputs_.push_back(LabelCheckboxCombo(caption, checkbox, select_checkbox));
+			detail_layout->addWidget(caption, row, 0);
             detail_layout->addWidget(checkbox, row, 1);
             detail_layout->addWidget(select_checkbox, row, 2);
             ++row;
@@ -235,13 +235,13 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
         for (int i = 0; i < pwmOutSize; ++i) {
             name[0] = 0;
             aseb_->getCommandName(i + TURAG_FELDBUS_ASEB_INDEX_START_PWM_OUTPUT, name);
-			label = new QLabel(QString("%1: %2 [%]").arg(i).arg(name));
+			caption = new QLabel(QString("%1: %2 [%]").arg(i).arg(name));
 
             unsigned frequency;
             if (aseb_->getPwmFrequency(i, &frequency)) {
-                label->setText(label->text() + QString("\n%1 Hz").arg(frequency));
+				caption->setText(caption->text() + QString("\n%1 Hz").arg(frequency));
             } else {
-                label->setText("ERROR");
+				caption->setText("ERROR");
             }
 
             lineedit = new QLineEdit;
@@ -250,8 +250,8 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
             select_checkbox = new QCheckBox;
             connect(select_checkbox, SIGNAL(toggled(bool)), this, SLOT(updateGraph()));
 
-            pwmOutputs_.push_back(LabelLineeditCombo(label, lineedit, select_checkbox));
-            detail_layout->addWidget(label, row, 0);
+			pwmOutputs_.push_back(LabelLineeditCombo(caption, lineedit, select_checkbox));
+			detail_layout->addWidget(caption, row, 0);
             detail_layout->addWidget(lineedit, row, 1);
             detail_layout->addWidget(select_checkbox, row, 2);
             ++row;

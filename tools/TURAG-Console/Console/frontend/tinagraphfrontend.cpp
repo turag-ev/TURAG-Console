@@ -130,24 +130,24 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
                     if (listindex != -1) {
                         QString encoded = line.right(line.size() - space_pos - 1);
                         QByteArray byte_data = encoded.toLatin1();
-                        const uint8_t* data = reinterpret_cast<const uint8_t*>(byte_data.constData());
+						const uint8_t* data_ = reinterpret_cast<const uint8_t*>(byte_data.constData());
                         size_t encoded_values = encoded.size() / 6;
 
                         if (encoded_values >= 2) {
                             float time;
-                            TURAG::Base64::decode(data, 6, reinterpret_cast<uint8_t*>(&time));
-                            data += 6;
+							TURAG::Base64::decode(data_, 6, reinterpret_cast<uint8_t*>(&time));
+							data_ += 6;
 
                             DataGraph* graph = static_cast<DataGraph*>(stack->widget(listindex));
                             int channel = 0;
 
                             for (unsigned i = 1; i < encoded_values; ++i) {
                                 float value;
-                                TURAG::Base64::decode(data, 6, reinterpret_cast<uint8_t*>(&value));
+								TURAG::Base64::decode(data_, 6, reinterpret_cast<uint8_t*>(&value));
                                 graph->addData(channel, QPointF(time, value));
 
                                 ++channel;
-                                data += 6;
+								data_ += 6;
                             }
                         }
                     }
@@ -164,15 +164,15 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
 						if (ok && channelIndex < graph->getNumberOfChannels()) {
 							QString encoded = line.right(line.size() - secondSpacePos - 1);
 							QByteArray byte_data = encoded.toLatin1();
-							const uint8_t* data = reinterpret_cast<const uint8_t*>(byte_data.constData());
+							const uint8_t* data_ = reinterpret_cast<const uint8_t*>(byte_data.constData());
 							size_t encoded_values = encoded.size() / 6;
 
 							if (encoded_values == 2) {
 								float x, y;
 
-								TURAG::Base64::decode(data, 6, reinterpret_cast<uint8_t*>(&x));
-								data += 6;
-								TURAG::Base64::decode(data, 6, reinterpret_cast<uint8_t*>(&y));
+								TURAG::Base64::decode(data_, 6, reinterpret_cast<uint8_t*>(&x));
+								data_ += 6;
+								TURAG::Base64::decode(data_, 6, reinterpret_cast<uint8_t*>(&y));
 
 								graph->addData(channelIndex, QPointF(x, y));
 							}
@@ -187,9 +187,8 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
                         QTextStream stream(line);
 
                         QByteArray encoded;
-                        int index;
 
-                        stream >> index;  // consume the index, which we don't need here
+						stream >> index;  // consume the index, which we already have
                         stream >> encoded;
 
                         float time;
@@ -198,8 +197,8 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
                             return;
                         }
 
-                        const uint8_t* data = reinterpret_cast<const uint8_t*>(encoded.constData());
-                        TURAG::Base64::decode(data, 6, reinterpret_cast<uint8_t*>(&time));
+						const uint8_t* data_ = reinterpret_cast<const uint8_t*>(encoded.constData());
+						TURAG::Base64::decode(data_, 6, reinterpret_cast<uint8_t*>(&time));
 
                         QString title(stream.readLine());
 
@@ -218,9 +217,9 @@ void TinaGraphFrontend::writeLine(QByteArray line) {
                     if (listindex != -1) {
                         QTextStream stream(line);
 
-                        int index, count;
+						int count;
 
-                        stream >> index;  // consume the index, which we don't need here
+						stream >> index;  // consume the index, which we already have
                         stream >> count;
 
                         QList<int> indices;
@@ -332,8 +331,7 @@ void TinaGraphFrontend::clear(void) {
 }
 
 // needed for the interface
-void TinaGraphFrontend::writeData(QByteArray data) {
-    (void)data;
+void TinaGraphFrontend::writeData(QByteArray ) {
 }
 
 

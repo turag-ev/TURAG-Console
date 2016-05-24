@@ -152,9 +152,8 @@ void RobotLogFrontend::clear()
 
 // we need to implement this function as part of the base classes interface
 // but we don't actually need it.
-void RobotLogFrontend::writeData(QByteArray data)
+void RobotLogFrontend::writeData(QByteArray )
 {
-	Q_UNUSED(data);
 }
 
 void RobotLogFrontend::keyPressEvent ( QKeyEvent * e )

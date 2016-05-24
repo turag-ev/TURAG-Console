@@ -440,17 +440,17 @@ void DataGraph::onUnhighlightCurve(const QVariant &itemInfo) {
     }
 }
 
-void DataGraph::addData(int channel, QPointF data) {
+void DataGraph::addData(int channel, QPointF data_) {
     if (channel < channels.size()) {
         CurveDataBase *curvedata = static_cast<CurveData *>( channels.at(channel)->data() );
-        curvedata->append(data);
+		curvedata->append(data_);
 
         show_datatable_action->setChecked(false);
 		showDataTable(false);
 
         requestReplot();
     } else {
-        (void) data;
+		(void) data_;
     }
 }
 
@@ -623,9 +623,9 @@ void DataGraph::updateCurveColors() {
 bool DataGraph::exportOutput(QString fileName) {
     if ( !fileName.isEmpty() ) {
         if (fileName.endsWith(".csv")) {
-            QFile data(fileName);
-            if (data.open(QFile::WriteOnly | QFile::Truncate)) {
-                QTextStream out(&data);
+			QFile data_(fileName);
+			if (data_.open(QFile::WriteOnly | QFile::Truncate)) {
+				QTextStream out(&data_);
 
 
 
@@ -758,15 +758,15 @@ void DataGraph::generateDataTableForChannel(int index) {
     }
 }
 
-void DataGraph::addEntryToDataTable(QPointF data, int row) {
+void DataGraph::addEntryToDataTable(QPointF data_, int row) {
     if (row == -1) {
         row = dataTable->rowCount();
         dataTable->setRowCount(row + 1);
     }
 
-    QTableWidgetItem *newItem = new QTableWidgetItem(QString("%1").arg(data.x()));
+	QTableWidgetItem *newItem = new QTableWidgetItem(QString("%1").arg(data_.x()));
     dataTable->setItem(row, 0, newItem);
-    newItem = new QTableWidgetItem(QString("%1").arg(data.y()));
+	newItem = new QTableWidgetItem(QString("%1").arg(data_.y()));
     dataTable->setItem(row, 1, newItem);
 }
 

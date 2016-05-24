@@ -108,8 +108,8 @@ void Oscilloscope::onStreamTypeChanged(int index) {
     plot->clear();
 }
 
-void Oscilloscope::writeData(QByteArray data) {
-    interface->writeData(data);
+void Oscilloscope::writeData(QByteArray data_) {
+	interface->writeData(data_);
 }
 
 void Oscilloscope::onDataPointsReady(QList<DataEntry> dataPoints) {

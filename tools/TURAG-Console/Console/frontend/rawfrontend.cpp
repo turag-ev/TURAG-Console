@@ -174,8 +174,8 @@ void RawFrontend::setStyle(Style style) {
 }
 
 
-void RawFrontend::writeData(QByteArray data) {
-	rawBuffer_->append(data);
+void RawFrontend::writeData(QByteArray data_) {
+	rawBuffer_->append(data_);
     if (!updateTimer.isActive()) {
         updateTimer.start();
     }

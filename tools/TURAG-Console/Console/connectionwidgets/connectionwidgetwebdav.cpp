@@ -212,8 +212,8 @@ void ConnectionWidgetWebDAV::sslError(const QList<QSslError> &errors) {
 	dialog.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
 	dialog.setDefaultButton(QMessageBox::Cancel);
 	QSpacerItem* horizontalSpacer = new QSpacerItem(500, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
-    QGridLayout* layout = static_cast<QGridLayout*>(dialog.layout());
-	layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
+	QGridLayout* dialogLayout = static_cast<QGridLayout*>(dialog.layout());
+	dialogLayout->addItem(horizontalSpacer, dialogLayout->rowCount(), 0, 1, dialogLayout->columnCount());
 	int result = dialog.exec();
 
 	if (result == QMessageBox::Cancel)  {

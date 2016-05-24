@@ -12,8 +12,7 @@ public:
     explicit HoverableQwtLegend(QWidget *parent=0) : QwtLegend(parent) {}
 
 protected:
-    virtual QWidget* createWidget(const QwtLegendData& data) const {
-        Q_UNUSED( data );
+	virtual QWidget* createWidget(const QwtLegendData& ) const {
         HoverableQwtLegendLabel* label = new HoverableQwtLegendLabel;
         label->setItemMode( defaultItemMode() );
 

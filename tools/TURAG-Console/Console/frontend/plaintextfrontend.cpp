@@ -177,8 +177,8 @@ void PlainTextFrontend::setStyle(Style style) {
 }
 
 
-void PlainTextFrontend::writeData(QByteArray data) {
-    buffer_->append(data);
+void PlainTextFrontend::writeData(QByteArray data_) {
+	buffer_->append(data_);
     if (!updateTimer.isActive()) {
         updateTimer.start();
     }
@@ -195,13 +195,13 @@ void PlainTextFrontend::onUpdate(void) {
         }
 
         // clean input stream
-        const char* data = buffer_->constBegin();
-        while (data != buffer_->constEnd()) {
-			if ((*data >= 0x20 && *data <= 0x7E) || *data == '\n' || *data == '\r' || *data == '\t' || *data < 0) {
+		const char* data_ = buffer_->constBegin();
+		while (data_ != buffer_->constEnd()) {
+			if ((*data_ >= 0x20 && *data_ <= 0x7E) || *data_ == '\n' || *data_ == '\r' || *data_ == '\t' || *data_ < 0) {
 				// printable characters, utf-8 characters (checked with: *data < 0)
 				// and newlines are piped through
-                cleanedBuffer_->append(*data);
-            } else if (*data == 0x08 || *data == 0x7F) {
+				cleanedBuffer_->append(*data_);
+			} else if (*data_ == 0x08 || *data_ == 0x7F) {
                 // special handling for backspace and delete characters
                 if (cleanedBuffer_->size()) {
                     cleanedBuffer_->chop(1);
@@ -232,12 +232,12 @@ void PlainTextFrontend::onUpdate(void) {
 //						cursor.deletePreviousChar();
 //					}
 //				}
-			} else if (*data != '\r') {
+			} else if (*data_ != '\r') {
 				// empty place holder for anything else
                 cleanedBuffer_->append("�");
             }
 
-            ++data;
+			++data_;
         }
 
         QScrollBar* scrollbar = textbox->verticalScrollBar();

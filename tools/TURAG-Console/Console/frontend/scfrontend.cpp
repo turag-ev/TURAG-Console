@@ -180,9 +180,9 @@ void SCFrontend::seek()
     robot_.update();
 }
 
-void SCFrontend::writeData(QByteArray data)
+void SCFrontend::writeData(QByteArray data_)
 {
-	tina_interface_.dataInput(data);
+	tina_interface_.dataInput(data_);
 }
 
 void SCFrontend::clear()

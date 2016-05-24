@@ -314,8 +314,8 @@ void FeldbusAktorView::onTimeout(void) {
     actor->getStructuredOutput(&output);
 
     int channel = 0;
-    for (Aktor::StructuredDataPair_t& data : output) {
-        plot->addData(channel, QPointF(msecs, data.value));
+	for (Aktor::StructuredDataPair_t& data_ : output) {
+		plot->addData(channel, QPointF(msecs, data_.value));
         ++channel;
     }
 

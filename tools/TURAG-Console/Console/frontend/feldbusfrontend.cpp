@@ -325,8 +325,8 @@ void FeldbusFrontend::onDisconnected(bool reconnecting) {
     updateStatisticsTimer_.stop();
 }
 
-void FeldbusFrontend::writeData(QByteArray data) {
-    turag_rs485_data_buffer.append(data);
+void FeldbusFrontend::writeData(QByteArray data_) {
+	turag_rs485_data_buffer.append(data_);
 }
 
 void FeldbusFrontend::clear(void) {
@@ -435,16 +435,16 @@ void FeldbusFrontend::onInquiry(bool boot) {
                             dev_info.address = i;
                             delete dev;
 
-                            Feldbus::Device* dev = new TURAG::Feldbus::Device("", dev_info.address, static_cast<Feldbus::Device::ChecksumType>(dev_info.device_info.crcType), addressLength, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ATTEMPTS, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ERRORS);
+							Feldbus::Device* detectedDev = new TURAG::Feldbus::Device("", dev_info.address, static_cast<Feldbus::Device::ChecksumType>(dev_info.device_info.crcType), addressLength, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ATTEMPTS, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ERRORS);
                             QByteArray name_buffer(dev_info.device_info.nameLength + 2, '\0');
-                            if (dev->receiveDeviceRealName(name_buffer.data())) {
+							if (detectedDev->receiveDeviceRealName(name_buffer.data())) {
                                 dev_info.device_name = name_buffer;
                             } else {
                                 dev_info.device_name = "???";
                             }
 
                             QByteArray versioninfo_buffer(dev_info.device_info.versioninfoLength + 2, '\0');
-                            if (dev->receiveVersionInfo(versioninfo_buffer.data())) {
+							if (detectedDev->receiveVersionInfo(versioninfo_buffer.data())) {
                                 dev_info.versionInfo = versioninfo_buffer;
                             } else {
                                 dev_info.versionInfo = "???";
@@ -475,7 +475,7 @@ void FeldbusFrontend::onInquiry(bool boot) {
                                 }
                             }
 
-                            delete dev;
+							delete detectedDev;
 
                             break;
                         }

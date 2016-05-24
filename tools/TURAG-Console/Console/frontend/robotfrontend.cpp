@@ -46,8 +46,8 @@ RobotFrontend::RobotFrontend(QWidget *parent) :
 }
 
 
-void RobotFrontend::writeData(QByteArray data) {
-    tinaInterface->dataInput(data);
+void RobotFrontend::writeData(QByteArray data_) {
+	tinaInterface->dataInput(data_);
 }
 
 void RobotFrontend::clear(void) {

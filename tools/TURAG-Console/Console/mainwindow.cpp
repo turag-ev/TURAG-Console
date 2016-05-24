@@ -367,7 +367,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	// ---------------------------------------
 	setCentralWidget(popupContainer);
 
-	showConnectionWidgetOverlay();
 
 
 
@@ -416,6 +415,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	onDisconnected(false);
 	readSettings();
+
+
+	// circumvents display problems :-/
+	QTimer* popupHackTimer = new QTimer(this);
+	popupHackTimer->setSingleShot(true);
+	connect(popupHackTimer, &QTimer::timeout, [this]() {
+		showConnectionWidgetOverlay();
+	});
+	popupHackTimer->start(0);
 }
 
 

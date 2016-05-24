@@ -58,8 +58,8 @@ STMCamFrontend::STMCamFrontend(QWidget *parent) :
     connect(cshell, SIGNAL(dataReady(QByteArray)), this, SIGNAL(dataReady(QByteArray)));
 }
 
-void STMCamFrontend::writeData(QByteArray data) {
-    tinaInterface->dataInput(data);
+void STMCamFrontend::writeData(QByteArray data_) {
+	tinaInterface->dataInput(data_);
 }
 
 void STMCamFrontend::clear(void) {

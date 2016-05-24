@@ -245,13 +245,13 @@ void FeldbusBootloaderBaseView::flashImageFile(void) {
 		return;
 	}
 
-	QByteArray data(image.readAll());
+	QByteArray data_(image.readAll());
 	image.close();
 	uint8_t* rawData;
 	unsigned dataLength = 0;
 
 	if (imagePathEdit->text().endsWith(".hex")) {
-		ihex_recordset_t* hexRecordset = ihex_rs_from_mem(data.constData(), data.size());
+		ihex_recordset_t* hexRecordset = ihex_rs_from_mem(data_.constData(), data_.size());
 		if (!hexRecordset) {
 			QMessageBox msg(QMessageBox::Warning, "Fehler", "Hex-Datei konnte nicht verarbeitet werden", QMessageBox::Ok);
 			msg.exec();
@@ -278,8 +278,8 @@ void FeldbusBootloaderBaseView::flashImageFile(void) {
 		dataLength = size;
 
 	} else if (imagePathEdit->text().endsWith(".bin")) {
-        rawData = reinterpret_cast<uint8_t*>(const_cast<char*>(data.constData()));
-		dataLength = data.size();
+		rawData = reinterpret_cast<uint8_t*>(const_cast<char*>(data_.constData()));
+		dataLength = data_.size();
 	} else {
 		return;
 	}

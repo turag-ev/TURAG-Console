@@ -303,9 +303,9 @@ void ConnectionWidgetTcp::fillDeviceList(void) {
     allDevicesWidget->setMinimumHeight(size + allDevicesWidget->sizeHintForRow(0));
 }
 
-void ConnectionWidgetTcp::send(QByteArray data) {
-    data.append("\n");
-    socket->write(data);
+void ConnectionWidgetTcp::send(QByteArray data_) {
+	data_.append("\n");
+	socket->write(data_);
 }
 
 void ConnectionWidgetTcp::send(QString string) {
@@ -389,16 +389,16 @@ void ConnectionWidgetTcp::resetFromContextMenu() {
         device * newSelectedDevice = allDevices.at(allDevicesWidget->currentRow());
 
         if (newSelectedDevice->onlineStatus == false) {
-            QByteArray data(LEAVE_BOOTLOADER);
-            data.append(" ");
-            data.append(newSelectedDevice->path);
-            send(data);
+			QByteArray data_(LEAVE_BOOTLOADER);
+			data_.append(" ");
+			data_.append(newSelectedDevice->path);
+			send(data_);
 
         } else {
-            QByteArray data(RESET_DEVICE);
-            data.append(" ");
-            data.append(newSelectedDevice->path);
-            send(data);
+			QByteArray data_(RESET_DEVICE);
+			data_.append(" ");
+			data_.append(newSelectedDevice->path);
+			send(data_);
         }
     }
 }
@@ -409,12 +409,12 @@ void ConnectionWidgetTcp::receive() {
 	indata.open(QIODevice::ReadOnly);
 
 	while (indata.canReadLine()) {
-		QByteArray data(indata.readLine(500));
-        data.chop(1);
-        if (data == QByteArray(TERMINATE)) {
+		QByteArray data_(indata.readLine(500));
+		data_.chop(1);
+		if (data_ == QByteArray(TERMINATE)) {
             handleData();
         } else {
-            puffer.append(data);
+			puffer.append(data_);
         }
     }
 }

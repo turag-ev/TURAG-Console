@@ -144,8 +144,6 @@ private:
 	bool inquiryRunning;
 	bool bootloaderActivationRunning;
 
-    TURAG::Feldbus::Device* dev;
-
 };
 
 #endif // FELDBUSFRONTEND_H

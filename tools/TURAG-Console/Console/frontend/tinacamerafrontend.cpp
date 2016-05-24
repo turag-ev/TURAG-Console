@@ -150,8 +150,7 @@ void TinaCameraFrontend::clear(void) {
 }
 
 // needed for the interface
-void TinaCameraFrontend::writeData(QByteArray data) {
-    (void)data;
+void TinaCameraFrontend::writeData(QByteArray ) {
 }
 
 void TinaCameraFrontend::updateImage(const QImage image)
