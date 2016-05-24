@@ -70,6 +70,7 @@ private:
 
     QActionGroup* frontendOptions;
 	ElidedButton* frontendButton;
+	QAction* frontendButtonAction;
 
     // status bar
     QLabel* status;

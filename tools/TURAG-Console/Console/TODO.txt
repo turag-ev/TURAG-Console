@@ -93,7 +93,6 @@ DataGraph/Graphenausgabe
  - vertikale Marker ebenfalls in DataGraph integrieren oder Support vielleicht
    ganz fallen lassen (braucht ja keiner)
  - im TinA-Frontend Auswahl und Anzeige mehrerer Graphen ermöglichen
- - Navigations-Tools optimieren: Zoom/Drag wie in Eagle, GraphPanner entfernen
  - für beide y-Achsen unabhängigen autoZoom ermöglichen
  - tooltip über ChannelButtons, um das mit der rechten y-Achse zu erklären
 

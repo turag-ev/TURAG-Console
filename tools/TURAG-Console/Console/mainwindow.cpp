@@ -286,7 +286,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	toolbar->addAction(refreshAction);
 	toolbar->addWidget(spacerWidget);
 	toolbar->addSeparator();
-	toolbar->addWidget(frontendButton);
+	frontendButtonAction = toolbar->addWidget(frontendButton);
 
 
 	// frontend toolbar
@@ -366,6 +366,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	// build central widget
 	// ---------------------------------------
 	setCentralWidget(popupContainer);
+
+	showConnectionWidgetOverlay();
 
 
 
@@ -656,11 +658,17 @@ void MainWindow::openUrl(QString url_string) {
 
 void MainWindow::handleNewConnectionAction(bool checked) {
 	if (checked) {
-		frontendButton->setEnabled(false);
+		frontendButtonAction->setEnabled(false);
 		refreshAction->setEnabled(false);
+
+//		frontendButtonAction->setVisible(false);
+//		refreshAction->setVisible(false);
 	} else {
-		frontendButton->setEnabled(true);
+		frontendButtonAction->setEnabled(true);
 		refreshAction->setEnabled(true);
+
+//		frontendButtonAction->setVisible(true);
+//		refreshAction->setVisible(true);
 	}
 }
 
