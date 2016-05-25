@@ -40,12 +40,12 @@ void ConnectionWidget::addRecentConnections() {
     settings.beginGroup("RecentConnections");
     recent_connections.loadFromSettings(objectName(), settings);
 
-    if (!recent_connections.empty()) {
+    if (!recent_connections.isEmpty()) {
 		recentConnectionsContainer = new QGroupBox(recentConnectionSpecifier_ + ":");
 		recentConnectionsContainer->setFlat(true);
 		QVBoxLayout* innerLayout = new QVBoxLayout;
 
-        for (int i = 0; i < recent_connections.size(); i++) {
+        for (int i = 0; i < recent_connections.getSize(); i++) {
             ElidedButton* link = new ElidedButton(" " + recent_connections[i]);
 			link->setElideMode(Qt::ElideMiddle);
 			link->setMinimumWidth(350);
