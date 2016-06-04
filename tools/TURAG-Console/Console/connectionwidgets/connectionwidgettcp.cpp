@@ -168,7 +168,7 @@ void ConnectionWidgetTcp::socketError(QAbstractSocket::SocketError error) {
 
     case QAbstractSocket::NetworkError:
 //        if (socket->isOpen()) socket->close();
-		logCritical("Host unreachebale");
+		logCritical("Host unreachable");
         break;
 
     default:
