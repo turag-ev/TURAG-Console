@@ -19,14 +19,20 @@ PopupWidget::PopupWidget(QWidget *mainWidget_, QSize defaultPreferredSize_, QStr
 		QSettings settings;
 		settings.beginGroup(QStringLiteral("popupWidgetGeometry"));
 		preferredSize = settings.value(saveGeometryIdentifier, preferredSize).toSize();
-	}
+        correctPreferredSize();
+    }
 
 
 	setAutoFillBackground(true);
 
 	connect(this, &ResizableFrame::geometryChanged, [this]() {
 		preferredSize = size();
-	});
+
+        correctPreferredSize();
+        if (preferredSize != size()) {
+            resize(preferredSize);
+        }
+    });
 }
 
 void PopupWidget::hideEvent(QHideEvent *) {
@@ -34,7 +40,17 @@ void PopupWidget::hideEvent(QHideEvent *) {
 		QSettings settings;
 		settings.beginGroup(QStringLiteral("popupWidgetGeometry"));
 		settings.setValue(saveGeometryIdentifier, preferredSize);
-	}
+    }
+}
+
+void PopupWidget::correctPreferredSize()
+{
+    if (preferredSize.width() < minPreferredWidth) {
+        preferredSize.setWidth(minPreferredWidth);
+    }
+    if (preferredSize.height() < minPreferredHeight) {
+        preferredSize.setHeight(minPreferredHeight);
+    }
 }
 
 

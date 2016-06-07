@@ -14,8 +14,11 @@ class QWidget;
 class PopupWidget : public ResizableFrame
 {
 public:
-	static constexpr int defaultPreferredWidth = 300;
-	static constexpr int defaultPreferredHeight = 300;
+    static constexpr int defaultPreferredWidth = 300;
+    static constexpr int defaultPreferredHeight = 300;
+
+    static constexpr int minPreferredWidth = 100;
+    static constexpr int minPreferredHeight = 100;
 
 
 	explicit PopupWidget(
@@ -29,6 +32,8 @@ protected:
 	virtual void hideEvent(QHideEvent *event);
 
 private:
+    void correctPreferredSize(void);
+
 	QSize preferredSize;
 
 	QString saveGeometryIdentifier;
