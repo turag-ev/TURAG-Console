@@ -61,7 +61,7 @@ void FileBackend::doCleanUpConnection(void) {
 
 
 void FileBackend::onFileChanged() {
-	if (!static_cast<QFile*>(stream_.data())->exists()) {
+	if (!stream_.data() || !static_cast<QFile*>(stream_.data())->exists()) {
         logFilteredErrorMsg("Datei existiert nicht mehr");
         connectionWasLost();
     } else {
