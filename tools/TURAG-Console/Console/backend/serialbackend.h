@@ -2,7 +2,7 @@
 #define SERIALBACKEND_H
 
 #include "basebackend.h"
-#include <QtSerialPort/QSerialPort>
+#include <QSerialPort>
 
 
 class SerialBackend : public BaseBackend {

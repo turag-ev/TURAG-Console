@@ -1,5 +1,5 @@
 #include "serialbackend.h"
-#include <QtSerialPort/QSerialPort>
+#include <QSerialPort>
 #include <QFileInfo>
 #include <QDebug>
 #include <QUrlQuery>
