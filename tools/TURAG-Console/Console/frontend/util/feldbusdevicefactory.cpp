@@ -9,9 +9,10 @@
 #include <tina++/feldbus/host/servo.h>
 #include <tina++/feldbus/host/aseb.h>
 #include <tina++/feldbus/host/bootloader.h>
+#include <tina++/feldbus/host/feldbusabstraction.h>
 
 
-FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfoExt &device_info) {
+FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfoExt &device_info, TURAG::Feldbus::FeldbusAbstraction* bus) {
     QString checksumString;
     QString protocolIdString;
     QString deviceTypeString;
@@ -40,6 +41,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
             device = new Feldbus::DCMotor(
                         device_info.device_name.constData(),
                         device_info.address,
+						bus,
                         static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
                         device_info.addressLength);
             deviceTypeString = "DC-Motor";
@@ -49,7 +51,8 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
             device = new Feldbus::Servo(
                         device_info.device_name.constData(),
                         device_info.address,
-                        static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
+						bus,
+						static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
                         device_info.addressLength);
             deviceTypeString = "Servo-Motor";
             break;
@@ -68,7 +71,8 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
             device = new Feldbus::Farbsensor(
                         device_info.device_name.constData(),
                         device_info.address,
-                        static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
+						bus,
+						static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
                         device_info.addressLength);
             deviceTypeString = "Farbsensor";
             break;
@@ -100,7 +104,8 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
             device = new Feldbus::Aseb(
                         device_info.device_name.constData(),
                         device_info.address,
-                        static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
+						bus,
+						static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
                         device_info.addressLength);
             deviceTypeString = "generic ASEB";
             break;
@@ -123,7 +128,8 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
             device = new Feldbus::BootloaderAtmega(
                         device_info.device_name.constData(),
                         device_info.address,
-                        static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
+						bus,
+						static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
                         device_info.addressLength);
             deviceTypeString = "AtMega - BMaX";
             break;
@@ -132,7 +138,8 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
             device = new Feldbus::BootloaderXmega(
                         device_info.device_name.constData(),
                         device_info.address,
-                        static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
+						bus,
+						static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
                         device_info.addressLength);
 			deviceTypeString = "XMEGA - BMaX";
             break;
@@ -150,7 +157,8 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
         device = new Feldbus::Device(
                     device_info.device_name.constData(),
                     device_info.address,
-                    static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
+					bus,
+					static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
                     device_info.addressLength);
         break;
     }

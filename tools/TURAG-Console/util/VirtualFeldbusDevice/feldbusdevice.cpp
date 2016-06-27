@@ -349,6 +349,11 @@ FeldbusDevice::FeldbusDevice(QObject* parent) :
 }
 
 bool FeldbusDevice::init(QString portString) {
+    if (!portString.startsWith("\\\\.\\")) {
+        portString = "\\\\.\\" + portString;
+    }
+
+
     port = new QSerialPort(portString);
     bool success = port->open(QIODevice::ReadWrite);
     if (!success) {

@@ -126,7 +126,6 @@ SOURCES +=\
     libs/keyboardenabledcombobox.cpp \
     libs/lineeditext.cpp \
     tina-platform/debug_printf.cpp \
-    tina-platform/rs485.cpp \
     libs/loggerwidget.cpp \
     libs/log.cpp \
     frontend/feldbusviews/feldbusbootloaderatmegaview.cpp \
@@ -205,7 +204,6 @@ HEADERS  += \
     libs/iconmanager.h \
     frontend/scfrontend.h \
     libs/tcpsocketext.h \
-    libs/debugprintclass.h \
     libs/popup/resizableframe.h \
     libs/popup/popupwidget.h \
     libs/popup/popupcontainerwidget.h \
