@@ -433,19 +433,19 @@ void FeldbusFrontend::onInquiry(bool boot) {
                 Feldbus::Device* dev = new TURAG::Feldbus::Device("", i, this, chksum_type, addressLength, 2, 1);
                 if (dev->isAvailable()) {
                     if (dev->getDeviceInfo(&dev_info.device_info)) {
-                        if (dev_info.device_info.crcType == static_cast<uint8_t>(chksum_type)) {
+						if (dev_info.device_info.crcType() == chksum_type) {
                             dev_info.address = i;
                             delete dev;
 
-							Feldbus::Device* detectedDev = new TURAG::Feldbus::Device("", dev_info.address, this, static_cast<Feldbus::Device::ChecksumType>(dev_info.device_info.crcType), addressLength, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ATTEMPTS, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ERRORS);
-                            QByteArray name_buffer(dev_info.device_info.nameLength + 2, '\0');
+							Feldbus::Device* detectedDev = new TURAG::Feldbus::Device("", dev_info.address, this, static_cast<Feldbus::Device::ChecksumType>(dev_info.device_info.crcType()), addressLength, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ATTEMPTS, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ERRORS);
+							QByteArray name_buffer(dev_info.device_info.nameLength() + 2, '\0');
 							if (detectedDev->receiveDeviceRealName(name_buffer.data())) {
                                 dev_info.device_name = name_buffer;
                             } else {
                                 dev_info.device_name = "???";
                             }
 
-                            QByteArray versioninfo_buffer(dev_info.device_info.versioninfoLength + 2, '\0');
+							QByteArray versioninfo_buffer(dev_info.device_info.versionInfoLength() + 2, '\0');
 							if (detectedDev->receiveVersionInfo(versioninfo_buffer.data())) {
                                 dev_info.versionInfo = versioninfo_buffer;
                             } else {
@@ -465,7 +465,7 @@ void FeldbusFrontend::onInquiry(bool boot) {
                                 sptr->oldSlaveOverflow = 0;
                                 sptr->oldSlaveLostPackages = 0;
                                 sptr->oldSlaveChecksumError = 0;
-                                if (dev_info.device_info.packageStatisticsAvailable) {
+								if (dev_info.device_info.packageStatisticsAvailable()) {
                                     uint32_t count[4];
                                     if (sptr->device->receiveAllSlaveErrorCount(count)) {
                                         // if the call succeeded, we have one accepted package more
@@ -830,7 +830,7 @@ void FeldbusFrontend::onUpdateStatisticsSlave(void) {
         Feldbus::Device::DeviceInfo devInfo;
         selectedDevice_->device->getDeviceInfo(&devInfo);
 
-        if (devInfo.packageStatisticsAvailable) {
+		if (devInfo.packageStatisticsAvailable()) {
             uint32_t count[4];
             if (selectedDevice_->device->receiveAllSlaveErrorCount(count)) {
                 slaveAcceptedPackages_->setText(QString("%1 (%2)").arg(count[0] - selectedDevice_->oldSlaveAcceptedPackages).arg(selectedDevice_->oldSlaveAcceptedPackages));

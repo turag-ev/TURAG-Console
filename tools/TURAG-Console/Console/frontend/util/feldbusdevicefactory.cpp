@@ -18,12 +18,12 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
     QString deviceTypeString;
     TURAG::Feldbus::Device* device = nullptr;
 
-    switch (device_info.device_info.crcType) {
-    case TURAG_FELDBUS_CHECKSUM_XOR:
+	switch (device_info.device_info.crcType()) {
+	case TURAG::Feldbus::Device::ChecksumType::xor_based:
         checksumString = "xor-Checksumme";
         break;
 
-    case TURAG_FELDBUS_CHECKSUM_CRC8_ICODE:
+	case TURAG::Feldbus::Device::ChecksumType::crc8_icode:
         checksumString = "CRC-8 I-CODE";
         break;
 
@@ -32,17 +32,17 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
         break;
     }
 
-    switch (device_info.device_info.deviceProtocolId) {
+	switch (device_info.device_info.deviceProtocolId()) {
     case TURAG_FELDBUS_DEVICE_PROTOCOL_STELLANTRIEBE:
         protocolIdString = "Stellantrieb";
 
-        switch (device_info.device_info.deviceTypeId) {
+		switch (device_info.device_info.deviceTypeId()) {
         case TURAG_FELDBUS_STELLANTRIEBE_DEVICE_TYPE_DC:
             device = new Feldbus::DCMotor(
                         device_info.device_name.constData(),
                         device_info.address,
 						bus,
-                        static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
+						device_info.device_info.crcType(),
                         device_info.addressLength);
             deviceTypeString = "DC-Motor";
             break;
@@ -52,7 +52,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
                         device_info.device_name.constData(),
                         device_info.address,
 						bus,
-						static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
+						device_info.device_info.crcType(),
                         device_info.addressLength);
             deviceTypeString = "Servo-Motor";
             break;
@@ -66,13 +66,13 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
     case TURAG_FELDBUS_DEVICE_PROTOCOL_LOKALISIERUNGSSENSOREN:
         protocolIdString = "Lokalisierungs-Sensor";
 
-        switch (device_info.device_info.deviceTypeId) {
+		switch (device_info.device_info.deviceTypeId()) {
         case TURAG_FELDBUS_LOKALISIERUNGSSENSOREN_DEVICE_TYPE_COLORSENSOR:
             device = new Feldbus::Farbsensor(
                         device_info.device_name.constData(),
                         device_info.address,
 						bus,
-						static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
+						device_info.device_info.crcType(),
                         device_info.addressLength);
             deviceTypeString = "Farbsensor";
             break;
@@ -99,13 +99,13 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
     case TURAG_FELDBUS_DEVICE_PROTOCOL_ASEB:
         protocolIdString = "ASEB (Application Specific Extension Board)";
 
-        switch (device_info.device_info.deviceTypeId) {
+		switch (device_info.device_info.deviceTypeId()) {
         case TURAG_FELDBUS_ASEB_GENERIC:
             device = new Feldbus::Aseb(
                         device_info.device_name.constData(),
                         device_info.address,
 						bus,
-						static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
+						device_info.device_info.crcType(),
                         device_info.addressLength);
             deviceTypeString = "generic ASEB";
             break;
@@ -119,7 +119,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
     case TURAG_FELDBUS_DEVICE_PROTOCOL_BOOTLOADER:
         protocolIdString = "TinA BMaX-Bootloader";
 
-        switch (device_info.device_info.deviceTypeId) {
+		switch (device_info.device_info.deviceTypeId()) {
         case TURAG_FELDBUS_BOOTLOADER_GENERIC:
             deviceTypeString = "generic - BMaX";
             break;
@@ -129,7 +129,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
                         device_info.device_name.constData(),
                         device_info.address,
 						bus,
-						static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
+						device_info.device_info.crcType(),
                         device_info.addressLength);
             deviceTypeString = "AtMega - BMaX";
             break;
@@ -139,7 +139,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
                         device_info.device_name.constData(),
                         device_info.address,
 						bus,
-						static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
+						device_info.device_info.crcType(),
                         device_info.addressLength);
 			deviceTypeString = "XMEGA - BMaX";
             break;
@@ -158,7 +158,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
                     device_info.device_name.constData(),
                     device_info.address,
 					bus,
-					static_cast<Feldbus::Device::ChecksumType>(device_info.device_info.crcType),
+					device_info.device_info.crcType(),
                     device_info.addressLength);
         break;
     }
@@ -176,9 +176,9 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
         devString += "</td></tr>\n<tr><td>Checksumme: </td><td>";
         devString += checksumString;
         devString += "</td></tr>\n<tr><td>Puffer-Größe: </td><td>";
-        devString += QString("%1").arg(device_info.device_info.bufferSize);
+		devString += QString("%1").arg(device_info.device_info.bufferSize());
         devString += "</td></tr>\n<tr><td>Uptime-Frequ.: </td><td>";
-        devString += device_info.device_info.uptimeFrequency ? QString("%1 Hz").arg(device_info.device_info.uptimeFrequency) : "n/a";
+		devString += device_info.device_info.uptimeFrequency() ? QString("%1 Hz").arg(device_info.device_info.uptimeFrequency()) : "n/a";
         devString += "</td></tr>\n<tr><td>Versions-Info: </td><td>";
         devString += device_info.versionInfo;
         devString += "</td></tr>\n</table>";
