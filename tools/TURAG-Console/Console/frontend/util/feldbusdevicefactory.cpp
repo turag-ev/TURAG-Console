@@ -12,18 +12,18 @@
 #include <tina++/feldbus/host/feldbusabstraction.h>
 
 
-FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfoExt &device_info, TURAG::Feldbus::FeldbusAbstraction* bus) {
+FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInfoExt &device_info, TURAG::Feldbus::FeldbusAbstraction& bus) {
     QString checksumString;
     QString protocolIdString;
     QString deviceTypeString;
     TURAG::Feldbus::Device* device = nullptr;
 
 	switch (device_info.device_info.crcType()) {
-	case TURAG::Feldbus::Device::ChecksumType::xor_based:
+    case TURAG::Feldbus::ChecksumType::xor_based:
         checksumString = "xor-Checksumme";
         break;
 
-	case TURAG::Feldbus::Device::ChecksumType::crc8_icode:
+    case TURAG::Feldbus::ChecksumType::crc8_icode:
         checksumString = "CRC-8 I-CODE";
         break;
 

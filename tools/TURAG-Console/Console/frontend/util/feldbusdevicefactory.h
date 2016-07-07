@@ -43,7 +43,7 @@ struct FeldbusDeviceWrapper {
 
 class FeldbusDeviceFactory  {
 public:
-    static FeldbusDeviceWrapper* createFeldbusDevice(FeldbusDeviceInfoExt& device_info, Feldbus::FeldbusAbstraction *bus);
+	static FeldbusDeviceWrapper* createFeldbusDevice(FeldbusDeviceInfoExt& device_info, Feldbus::FeldbusAbstraction &bus);
 };
 
 

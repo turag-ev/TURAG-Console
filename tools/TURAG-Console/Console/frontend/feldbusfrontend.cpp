@@ -43,6 +43,7 @@ using namespace TURAG;
 
 FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 	BaseFrontend("TURAG Feldbus", IconManager::get("logo_feldbus"), parent),
+	FeldbusAbstraction("Bus", false),
     fromValidator_(nullptr), toValidator_(nullptr), bootloaderFromValidator_(nullptr),
     bootloaderToValidator_(nullptr), selectedDevice_(nullptr), broadcastBootloader(nullptr),
     deviceAddressLength(Feldbus::Device::AddressLength::byte_),
@@ -423,21 +424,21 @@ void FeldbusFrontend::onInquiry(bool boot) {
         } else {
 			startInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg((i - fromAddress) * 100 / (toAddress - fromAddress + 1)));
         }
-        for (int j = 0; j <= static_cast<int>(Feldbus::Device::ChecksumType::crc8_icode); j++) {
-            if (j == checksumTypeIndex || checksumTypeIndex > static_cast<int>(Feldbus::Device::ChecksumType::crc8_icode)) {
-                Feldbus::Device::ChecksumType chksum_type = static_cast<Feldbus::Device::ChecksumType>(j);
+		for (int j = 0; j <= static_cast<int>(Feldbus::ChecksumType::crc8_icode); j++) {
+			if (j == checksumTypeIndex || checksumTypeIndex > static_cast<int>(Feldbus::ChecksumType::crc8_icode)) {
+				Feldbus::ChecksumType chksum_type = static_cast<Feldbus::ChecksumType>(j);
 
                 // the condition for detecting the device is a successful ping-request
                 // plus successful receiving of the device info making it possible
                 // to double check the assumed checksum type
-                Feldbus::Device* dev = new TURAG::Feldbus::Device("", i, this, chksum_type, addressLength, 2, 1);
+				Feldbus::Device* dev = new TURAG::Feldbus::Device("", i, *this, chksum_type, addressLength, 2, 1);
                 if (dev->isAvailable()) {
                     if (dev->getDeviceInfo(&dev_info.device_info)) {
 						if (dev_info.device_info.crcType() == chksum_type) {
                             dev_info.address = i;
                             delete dev;
 
-							Feldbus::Device* detectedDev = new TURAG::Feldbus::Device("", dev_info.address, this, static_cast<Feldbus::Device::ChecksumType>(dev_info.device_info.crcType()), addressLength, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ATTEMPTS, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ERRORS);
+							Feldbus::Device* detectedDev = new TURAG::Feldbus::Device("", dev_info.address, *this, static_cast<Feldbus::ChecksumType>(dev_info.device_info.crcType()), addressLength, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ATTEMPTS, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ERRORS);
 							QByteArray name_buffer(dev_info.device_info.nameLength() + 2, '\0');
 							if (detectedDev->receiveDeviceRealName(name_buffer.data())) {
                                 dev_info.device_name = name_buffer;
@@ -455,7 +456,7 @@ void FeldbusFrontend::onInquiry(bool boot) {
                             deviceList_->addItem(dev_info.toString());
                             dev_info.addressLength = addressLength;
                             std::shared_ptr<FeldbusDeviceWrapper> sptr;
-                            sptr.reset(FeldbusDeviceFactory::createFeldbusDevice(dev_info, this));
+							sptr.reset(FeldbusDeviceFactory::createFeldbusDevice(dev_info, *this));
                             devices_.append(sptr);
 
                             if (sptr->device.get()) {
@@ -787,8 +788,8 @@ void FeldbusFrontend::onStartBoot(void) {
 	if (broadcastBootloader) {
 		delete broadcastBootloader;
 	}
-    broadcastBootloader = new Feldbus::Bootloader("broadcastBootloader", 0, this,
-												  static_cast<Feldbus::Device::ChecksumType>(bootloaderChecksumCombobox_->currentIndex()),
+	broadcastBootloader = new Feldbus::Bootloader("broadcastBootloader", 0, *this,
+												  static_cast<Feldbus::ChecksumType>(bootloaderChecksumCombobox_->currentIndex()),
 												  bootloaderAddressLength);
 }
 
@@ -981,7 +982,7 @@ void FeldbusFrontend::setDynamixelInquiryWidgetsEnabled(bool enabled) {
 	}
 }
 
-bool FeldbusFrontend::transceive(const uint8_t *transmit, int *transmit_length, uint8_t *receive, int *receive_length, bool) {
+bool FeldbusFrontend::doTransceive(const uint8_t *transmit, int *transmit_length, uint8_t *receive, int *receive_length, bool) {
 	if (!connected || !turag_rs485_io_device) {
         return false;
     }

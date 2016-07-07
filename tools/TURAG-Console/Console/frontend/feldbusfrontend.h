@@ -4,6 +4,7 @@
 #include "basefrontend.h"
 #include "util/feldbusdevicefactory.h"
 
+#include <tina++/feldbus/host/feldbusabstraction.h>
 #include <tina++/feldbus/host/device.h>
 #include <tina++/feldbus/host/bootloader.h>
 #include <tina++/feldbus/dynamixel/dynamixeldevice.h>
@@ -42,7 +43,7 @@ public:
 	FeldbusFrontend(QWidget *parent = 0);
 	virtual ~FeldbusFrontend();
 
-	virtual bool transceive(const uint8_t *transmit, int *transmit_length, uint8_t *receive, int *receive_length, bool delayTransmission);
+    virtual bool doTransceive(const uint8_t *transmit, int *transmit_length, uint8_t *receive, int *receive_length, bool delayTransmission);
     virtual void clearBuffer(void);
 	void setFeldbusTimeout(int milliSeconds);
 	int getFeldbusTimeout(void);
