@@ -16,6 +16,7 @@ class QImage;
 class QLabel;
 class QLineEdit;
 class QPushButton;
+class QShortcut;
 class QSettings;
 class QSignalMapper;
 class QStackedLayout;
@@ -67,6 +68,7 @@ private:
     QAction *disconnect_action;
     QAction *new_connection_action;
 	QAction* refreshAction;
+	QShortcut* closeNewConnectionEscapeShortcut;
 
     QActionGroup* frontendOptions;
 	ElidedButton* frontendButton;

@@ -248,7 +248,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(focusAddressbarCtrlLShortcut, SIGNAL(activated()), this, SLOT(showConnectionWidgetOverlay()));
 	QShortcut* focusAddressbarF6Shortcut = new QShortcut(Qt::Key_F6, this);
 	connect(focusAddressbarF6Shortcut, SIGNAL(activated()), this, SLOT(showConnectionWidgetOverlay()));
-	QShortcut* closeNewConnectionEscapeShortcut = new QShortcut(Qt::Key_Escape, this);
+	closeNewConnectionEscapeShortcut = new QShortcut(Qt::Key_Escape, this);
 	connect(closeNewConnectionEscapeShortcut, SIGNAL(activated()), this, SLOT(hideConnectionWidgetOverlay()));
 
 	PopupToolButton* newConnectionPopupButton = new PopupToolButton(popupContainer);
@@ -669,11 +669,15 @@ void MainWindow::handleNewConnectionAction(bool checked) {
 		frontendButtonAction->setEnabled(false);
 		refreshAction->setEnabled(false);
 
+		closeNewConnectionEscapeShortcut->setEnabled(true);
+
 //		frontendButtonAction->setVisible(false);
 //		refreshAction->setVisible(false);
 	} else {
 		frontendButtonAction->setEnabled(true);
 		refreshAction->setEnabled(true);
+
+		closeNewConnectionEscapeShortcut->setEnabled(false);
 
 //		frontendButtonAction->setVisible(true);
 //		refreshAction->setVisible(true);
