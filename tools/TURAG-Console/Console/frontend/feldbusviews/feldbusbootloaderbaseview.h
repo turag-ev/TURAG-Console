@@ -8,13 +8,14 @@
 class QPushButton;
 class QLineEdit;
 class QFormLayout;
+class FeldbusFrontend;
 
 
 class FeldbusBootloaderBaseView : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit FeldbusBootloaderBaseView(TURAG::Feldbus::BootloaderAvrBase *bootloader, QWidget *parent = 0);
+    explicit FeldbusBootloaderBaseView(TURAG::Feldbus::BootloaderAvrBase *bootloader, FeldbusFrontend* bus_, QWidget *parent = 0);
 
 signals:
 
@@ -36,6 +37,7 @@ protected:
 
 	QFormLayout* infoLayout;
 	QLineEdit* mcuIdEdit;
+    FeldbusFrontend* bus;
 
 private:
 	TURAG::Feldbus::BootloaderAvrBase* bootloader_;

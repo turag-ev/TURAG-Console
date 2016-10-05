@@ -3,8 +3,8 @@
 #include <QLineEdit>
 
 
-FeldbusBootloaderAtmegaView::FeldbusBootloaderAtmegaView(TURAG::Feldbus::BootloaderAtmega *bootloader, QWidget *parent) :
-	FeldbusBootloaderBaseView(bootloader, parent)
+FeldbusBootloaderAtmegaView::FeldbusBootloaderAtmegaView(TURAG::Feldbus::BootloaderAtmega *bootloader, FeldbusFrontend *bus_, QWidget *parent) :
+    FeldbusBootloaderBaseView(bootloader, bus_, parent)
 {
 	QLineEdit* lowFuseEdit = new QLineEdit;
 	setDisabledTheme(lowFuseEdit);

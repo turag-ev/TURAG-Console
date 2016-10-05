@@ -1,54 +1,57 @@
 #include "feldbusfrontend.h"
-#include <tina/feldbus/host/rs485.h>
-#include <QSplitter>
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QVBoxLayout>
-#include <QFormLayout>
-#include <QListWidget>
-#include <QTextEdit>
-#include <QDebug>
-#include <QCoreApplication>
-#include <QLabel>
-#include <QLineEdit>
-#include <QSettings>
-#include <QTabWidget>
-#include <QGroupBox>
-#include <libs/checkboxext.h>
-#include <libs/comboboxext.h>
-#include <libs/lineeditext.h>
-#include <libs/iconmanager.h>
-#include <tina++/feldbus/host/farbsensor.h>
-#include <tina++/feldbus/host/aktor.h>
-#include <tina++/feldbus/host/dcmotor.h>
-#include <tina++/feldbus/host/servo.h>
-#include <tina++/feldbus/dynamixel/dynamixeldevice.h>
-#include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
 #include "feldbusviews/feldbusfarbsensorview.h"
 #include "feldbusviews/dynamixelview.h"
 #include "feldbusviews/feldbusaktorview.h"
 #include "feldbusviews/feldbusasebview.h"
 #include "feldbusviews/feldbusbootloaderatmegaview.h"
 #include "feldbusviews/feldbusbootloaderxmegaview.h"
-#include <libs/debugprintclass.h>
+#include <libs/checkboxext.h>
+#include <libs/comboboxext.h>
+#include <libs/lineeditext.h>
+#include <libs/iconmanager.h>
 #include "plaintextfrontend.h"
+
+#include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
+#include <tina++/feldbus/host/farbsensor.h>
+#include <tina++/feldbus/host/aktor.h>
+#include <tina++/feldbus/host/dcmotor.h>
+#include <tina++/feldbus/host/servo.h>
+#include <tina++/feldbus/dynamixel/dynamixeldevice.h>
+
+#include <QCoreApplication>
+#include <QDebug>
+#include <QFormLayout>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QListWidget>
+#include <QPushButton>
+#include <QSettings>
+#include <QSplitter>
+#include <QTabWidget>
+#include <QTextEdit>
+#include <QVBoxLayout>
+
 #include <cmath>
+#ifdef Q_OS_WIN32
+# include <windows.h>
+#endif
+
 
 using namespace TURAG;
 
-extern QIODevice* turag_rs485_io_device;
-extern QByteArray turag_rs485_data_buffer;
-extern DebugPrintClass rs485Debug;
-
-
 FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 	BaseFrontend("TURAG Feldbus", IconManager::get("logo_feldbus"), parent),
+	FeldbusAbstraction("Bus", false),
     fromValidator_(nullptr), toValidator_(nullptr), bootloaderFromValidator_(nullptr),
     bootloaderToValidator_(nullptr), selectedDevice_(nullptr), broadcastBootloader(nullptr),
     deviceAddressLength(Feldbus::Device::AddressLength::byte_),
 	bootloaderAddressLength(Feldbus::Device::AddressLength::byte_),
 	inquiryRunning(false),
-	bootloaderActivationRunning(false)
+    bootloaderActivationRunning(false),
+	connected(false),
+	turag_rs485_io_device(nullptr)
 {
     /*
      * Default device inquiry interface
@@ -206,8 +209,6 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     tabwidget->addTab(leftDeviceWidget, "Geräte");
     tabwidget->addTab(busLog_, "Log");
 
-    connect(&rs485Debug, SIGNAL(debugMsg(QString)), this, SLOT(onRs485DebugMsg(QString)));
-
     /*
      * Statistics labels
      */
@@ -285,10 +286,10 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     connect(&updateStatisticsTimer_, SIGNAL(timeout()), this, SLOT(onUpdateStatistics()));
 
 #ifdef Q_OS_WIN32
-    // windows is a bit slower :D
-    turag_rs485_init(0, turag_ms_to_ticks(50));
+	// windows is a bit slower :D
+	setFeldbusTimeout(50); // [ms]
 #else
-	 turag_rs485_init(0, turag_ms_to_ticks(10));
+	setFeldbusTimeout(10); // [ms]
 #endif
 
     onTwoByteAddressCheckBoxToggled(twoByteAddressCheckbox_->isChecked());
@@ -310,8 +311,9 @@ FeldbusFrontend::~FeldbusFrontend() {
     }
 }
 
-void FeldbusFrontend::onConnected(bool readOnly, QIODevice* dev) {
-    turag_rs485_io_device = dev;
+void FeldbusFrontend::onConnected(bool readOnly, QIODevice* dev_) {
+    connected = true;
+	turag_rs485_io_device = dev_;
     if (!readOnly) {
         setEnabled(true);
     }
@@ -320,13 +322,14 @@ void FeldbusFrontend::onConnected(bool readOnly, QIODevice* dev) {
 
 void FeldbusFrontend::onDisconnected(bool reconnecting) {
     (void)reconnecting;
-    turag_rs485_io_device = nullptr;
+    connected = false;
+	turag_rs485_io_device = nullptr;
     setEnabled(false);
     updateStatisticsTimer_.stop();
 }
 
 void FeldbusFrontend::writeData(QByteArray data_) {
-	turag_rs485_data_buffer.append(data_);
+	busDataBuffer.append(data_);
 }
 
 void FeldbusFrontend::clear(void) {
@@ -410,7 +413,7 @@ void FeldbusFrontend::onInquiry(bool boot) {
     deviceList_->clear();
     devices_.clear();
     deviceInfo_->clear();
-    turag_rs485_data_buffer.clear();
+    busDataBuffer.clear();
 
     FeldbusDeviceInfoExt dev_info;
     dev_info.address = 0;
@@ -421,29 +424,29 @@ void FeldbusFrontend::onInquiry(bool boot) {
         } else {
 			startInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg((i - fromAddress) * 100 / (toAddress - fromAddress + 1)));
         }
-        for (int j = 0; j <= static_cast<int>(Feldbus::Device::ChecksumType::crc8_icode); j++) {
-            if (j == checksumTypeIndex || checksumTypeIndex > static_cast<int>(Feldbus::Device::ChecksumType::crc8_icode)) {
-                Feldbus::Device::ChecksumType chksum_type = static_cast<Feldbus::Device::ChecksumType>(j);
+		for (int j = 0; j <= static_cast<int>(Feldbus::ChecksumType::crc8_icode); j++) {
+			if (j == checksumTypeIndex || checksumTypeIndex > static_cast<int>(Feldbus::ChecksumType::crc8_icode)) {
+				Feldbus::ChecksumType chksum_type = static_cast<Feldbus::ChecksumType>(j);
 
                 // the condition for detecting the device is a successful ping-request
                 // plus successful receiving of the device info making it possible
                 // to double check the assumed checksum type
-                Feldbus::Device* dev = new TURAG::Feldbus::Device("", i, chksum_type, addressLength, 2, 1);
+				Feldbus::Device* dev = new TURAG::Feldbus::Device("", i, *this, chksum_type, addressLength, 2, 1);
                 if (dev->isAvailable()) {
                     if (dev->getDeviceInfo(&dev_info.device_info)) {
-                        if (dev_info.device_info.crcType == static_cast<uint8_t>(chksum_type)) {
+						if (dev_info.device_info.crcType() == chksum_type) {
                             dev_info.address = i;
                             delete dev;
 
-							Feldbus::Device* detectedDev = new TURAG::Feldbus::Device("", dev_info.address, static_cast<Feldbus::Device::ChecksumType>(dev_info.device_info.crcType), addressLength, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ATTEMPTS, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ERRORS);
-                            QByteArray name_buffer(dev_info.device_info.nameLength + 2, '\0');
+							Feldbus::Device* detectedDev = new TURAG::Feldbus::Device("", dev_info.address, *this, static_cast<Feldbus::ChecksumType>(dev_info.device_info.crcType()), addressLength, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ATTEMPTS, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ERRORS);
+							QByteArray name_buffer(dev_info.device_info.nameLength() + 2, '\0');
 							if (detectedDev->receiveDeviceRealName(name_buffer.data())) {
                                 dev_info.device_name = name_buffer;
                             } else {
                                 dev_info.device_name = "???";
                             }
 
-                            QByteArray versioninfo_buffer(dev_info.device_info.versioninfoLength + 2, '\0');
+							QByteArray versioninfo_buffer(dev_info.device_info.versionInfoLength() + 2, '\0');
 							if (detectedDev->receiveVersionInfo(versioninfo_buffer.data())) {
                                 dev_info.versionInfo = versioninfo_buffer;
                             } else {
@@ -453,7 +456,7 @@ void FeldbusFrontend::onInquiry(bool boot) {
                             deviceList_->addItem(dev_info.toString());
                             dev_info.addressLength = addressLength;
                             std::shared_ptr<FeldbusDeviceWrapper> sptr;
-                            sptr.reset(FeldbusDeviceFactory::createFeldbusDevice(dev_info));
+							sptr.reset(FeldbusDeviceFactory::createFeldbusDevice(dev_info, *this));
                             devices_.append(sptr);
 
                             if (sptr->device.get()) {
@@ -463,7 +466,7 @@ void FeldbusFrontend::onInquiry(bool boot) {
                                 sptr->oldSlaveOverflow = 0;
                                 sptr->oldSlaveLostPackages = 0;
                                 sptr->oldSlaveChecksumError = 0;
-                                if (dev_info.device_info.packageStatisticsAvailable) {
+								if (dev_info.device_info.packageStatisticsAvailable()) {
                                     uint32_t count[4];
                                     if (sptr->device->receiveAllSlaveErrorCount(count)) {
                                         // if the call succeeded, we have one accepted package more
@@ -562,7 +565,7 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
 
     deviceList_->clearSelection();
     deviceList_->clear();
-    turag_rs485_data_buffer.clear();
+    busDataBuffer.clear();
 
     dynamixelDevices_.clear();
     deviceInfo_->clear();
@@ -659,7 +662,7 @@ void FeldbusFrontend::onDeviceSelected(int row) {
 			// create Bootloader Atmega view
 			Feldbus::BootloaderAtmega* atmegaBoot = dynamic_cast<Feldbus::BootloaderAtmega*>(selectedDevice_->device.get());
 			if (atmegaBoot) {
-				feldbusWidget = new FeldbusBootloaderAtmegaView(atmegaBoot);
+                feldbusWidget = new FeldbusBootloaderAtmegaView(atmegaBoot, this);
 				splitter->addWidget(feldbusWidget);
 				splitter->setStretchFactor(1,2);
 				return;
@@ -668,7 +671,7 @@ void FeldbusFrontend::onDeviceSelected(int row) {
 			// create Bootloader Xmega view
 			Feldbus::BootloaderXmega* xmegaBoot = dynamic_cast<Feldbus::BootloaderXmega*>(selectedDevice_->device.get());
 			if (xmegaBoot) {
-				feldbusWidget = new FeldbusBootloaderXmegaView(xmegaBoot);
+                feldbusWidget = new FeldbusBootloaderXmegaView(xmegaBoot, this);
 				splitter->addWidget(feldbusWidget);
 				splitter->setStretchFactor(1,2);
 				return;
@@ -694,7 +697,7 @@ void FeldbusFrontend::onDeviceSelected(int row) {
 
 
 void FeldbusFrontend::onRs485DebugMsg(QString msg) {
-    busLog_->writeData(msg.toLatin1());
+    busLog_->writeData(QString("%1\n").arg(msg).toLatin1());
 }
 
 void FeldbusFrontend::onCheckDeviceAvailability(void) {
@@ -785,8 +788,8 @@ void FeldbusFrontend::onStartBoot(void) {
 	if (broadcastBootloader) {
 		delete broadcastBootloader;
 	}
-	broadcastBootloader = new Feldbus::Bootloader("broadcastBootloader", 0,
-												  static_cast<Feldbus::Device::ChecksumType>(bootloaderChecksumCombobox_->currentIndex()),
+	broadcastBootloader = new Feldbus::Bootloader("broadcastBootloader", 0, *this,
+												  static_cast<Feldbus::ChecksumType>(bootloaderChecksumCombobox_->currentIndex()),
 												  bootloaderAddressLength);
 }
 
@@ -828,7 +831,7 @@ void FeldbusFrontend::onUpdateStatisticsSlave(void) {
         Feldbus::Device::DeviceInfo devInfo;
         selectedDevice_->device->getDeviceInfo(&devInfo);
 
-        if (devInfo.packageStatisticsAvailable) {
+		if (devInfo.packageStatisticsAvailable()) {
             uint32_t count[4];
             if (selectedDevice_->device->receiveAllSlaveErrorCount(count)) {
                 slaveAcceptedPackages_->setText(QString("%1 (%2)").arg(count[0] - selectedDevice_->oldSlaveAcceptedPackages).arg(selectedDevice_->oldSlaveAcceptedPackages));
@@ -977,4 +980,101 @@ void FeldbusFrontend::setDynamixelInquiryWidgetsEnabled(bool enabled) {
 		}
 		startInquiry_->setEnabled(false);
 	}
+}
+
+bool FeldbusFrontend::doTransceive(const uint8_t *transmit, int *transmit_length, uint8_t *receive, int *receive_length, bool) {
+	if (!connected || !turag_rs485_io_device) {
+        return false;
+    }
+
+	if (transmit_length && transmit) {
+		int transmit_length_copy = *transmit_length;
+
+		if (transmit_length_copy > 0) {
+			QString transmitmsg = QString("_Write: %1 {").arg(transmit_length_copy);
+			for (int i = 0; i < transmit_length_copy; ++i) {
+				transmitmsg += QString("%1 ").arg(transmit[i]);
+			}
+			transmitmsg += "}:";
+
+			*transmit_length = turag_rs485_io_device->write(reinterpret_cast<const char*>(transmit), transmit_length_copy);
+
+			if (transmit_length_copy != *transmit_length) {
+				onRs485DebugMsg(transmitmsg + " failed");
+				if (receive_length) {
+					*receive_length = 0;
+				}
+				return false;
+			}
+			if (!turag_rs485_io_device->waitForBytesWritten(feldbusTimeout_ms)) {
+				onRs485DebugMsg(transmitmsg + " timeout");
+				if (receive_length) {
+					*receive_length = 0;
+				}
+				return false;
+			}
+			onRs485DebugMsg(transmitmsg + " ok");
+		}
+	}
+
+	if (receive_length && receive) {
+		int receive_length_copy = *receive_length;
+
+		if (receive_length_copy > 0) {
+			QString outmsg = QString("_Read required: %1").arg(receive_length_copy);
+
+			#ifdef Q_OS_WIN32
+				unsigned long startTick = GetTickCount();
+				int lastSize = busDataBuffer.size();
+
+				while (busDataBuffer.size() < receive_length_copy) {
+					turag_rs485_io_device->waitForReadyRead(0);
+					if (lastSize < busDataBuffer.size()) {
+						lastSize = busDataBuffer.size();
+						startTick = GetTickCount();
+					}
+
+
+					if (GetTickCount() - startTick > feldbusTimeout_ms) {
+						onRs485DebugMsg(outmsg + QString(" Timeout (%1)").arg(busDataBuffer.size()));
+						*receive_length = busDataBuffer.size();
+						clearBuffer();
+						return false;
+					}
+				}
+			#else
+				while (busDataBuffer.size() < receive_length_copy) {
+					if (!turag_rs485_io_device->waitForReadyRead(feldbusTimeout_ms)) {
+						onRs485DebugMsg(outmsg + QString(" Timeout (%1)").arg(busDataBuffer.size()));
+						*receive_length = busDataBuffer.size();
+						clearBuffer();
+						return false;
+					}
+				}
+			#endif
+
+			onRs485DebugMsg(outmsg + QString(" available: %1/%2").arg(busDataBuffer.size()).arg(receive_length_copy));
+			outmsg = "data: {";
+			for (int i = 0; i < receive_length_copy; ++i) {
+				receive[i] = busDataBuffer.at(i);
+				outmsg += QString("%1 ").arg(receive[i]);
+			}
+			onRs485DebugMsg(outmsg + "}");
+			busDataBuffer.remove(0, receive_length_copy);
+		}
+	}
+
+    return true;
+}
+
+void FeldbusFrontend::clearBuffer(void) {
+    busDataBuffer.clear();
+}
+
+void FeldbusFrontend::setFeldbusTimeout(int milliSeconds) {
+	feldbusTimeout_ms = milliSeconds;
+}
+
+int FeldbusFrontend::getFeldbusTimeout(void) {
+	return feldbusTimeout_ms;
 }
