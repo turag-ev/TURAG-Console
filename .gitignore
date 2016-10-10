@@ -40,6 +40,9 @@ tools/GerbGerb/bin_unix
 
 # Doxygen
 doxygen_sqlite3.db
+/doc/html
+/doc/qtdoc
+
 
 # Matlab
 *.mexa64
