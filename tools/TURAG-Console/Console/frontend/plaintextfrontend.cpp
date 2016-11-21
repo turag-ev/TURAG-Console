@@ -144,36 +144,30 @@ void PlainTextFrontend::onStyleRaspberryOnBlack() {
 void PlainTextFrontend::setStyle(Style style) {
     selectedStyle = style;
 
-    QPalette p = textbox->palette();
+	QString styleSheet;
 
     switch (style) {
     case Style::BlackOnWhite:
-        p.setColor(QPalette::Base, Qt::white);
-        p.setColor(QPalette::Text, Qt::black);
-        break;
+		styleSheet = "background-color: white; color: black";
+		break;
 
     case Style::GreenOnBlack:
-        p.setColor(QPalette::Base, Qt::black);
-        p.setColor(QPalette::Text, Qt::green);
+		styleSheet = "background-color: black; color: rgb(0,255,0)";
         break;
 
     case Style::GrayOnBlack:
-        p.setColor(QPalette::Base, Qt::black);
-        p.setColor(QPalette::Text, QColor(178,178,178));
-        break;
+		styleSheet = "background-color: black; color: rgb(178,178,178)";
+		break;
 
     case Style::BlueOnBlack:
-        p.setColor(QPalette::Base, Qt::black);
-        p.setColor(QPalette::Text, QColor(23,74,240));
-        break;
+		styleSheet = "background-color: black; color: rgb(23,74,240)";
+		break;
 
     case Style::RaspberryOnBlack:
-        p.setColor(QPalette::Base, Qt::black);
-        p.setColor(QPalette::Text, QColor(0xcc,0x00,0x99));
-        break;
+		styleSheet = "background-color: black; color: rgb(204, 0, 153)";
+		break;
     }
-
-    textbox->setPalette(p);
+	textbox->setStyleSheet(styleSheet);
 }
 
 
