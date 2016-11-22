@@ -146,27 +146,27 @@ void PlainTextFrontend::setStyle(Style style) {
 
 	QString styleSheet;
 
-    switch (style) {
-    case Style::BlackOnWhite:
-		styleSheet = "background-color: white; color: black";
+	switch (style) {
+	case Style::BlackOnWhite:
+		styleSheet = "QPlainTextEdit {background-color: white; color: black}";
 		break;
 
-    case Style::GreenOnBlack:
-		styleSheet = "background-color: black; color: rgb(0,255,0)";
-        break;
-
-    case Style::GrayOnBlack:
-		styleSheet = "background-color: black; color: rgb(178,178,178)";
+	case Style::GreenOnBlack:
+		styleSheet = "QPlainTextEdit {background-color: black; color: rgb(0,255,0)}";
 		break;
 
-    case Style::BlueOnBlack:
-		styleSheet = "background-color: black; color: rgb(23,74,240)";
+	case Style::GrayOnBlack:
+		styleSheet = "QPlainTextEdit {background-color: black; color: rgb(178,178,178)}";
 		break;
 
-    case Style::RaspberryOnBlack:
-		styleSheet = "background-color: black; color: rgb(204, 0, 153)";
+	case Style::BlueOnBlack:
+		styleSheet = "QPlainTextEdit {background-color: black; color: rgb(23,74,240)}";
 		break;
-    }
+
+	case Style::RaspberryOnBlack:
+		styleSheet = "QPlainTextEdit {background-color: black; color: rgb(204, 0, 153)}";
+		break;
+	}
 	textbox->setStyleSheet(styleSheet);
 }
 

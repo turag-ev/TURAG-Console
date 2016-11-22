@@ -4,7 +4,10 @@
 #include "basefrontend.h"
 #include <QTimer>
 
+class QComboBox;
+class QLineEdit;
 class QPlainTextEdit;
+class QPushButton;
 
 class RawFrontend : public BaseFrontend
 {
@@ -50,11 +53,17 @@ protected slots:
 
     void onUpdate(void);
 
+	void onSendData();
+
 protected:
-    QPlainTextEdit* textbox;
+	QPlainTextEdit* rxText;
+	QPlainTextEdit* txText;
     bool scroll_on_output;
     bool auto_wrap;
     Style selectedStyle;
+	QLineEdit* inputText;
+	QPushButton* sendButton;
+	QComboBox* appendChecksum;
 
     // menu actions
     QAction* clear_action;

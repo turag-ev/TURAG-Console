@@ -1,39 +1,84 @@
 #include "rawfrontend.h"
-#include <QVBoxLayout>
-#include <QScrollBar>
-#include <QTextCursor>
-#include <QKeyEvent>
-#include <QPalette>
-#include <QFileDialog>
-#include <QAction>
-#include <QSettings>
-#include <QActionGroup>
-#include <QMenu>
-#include <QDebug>
-#include <QPlainTextEdit>
-#include <QApplication>
-#include <QClipboard>
 #include <libs/iconmanager.h>
+
+#include <tina++/crc.h>
+
+#include <QAction>
+#include <QActionGroup>
+#include <QApplication>
+#include <QByteArray>
+#include <QClipboard>
+#include <QComboBox>
+#include <QDebug>
+#include <QFileDialog>
+#include <QHBoxLayout>
+#include <QKeyEvent>
+#include <QLabel>
+#include <QLineEdit>
+#include <QMenu>
+#include <QPlainTextEdit>
+#include <QPushButton>
+#include <QScrollBar>
+#include <QSettings>
+#include <QTextCursor>
+#include <QTextStream>
+#include <QVBoxLayout>
+
+
 
 RawFrontend::RawFrontend(QWidget *parent) :
 	BaseFrontend("Raw-Frontend", IconManager::get("binary-icon"), parent), scroll_on_output(true), rawBuffer_(new QByteArray)
 {
     QVBoxLayout* layout = new QVBoxLayout();
 
-    textbox = new QPlainTextEdit(this);
-    textbox->setReadOnly(true);
-    textbox->setWordWrapMode(QTextOption::NoWrap);
-    textbox->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
-    textbox->setFocusPolicy(Qt::NoFocus);
+	// received text field
+	rxText = new QPlainTextEdit(this);
+	rxText->setReadOnly(true);
+	rxText->setWordWrapMode(QTextOption::NoWrap);
+	rxText->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+	//rxText->setFocusPolicy(Qt::NoFocus);
 
     // this option effectively leaves the context menu handling to the BaseFrontend.
-    textbox->setContextMenuPolicy(Qt::NoContextMenu);
+	rxText->setContextMenuPolicy(Qt::NoContextMenu);
 
 	QFont font("Monospace", 9);
 	font.setStyleHint(QFont::Monospace);
-	textbox->setFont(font);
+	rxText->setFont(font);
 
-	layout->addWidget(textbox);
+
+	// sent text field
+	txText = new QPlainTextEdit(this);
+	txText->setReadOnly(true);
+	txText->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+	//txText->setFocusPolicy(Qt::NoFocus);
+
+	// this option effectively leaves the context menu handling to the BaseFrontend.
+	txText->setContextMenuPolicy(Qt::NoContextMenu);
+
+	txText->setFont(font);
+
+
+	// input field
+	inputText = new QLineEdit;
+	connect(inputText, &QLineEdit::returnPressed, this, &RawFrontend::onSendData);
+	QLabel* checksumLabel = new QLabel("Checksumme");
+	appendChecksum = new QComboBox;
+	appendChecksum->addItems(QStringList({"keine", "XOR", "CRC8-Icode"}));
+	appendChecksum->setCurrentIndex(0);
+	appendChecksum->setToolTip("Automatisch Checksumme ans Ende der Daten hängen");
+	sendButton= new QPushButton("Senden");
+	connect(sendButton, &QPushButton::clicked, this, &RawFrontend::onSendData);
+
+	QHBoxLayout* hlayout = new QHBoxLayout;
+	hlayout->addWidget(inputText);
+	hlayout->addWidget(checksumLabel);
+	hlayout->addWidget(appendChecksum);
+	hlayout->addWidget(sendButton);
+
+
+	layout->addWidget(rxText);
+	layout->addWidget(txText);
+	layout->addLayout(hlayout);
 	setLayout(layout);
 
     setFocusPolicy(Qt::WheelFocus);
@@ -78,24 +123,30 @@ RawFrontend::RawFrontend(QWidget *parent) :
     colorscheme_action->setMenu(colorscheme_menu);
     addAction(colorscheme_action);
 
-    QAction* selectall_action = new QAction("Alles markieren", this);
-    selectall_action->setShortcut(QKeySequence::SelectAll);
-    connect(selectall_action,SIGNAL(triggered()),textbox,SLOT(selectAll()));
-    addAction(selectall_action);
+//	QAction* rxtext_selectall_action = new QAction("Alles markieren", rxText);
+//	rxtext_selectall_action->setShortcut(QKeySequence::SelectAll);
+//	connect(rxtext_selectall_action,SIGNAL(triggered()),rxText,SLOT(selectAll()));
+//	rxText->addAction(rxtext_selectall_action);
 
-    QAction* copy_action = new QAction("Kopieren", this);
-    copy_action->setShortcut(QKeySequence::Copy);
-    connect(copy_action,SIGNAL(triggered()),textbox,SLOT(copy()));
-    addAction(copy_action);
+//	QAction* rxText_copy_action = new QAction("Kopieren", rxText);
+//	rxText_copy_action->setShortcut(QKeySequence::Copy);
+//	connect(rxText_copy_action,SIGNAL(triggered()),rxText,SLOT(copy()));
+//	rxText->addAction(rxText_copy_action);
 
-    paste_action = new QAction("Einfügen", this);
-    paste_action->setShortcut(QKeySequence::Paste);
-    connect(paste_action,SIGNAL(triggered()),this,SLOT(onPaste()));
-    addAction(paste_action);
+//	QAction* txText_copy_action = new QAction("Kopieren", txText);
+//	txText_copy_action->setShortcut(QKeySequence::Copy);
+//	connect(txText_copy_action,SIGNAL(triggered()),txText,SLOT(copy()));
+//	txText->addAction(txText_copy_action);
+
+
+//	paste_action = new QAction("Einfügen", this);
+//    paste_action->setShortcut(QKeySequence::Paste);
+//    connect(paste_action,SIGNAL(triggered()),this,SLOT(onPaste()));
+	//addAction(paste_action);
 
     clear_action = new QAction("Ausgabe löschen", this);
     connect(clear_action,SIGNAL(triggered()),this,SLOT(clear()));
-    addAction(clear_action);
+	addAction(clear_action);
 
     scroll_action = new QAction("Mit Ausgabe scrollen", this);
     scroll_action->setCheckable(true);
@@ -105,7 +156,7 @@ RawFrontend::RawFrontend(QWidget *parent) :
     wrap_action = new QAction("Ausgabe automatisch umbrechen", this);
     wrap_action->setCheckable(true);
     connect(wrap_action,SIGNAL(triggered(bool)),this,SLOT(setAutoWrap(bool)));
-    addAction(wrap_action);
+	//addAction(wrap_action);
 
     readSettings();
 
@@ -139,38 +190,33 @@ void RawFrontend::onStyleRaspberryOnBlack() {
 }
 
 void RawFrontend::setStyle(Style style) {
-    selectedStyle = style;
+	selectedStyle = style;
 
-    QPalette p = textbox->palette();
+	QString styleSheet;
 
-    switch (style) {
-    case Style::BlackOnWhite:
-        p.setColor(QPalette::Base, Qt::white);
-        p.setColor(QPalette::Text, Qt::black);
-        break;
+	switch (style) {
+	case Style::BlackOnWhite:
+		styleSheet = "QPlainTextEdit {background-color: white; color: black}";
+		break;
 
-    case Style::GreenOnBlack:
-        p.setColor(QPalette::Base, Qt::black);
-        p.setColor(QPalette::Text, Qt::green);
-        break;
+	case Style::GreenOnBlack:
+		styleSheet = "QPlainTextEdit {background-color: black; color: rgb(0,255,0)}";
+		break;
 
-    case Style::GrayOnBlack:
-        p.setColor(QPalette::Base, Qt::black);
-        p.setColor(QPalette::Text, QColor(178,178,178));
-        break;
+	case Style::GrayOnBlack:
+		styleSheet = "QPlainTextEdit {background-color: black; color: rgb(178,178,178)}";
+		break;
 
-    case Style::BlueOnBlack:
-        p.setColor(QPalette::Base, Qt::black);
-        p.setColor(QPalette::Text, QColor(23,74,240));
-        break;
+	case Style::BlueOnBlack:
+		styleSheet = "QPlainTextEdit {background-color: black; color: rgb(23,74,240)}";
+		break;
 
-    case Style::RaspberryOnBlack:
-        p.setColor(QPalette::Base, Qt::black);
-        p.setColor(QPalette::Text, QColor(0xcc,0x00,0x99));
-        break;
-    }
-
-    textbox->setPalette(p);
+	case Style::RaspberryOnBlack:
+		styleSheet = "QPlainTextEdit {background-color: black; color: rgb(204, 0, 153)}";
+		break;
+	}
+	rxText->setStyleSheet(styleSheet);
+	txText->setStyleSheet(styleSheet);
 }
 
 
@@ -186,12 +232,12 @@ void RawFrontend::onUpdate(void) {
 
 	if (rawBuffer_->size()) {
         // make sure we insert text at the end
-        QTextCursor cursor = textbox->textCursor();
+		QTextCursor cursor = rxText->textCursor();
         cursor.movePosition(QTextCursor::End);
 
 		static int count = 0;
 		for (char byte : *rawBuffer_) {
-            temp.append(QString("%1 ").arg(
+			temp.append(QString("0x%1 ").arg(
                             static_cast<long>(byte) & 0xff,
                             static_cast<int>(2),
                             static_cast<int>(16),
@@ -204,7 +250,7 @@ void RawFrontend::onUpdate(void) {
 		}
 
 
-        QScrollBar* scrollbar = textbox->verticalScrollBar();
+		QScrollBar* scrollbar = rxText->verticalScrollBar();
         bool scroll_to_max = scroll_on_output && scrollbar->value() == scrollbar->maximum();
 
         // insert data
@@ -217,7 +263,68 @@ void RawFrontend::onUpdate(void) {
 
 		rawBuffer_->clear();
         updateTimer.stop();
-    }
+	}
+}
+
+void RawFrontend::onSendData() {
+	QString raw_data(inputText->text().trimmed());
+	QTextStream in(&raw_data);
+//	in.setIntegerBase(16);
+	QByteArray out;
+	int c;
+
+	// convert input
+	while (!in.atEnd()) {
+		qint64 pos = in.pos();
+		in >> c;
+		// check for input which cannot be parsed
+		if (in.pos() == pos) {
+			return;
+		}
+		out.append(static_cast<char>(c));
+	}
+	if (out.size() == 0) return;
+
+	// append checksum
+	switch (appendChecksum->currentIndex()) {
+	case 1:
+		out.append(TURAG::XOR::calculate(out.constData(), out.size()));
+		break;
+
+	case 2:
+		out.append(TURAG::CRC8::calculate(out.constData(), out.size()));
+		break;
+	}
+
+	// send data
+	emit dataReady(out);
+
+
+	// display sent data
+	QTextCursor cursor = txText->textCursor();
+	cursor.movePosition(QTextCursor::End);
+
+	QString temp;
+	for (char byte : out) {
+		temp.append(QString("0x%1 ").arg(
+						static_cast<long>(byte) & 0xff,
+						static_cast<int>(2),
+						static_cast<int>(16),
+						static_cast<QChar>('0')));
+	}
+	temp.append("\n");
+
+	QScrollBar* scrollbar = rxText->verticalScrollBar();
+	bool scroll_to_max = scroll_on_output && scrollbar->value() == scrollbar->maximum();
+
+	// insert data
+	cursor.insertText(temp);
+
+	// handle auto scroll feature
+	if (scroll_to_max) {
+		scrollbar->setValue(scrollbar->maximum());
+	}
+	inputText->clear();
 }
 
 
@@ -232,7 +339,8 @@ void RawFrontend::keyPressEvent ( QKeyEvent * e ) {
 
 
 void RawFrontend::clear(void) {
-    textbox->clear();
+	rxText->clear();
+	txText->clear();
 }
 
 void RawFrontend::setScrollOnOutput(bool on) {
@@ -243,18 +351,18 @@ void RawFrontend::setAutoWrap(bool on) {
     auto_wrap = on;
 
     if (on) {
-        textbox->setWordWrapMode(QTextOption::WrapAnywhere);
+		rxText->setWordWrapMode(QTextOption::WrapAnywhere);
     } else {
-        textbox->setWordWrapMode(QTextOption::NoWrap);
+		rxText->setWordWrapMode(QTextOption::NoWrap);
     }
 }
 
 
 void RawFrontend::onConnected(bool readOnly, QIODevice*) {
     if (readOnly) {
-        paste_action->setEnabled(false);
+		//paste_action->setEnabled(false);
     } else {
-        paste_action->setEnabled(true);
+		//paste_action->setEnabled(true);
     }
 }
 
