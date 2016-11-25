@@ -125,7 +125,6 @@ SOURCES +=\
     libs/elidedbutton.cpp \
     libs/keyboardenabledcombobox.cpp \
     libs/lineeditext.cpp \
-    tina-platform/debug_printf.cpp \
     libs/loggerwidget.cpp \
     libs/log.cpp \
     frontend/feldbusviews/feldbusbootloaderatmegaview.cpp \
