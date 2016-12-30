@@ -9,6 +9,7 @@
 #include "util/tinainterface.h"
 #include "tinagraphfrontend.h"
 #include <libs/iconmanager.h>
+#include <libs/splitterext.h>
 
 
 RobotFrontend::RobotFrontend(QWidget *parent) :
@@ -23,7 +24,7 @@ RobotFrontend::RobotFrontend(QWidget *parent) :
 
 
     QHBoxLayout* layout = new QHBoxLayout;
-    QSplitter* splitter = new QSplitter;
+	SplitterExt* splitter = new SplitterExt("robotFrontend_splitter");
 
     layout->addWidget(tabs);
 //    layout->setMargin(0);
@@ -32,6 +33,7 @@ RobotFrontend::RobotFrontend(QWidget *parent) :
     splitter->addWidget(logview);
     splitter->addWidget(cmenu);
 //    splitter->setContentsMargins(0,0,0,0);
+	splitter->restoreState();
 
     tabs->addTab(graphView, "Diagramme");
 

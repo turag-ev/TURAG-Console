@@ -121,8 +121,7 @@ SCFrontend::SCFrontend(QWidget *parent)
     connect(&tina_interface_, SIGNAL(tinaPackageReady(QByteArray)),
 			this, SLOT(writeLine(QByteArray)));
 
-	connect(&refresh_log_timer_, SIGNAL(timeout()),
-			log_view_, SLOT(updateLog()));
+	connect(&refresh_log_timer_, &QTimer::timeout, log_view_, &RobotLogView::updateLog);
 
     readSettings();
 
