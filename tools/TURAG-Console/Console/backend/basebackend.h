@@ -150,6 +150,11 @@ private:
 	int readIndex;
 
 	int dataEmissionChunkSize;
+
+	// this variable is used to prevent recursion when calling stream_->close().
+	// At keast in Qt 5.5.1 this can hapen in connectionWasLost(): after calling close()
+	// another error is emitted which calls connectionWasLost() again resulting in endless recursion.
+	bool streamCloseWasCalled;
 };
 
 #endif // BASEBACKEND_H
