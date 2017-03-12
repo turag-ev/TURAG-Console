@@ -7,7 +7,7 @@
 #include <initializer_list>
 
 BaseBackend::BaseBackend(std::initializer_list<QString> protocolScheme, QObject *parent) :
-	QObject(parent), connectionInProgress(false), deviceRecoveryActive(false), dataEmissionChunkSize(10240)
+	QObject(parent), connectionInProgress(false), deviceRecoveryActive(false), dataEmissionChunkSize(10240), streamCloseWasCalled(false)
 {
 	for (const QString& scheme : protocolScheme) {
 		supportedProtocolSchemes_.push_back(scheme);
@@ -121,7 +121,9 @@ void BaseBackend::closeConnectionInternal(void) {
 	}
 
 	if (isOpen()) {
+		streamCloseWasCalled = true;
 		stream_->close();
+		streamCloseWasCalled = false;
 		stream_->disconnect(this);
 	}
 	stream_.reset();
@@ -234,7 +236,9 @@ void BaseBackend::connectingFailed(void) {
 
 	if (stream_.data()) {
 		if (isOpen()) {
+			streamCloseWasCalled = true;
 			stream_->close();
+			streamCloseWasCalled = false;
 		}
 		stream_->disconnect(this);
 	}
@@ -242,14 +246,18 @@ void BaseBackend::connectingFailed(void) {
 }
 
 void BaseBackend::connectionWasLost(void) {
-    if (isOpen()) {
-        stream_->close();
-		emit disconnected(!deviceShouldBeConnectedUrl.isEmpty() && deviceRecoveryActive);
-    }
-	if (!deviceShouldBeConnectedUrl.isEmpty() && deviceRecoveryActive) {
-        recoverDeviceTimer.start();
-    }
-	stream_.reset();
+	if (!streamCloseWasCalled) {
+		if (isOpen()) {
+			streamCloseWasCalled = true;
+			stream_->close();
+			streamCloseWasCalled = false;
+			emit disconnected(!deviceShouldBeConnectedUrl.isEmpty() && deviceRecoveryActive);
+		}
+		if (!deviceShouldBeConnectedUrl.isEmpty() && deviceRecoveryActive) {
+			recoverDeviceTimer.start();
+		}
+		stream_.reset();
+	}
 }
 
 void BaseBackend::onRecoverDevice(void) {
