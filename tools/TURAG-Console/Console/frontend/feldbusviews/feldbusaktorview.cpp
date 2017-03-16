@@ -1,22 +1,30 @@
 #include "feldbusaktorview.h"
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QGridLayout>
 #include "frontend/graphutils/datagraph.h"
-#include <QRadioButton>
-#include <QCheckBox>
-#include <QFormLayout>
-#include <QSettings>
-#include <QIntValidator>
-#include <QTimer>
-#include <QSignalMapper>
-#include <QPalette>
-#include <QColor>
-#include <vector>
-#include <QDebug>
-#include <QScrollArea>
 #include <libs/lineeditext.h>
 #include <libs/buttongroupext.h>
+#include <libs/splitterext.h>
+
+#include <QCheckBox>
+#include <QColor>
+#include <QDebug>
+#include <QFormLayout>
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QIntValidator>
+#include <QMessageBox>
+#include <QPalette>
+#include <QRadioButton>
+#include <QScrollArea>
+#include <QSettings>
+#include <QSignalMapper>
+#include <QSplitter>
+#include <QStringList>
+#include <QTextEdit>
+#include <QTimer>
+#include <QVBoxLayout>
+
+#include <vector>
 
 
 FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
@@ -25,16 +33,28 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     QIntValidator* intervalValidator = new QIntValidator(1, 100000, this);
     QIntValidator* lengthValidator = new QIntValidator(1, 100000, this);
 
-    QHBoxLayout* vlayout = new QHBoxLayout;
+	QHBoxLayout* hlayout = new QHBoxLayout;
+	SplitterExt* main_splitter = new SplitterExt("FeldbusAktorView_main_splitter");
     QVBoxLayout* left_layout = new QVBoxLayout;
     QVBoxLayout* right_layout = new QVBoxLayout;
+	QWidget* right_layout_holder = new QWidget;
     QGridLayout* value_grid = new QGridLayout;
     QVBoxLayout* settings_layout = new QVBoxLayout;
+	QSplitter* left_splitter = new QSplitter;
+	QWidget* left_layout_holder = new QWidget;
 
-    vlayout->addLayout(left_layout);
-    vlayout->addLayout(right_layout);
-    vlayout->setStretch(1,100);
-    setLayout(vlayout);
+	left_splitter->setOrientation(Qt::Vertical);
+	left_splitter->addWidget(left_layout_holder);
+	left_layout_holder->setLayout(left_layout);
+
+	hlayout->addWidget(main_splitter);
+	main_splitter->addWidget(left_splitter);
+	main_splitter->addWidget(right_layout_holder);
+	main_splitter->setChildrenCollapsible(false);
+	main_splitter->setStretchFactor(1, 2);
+	main_splitter->restoreState();
+	right_layout_holder->setLayout(right_layout);
+	setLayout(hlayout);
 
 	updateDeviceValues = new QPushButton("Werte aktualisieren/zurücksetzen");
     connect(updateDeviceValues, SIGNAL(clicked()), this, SLOT(onUpdateDeviceValues()));
@@ -59,32 +79,28 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     plot = new DataGraph;
     right_layout->addWidget(plot);
     right_layout->addLayout(settings_layout);
+	plot->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    QHBoxLayout* startStopLayout = new QHBoxLayout;
-    settings_layout->addLayout(startStopLayout);
-    QLabel* startDescr = new QLabel("zyklisch: Daten werden ständig vom Gerät geholt und angezeigt; einmalig: die Änderung eines Wertes startet die Datenaufzeichnung für die angegebene Dauer");
-    startDescr->setWordWrap(true);
-    startStopLayout->addWidget(startDescr);
-    QVBoxLayout* startStopLayoutv = new QVBoxLayout;
     startStopDataUpdate = new QPushButton("Start");
     startStopDataUpdate->setDisabled(true);
-    startStopLayoutv->addWidget(startStopDataUpdate);
     connect(startStopDataUpdate, SIGNAL(clicked()), this, SLOT(onStartStopDataUpdate()));
     updateDuration = new QLabel("");
-    startStopLayoutv->addWidget(updateDuration);
-    startStopLayout->addLayout(startStopLayoutv);
 
     QHBoxLayout* radio_layout = new QHBoxLayout;
     settings_layout->addLayout(radio_layout);
     cyclicDataUpdate = new QRadioButton("zyklische Datenaktualisierung");
 	cyclicDataUpdate->setChecked(true);
+	cyclicDataUpdate->setToolTip("Daten werden ständig vom Gerät geholt und angezeigt");
     radio_layout->addWidget(cyclicDataUpdate);
     oneShotDataUpdate = new QRadioButton("einmalige Datenaktualisierung");
+	oneShotDataUpdate->setToolTip("Die Änderung eines Wertes startet die Datenaufzeichnung für die angegebene Dauer");
     radio_layout->addWidget(oneShotDataUpdate);
+	radio_layout->addWidget(startStopDataUpdate);
 	ButtonGroupExt* dataUpdateButtonGroup = new ButtonGroupExt("feldbusAktorViewDataUpdateButtonGroup", this);
     dataUpdateButtonGroup->addButton(cyclicDataUpdate);
     dataUpdateButtonGroup->addButton(oneShotDataUpdate);
     dataUpdateButtonGroup->readSettings();
+	settings_layout->addWidget(updateDuration);
 	
     QFormLayout* settings_form = new QFormLayout;
     settings_layout->addLayout(settings_form);
@@ -99,11 +115,57 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
     settings_form->addRow(label1, updateInterval);
     settings_form->addRow(label2, updateLength);
 
-    updateTimer = new QTimer(this);
-    connect(updateTimer, SIGNAL(timeout()), this, SLOT(onTimeout()));
+	updateTimer = new QTimer(this);
+	connect(updateTimer, SIGNAL(timeout()), this, SLOT(onTimeout()));
 
-    setMapper = new QSignalMapper(this);
-    connect(setMapper, SIGNAL(mapped(int)), this, SLOT(onValueSet(int)));
+	scriptExecTimer = new QTimer(this);
+	scriptExecTimer->setSingleShot(true);
+	connect(scriptExecTimer, SIGNAL(timeout()), this, SLOT(executeNextScriptCommand()));
+
+	setMapper = new QSignalMapper(this);
+	connect(setMapper, SIGNAL(mapped(int)), this, SLOT(onValueSet(int)));
+	addScriptSnippetMapper = new QSignalMapper(this);
+	connect(addScriptSnippetMapper, SIGNAL(mapped(int)), this, SLOT(addScriptSnippet(int)));
+
+	QVBoxLayout* script_vlayout = new QVBoxLayout;
+	QWidget* script_vlayout_holder = new QWidget;
+	script_vlayout_holder->setLayout(script_vlayout);
+	left_splitter->addWidget(script_vlayout_holder);
+
+	left_splitter->setSizes({{4,1}});
+
+	scriptGroupBox = new QGroupBox("Skript-Editor");
+	script_vlayout->addWidget(scriptGroupBox);
+
+	QVBoxLayout* script_editor_layout = new QVBoxLayout;
+	QHBoxLayout* script_button_layout = new QHBoxLayout;
+	script_editor_layout->addLayout(script_button_layout);
+	scriptGroupBox->setLayout(script_editor_layout);
+
+	scriptEditor = new QTextEdit;
+	script_editor_layout->addWidget(scriptEditor);
+	runScriptButton = new QPushButton("Skript ausführen");
+	script_vlayout->addWidget(runScriptButton);
+	connect(runScriptButton, SIGNAL(pressed()), this, SLOT(executeScript()));
+	stopScriptButton = new QPushButton("STOP");
+	stopScriptButton->setVisible(false);
+	script_vlayout->addWidget(stopScriptButton);
+	connect(stopScriptButton, SIGNAL(pressed()), this, SLOT(stopScript()));
+
+	QPushButton* insertWaitBtn = new QPushButton("WT");
+	insertWaitBtn->setToolTip("Fügt einen \"wait(x)\"-Befehl ein, der die Befehlsausführung um <x> Sekunden verzögert.");
+	script_button_layout->addWidget(insertWaitBtn);
+	connect(insertWaitBtn, &QPushButton::pressed, [this] () {
+		scriptEditor->append("wait( 1 );");
+	});
+
+	QPushButton* insertCaptureBtn = new QPushButton("CAP");
+	insertCaptureBtn->setToolTip("Fügt einen \"startCapture()\"-Befehl ein, der die Datenaufzeichnung startet, sofern  \"einmalige Datenaktualisierung\" gewählt ist.");
+	script_button_layout->addWidget(insertCaptureBtn);
+	connect(insertCaptureBtn, &QPushButton::pressed, [this] () {
+		scriptEditor->append("startCapture();");
+	});
+
 
     onInputEdited();
 
@@ -149,6 +211,7 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
 	unsigned i = 0;
 	for (i = 0; i < commandsetLength; ++i) {
 		if (commandset[i].length == Aktor::Command_t::CommandLength::text) {
+			// text entry command
 			QLabel* text = new QLabel;
 
 			if (actor->getCommandName(i+1, command_name)) {
@@ -160,15 +223,18 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
 			value_grid->addWidget(text, i, 0, 1, -1, Qt::AlignBottom);
 			value_grid->setRowMinimumHeight(i, 25);
 		} else if (commandset[i].length != Aktor::Command_t::CommandLength::none) {
+			// actual command entry
             CommandsetEntry entry;
             entry.key = i+1;
             entry.label = new QLabel;
 
             if (actor->getCommandName(entry.key, command_name)) {
-                entry.label->setText(QString(command_name));
+				entry.caption = QString(command_name);
+				entry.label->setText(entry.caption);
             } else {
-                entry.label->setText("???");
+				entry.label->setText("???");
             }
+
             entry.value = new LineEditExt;
             if (commandset[i].writeAccess == Aktor::Command_t::WriteAccess::no_write) {
                 entry.value->setReadOnly(true);
@@ -185,6 +251,12 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
                 connect(entry.value, SIGNAL(returnPressed()), setMapper, SLOT(map()));
                 setMapper->setMapping(entry.value, commandsetGrid.size());
                 connect(entry.value, SIGNAL(textEdited(QString)), this, SLOT(onUserInput()));
+
+				if (!entry.caption.isEmpty()) {
+					connect(entry.label, SIGNAL(linkActivated(QString)), addScriptSnippetMapper, SLOT(map()));
+					addScriptSnippetMapper->setMapping(entry.label, commandsetGrid.size());
+					entry.label->setText(QString("<a href=\"http://www.turag.de\">%1</a>").arg(entry.caption));
+				}
             }
 
             entry.checkbox = new QCheckBox;
@@ -286,7 +358,15 @@ void FeldbusAktorView::validateInput(void) {
     }
     if (!updateLength->hasAcceptableInput()) {
         updateLength->setText("100");
-    }
+	}
+}
+
+void FeldbusAktorView::errorPrompt(const QString &msg)
+{
+	QMessageBox msgBox;
+	msgBox.setText(msg);
+	msgBox.setIcon(QMessageBox::Warning);
+	msgBox.exec();
 }
 
 
@@ -352,8 +432,177 @@ void FeldbusAktorView::onValueSet(int id) {
     QPalette pal = commandsetGrid.at(id).value->palette();
     pal.setColor(QPalette::Active, QPalette::Base, Qt::white);
     commandsetGrid.at(id).value->setPalette(pal);
+}
+
+void FeldbusAktorView::addScriptSnippet(int id)
+{
+	QString snippet = QString("set(\"%1\", %2);").arg(commandsetGrid.at(id).caption).arg(commandsetGrid.at(id).value->text());
+	scriptEditor->append(snippet);
+}
+
+void FeldbusAktorView::executeScript()
+{
+	currentScriptEntry = 0;
+	scriptCommandList.clear();
+	ScriptEntry entry;
+
+	QString script = scriptEditor->toPlainText();
+	QStringList commands = script.trimmed().split(QChar(';'), QString::SkipEmptyParts);
+
+	int line = 1;
+	for (QString command : commands) {
+		command = command.trimmed();
+
+		if (command.startsWith("set")) {
+			entry.commandEntry = command;
+			command = command.remove(0, 3).trimmed();
+			if (!(command.startsWith('(') && command.endsWith(')'))) {
+				errorPrompt(QString("fehlende runde Klammern (Zeile %1)").arg(line));
+				return;
+			}
+			command = command.mid(1, command.size()-2).trimmed();
+			int quoteEnd = command.lastIndexOf('"');
+
+			if (!command.startsWith('"') || quoteEnd == 0) {
+				errorPrompt(QString("fehlende Anführungszeichen (Zeile %1)").arg(line));
+				return;
+			}
+			QString setCaption = command.mid(1, quoteEnd-1);
+			QList<CommandsetEntry>::ConstIterator found = std::find_if(commandsetGrid.constBegin(), commandsetGrid.constEnd(), [&] (const CommandsetEntry& e) {
+				if (setCaption == e.caption) {
+					return true;
+				} else {
+					return false;
+				}
+			});
+			if (found == commandsetGrid.constEnd()) {
+				errorPrompt(QString("command key \"%1\" für \"set\" nicht vorhanden (Zeile %2)").arg(setCaption).arg(line));
+				return;
+			}
+
+			command = command.right(command.size() - quoteEnd - 1).trimmed();
+			if (!command.startsWith(',')) {
+				errorPrompt(QString("fehlendes Komma (Zeile %1)").arg(line));
+				return;
+			}
+
+			command = command.right(command.size() - 1).trimmed();
+
+			if (commandset[found->key - 1].factor == TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE) {
+				bool ok = false;
+				int value = command.toInt(&ok);
+
+				if (!ok) {
+					errorPrompt(QString("Argument für command key \"%1\" muss Ganzzahl sein (Zeile %2)").arg(setCaption).arg(line));
+					return;
+				}
+				entry.intValue = value;
+			} else {
+				bool ok = false;
+				float value = command.toFloat(&ok);
+
+				if (!ok) {
+					errorPrompt(QString("Argument für command key \"%1\" muss Fließkommazahl sein (Zeile %2)").arg(setCaption).arg(line));
+					return;
+				}
+				entry.floatValue = value;
+			}
+			entry.key = found->key;
+
+		} else if (command.startsWith("wait")) {
+			entry.commandEntry = command;
+			command = command.remove(0, 4).trimmed();
+			if (!(command.startsWith('(') && command.endsWith(')'))) {
+				errorPrompt(QString("fehlende runde Klammern (Zeile %1)").arg(line));
+				return;
+			}
+			command = command.mid(1, command.size()-2).trimmed();
+
+			bool ok = false;
+			float value = command.toFloat(&ok);
+			if (!ok || value < 0.0f) {
+				errorPrompt(QString("Argument von wait muss pos. Fließkommazahl sein (Zeile %1)").arg(line));
+				return;
+			}
+
+			entry.key = ScriptCommand::wait;
+			entry.floatValue = value;
+		} else if (command.startsWith("startCapture")) {
+			entry.commandEntry = command;
+			command = command.remove(0, 12).trimmed();
+			if (!(command.startsWith('(') && command.endsWith(')'))) {
+				errorPrompt(QString("fehlende runde Klammern (Zeile %1)").arg(line));
+				return;
+			}
+			command = command.mid(1, command.size()-2).trimmed();
+			if (!command.isEmpty()) {
+				errorPrompt(QString("Unerwartetes Argument (Zeile %1)").arg(line));
+				return;
+			}
+			entry.key = ScriptCommand::startCapture;
+		} else {
+			errorPrompt(QString("Unbekanntes Kommando \"%1\" (Zeile %2)").arg(command).arg(line));
+			return;
+		}
+
+		scriptCommandList.append(entry);
+	}
+
+	qDebug() << scriptCommandList.size() << "Skripteinträge";
+
+	if (scriptCommandList.size() > 0) {
+		runScriptButton->setVisible(false);
+		stopScriptButton->setVisible(true);
+		scriptGroupBox->setEnabled(false);
+
+		scriptExecTimer->start(0);
+	}
 
 }
+
+void FeldbusAktorView::stopScript()
+{
+	stopScriptButton->setVisible(false);
+	runScriptButton->setVisible(true);
+	scriptGroupBox->setEnabled(true);
+	scriptExecTimer->stop();
+}
+
+void FeldbusAktorView::executeNextScriptCommand()
+{
+	if (currentScriptEntry < scriptCommandList.size()) {
+		ScriptEntry entry = scriptCommandList.at(currentScriptEntry);
+		int delay = 0;
+
+		qDebug() << "execute" << entry.commandEntry;
+
+		if (entry.key == ScriptCommand::wait) {
+			delay = static_cast<int>(entry.floatValue * 1000);
+		} else if (entry.key == ScriptCommand::startCapture) {
+			if (oneShotDataUpdate->isChecked() && !updateTimer->isActive()) {
+				onStartStopDataUpdate();
+			}
+		} else {
+			if (commandset[entry.key - 1].factor == TURAG_FELDBUS_STELLANTRIEBE_COMMAND_FACTOR_CONTROL_VALUE) {
+				actor->setValue(static_cast<uint8_t>(entry.key), static_cast<int32_t>(entry.intValue));
+			} else {
+				actor->setValue(static_cast<uint8_t>(entry.key), entry.floatValue);
+			}
+
+			if (oneShotDataUpdate->isChecked() && !updateTimer->isActive()) {
+				onStartStopDataUpdate();
+			}
+		}
+
+
+		scriptExecTimer->start(delay);
+		++currentScriptEntry;
+	} else {
+		qDebug() << "Script execution finished";
+		stopScript();
+	}
+}
+
 
 void FeldbusAktorView::onCheckboxChanged(void) {
     unsigned int numberOfCheckedValues = 0;
@@ -387,5 +636,6 @@ void FeldbusAktorView::onUserInput(void) {
 
     QPalette pal = widget->palette();
     pal.setColor(QPalette::Active, QPalette::Base, Qt::red);
-    widget->setPalette(pal);
+	widget->setPalette(pal);
 }
+

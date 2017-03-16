@@ -349,9 +349,16 @@ FeldbusDevice::FeldbusDevice(QObject* parent) :
 }
 
 bool FeldbusDevice::init(QString portString) {
-    if (!portString.startsWith("\\\\.\\")) {
-        portString = "\\\\.\\" + portString;
-    }
+#ifdef Q_OS_WIN32
+	// connectionWIdgetSerial adds a leading '/' to make a valid URL.
+	while(portPath.size() && portPath.startsWith('/')) {
+		portPath.remove(0, 1);
+	}
+	// see: https://support.microsoft.com/en-us/kb/115831
+	if (!portPath.startsWith("\\\\.\\")) {
+		portPath = "\\\\.\\" + portPath;
+	}
+#endif
 
 
     port = new QSerialPort(portString);
