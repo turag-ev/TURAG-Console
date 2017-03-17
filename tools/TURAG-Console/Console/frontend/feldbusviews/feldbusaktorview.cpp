@@ -588,10 +588,6 @@ void FeldbusAktorView::executeNextScriptCommand()
 			} else {
 				actor->setValue(static_cast<uint8_t>(entry.key), entry.floatValue);
 			}
-
-			if (oneShotDataUpdate->isChecked() && !updateTimer->isActive()) {
-				onStartStopDataUpdate();
-			}
 		}
 
 
