@@ -18,6 +18,15 @@ public:
         }
     }
 
+    explicit SplitterExt(Qt::Orientation orientation, const QString& identifier, QWidget *parent = 0) :
+        QSplitter(orientation, parent)
+    {
+        if (!identifier.isEmpty()) {
+            setObjectName(identifier);
+            connect(this, SIGNAL(splitterMoved(int,int)), this, SLOT(saveState()));
+        }
+    }
+
     bool restoreState(void) {
         if (!objectName().isEmpty()) {
             QSettings settings;
