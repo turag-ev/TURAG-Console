@@ -11,11 +11,12 @@ class RobotLogFrontend;
 
 class QPushButton;
 class QListWidget;
+class QListWidgetItem;
 class QPlainTextEdit;
 class QLineEdit;
 class QLabel;
 class QStateMachine;
-class QListWidgetItem;
+class QState;
 
 class OdocalParamsListItem : public QListWidgetItem
 {
@@ -46,33 +47,59 @@ public slots:
     void onConnected(bool readOnly, QIODevice*) override;
     void onDisconnected(bool reconnecting) override;
 
+signals:
+    void cmenuDataAvailable(QByteArray data);
+
 protected:
     TinaInterface *tinaInterface;
     RobotLogFrontend *logview;
     PlainTextFrontend *cmenu;
 
+    // Left column
     QListWidget *parameterHistoryWidget;
     QLabel *paramRadiusLeftText, *paramRadiusRightText, *paramWheelDistanceText;
     QLineEdit *paramRadiusLeft, *paramRadiusRight, *paramWheelDistance;
     QPushButton *addParamBtn;
 
+    // Middle column
     QLineEdit *geometryXa, *geometryXb, *geometryW;
     QLabel *geometryImg;
     QLabel *nextActionText;
     QLineEdit *userInputField;
     QPushButton *execActionBtn;
 
+    // Right column
     QPlainTextEdit *odoLogText;
 
+    // Odocal statemachine
     QStateMachine *odoStateMachine;
+    QState *pushToStart1, *measureYBeforeDrive1, *driveRoute1, *measureYAfterDrive1,
+        *measureDisplacement1, *pushToStart2, *measureYBeforeDrive2, *driveRoute2,
+        *measureYAfterDrive2, *measureDisplacement2;
+
+    // Cmenu control stuff
+    QQueue<QByteArray> *cmenuKeystrokes;
+    QByteArray *lastCmenuResponse;
+
+    void sendCmenuKeystrokes(QList<QByteArray> keystrokes);
+    void sendNextCmenuKeystroke(QByteArray response = 0);
+
+    // Helpers using cmenu
+    void setRobotSlow(void);
+    void driveRobotForward(void);
+    void turnRobotPositive(void);
+    void turnRobotNegative(void);
+    void resetRobotPose(void);
+    void setRobotParams(double rl, double rr, double wd);
+    bool getRobotCalibrationMode(void);
+    double getRobotLeftWheelRadius(void);
+    double getRobotRightWheelRadius(void);
+    double getRobotWheelDistance(void);
+    double getRobotYPosition(void);
 
 protected slots:
     void addParams(void);
     void fetchParam(OdocalParamsListItem*);
-
-private slots:
-    void activatedMessage(char, QString message);
-
 };
 
 #endif // ODOCALFRONTEND_H
