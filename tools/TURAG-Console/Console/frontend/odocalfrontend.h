@@ -2,10 +2,14 @@
 #define ODOCALFRONTEND_H
 
 #include "basefrontend.h"
-#include "tina++/units.h"
+#include "cmath"
+
 #include <QListWidgetItem>
 #include <QEvent>
 #include <QAbstractTransition>
+
+#include "libs/legacyOdocal/ad.h"
+#include "libs/legacyOdocal/pose.h"
 
 class TinaInterface;
 class PlainTextFrontend;
@@ -39,22 +43,40 @@ signals:
     void cmenuDataAvailable(QByteArray data);
 
 protected:
+    /// Struct for storing an Odocal parameter set.
+    struct OdocalParams {
+        double rl, rr, a;
+    };
+
+    /// Class for storing OdocalParams in a QListWidgetItem
     class OdocalParamsListItem : public QListWidgetItem
     {
     public:
-        OdocalParamsListItem(double rl, double rr, double wd, QListWidget *view_ = Q_NULLPTR) :
-            QListWidgetItem(view_, UserType), rl_(rl), rr_(rr), wd_(wd)
+        OdocalParamsListItem(OdocalParams params, QListWidget *view_ = Q_NULLPTR) :
+            QListWidgetItem(view_, UserType), params_(params)
         {
-            this->setText(QString("[%1, %2, %3]").arg(rl_).arg(rr_).arg(wd_));
+            this->setText(QString("[%1, %2, %3]").arg(params.rl).arg(params.rr).arg(2*params.a));
         }
 
-        double getRadiusLeft(void) { return rl_; }
-        double getRadiusRight(void) { return rr_; }
-        double getWheelDistance(void) { return wd_; }
+        OdocalParams params() { return params_; }
+        double rl(void) { return params_.rl; }
+        double rr(void) { return params_.rr; }
+        double cd(void) { return 2*params_.a; }
+        double a(void) {return params_.a; }
     protected:
-        double rl_, rr_, wd_;
+        OdocalParams params_;
     };
 
+    /// Struct for storing a keystroke for CMenu interaction
+    struct Keystroke
+    {
+        /// Byte to send to Cmenu
+        QByteArray data;
+        /// Wheter to keep the response
+        bool keepResponse;
+    };
+
+    /// Event, fired when there is a Cmenu response available
     struct CmenuResponseEvent : public QEvent
     {
     public:
@@ -71,12 +93,13 @@ protected:
         QByteArray response_;
     };
 
+    /// Transition for QStatemachine using a CMenuResponseEvent
     class CmenuResponseTransition : public QAbstractTransition
     {
-        Q_OBJECT
+        //Q_OBJECT
 
     public:
-        CmenuResponseTransition(QState target_)
+        CmenuResponseTransition(QAbstractState *target_)
         {
             setTargetState(target_);
         }
@@ -91,6 +114,7 @@ protected:
         }
     };
 
+    // Standard TinA and CMenu frontend
     TinaInterface *tinaInterface;
     RobotLogFrontend *logview;
     PlainTextFrontend *cmenu;
@@ -102,10 +126,10 @@ protected:
     QPushButton *addParamBtn;
 
     // Middle column
-    QLineEdit *geometryXa, *geometryXb, *geometryW;
-    QLabel *geometryImg;
+    QLineEdit *geometryMx, *geometryMy, *geometryW;
+    //QLabel *geometryImg; // TODO: Insert explaining image
     QLabel *nextActionText;
-    QLineEdit *userInputField;
+    QLineEdit *geometryYa, *geometryYb;
     QPushButton *execActionBtn;
 
     // Right column
@@ -121,10 +145,10 @@ protected:
     double yBeforeDrive2, yAfterDrive2, yDisplacement2;
 
     // Cmenu control stuff
-    QQueue<QByteArray> *cmenuKeystrokes;
-    QByteArray *lastCmenuResponse;
+    QQueue<Keystroke> *cmenuKeystrokes;
+    QByteArray lastCmenuResponse;
 
-    void sendCmenuKeystrokes(QList<QByteArray> keystrokes);
+    void sendCmenuKeystrokes(QList<Keystroke> keystrokes);
     void sendNextCmenuKeystroke(QByteArray response = 0);
 
     // Helpers using cmenu
@@ -135,11 +159,33 @@ protected:
     void turnRobotNegative(void);
     void resetRobotPose(void);
     void setRobotParams(double rl, double rr, double wd);
-    bool getRobotCalibrationMode(void);
-    double getRobotLeftWheelRadius(void);
-    double getRobotRightWheelRadius(void);
-    double getRobotWheelDistance(void);
-    double getRobotYPosition(void);
+    void getRobotCalibrationMode(void);
+    void getRobotLeftWheelRadius(void);
+    void getRobotRightWheelRadius(void);
+    void getRobotWheelDistance(void);
+    void getRobotYPosition(void);
+
+    // Calculation stuff
+    inline static LegacyOdocal::Pose<LegacyOdocal::AD<double, 3>> pose_forward(double L, const OdocalParams& param)
+    {
+        return LegacyOdocal::Pose<LegacyOdocal::AD<double, 3> >(
+            LegacyOdocal::AD<double,3>( L, 3, (double)(.5/param.rl*L), (double)(.5/param.rr*L), (double)(0) ),
+            LegacyOdocal::AD<double,3>( 0, 3, (double)(-.5/param.rl/param.a*L), (double)(.5/param.rr/param.a*L), (double)(0) ) );
+    }
+
+    inline static LegacyOdocal::Pose<LegacyOdocal::AD<double, 3>> pose_turn(double phi, const OdocalParams& param)
+    {
+        return LegacyOdocal::Pose<LegacyOdocal::AD<double, 3> >(
+            LegacyOdocal::AD<double,3>( 0, 3, (double)(-.5/param.rl*param.a*phi), (double)(.5/param.rr*param.a*phi), (double)(0) ),
+            LegacyOdocal::AD<double,3>( phi, 3, (double)(.5/param.rl*phi), (double)(.5/param.rr*phi), (double)(-1.0/param.a*phi) ) );
+    }
+
+    inline static double calculateYDisplacement(double y_a, double y_b, double m_x, double m_y, double w)
+    {
+        return (y_a + sqrt(m_x*m_x + m_y*m_y) * (y_b - y_a) / w);
+    }
+
+    void calculateNewParameters(void);
 
 protected slots:
     void addParams(void);

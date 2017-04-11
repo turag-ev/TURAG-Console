@@ -210,7 +210,9 @@ HEADERS  += \
     libs/popup/popupcontainerwidget.h \
     libs/popup/popuptoolbutton.h \
     frontend/graphutils/plotmagnifier.h \
-    frontend/odocalfrontend.h
+    frontend/odocalfrontend.h \
+    libs/legacyOdocal/ad.h \
+    libs/legacyOdocal/pose.h
 
 INCLUDEPATH += \
     tina-platform/public \
