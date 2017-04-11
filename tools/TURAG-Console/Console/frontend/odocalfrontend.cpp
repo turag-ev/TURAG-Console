@@ -152,17 +152,22 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     pushToStart1->assignProperty(userInputField, "enabled", false);
     pushToStart1->assignProperty(execActionBtn, "text", "Start!");
     pushToStart1->assignProperty(execActionBtn, "enabled", true);
-    // Disabled for testing purposes
-    //pushToStart1->addTransition(execActionBtn, &QPushButton::clicked, measureYBeforeDrive1);
+    pushToStart1->addTransition(execActionBtn, &QPushButton::clicked, measureYBeforeDrive1);
+    connect(pushToStart1, &QState::entered, this, &OdocalFrontend::releaseRobotWheels);
     odoStateMachine->addState(pushToStart1);
 
     // Measure y before drive
     measureYBeforeDrive1->assignProperty(nextActionText, "text", "Measuring Y from Bot ...");
     measureYBeforeDrive1->assignProperty(userInputField, "enabled", false);
-    measureYBeforeDrive1->assignProperty(execActionBtn, "text", "Done!");
-    measureYBeforeDrive1->assignProperty(execActionBtn, "enabled", true);
-    // TODO: Use cmenu answer event and disable button!
-    measureYBeforeDrive1->addTransition(execActionBtn, &QPushButton::clicked, driveRoute1);
+    measureYBeforeDrive1->assignProperty(execActionBtn, "text", "Waiting for Cmenu response.");
+    measureYBeforeDrive1->assignProperty(execActionBtn, "enabled", false);
+    //measureYBeforeDrive1->addTransition(execActionBtn, &QPushButton::clicked, driveRoute1);
+    measureYBeforeDrive1->addTransition(new CmenuResponseTransition(driveRoute1));
+    connect(measureYBeforeDrive1, &QState::entered, this, &OdocalFrontend::getRobotYPosition);
+    connect(measureYBeforeDrive1, &QState::exited, this, [this](){
+        yBeforeDrive1 = QString(lastCmenuResponse).toDouble();
+        odoLogText->appendPlainText(QString("Robot thinks he's at y=%1mm.").arg(yBeforeDrive1));
+    });
     odoStateMachine->addState(measureYBeforeDrive1);
 
     // Drive route
@@ -178,10 +183,15 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     // Measure y after drive
     measureYAfterDrive1->assignProperty(nextActionText, "text", "Measuring Y from Bot ...");
     measureYAfterDrive1->assignProperty(userInputField, "enabled", false);
-    measureYAfterDrive1->assignProperty(execActionBtn, "text", "Done!");
-    measureYAfterDrive1->assignProperty(execActionBtn, "enabled", true);
-    // TODO: Use cmenu answer event and disable button!
-    measureYAfterDrive1->addTransition(execActionBtn, &QPushButton::clicked, measureDisplacement1);
+    measureYAfterDrive1->assignProperty(execActionBtn, "text", "Waiting for Cmenu response.");
+    measureYAfterDrive1->assignProperty(execActionBtn, "enabled", false);
+    //measureYAfterDrive1->addTransition(execActionBtn, &QPushButton::clicked, measureDisplacement1);
+    measureYAfterDrive1->addTransition(new CmenuResponseTransition(measureDisplacement1));
+    connect(measureYAfterDrive1, &QState::entered, this, &OdocalFrontend::getRobotYPosition);
+    connect(measureYAfterDrive1, &QState::exited, this, [this](){
+        yAfterDrive1 = QString(lastCmenuResponse).toDouble();
+        odoLogText->appendPlainText(QString("Robot thinks he's at y=%1mm.").arg(yAfterDrive1));
+    });
     odoStateMachine->addState(measureYAfterDrive1);
 
     // Measure displacement
@@ -190,7 +200,8 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     measureDisplacement1->assignProperty(execActionBtn, "text", "Save value");
     measureDisplacement1->assignProperty(execActionBtn, "enabled", true);
     measureDisplacement1->addTransition(execActionBtn, &QPushButton::clicked, pushToStart2);
-    // Leave function: Save value to variable!
+    // enter function: set focus
+    // leave function: save value to variable!
     odoStateMachine->addState(measureDisplacement1);
 
     // Push to start
@@ -287,6 +298,12 @@ void OdocalFrontend::fetchParam(OdocalParamsListItem *item)
     paramWheelDistance->setText(QString::number(item->getWheelDistance()));
 }
 
+/*
+ * Do not call this function multiple times in a row without ensuring
+ * that the last keystrokes have all finished, since there is only one
+ * global keystroke query!
+ * TODO: Fix this.
+ */
 void OdocalFrontend::sendCmenuKeystrokes(QList<QByteArray> keystrokes)
 {
     for (QByteArray keystroke : keystrokes) {
@@ -303,14 +320,19 @@ void OdocalFrontend::sendNextCmenuKeystroke(QByteArray response)
         emit(dataReady(keystroke));
     } else {
         lastCmenuResponse = &response;
+        odoStateMachine->postEvent(new CmenuResponseEvent(response));
         disconnect(tinaInterface, &TinaInterface::cmenuDataReady, this, &OdocalFrontend::sendNextCmenuKeystroke);
-        // Send Event (possibly with response data?)
     }
 }
 
 void OdocalFrontend::setRobotSlow(void)
 {
     sendCmenuKeystrokes({"3", "V", "0", "0", "\r", "X", "0", "0", "\r", "\x1b"});
+}
+
+void OdocalFrontend::releaseRobotWheels(void)
+{
+    sendCmenuKeystrokes({"r"});
 }
 
 void OdocalFrontend::driveRobotForward(void)
