@@ -14,6 +14,7 @@
 class TinaInterface;
 class PlainTextFrontend;
 class RobotLogFrontend;
+class LineEditExt;
 
 class QPushButton;
 class QListWidget;
@@ -24,6 +25,7 @@ class QLabel;
 class QStateMachine;
 class QState;
 class QAbstractTransition;
+class QTimer;
 
 
 class OdocalFrontend : public BaseFrontend
@@ -126,7 +128,7 @@ protected:
     QPushButton *addParamBtn;
 
     // Middle column
-    QLineEdit *geometryMx, *geometryMy, *geometryW;
+    LineEditExt *geometryMx, *geometryMy, *geometryW;
     //QLabel *geometryImg; // TODO: Insert explaining image
     QLabel *nextActionText;
     QLineEdit *geometryYa, *geometryYb;
@@ -151,7 +153,7 @@ protected:
 
     // Odocal statemachine
     QStateMachine *odoStateMachine;
-    QState *pushToStart1, *measureYBeforeDrive1, *driveRoute1, *measureYAfterDrive1, *measureDisplacement1,
+    QState *waitForUserStart, *pushToStart1, *measureYBeforeDrive1, *driveRoute1, *measureYAfterDrive1, *measureDisplacement1,
         *pushToStart2, *measureYBeforeDrive2, *driveRoute2, *measureYAfterDrive2, *measureDisplacement2;
 
     // Measured variables
@@ -160,11 +162,14 @@ protected:
 
     // Cmenu control stuff
     QQueue<Keystroke> *cmenuKeystrokes;
+    bool keepCmenuResponse;
     QByteArray lastCmenuResponse;
+    QTimer *cmenuDelayTimer;
 
     QString charToString(char c);
     void sendCmenuKeystrokes(QList<Keystroke> keystrokes);
-    void sendNextCmenuKeystroke(QByteArray response = 0);
+    void fetchCmenuResponse(QByteArray response);
+    void sendNextCmenuKeystroke(void);
 
     // Helpers using cmenu
     void setRobotSlow(void);

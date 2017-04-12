@@ -10,9 +10,11 @@
 #include <QFormLayout>
 #include <QStateMachine>
 #include <QQueue>
+#include <QTimer>
 
 #include "libs/iconmanager.h"
 #include "libs/splitterext.h"
+#include "libs/lineeditext.h"
 
 #include "util/tinainterface.h"
 
@@ -87,11 +89,11 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
 
     QWidget* geometryContainer = new QWidget(odomiddlecontainer);
     QFormLayout* geometryLayout = new QFormLayout;
-    geometryMx = new QLineEdit(geometryContainer);
+    geometryMx = new LineEditExt("odocal_geometryMx", "0", true, geometryContainer);
     geometryLayout->addRow("m_x (in mm)", geometryMx);
-    geometryMy = new QLineEdit(geometryContainer);
+    geometryMy = new LineEditExt("odocal_geometryMy", "0", true, geometryContainer);
     geometryLayout->addRow("m_y (in mm)", geometryMy);
-    geometryW = new QLineEdit(geometryContainer);
+    geometryW = new LineEditExt("odocal_geometryW", "0", true, geometryContainer);
     geometryLayout->addRow("w (in mm)", geometryW);
     geometryContainer->setLayout(geometryLayout);
     odomiddlelayout->addWidget(geometryContainer);
@@ -179,14 +181,19 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     setLayout(layout);
     // === END LAYOUT ===
 
+
     // Init CMenu keystroke queue
     cmenuKeystrokes = new QQueue<Keystroke>;
+    // Cmenu delay until next keystroke
+    cmenuDelayTimer = new QTimer(this);
+    cmenuDelayTimer->setSingleShot(true);
+    cmenuDelayTimer->setInterval(50);
+    connect(cmenuDelayTimer, &QTimer::timeout, this, &OdocalFrontend::sendNextCmenuKeystroke);
 
-    // Test stuff
-    //connect(execActionBtn, &QPushButton::clicked, this, [this](){this->setRobotSlow();} );
 
     // Init statemachine!
     odoStateMachine = new QStateMachine;
+    waitForUserStart = new QState;
     pushToStart1 = new QState;
     measureYBeforeDrive1 = new QState;
     driveRoute1 = new QState;
@@ -198,13 +205,21 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     measureYAfterDrive2 = new QState;
     measureDisplacement2 = new QState;
 
+    // Wait for user to initiate start
+    waitForUserStart->assignProperty(nextActionText, "text", "Press Start to begin!");
+    waitForUserStart->assignProperty(enterDisplacementContainer, "enabled", false);
+    waitForUserStart->assignProperty(execActionBtn, "text", "Start!");
+    waitForUserStart->assignProperty(execActionBtn, "enabled", true);
+    waitForUserStart->addTransition(execActionBtn, &QPushButton::clicked, pushToStart1);
+    odoStateMachine->addState(waitForUserStart);
+
     // Push to start
     pushToStart1->assignProperty(nextActionText, "text", "Placen robot correctly!");
     pushToStart1->assignProperty(enterDisplacementContainer, "enabled", false);
-    pushToStart1->assignProperty(execActionBtn, "text", "Start!");
+    pushToStart1->assignProperty(execActionBtn, "text", "Done!");
     pushToStart1->assignProperty(execActionBtn, "enabled", true);
     pushToStart1->addTransition(execActionBtn, &QPushButton::clicked, measureYBeforeDrive1);
-    //connect(pushToStart1, &QState::entered, this, &OdocalFrontend::releaseRobotWheels);
+    connect(pushToStart1, &QState::entered, this, &OdocalFrontend::releaseRobotWheels);
     odoStateMachine->addState(pushToStart1);
 
     // Measure y before drive
@@ -285,7 +300,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     // Drive route
     driveRoute2->assignProperty(nextActionText, "text", "Please drive the Robot via CMenu control!\nAutomated driving is not implemented yet.");
     driveRoute2->assignProperty(enterDisplacementContainer, "enabled", false);
-    driveRoute2->assignProperty(execActionBtn, "text", "Start!");
+    driveRoute2->assignProperty(execActionBtn, "text", "Done!");
     driveRoute2->assignProperty(execActionBtn, "enabled", true);
     driveRoute2->addTransition(execActionBtn, &QPushButton::clicked, measureYAfterDrive2);
     odoStateMachine->addState(driveRoute2);
@@ -342,10 +357,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     });
     odoStateMachine->addState(measureDisplacement2);
 
-    odoStateMachine->setInitialState(pushToStart1);
-
-    // For testing purposes
-    odoStateMachine->start();
+    odoStateMachine->setInitialState(waitForUserStart);
 }
 
 void OdocalFrontend::writeData(QByteArray data_)
@@ -366,8 +378,6 @@ void OdocalFrontend::onConnected(bool readOnly, QIODevice* dev)
     logview->onConnected(readOnly, dev);
     cmenu->onConnected(readOnly, dev);
     odoStateMachine->start();
-    // TODO: Check if LMC is connected!
-    // TODO: Check if LMC is in calibrate mode!
     odoLogText->appendPlainText("Connected. Let's hope we have connected to an LMC in calibrate mode.");
 }
 
@@ -418,48 +428,54 @@ void OdocalFrontend::sendCmenuKeystrokes(QList<Keystroke> keystrokes)
             printList += charToString(keystroke.data) + ", ";
             cmenuKeystrokes->enqueue(keystroke);
         }
-        odoLogText->appendPlainText(printList);
-        connect(tinaInterface, &TinaInterface::cmenuDataReady, this, &OdocalFrontend::sendNextCmenuKeystroke);
+        //odoLogText->appendPlainText(printList);
+        connect(tinaInterface, &TinaInterface::cmenuDataReady, this, &OdocalFrontend::fetchCmenuResponse);
         sendNextCmenuKeystroke();
     }
 }
 
-void OdocalFrontend::sendNextCmenuKeystroke(QByteArray response)
+void OdocalFrontend::fetchCmenuResponse(QByteArray response)
 {
-    static bool keepResponse;
+    if (keepCmenuResponse) {
+        lastCmenuResponse = response;
+        /*
+        odoLogText->appendPlainText("=== BEGIN RESPONSE ===");
+        odoLogText->appendPlainText(response);
+        odoLogText->appendPlainText("=== END RESPONSE ===");
+        */
+    }
+
+    cmenuDelayTimer->start();
+}
+
+void OdocalFrontend::sendNextCmenuKeystroke(void)
+{
 
     if (!cmenuKeystrokes->empty()) {
         Keystroke keystroke = cmenuKeystrokes->dequeue();
-        keepResponse = keystroke.keepResponse;
+        keepCmenuResponse = keystroke.keepResponse;
 
-        QString keepStr = keystroke.keepResponse ? " (keep)" : "";
-        odoLogText->appendPlainText("Sending keystroke " + charToString(keystroke.data) + keepStr);
+        //QString keepStr = keepCmenuResponse ? " (keep)" : "";
+        //odoLogText->appendPlainText("Sending keystroke " + charToString(keystroke.data) + keepStr);
 
         emit(dataReady(QByteArray().append(keystroke.data)));
     } else {
-        if (keepResponse) {
-            lastCmenuResponse = response;
-
-            odoLogText->appendPlainText("=== BEGIN RESPONSE ===");
-            odoLogText->appendPlainText(response);
-            odoLogText->appendPlainText("=== END RESPONSE ===");
-        }
         odoStateMachine->postEvent(new CmenuResponseEvent(lastCmenuResponse));
 
-        keepResponse = false;
-        disconnect(tinaInterface, &TinaInterface::cmenuDataReady, this, &OdocalFrontend::sendNextCmenuKeystroke);
+        keepCmenuResponse = false;
+        disconnect(tinaInterface, &TinaInterface::cmenuDataReady, this, &OdocalFrontend::fetchCmenuResponse);
     }
 }
 
 void OdocalFrontend::setRobotSlow(void)
 {
-    sendCmenuKeystrokes({{'3', false}, {'V', false}, {'0', false}, {'0', false}, {'\r', false},
-                         {'X', false}, {'0', false}, {'0', false}, {'\r', false}, {'\x1b', false}});
+    sendCmenuKeystrokes({{'3', false}, {'V', false}, {'0', false}, {'\r', false},
+                         {'X', false}, {'0', false}, {'\r', false}, {'\x1b', false}});
 }
 
 void OdocalFrontend::releaseRobotWheels(void)
 {
-    sendCmenuKeystrokes({{'r', false}});
+    sendCmenuKeystrokes({{'3', false}, {'r', false}, {'\x1b', false}});
 }
 
 void OdocalFrontend::driveRobotForward(void)
