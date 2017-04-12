@@ -71,7 +71,7 @@ protected:
     struct Keystroke
     {
         /// Byte to send to Cmenu
-        QByteArray data;
+        char data;
         /// Wheter to keep the response
         bool keepResponse;
     };
@@ -135,6 +135,20 @@ protected:
     // Right column
     QPlainTextEdit *odoLogText;
 
+    // Extra column
+    QPushButton *setRobotSlowButton;
+    QPushButton *releaseRobotWheelsButton;
+    QPushButton *driveRobotForwardButton;
+    QPushButton *turnRobotPositiveButton;
+    QPushButton *turnRobotNegativeButton;
+    QPushButton *resetRobotPoseButton;
+    QPushButton *setRobotParamsButton;
+    QPushButton *getRobotCalibrationModeButton;
+    QPushButton *getRobotLeftWheelRadiusButton;
+    QPushButton *getRobotRightWheelRadiusButton;
+    QPushButton *getRobotWheelDistanceButton;
+    QPushButton *getRobotYPositionButton;
+
     // Odocal statemachine
     QStateMachine *odoStateMachine;
     QState *pushToStart1, *measureYBeforeDrive1, *driveRoute1, *measureYAfterDrive1, *measureDisplacement1,
@@ -148,6 +162,7 @@ protected:
     QQueue<Keystroke> *cmenuKeystrokes;
     QByteArray lastCmenuResponse;
 
+    QString charToString(char c);
     void sendCmenuKeystrokes(QList<Keystroke> keystrokes);
     void sendNextCmenuKeystroke(QByteArray response = 0);
 
@@ -185,7 +200,7 @@ protected:
         return (y_a + sqrt(m_x*m_x + m_y*m_y) * (y_b - y_a) / w);
     }
 
-    void calculateNewParameters(void);
+    OdocalParams calculateNewParameters(OdocalParams param, double length, int count, double yError1, double yError2);
 
 protected slots:
     void addParams(void);
