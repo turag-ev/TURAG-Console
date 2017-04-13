@@ -443,7 +443,7 @@ void MainWindow::about() {
 										"&nbsp; Martin Oemus<br />"
 										"&nbsp; Pascal Below<br />"
 										"&nbsp; Kevin Seidel<br />"
-										"&nbsp; Florian Völker<br /><br />"
+                                        "&nbsp; Florian Völker<br />"
                                         "&nbsp; Hermann von Kleist<br /><br />"
                                         "Copyright © 2013 - 2017 TURAG e.V.<br /><br />"
 										"Based in part on the work of the <a href=\"http://qwt.sf.net\">Qwt project</href>."
