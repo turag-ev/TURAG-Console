@@ -153,7 +153,8 @@ protected:
 
     // Odocal statemachine
     QStateMachine *odoStateMachine;
-    QState *waitForUserStart, *pushToStart1, *measureYBeforeDrive1, *driveRoute1, *measureYAfterDrive1, *measureDisplacement1,
+    QState *waitForUserStart, *fetchRlParam, *fetchRrParam, *fetchWdParam,
+        *pushToStart1, *measureYBeforeDrive1, *driveRoute1, *measureYAfterDrive1, *measureDisplacement1,
         *pushToStart2, *measureYBeforeDrive2, *driveRoute2, *measureYAfterDrive2, *measureDisplacement2;
 
     // Measured variables

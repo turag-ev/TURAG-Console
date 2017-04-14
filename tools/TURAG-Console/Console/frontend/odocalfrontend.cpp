@@ -130,6 +130,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     odosplitter->addWidget(odorightcontainer);
 
     // extra column
+    /*
     QWidget *odoExtraContainer = new QWidget(odosplitter);
     QVBoxLayout *odoExtraLayout = new QVBoxLayout;
 
@@ -172,6 +173,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
 
     odoExtraContainer->setLayout(odoExtraLayout);
     odosplitter->addWidget(odoExtraContainer);
+    */
 
     odosplitter->restoreState();
     mainsplitter->addWidget(odosplitter);
@@ -194,6 +196,9 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     // Init statemachine!
     odoStateMachine = new QStateMachine;
     waitForUserStart = new QState;
+    fetchRlParam = new QState;
+    fetchRrParam = new QState;
+    fetchWdParam = new QState;
     pushToStart1 = new QState;
     measureYBeforeDrive1 = new QState;
     driveRoute1 = new QState;
@@ -210,8 +215,44 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     waitForUserStart->assignProperty(enterDisplacementContainer, "enabled", false);
     waitForUserStart->assignProperty(execActionBtn, "text", "Start!");
     waitForUserStart->assignProperty(execActionBtn, "enabled", true);
-    waitForUserStart->addTransition(execActionBtn, &QPushButton::clicked, pushToStart1);
+    waitForUserStart->addTransition(execActionBtn, &QPushButton::clicked, fetchRlParam);
     odoStateMachine->addState(waitForUserStart);
+
+    // Fetch current odocal parameters from bot
+    fetchRlParam->assignProperty(nextActionText, "text", "Fetching radius left ...");
+    fetchRlParam->assignProperty(enterDisplacementContainer, "enabled", false);
+    fetchRlParam->assignProperty(execActionBtn, "text", "Waiting for Cmenu response.");
+    fetchRlParam->assignProperty(execActionBtn, "enabled", false);
+    fetchRlParam->addTransition(new CmenuResponseTransition(fetchRrParam));
+    connect(fetchRlParam, &QState::entered, this, &OdocalFrontend::getRobotLeftWheelRadius);
+    connect(fetchRlParam, &QState::exited, this, [this](){
+        paramRadiusLeft->setText(QString(lastCmenuResponse));
+    });
+    odoStateMachine->addState(fetchRlParam);
+
+    fetchRrParam->assignProperty(nextActionText, "text", "Fetching radius right ...");
+    fetchRrParam->assignProperty(enterDisplacementContainer, "enabled", false);
+    fetchRrParam->assignProperty(execActionBtn, "text", "Waiting for Cmenu response.");
+    fetchRrParam->assignProperty(execActionBtn, "enabled", false);
+    fetchRrParam->addTransition(new CmenuResponseTransition(fetchWdParam));
+    connect(fetchRrParam, &QState::entered, this, &OdocalFrontend::getRobotRightWheelRadius);
+    connect(fetchRrParam, &QState::exited, this, [this](){
+        paramRadiusRight->setText(QString(lastCmenuResponse));
+    });
+    odoStateMachine->addState(fetchRrParam);
+
+    fetchWdParam->assignProperty(nextActionText, "text", "Fetching wheel distance ...");
+    fetchWdParam->assignProperty(enterDisplacementContainer, "enabled", false);
+    fetchWdParam->assignProperty(execActionBtn, "text", "Waiting for Cmenu response.");
+    fetchWdParam->assignProperty(execActionBtn, "enabled", false);
+    fetchWdParam->addTransition(new CmenuResponseTransition(pushToStart1));
+    connect(fetchWdParam, &QState::entered, this, &OdocalFrontend::getRobotWheelDistance);
+    connect(fetchWdParam, &QState::exited, this, [this](){
+        paramWheelDistance->setText(QString(lastCmenuResponse));
+        addParams();
+        resetRobotPose();
+    });
+    odoStateMachine->addState(fetchWdParam);
 
     // Push to start
     pushToStart1->assignProperty(nextActionText, "text", "Placen robot correctly!");
@@ -351,9 +392,9 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
 
         // Add new parameter to list and input fields
         parameterHistoryWidget->addItem(new OdocalParamsListItem(newParams, parameterHistoryWidget));
-        paramRadiusLeft->setText(QString::number(params.rl));
-        paramRadiusRight->setText(QString::number(params.rr));
-        paramWheelDistance->setText(QString::number(params.a * 2.0));
+        paramRadiusLeft->setText(QString::number(newParams.rl));
+        paramRadiusRight->setText(QString::number(newParams.rr));
+        paramWheelDistance->setText(QString::number(newParams.a * 2.0));
 
         // Send new params to bot
         setRobotParams(params);
