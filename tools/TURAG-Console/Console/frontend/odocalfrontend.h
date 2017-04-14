@@ -178,7 +178,7 @@ protected:
     void turnRobotPositive(void);
     void turnRobotNegative(void);
     void resetRobotPose(void);
-    void setRobotParams(double rl, double rr, double wd);
+    void setRobotParams(OdocalParams params);
     void getRobotCalibrationMode(void);
     void getRobotLeftWheelRadius(void);
     void getRobotRightWheelRadius(void);

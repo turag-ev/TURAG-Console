@@ -152,7 +152,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     connect(resetRobotPoseButton, &QPushButton::clicked, this, [this](){ resetRobotPose(); });
     odoExtraLayout->addWidget(resetRobotPoseButton);
     setRobotParamsButton = new QPushButton("Set robot params", odoExtraContainer);
-    connect(setRobotParamsButton, &QPushButton::clicked, this, [this](){ setRobotParams(0.0, 0.0, 0.0); });
+    connect(setRobotParamsButton, &QPushButton::clicked, this, [this](){ setRobotParams({0.0, 0.0, 0.0}); });
     odoExtraLayout->addWidget(setRobotParamsButton);
     getRobotCalibrationModeButton = new QPushButton("Get calibration mode", odoExtraContainer);
     connect(getRobotCalibrationModeButton, &QPushButton::clicked, this, [this](){ getRobotCalibrationMode(); });
@@ -354,6 +354,9 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
         paramRadiusLeft->setText(QString::number(params.rl));
         paramRadiusRight->setText(QString::number(params.rr));
         paramWheelDistance->setText(QString::number(params.a * 2.0));
+
+        // Send new params to bot
+        setRobotParams(params);
     });
     odoStateMachine->addState(measureDisplacement2);
 
@@ -423,9 +426,9 @@ QString OdocalFrontend::charToString(char c)
 void OdocalFrontend::sendCmenuKeystrokes(QList<Keystroke> keystrokes)
 {
     if (cmenuKeystrokes->empty()) {
-        QString printList = "Appending keystrokes: ";
+        //QString printList = "Appending keystrokes: ";
         for (Keystroke keystroke : keystrokes) {
-            printList += charToString(keystroke.data) + ", ";
+            //printList += charToString(keystroke.data) + ", ";
             cmenuKeystrokes->enqueue(keystroke);
         }
         //odoLogText->appendPlainText(printList);
@@ -503,9 +506,30 @@ void OdocalFrontend::getRobotCalibrationMode(void)
     sendCmenuKeystrokes({{'5', false}, {'m', true}, {'\x1b', false}});
 }
 
-void OdocalFrontend::setRobotParams(double rl, double rr, double wd)
+void OdocalFrontend::setRobotParams(OdocalParams params)
 {
-    sendCmenuKeystrokes({{'5', false}, {'S', false}, {'\x1b', false}});
+    QList<Keystroke> keystrokes = {{'5', false}, {'S', false}};
+
+    QByteArray rlString = QString::number(params.rl).toLocal8Bit();
+    for (char key : rlString) {
+        keystrokes.append({key, false});
+    }
+    keystrokes.append({'\r', false});
+
+    QByteArray rrString = QString::number(params.rr).toLocal8Bit();
+    for (char key : rrString) {
+        keystrokes.append({key, false});
+    }
+    keystrokes.append({'\r', false});
+
+    QByteArray wdString = QString::number(params.a * 2.0).toLocal8Bit();
+    for (char key : wdString) {
+        keystrokes.append({key, false});
+    }
+    keystrokes.append({'\r', false});
+    keystrokes.append({'\x1b', false});
+
+    sendCmenuKeystrokes(keystrokes);
 }
 
 void OdocalFrontend::getRobotYPosition(void)
