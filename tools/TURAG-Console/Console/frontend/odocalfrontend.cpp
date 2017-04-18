@@ -12,6 +12,7 @@
 #include <QQueue>
 #include <QTimer>
 #include <QAction>
+#include <QMessageBox>
 
 #include "libs/iconmanager.h"
 #include "libs/splitterext.h"
@@ -55,8 +56,12 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
 
     parameterHistoryWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
     QAction *removeParam = new QAction("Remove", parameterHistoryWidget);
-    connect (removeParam, &QAction::triggered, this, [this](){
-        parameterHistoryWidget->takeItem(parameterHistoryWidget->currentRow());
+    connect (removeParam, &QAction::triggered, this, [this]() {
+        int ret = QMessageBox::question(this, "Delete parameter set",
+                                          "Are you sure to delete this parameter set?", QMessageBox::Yes, QMessageBox::No);
+        if (ret == QMessageBox::Yes) {
+            parameterHistoryWidget->takeItem(parameterHistoryWidget->currentRow());
+        }
     });
     parameterHistoryWidget->addAction(removeParam);
     QAction *sendParam = new QAction("Send to bot", parameterHistoryWidget);
@@ -104,7 +109,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     QWidget* geometryContainer = new QWidget(odomiddlecontainer);
     QFormLayout* geometryLayout = new QFormLayout;
     driveLength = new LineEditExt("odocal_driveLength", "1200", true, geometryContainer);
-    geometryLayout->addRow("drive length (in mm)", driveLength);
+    geometryLayout->addRow("drive dist. (in mm)", driveLength);
     driveCounts = new LineEditExt("odocal_driveCounts", "1", true, geometryContainer);
     geometryLayout->addRow("drive counts", driveCounts);
     geometryMx = new LineEditExt("odocal_geometryMx", "0", true, geometryContainer);
@@ -129,9 +134,19 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     odomiddlelayout->addWidget(enterDisplacementContainer);
     enterDisplacementContainer->setEnabled(false);
 
-    execActionBtn = new QPushButton("Connect Robot first!", odomiddlecontainer);
+    QWidget *controlButtonContainer = new QWidget(odomiddlecontainer);
+    QHBoxLayout *controlButtonLayout = new QHBoxLayout;
+
+    execActionBtn = new QPushButton("Connect Robot first!", controlButtonContainer);
     execActionBtn->setEnabled(false);
-    odomiddlelayout->addWidget(execActionBtn);
+    controlButtonLayout->addWidget(execActionBtn);
+
+    cancelBtn = new QPushButton("Reset", controlButtonContainer);
+    cancelBtn->setEnabled(true);
+    controlButtonLayout->addWidget(cancelBtn);
+
+    controlButtonContainer->setLayout(controlButtonLayout);
+    odomiddlelayout->addWidget(controlButtonContainer);
 
     odomiddlecontainer->setLayout(odomiddlelayout);
     odosplitter->addWidget(odomiddlecontainer);
@@ -234,6 +249,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     waitForUserStart->assignProperty(execActionBtn, "text", "Start!");
     waitForUserStart->assignProperty(execActionBtn, "enabled", true);
     waitForUserStart->addTransition(execActionBtn, &QPushButton::clicked, fetchRlParam);
+    waitForUserStart->addTransition(cancelBtn, &QPushButton::clicked, waitForUserStart);
     odoStateMachine->addState(waitForUserStart);
 
     // Fetch current odocal parameters from bot
@@ -242,6 +258,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     fetchRlParam->assignProperty(execActionBtn, "text", "Waiting for Cmenu response.");
     fetchRlParam->assignProperty(execActionBtn, "enabled", false);
     fetchRlParam->addTransition(new CmenuResponseTransition(fetchRrParam));
+    fetchRlParam->addTransition(cancelBtn, &QPushButton::clicked, waitForUserStart);
     connect(fetchRlParam, &QState::entered, this, &OdocalFrontend::getRobotLeftWheelRadius);
     connect(fetchRlParam, &QState::exited, this, [this](){
         paramRadiusLeft->setText(QString(lastCmenuResponse));
@@ -253,6 +270,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     fetchRrParam->assignProperty(execActionBtn, "text", "Waiting for Cmenu response.");
     fetchRrParam->assignProperty(execActionBtn, "enabled", false);
     fetchRrParam->addTransition(new CmenuResponseTransition(fetchWdParam));
+    fetchRrParam->addTransition(cancelBtn, &QPushButton::clicked, waitForUserStart);
     connect(fetchRrParam, &QState::entered, this, &OdocalFrontend::getRobotRightWheelRadius);
     connect(fetchRrParam, &QState::exited, this, [this](){
         paramRadiusRight->setText(QString(lastCmenuResponse));
@@ -264,6 +282,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     fetchWdParam->assignProperty(execActionBtn, "text", "Waiting for Cmenu response.");
     fetchWdParam->assignProperty(execActionBtn, "enabled", false);
     fetchWdParam->addTransition(new CmenuResponseTransition(pushToStart1));
+    fetchWdParam->addTransition(cancelBtn, &QPushButton::clicked, waitForUserStart);
     connect(fetchWdParam, &QState::entered, this, &OdocalFrontend::getRobotWheelDistance);
     connect(fetchWdParam, &QState::exited, this, [this](){
         paramWheelDistance->setText(QString(lastCmenuResponse));
@@ -278,6 +297,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     pushToStart1->assignProperty(execActionBtn, "text", "Done!");
     pushToStart1->assignProperty(execActionBtn, "enabled", true);
     pushToStart1->addTransition(execActionBtn, &QPushButton::clicked, measureYBeforeDrive1);
+    pushToStart1->addTransition(cancelBtn, &QPushButton::clicked, waitForUserStart);
     connect(pushToStart1, &QState::entered, this, &OdocalFrontend::releaseRobotWheels);
     odoStateMachine->addState(pushToStart1);
 
@@ -287,6 +307,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     measureYBeforeDrive1->assignProperty(execActionBtn, "text", "Waiting for Cmenu response.");
     measureYBeforeDrive1->assignProperty(execActionBtn, "enabled", false);
     measureYBeforeDrive1->addTransition(new CmenuResponseTransition(driveRoute1));
+    measureYBeforeDrive1->addTransition(cancelBtn, &QPushButton::clicked, waitForUserStart);
     connect(measureYBeforeDrive1, &QState::entered, this, &OdocalFrontend::getRobotYPosition);
     connect(measureYBeforeDrive1, &QState::exited, this, [this](){
         yBeforeDrive1 = QString(lastCmenuResponse).toDouble();
@@ -300,6 +321,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     driveRoute1->assignProperty(execActionBtn, "text", "Done!");
     driveRoute1->assignProperty(execActionBtn, "enabled", true);
     driveRoute1->addTransition(execActionBtn, &QPushButton::clicked, measureYAfterDrive1);
+    driveRoute1->addTransition(cancelBtn, &QPushButton::clicked, waitForUserStart);
     odoStateMachine->addState(driveRoute1);
 
     // TODO: Insert States while Driving
@@ -310,6 +332,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     measureYAfterDrive1->assignProperty(execActionBtn, "text", "Waiting for CMenu response.");
     measureYAfterDrive1->assignProperty(execActionBtn, "enabled", false);
     measureYAfterDrive1->addTransition(new CmenuResponseTransition(measureDisplacement1));
+    measureYAfterDrive1->addTransition(cancelBtn, &QPushButton::clicked, waitForUserStart);
     connect(measureYAfterDrive1, &QState::entered, this, &OdocalFrontend::getRobotYPosition);
     connect(measureYAfterDrive1, &QState::exited, this, [this](){
         yAfterDrive1 = QString(lastCmenuResponse).toDouble();
@@ -323,6 +346,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     measureDisplacement1->assignProperty(execActionBtn, "text", "Save value");
     measureDisplacement1->assignProperty(execActionBtn, "enabled", true);
     measureDisplacement1->addTransition(execActionBtn, &QPushButton::clicked, pushToStart2);
+    measureDisplacement1->addTransition(cancelBtn, &QPushButton::clicked, waitForUserStart);
     connect(measureDisplacement1, &QState::exited, this, [this](){
         double m_x = geometryMx->text().toDouble();
         double m_y = geometryMy->text().toDouble();
@@ -340,6 +364,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     pushToStart2->assignProperty(execActionBtn, "text", "Done!");
     pushToStart2->assignProperty(execActionBtn, "enabled", true);
     pushToStart2->addTransition(execActionBtn, &QPushButton::clicked, measureYBeforeDrive2);
+    pushToStart2->addTransition(cancelBtn, &QPushButton::clicked, waitForUserStart);
     connect(pushToStart2, &QState::entered, this, &OdocalFrontend::releaseRobotWheels);
     odoStateMachine->addState(pushToStart2);
 
@@ -349,6 +374,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     measureYBeforeDrive2->assignProperty(execActionBtn, "text", "Done!");
     measureYBeforeDrive2->assignProperty(execActionBtn, "enabled", true);
     measureYBeforeDrive2->addTransition(new CmenuResponseTransition(driveRoute2));
+    measureYBeforeDrive2->addTransition(cancelBtn, &QPushButton::clicked, waitForUserStart);
     connect(measureYBeforeDrive2, &QState::entered, this, &OdocalFrontend::getRobotYPosition);
     connect(measureYBeforeDrive2, &QState::exited, this, [this](){
         yBeforeDrive2 = QString(lastCmenuResponse).toDouble();
@@ -362,6 +388,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     driveRoute2->assignProperty(execActionBtn, "text", "Done!");
     driveRoute2->assignProperty(execActionBtn, "enabled", true);
     driveRoute2->addTransition(execActionBtn, &QPushButton::clicked, measureYAfterDrive2);
+    driveRoute2->addTransition(cancelBtn, &QPushButton::clicked, waitForUserStart);
     odoStateMachine->addState(driveRoute2);
 
     // TODO: Insert States while Driving
@@ -372,6 +399,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     measureYAfterDrive2->assignProperty(execActionBtn, "text", "Done!");
     measureYAfterDrive2->assignProperty(execActionBtn, "enabled", true);
     measureYAfterDrive2->addTransition(new CmenuResponseTransition(measureDisplacement2));
+    measureYAfterDrive2->addTransition(cancelBtn, &QPushButton::clicked, waitForUserStart);
     connect(measureYAfterDrive2, &QState::entered, this, &OdocalFrontend::getRobotYPosition);
     connect(measureYAfterDrive2, &QState::exited, this, [this](){
         yAfterDrive2 = QString(lastCmenuResponse).toDouble();
@@ -385,6 +413,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     measureDisplacement2->assignProperty(execActionBtn, "text", "Save value");
     measureDisplacement2->assignProperty(execActionBtn, "enabled", true);
     measureDisplacement2->addTransition(execActionBtn, &QPushButton::clicked, pushToStart1);
+    measureDisplacement2->addTransition(cancelBtn, &QPushButton::clicked, waitForUserStart);
     connect(measureDisplacement2, &QState::exited, this, [this](){
         double m_x = geometryMx->text().toDouble();
         double m_y = geometryMy->text().toDouble();

@@ -133,7 +133,7 @@ protected:
     //QLabel *geometryImg; // TODO: Insert explaining image
     QLabel *nextActionText;
     QLineEdit *geometryYa, *geometryYb;
-    QPushButton *execActionBtn;
+    QPushButton *execActionBtn, *cancelBtn;
 
     // Right column
     QPlainTextEdit *odoLogText;
