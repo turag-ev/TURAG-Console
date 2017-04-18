@@ -382,8 +382,10 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
             paramRadiusRight->text().toDouble(),
             paramWheelDistance->text().toDouble() / 2.0
         };
-        double yError1 = yDisplacement1 - yBeforeDrive1 - yAfterDrive1;
-        double yError2 = yDisplacement2 - yBeforeDrive2 - yAfterDrive2;
+        //double yError1 = yDisplacement1 - yBeforeDrive1 - yAfterDrive1;
+        //double yError2 = yDisplacement2 - yBeforeDrive2 - yAfterDrive2;
+        double yError1 = yDisplacement1 - yAfterDrive1;
+        double yError2 = yDisplacement2 - yAfterDrive2;
         double length = 1200.0;
         int count = 1;
         OdocalParams newParams = calculateNewParameters(params, length, count, yError1, yError2);
@@ -397,7 +399,7 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
         paramWheelDistance->setText(QString::number(newParams.a * 2.0));
 
         // Send new params to bot
-        setRobotParams(params);
+        setRobotParams(newParams);
     });
     odoStateMachine->addState(measureDisplacement2);
 
