@@ -11,6 +11,7 @@
 #include <QStateMachine>
 #include <QQueue>
 #include <QTimer>
+#include <QAction>
 
 #include "libs/iconmanager.h"
 #include "libs/splitterext.h"
@@ -51,6 +52,19 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
     QVBoxLayout* odoleftlayout = new QVBoxLayout;
 
     parameterHistoryWidget = new QListWidget(odoleftcontainer);
+
+    parameterHistoryWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
+    QAction *removeParam = new QAction("Remove", parameterHistoryWidget);
+    connect (removeParam, &QAction::triggered, this, [this](){
+        parameterHistoryWidget->takeItem(parameterHistoryWidget->currentRow());
+    });
+    parameterHistoryWidget->addAction(removeParam);
+    QAction *sendParam = new QAction("Send to bot", parameterHistoryWidget);
+    connect (sendParam, &QAction::triggered, this, [this](){
+        setRobotParams(reinterpret_cast<OdocalParamsListItem*>(parameterHistoryWidget->currentItem())->params());
+    });
+    parameterHistoryWidget->addAction(sendParam);
+
     connect(parameterHistoryWidget, &QListWidget::itemDoubleClicked,
             this, [this](QListWidgetItem *item) { this->fetchParam(reinterpret_cast<OdocalParamsListItem*>(item)); });
     odoleftlayout->addWidget(parameterHistoryWidget);
@@ -89,6 +103,10 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
 
     QWidget* geometryContainer = new QWidget(odomiddlecontainer);
     QFormLayout* geometryLayout = new QFormLayout;
+    driveLength = new LineEditExt("odocal_driveLength", "1200", true, geometryContainer);
+    geometryLayout->addRow("drive length (in mm)", driveLength);
+    driveCounts = new LineEditExt("odocal_driveCounts", "1", true, geometryContainer);
+    geometryLayout->addRow("drive counts", driveCounts);
     geometryMx = new LineEditExt("odocal_geometryMx", "0", true, geometryContainer);
     geometryLayout->addRow("m_x (in mm)", geometryMx);
     geometryMy = new LineEditExt("odocal_geometryMy", "0", true, geometryContainer);
@@ -386,8 +404,8 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
         //double yError2 = yDisplacement2 - yBeforeDrive2 - yAfterDrive2;
         double yError1 = yDisplacement1 - yAfterDrive1;
         double yError2 = yDisplacement2 - yAfterDrive2;
-        double length = 1200.0;
-        int count = 1;
+        double length = driveLength->text().toDouble();
+        int count = driveCounts->text().toInt();
         OdocalParams newParams = calculateNewParameters(params, length, count, yError1, yError2);
         odoLogText->appendPlainText(QString("corrected values: rl=%1 (radius) rr=%2 (radius) 2*a=%3 (wheel distance)")
                                 .arg(newParams.rl).arg(newParams.rr).arg(newParams.a*2.0));

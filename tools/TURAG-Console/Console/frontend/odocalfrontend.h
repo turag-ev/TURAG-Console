@@ -128,6 +128,7 @@ protected:
     QPushButton *addParamBtn;
 
     // Middle column
+    LineEditExt *driveLength, *driveCounts;
     LineEditExt *geometryMx, *geometryMy, *geometryW;
     //QLabel *geometryImg; // TODO: Insert explaining image
     QLabel *nextActionText;
