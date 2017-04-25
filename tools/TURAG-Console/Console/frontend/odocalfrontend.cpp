@@ -429,10 +429,10 @@ OdocalFrontend::OdocalFrontend(QWidget *parent) :
             paramRadiusRight->text().toDouble(),
             paramWheelDistance->text().toDouble() / 2.0
         };
-        //double yError1 = yDisplacement1 - yBeforeDrive1 - yAfterDrive1;
-        //double yError2 = yDisplacement2 - yBeforeDrive2 - yAfterDrive2;
-        double yError1 = yDisplacement1 - yAfterDrive1;
-        double yError2 = yDisplacement2 - yAfterDrive2;
+        double yError1 = yDisplacement1 - yBeforeDrive1 - yAfterDrive1;
+        double yError2 = yDisplacement2 - yBeforeDrive2 - yAfterDrive2;
+        //double yError1 = yDisplacement1 - yAfterDrive1;
+        //double yError2 = yDisplacement2 - yAfterDrive2;
         double length = driveLength->text().toDouble();
         int count = driveCounts->text().toInt();
         OdocalParams newParams = calculateNewParameters(params, length, count, yError1, yError2);
@@ -648,13 +648,13 @@ OdocalFrontend::OdocalParams OdocalFrontend::calculateNewParameters(
     // Mainly copied from old odocal/src/main.cpp
 
     //path to drive positive
-    LegacyOdocal::Pose<LegacyOdocal::AD<double,3> > p;
+    LegacyOdocal::Pose<LegacyOdocal::AD<double,3>> p;
     for(int i=0; i < 2*count; ++i) {
         p+=pose_forward(length,param);
         p+=pose_turn(M_PI,param);
     }
     //path to drive negative
-    LegacyOdocal::Pose<LegacyOdocal::AD<double,3> >m;
+    LegacyOdocal::Pose<LegacyOdocal::AD<double,3>> m;
     for(int i=0; i < 2*count; ++i) {
         m+=pose_forward(length,param);
         m+=pose_turn(-M_PI,param);
