@@ -634,7 +634,7 @@ void OdocalFrontend::getRobotLeftWheelRadius(void)
 
 void OdocalFrontend::getRobotRightWheelRadius(void)
 {
-    sendCmenuKeystrokes({{'5', false}, {'r', true}, {'\x1b', false}});
+    sendCmenuKeystrokes({{'5', false}, {'R', true}, {'\x1b', false}});
 }
 
 void OdocalFrontend::getRobotWheelDistance(void)
