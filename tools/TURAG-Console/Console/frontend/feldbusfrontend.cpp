@@ -17,6 +17,7 @@
 #include <tina++/feldbus/host/dcmotor.h>
 #include <tina++/feldbus/host/servo.h>
 #include <tina++/feldbus/dynamixel/dynamixeldevice.h>
+#include <tina++/feldbus/dynamixel/dynamixel.h>
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -570,6 +571,8 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
     dynamixelDevices_.clear();
     deviceInfo_->clear();
 
+    turag_dxl_initialize((FeldbusAbstraction*)this);
+
     for (std::shared_ptr<FeldbusDeviceWrapper> pDevWrapper: devices_) {
         if (pDevWrapper.get()) {
             deviceList_->addItem(pDevWrapper.get()->devInfo.toString());
@@ -577,7 +580,7 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
     }
 
     for (int i = fromAddress; i <= toAddress; i++) {
-		dynamixelStartInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg(i * 100 / (toAddress - fromAddress + 1)));
+        //dynamixelStartInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg(i * 100 / (toAddress - fromAddress + 1)));
 
         Feldbus::DynamixelDevice* dev = new Feldbus::DynamixelDevice("", i, 2, 1);
         int modelNumber = 0;
