@@ -580,7 +580,7 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
     }
 
     for (int i = fromAddress; i <= toAddress; i++) {
-        //dynamixelStartInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg(i * 100 / (toAddress - fromAddress + 1)));
+        dynamixelStartInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg(i * 100 / (toAddress - fromAddress + 1)));
 
         Feldbus::DynamixelDevice* dev = new Feldbus::DynamixelDevice("", i, 2, 1);
         int modelNumber = 0;
