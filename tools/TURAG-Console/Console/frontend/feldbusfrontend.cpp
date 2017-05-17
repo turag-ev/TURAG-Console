@@ -290,7 +290,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 	// windows is a bit slower :D
 	setFeldbusTimeout(50); // [ms]
 #else
-	setFeldbusTimeout(10); // [ms]
+    setFeldbusTimeout(20); // [ms]
 #endif
 
     onTwoByteAddressCheckBoxToggled(twoByteAddressCheckbox_->isChecked());
