@@ -19,6 +19,7 @@ bin
 *.creator.user.*
 
 # Qt
+.qmake.stash
 moc_*.cpp
 qrc_*.cpp
 
@@ -40,6 +41,7 @@ core
 doxygen_sqlite3.db
 /doc/html
 /doc/qtdoc
+/doc/html-gnav
 
 
 # Matlab
