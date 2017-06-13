@@ -36,8 +36,6 @@ core
 #Python
 *.pyc
 
-tools/GerbGerb/bin_unix
-
 # Doxygen
 doxygen_sqlite3.db
 /doc/html
