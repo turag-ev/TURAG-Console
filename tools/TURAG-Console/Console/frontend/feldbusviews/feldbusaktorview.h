@@ -9,14 +9,18 @@
 #include <QPushButton>
 #include <QCheckBox>
 #include <QList>
+#include <QString>
 #include <QTime>
 
 
-class QRadioButton;
-class QIntValidator;
-class QTimer;
 class QGridLayout;
+class QGroupBox;
+class QIntValidator;
+class QRadioButton;
 class QSignalMapper;
+class QTextEdit;
+class QTimer;
+
 class LineEditExt;
 
 
@@ -40,6 +44,11 @@ protected slots:
     void onValueSet(int id);
     void onCheckboxChanged(void);
     void onUserInput(void);
+	void addScriptSnippet(int id);
+
+	void executeScript(void);
+	void stopScript(void);
+	void executeNextScriptCommand(void);
 
 protected:
     void enableCheckboxes(void);
@@ -49,16 +58,29 @@ protected:
 	
 private:
     void validateInput(void);
+	void errorPrompt(const QString& msg);
 
 	
 protected:
     struct CommandsetEntry {
+		QString caption;
         uint8_t key;
         QLabel* label;
         QLineEdit* value;
         QPushButton* button;
         QCheckBox* checkbox;
     };
+
+	struct ScriptEntry {
+		QString commandEntry;
+		int key;
+		int intValue;
+		float floatValue;
+	};
+
+	enum ScriptCommand {
+		wait, startCapture
+	};
 
     Aktor* actor;
 
@@ -75,7 +97,16 @@ protected:
     QList<CommandsetEntry> commandsetGrid;
     Aktor::Command_t* commandset;
     QSignalMapper* setMapper;
+	QSignalMapper* addScriptSnippetMapper;
     QTime updateStartTime;
+
+	QTextEdit* scriptEditor;
+	QTimer* scriptExecTimer;
+	QList<ScriptEntry> scriptCommandList;
+	int currentScriptEntry;
+	QPushButton* stopScriptButton;
+	QPushButton* runScriptButton;
+	QGroupBox* scriptGroupBox;
 
 };
 

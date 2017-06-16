@@ -10,7 +10,11 @@ class SplitterExt : public QSplitter
     Q_OBJECT
 public:
     explicit SplitterExt(const QString& identifier, QWidget *parent = 0) :
-        QSplitter(parent)
+        SplitterExt(Qt::Horizontal, identifier, parent)
+    { }
+
+    explicit SplitterExt(Qt::Orientation orientation, const QString& identifier, QWidget *parent = 0) :
+        QSplitter(orientation, parent)
     {
         if (!identifier.isEmpty()) {
             setObjectName(identifier);

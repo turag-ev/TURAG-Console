@@ -6,6 +6,7 @@
 tmp
 bin
 *.kate-swp
+*.swp
 
 # C/C++
 *.o
@@ -19,6 +20,7 @@ bin
 *.creator.user.*
 
 # Qt
+.qmake.stash
 moc_*.cpp
 qrc_*.cpp
 
@@ -36,12 +38,11 @@ core
 #Python
 *.pyc
 
-tools/GerbGerb/bin_unix
-
 # Doxygen
 doxygen_sqlite3.db
 /doc/html
 /doc/qtdoc
+/doc/html-gnav
 
 
 # Matlab

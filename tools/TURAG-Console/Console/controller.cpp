@@ -12,6 +12,7 @@
 #include "frontend/stmcamfrontend.h"
 #include "frontend/rawfrontend.h"
 #include "frontend/scfrontend.h"
+#include "frontend/odocalfrontend.h"
 
 #include <libs/log.h>
 
@@ -41,7 +42,8 @@ Controller::Controller(QWidget *parent) :
     availableFrontends.append(new FeldbusFrontend);
     availableFrontends.append(new STMCamFrontend);
 	availableFrontends.append(new RawFrontend);
-	availableFrontends.append(new SCFrontend);
+    availableFrontends.append(new SCFrontend);
+    availableFrontends.append(new OdocalFrontend);
 
 
     // ---------------------------------------------------------------
