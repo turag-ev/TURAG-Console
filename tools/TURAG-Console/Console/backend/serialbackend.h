@@ -10,6 +10,8 @@ class SerialBackend : public BaseBackend {
 
 
 public:
+    static constexpr int MAX_READ_ERRORS = 10;
+    
     SerialBackend(QObject *parent = 0);
 	virtual ~SerialBackend();
 
@@ -23,6 +25,8 @@ private slots:
 private:
 	virtual bool doConnectionPreconditionChecking(const QUrl& url);
 	virtual BaseBackend::ConnectionStatus doOpenConnection(const QUrl& connectionUrl);
+    
+    int readErrorCounter;
 };
 
 
