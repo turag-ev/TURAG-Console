@@ -9,7 +9,8 @@ const QString SerialBackend::protocolScheme = "serial";
 
 
 SerialBackend::SerialBackend(QObject *parent) :
-	BaseBackend({SerialBackend::protocolScheme}, parent)
+	BaseBackend({SerialBackend::protocolScheme}, parent), 
+    readErrorCounter(0)
 {
 	// it usually doesn't make sense and it must be disabled
 	// for feldbusfrontend
@@ -135,6 +136,10 @@ BaseBackend::ConnectionStatus SerialBackend::doOpenConnection(const QUrl &url) {
 
 	connect(stream_.data(),SIGNAL(readyRead()),this,SLOT(emitDataReady()));
 	connect(stream_.data(),SIGNAL(error(QSerialPort::SerialPortError)),this,SLOT(onError(QSerialPort::SerialPortError)));
+    
+    connect(stream_.data(), &QIODevice::readyRead, [this](){
+        this->readErrorCounter = 0;
+    });
 
 	return ConnectionStatus::successful;
 }
@@ -178,10 +183,21 @@ void SerialBackend::onError(QSerialPort::SerialPortError error) {
         logFilteredErrorMsg("Fehler: " + errormsg);
         break;
     case QSerialPort::ReadError:
-		// This error used to make a call to connectionWasLost(). But I have
+		// Reamrk: This error used to make a call to connectionWasLost(). But I have
 		// a funny adapter which raises this error two times after opening
 		// and works totally fine afterwards, so I removed the call.
-        errormsg = "An I/O error occurred while reading the data.";
+        
+        // Remark 2: Now this change causes havoc: for some funny reason I get loads and
+        // loads of read errors before I either get lucky and a ResourceError comes through
+        // or my system runs out of memory because the error log is filling up. Thus we count
+        // the read errors we got since the last successful read and stop at a certain point.
+        ++readErrorCounter;
+        if (readErrorCounter >= MAX_READ_ERRORS) {
+            connectionWasLost();
+            errormsg = "Too many I/O errors occurred while reading the data; ressource seems to unavailable.";
+        } else {
+            errormsg = "An I/O error occurred while reading the data.";
+        }
         break;
     case QSerialPort::ResourceError:
 		// This error occurs when a serial USB adapter is removed and thus the call
