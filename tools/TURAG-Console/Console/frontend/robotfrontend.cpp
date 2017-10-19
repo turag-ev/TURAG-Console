@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 #include <QSplitter>
 #include <QTabWidget>
+#include <QTabBar>
 
 #include "logview.h"
 #include "plaintextfrontend.h"
@@ -36,6 +37,7 @@ RobotFrontend::RobotFrontend(QWidget *parent) :
 	splitter->restoreState();
 
     tabs->addTab(graphView, "Diagramme");
+    tabs->tabBar()->setExpanding(false);
 
 
     connect(tinaInterface, SIGNAL(cmenuDataReady(QByteArray)), cmenu, SLOT(writeData(QByteArray)));
