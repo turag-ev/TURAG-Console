@@ -27,7 +27,7 @@ defineTest(minQtVersion) {
 #
 #-------------------------------------------------
 
-VERSION = 3.4.2
+VERSION = 3.5.0
 
 CONFIG +=  qwt
 QT     += core gui
@@ -145,8 +145,7 @@ SOURCES +=\
     libs/popup/popupwidget.cpp \
     libs/popup/popupcontainerwidget.cpp \
     libs/popup/popuptoolbutton.cpp \
-    frontend/graphutils/plotmagnifier.cpp \
-    frontend/odocalfrontend.cpp
+    frontend/graphutils/plotmagnifier.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -208,10 +207,7 @@ HEADERS  += \
     libs/popup/popupwidget.h \
     libs/popup/popupcontainerwidget.h \
     libs/popup/popuptoolbutton.h \
-    frontend/graphutils/plotmagnifier.h \
-    frontend/odocalfrontend.h \
-    libs/legacyOdocal/ad.h \
-    libs/legacyOdocal/pose.h
+    frontend/graphutils/plotmagnifier.h
 
 INCLUDEPATH += \
     tina-platform/public \
