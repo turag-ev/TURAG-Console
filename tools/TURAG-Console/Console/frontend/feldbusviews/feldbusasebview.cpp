@@ -237,12 +237,7 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
             aseb_->getCommandName(i + TURAG_FELDBUS_ASEB_INDEX_START_PWM_OUTPUT, name);
 			caption = new QLabel(QString("%1: %2 [%]").arg(i).arg(name));
 
-            unsigned frequency;
-            if (aseb_->getPwmFrequency(i, &frequency)) {
-				caption->setText(caption->text() + QString("\n%1 Hz").arg(frequency));
-            } else {
-				caption->setText("ERROR");
-            }
+            caption->setText(caption->text() + QString("\n%1 Hz").arg(aseb_->getPwmFrequency(i)));
 
             lineedit = new QLineEdit;
             connect(lineedit, SIGNAL(textEdited(QString)), this, SLOT(onUserInput()));
