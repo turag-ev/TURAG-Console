@@ -235,7 +235,8 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
         for (int i = 0; i < pwmOutSize; ++i) {
             name[0] = 0;
             aseb_->getCommandName(i + TURAG_FELDBUS_ASEB_INDEX_START_PWM_OUTPUT, name);
-			caption = new QLabel(QString("%1: %2 [%]").arg(i).arg(name));
+            //target
+            caption = new QLabel(QString("%1: %2 target [%]").arg(i).arg(name));
 
             caption->setText(caption->text() + QString("\n%1 Hz").arg(aseb_->getPwmFrequency(i)));
 
@@ -244,9 +245,37 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
             connect(lineedit, SIGNAL(returnPressed()), this, SLOT(onSetOutputs()));
             select_checkbox = new QCheckBox;
             connect(select_checkbox, SIGNAL(toggled(bool)), this, SLOT(updateGraph()));
+            pwmTargets_.push_back(LabelLineeditCombo(caption, lineedit, select_checkbox));
 
-			pwmOutputs_.push_back(LabelLineeditCombo(caption, lineedit, select_checkbox));
 			detail_layout->addWidget(caption, row, 0);
+            detail_layout->addWidget(lineedit, row, 1);
+            detail_layout->addWidget(select_checkbox, row, 2);
+            ++row;
+            //value
+            caption = new QLabel(QString("%1: %2 value [%]").arg(i).arg(name));
+
+            lineedit = new QLineEdit;
+            lineedit->setEnabled(false);
+            select_checkbox = new QCheckBox;
+            connect(select_checkbox, SIGNAL(toggled(bool)), this, SLOT(updateGraph()));
+
+            pwmOutputs_.push_back(LabelLineeditCombo(caption, lineedit, select_checkbox));
+            detail_layout->addWidget(caption, row, 0);
+            detail_layout->addWidget(lineedit, row, 1);
+            detail_layout->addWidget(select_checkbox, row, 2);
+            ++row;
+
+            //speed
+            caption = new QLabel(QString("%1: %2 speed [%/s]").arg(i).arg(name));
+
+            lineedit = new QLineEdit;
+            connect(lineedit, SIGNAL(textEdited(QString)), this, SLOT(onUserInput()));
+            connect(lineedit, SIGNAL(returnPressed()), this, SLOT(onSetOutputs()));
+            select_checkbox = new QCheckBox;
+            connect(select_checkbox, SIGNAL(toggled(bool)), this, SLOT(updateGraph()));
+
+            pwmSpeeds_.push_back(LabelLineeditCombo(caption, lineedit, select_checkbox));
+            detail_layout->addWidget(caption, row, 0);
             detail_layout->addWidget(lineedit, row, 1);
             detail_layout->addWidget(select_checkbox, row, 2);
             ++row;
@@ -278,9 +307,17 @@ void FeldbusAsebView::onResetOutputs(void) {
         combo.checkbox->setPalette(pal);
         ++key;
     }
-	key = 0;
-    for (LabelLineeditCombo& combo : pwmOutputs_) {
-        combo.lineedit->setText(QString("%1").arg(aseb_->getPwmOutput(key)));
+    key = 0;
+    for (LabelLineeditCombo& combo : pwmTargets_) {
+        combo.lineedit->setText(QString("%1").arg(aseb_->getTargetPwmOutput(key)));
+        QPalette pal = combo.lineedit->palette();
+        pal.setColor(QPalette::Active, QPalette::Base, Qt::white);
+        combo.lineedit->setPalette(pal);
+        ++key;
+    }
+    key = 0;
+    for (LabelLineeditCombo& combo : pwmSpeeds_) {
+        combo.lineedit->setText(QString("%1").arg(aseb_->getPwmSpeed(key)));
         QPalette pal = combo.lineedit->palette();
         pal.setColor(QPalette::Active, QPalette::Base, Qt::white);
         combo.lineedit->setPalette(pal);
@@ -298,14 +335,21 @@ void FeldbusAsebView::onSetOutputs(void) {
         ++key;
     }
     key = 0;
-    for (LabelLineeditCombo& combo : pwmOutputs_) {
-        aseb_->setPwmOutput(key, combo.lineedit->text().toFloat());
+    for (LabelLineeditCombo& combo : pwmTargets_) {
+        aseb_->setTargetPwmOutput(key, combo.lineedit->text().toFloat());
         QPalette pal = combo.lineedit->palette();
         pal.setColor(QPalette::Active, QPalette::Base, Qt::white);
         combo.lineedit->setPalette(pal);
         ++key;
     }
-
+    key = 0;
+    for (LabelLineeditCombo& combo : pwmSpeeds_) {
+        aseb_->setPwmSpeed(key, combo.lineedit->text().toFloat());
+        QPalette pal = combo.lineedit->palette();
+        pal.setColor(QPalette::Active, QPalette::Base, Qt::white);
+        combo.lineedit->setPalette(pal);
+        ++key;
+    }
 	onResetOutputs();
 }
 
@@ -335,15 +379,40 @@ void FeldbusAsebView::onUpdate(void) {
             }
             ++key;
         }
-
+        key = 0;
         for (LabelCheckboxCombo& combo : digitalOutputs_) {
             if (combo.select_checkbox->isChecked()) {
-                plot->addData(channel, QPointF(msecs, combo.checkbox->isChecked() ? 1 : 0));
+                plot->addData(channel, QPointF(msecs, aseb_->getDigitalOutput(key)?1:0));
+                ++channel;
+            }
+            ++key;
+        }
+
+        key = 0;
+        for (LabelLineeditCombo& combo : pwmTargets_) {
+            if (combo.select_checkbox->isChecked()) {
+                plot->addData(channel, QPointF(msecs, aseb_->getTargetPwmOutput(key)));
                 ++channel;
             }
         }
 
+        key = 0;
         for (LabelLineeditCombo& combo : pwmOutputs_) {
+            float value;
+            if(aseb_->getCurrentPwmOutput(key, &value)) {
+                combo.lineedit->setText(QString("%1").arg(value));
+
+                if (combo.select_checkbox->isChecked()) {
+                    plot->addData(channel, QPointF(msecs, value));
+                    ++channel;
+                }
+            } else {
+                combo.lineedit->setText(QString("ERROR"));
+            }
+            ++key;
+        }
+
+        for (LabelLineeditCombo& combo : pwmSpeeds_) {
             if (combo.select_checkbox->isChecked()) {
                 plot->addData(channel, QPointF(msecs, combo.lineedit->text().toFloat()));
                 ++channel;
@@ -406,6 +475,13 @@ void FeldbusAsebView::updateGraph(void) {
         }
     }
 
+    for (LabelLineeditCombo& combo : pwmTargets_) {
+        if (combo.select_checkbox->isChecked()) {
+            plot->addChannel(combo.label->text(), static_cast<qreal>(updateLength->text().toFloat() * updateInterval->text().toFloat()));
+            ++channel;
+        }
+    }
+
     for (LabelLineeditCombo& combo : pwmOutputs_) {
         if (combo.select_checkbox->isChecked()) {
             plot->addChannel(combo.label->text(), static_cast<qreal>(updateLength->text().toFloat() * updateInterval->text().toFloat()));
@@ -413,6 +489,12 @@ void FeldbusAsebView::updateGraph(void) {
         }
     }
 
+    for (LabelLineeditCombo& combo : pwmSpeeds_) {
+        if (combo.select_checkbox->isChecked()) {
+            plot->addChannel(combo.label->text(), static_cast<qreal>(updateLength->text().toFloat() * updateInterval->text().toFloat()));
+            ++channel;
+        }
+    }
 
     updateStartTime.start();
 }

@@ -65,7 +65,9 @@ protected:
     QList<LabelCheckboxCombo> digitalInputs_;
     QList<LabelCheckboxCombo> digitalOutputs_;
     QList<LabelLineeditCombo> analogInputs_;
+    QList<LabelLineeditCombo> pwmTargets_;
     QList<LabelLineeditCombo> pwmOutputs_;
+    QList<LabelLineeditCombo> pwmSpeeds_;
 
     Aseb* aseb_;
     Aseb::Analog_t* asebAnalogInputSet_;
