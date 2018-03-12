@@ -152,18 +152,32 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
 	script_vlayout->addWidget(stopScriptButton);
 	connect(stopScriptButton, SIGNAL(pressed()), this, SLOT(stopScript()));
 
-	QPushButton* insertWaitBtn = new QPushButton("WT");
-	insertWaitBtn->setToolTip("Fügt einen \"wait(x)\"-Befehl ein, der die Befehlsausführung um <x> Sekunden verzögert.");
+	QPushButton* insertWaitBtn = new QPushButton("wait( x )");
+	insertWaitBtn->setToolTip("Fügt einen \"wait( x )\"-Befehl ein, der die Befehlsausführung um <x> Sekunden verzögert.");
 	script_button_layout->addWidget(insertWaitBtn);
 	connect(insertWaitBtn, &QPushButton::pressed, [this] () {
-		scriptEditor->append("wait( 1 );");
+		scriptEditor->moveCursor(QTextCursor::StartOfLine);
+		scriptEditor->moveCursor(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+		if (!scriptEditor->textCursor().selectedText().simplified().isEmpty()) {
+			scriptEditor->moveCursor(QTextCursor::EndOfLine, QTextCursor::MoveAnchor);
+			scriptEditor->insertPlainText("\n");
+		}
+		scriptEditor->moveCursor(QTextCursor::EndOfLine);
+		scriptEditor->insertPlainText("wait( 1 );");
 	});
 
-	QPushButton* insertCaptureBtn = new QPushButton("CAP");
+	QPushButton* insertCaptureBtn = new QPushButton("startCapture()");
 	insertCaptureBtn->setToolTip("Fügt einen \"startCapture()\"-Befehl ein, der die Datenaufzeichnung startet, sofern  \"einmalige Datenaktualisierung\" gewählt ist.");
 	script_button_layout->addWidget(insertCaptureBtn);
 	connect(insertCaptureBtn, &QPushButton::pressed, [this] () {
-		scriptEditor->append("startCapture();");
+		scriptEditor->moveCursor(QTextCursor::StartOfLine);
+		scriptEditor->moveCursor(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+		if (!scriptEditor->textCursor().selectedText().simplified().isEmpty()) {
+			scriptEditor->moveCursor(QTextCursor::EndOfLine, QTextCursor::MoveAnchor);
+			scriptEditor->insertPlainText("\n");
+		}
+		scriptEditor->moveCursor(QTextCursor::EndOfLine);
+		scriptEditor->insertPlainText("startCapture();");
 	});
 
 
@@ -437,7 +451,14 @@ void FeldbusAktorView::onValueSet(int id) {
 void FeldbusAktorView::addScriptSnippet(int id)
 {
 	QString snippet = QString("set(\"%1\", %2);").arg(commandsetGrid.at(id).caption).arg(commandsetGrid.at(id).value->text());
-	scriptEditor->append(snippet);
+	scriptEditor->moveCursor(QTextCursor::StartOfLine);
+	scriptEditor->moveCursor(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+	if (!scriptEditor->textCursor().selectedText().simplified().isEmpty()) {
+		scriptEditor->moveCursor(QTextCursor::EndOfLine, QTextCursor::MoveAnchor);
+		scriptEditor->insertPlainText("\n");
+	}
+	scriptEditor->moveCursor(QTextCursor::EndOfLine);
+	scriptEditor->insertPlainText(snippet);
 }
 
 void FeldbusAktorView::executeScript()
