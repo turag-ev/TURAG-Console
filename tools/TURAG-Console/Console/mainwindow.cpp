@@ -445,7 +445,7 @@ void MainWindow::about() {
 										"&nbsp; Kevin Seidel<br />"
                                         "&nbsp; Florian Völker<br />"
                                         "&nbsp; Hermann von Kleist<br /><br />"
-                                        "Copyright © 2013 - 2017 TURAG e.V.<br /><br />"
+                                        "Copyright © 2013 - 2018 TURAG e.V.<br /><br />"
 										"Based in part on the work of the <a href=\"http://qwt.sf.net\">Qwt project</href>."
 										).arg(qVersion()));
 
