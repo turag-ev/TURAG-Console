@@ -8,6 +8,7 @@
 #include <tina++/feldbus/host/farbsensor.h>
 #include <tina++/feldbus/host/servo.h>
 #include <tina++/feldbus/host/aseb.h>
+#include <tina++/feldbus/host/muxer_64_32.h>
 #include <tina++/feldbus/host/bootloader.h>
 #include <tina++/feldbus/host/feldbusabstraction.h>
 
@@ -153,13 +154,28 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
 
     default:
         protocolIdString = "unbekannt";
-        deviceTypeString = "unbekannt";
-        device = new Feldbus::Device(
-                    device_info.device_name.constData(),
-                    device_info.address,
-					bus,
-					device_info.device_info.crcType(),
-                    device_info.addressLength);
+
+        switch (device_info.device_info.deviceTypeId()) {
+        case 0x01:
+            device = new Feldbus::Muxer_64_32(
+                        device_info.device_name.constData(),
+                        device_info.address,
+                        bus,
+                        device_info.device_info.crcType(),
+                        device_info.addressLength);
+            deviceTypeString = "64-32-Muxer";
+            break;
+
+        default:
+            deviceTypeString = "unbekannt";
+            device = new Feldbus::Device(
+                        device_info.device_name.constData(),
+                        device_info.address,
+                        bus,
+                        device_info.device_info.crcType(),
+                        device_info.addressLength);
+            break;
+        }
         break;
     }
 

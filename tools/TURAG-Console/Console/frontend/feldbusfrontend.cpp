@@ -5,6 +5,7 @@
 #include "feldbusviews/feldbusasebview.h"
 #include "feldbusviews/feldbusbootloaderatmegaview.h"
 #include "feldbusviews/feldbusbootloaderxmegaview.h"
+#include "feldbusviews/feldbusmuxerview.h"
 #include <libs/checkboxext.h>
 #include <libs/comboboxext.h>
 #include <libs/lineeditext.h>
@@ -16,6 +17,7 @@
 #include <tina++/feldbus/host/aktor.h>
 #include <tina++/feldbus/host/dcmotor.h>
 #include <tina++/feldbus/host/servo.h>
+#include <tina++/feldbus/host/muxer_64_32.h>
 #include <tina++/feldbus/dynamixel/dynamixeldevice.h>
 #include <tina++/feldbus/dynamixel/dynamixel.h>
 
@@ -671,14 +673,23 @@ void FeldbusFrontend::onDeviceSelected(int row) {
 				return;
 			}
 
-			// create Bootloader Xmega view
-			Feldbus::BootloaderXmega* xmegaBoot = dynamic_cast<Feldbus::BootloaderXmega*>(selectedDevice_->device.get());
-			if (xmegaBoot) {
+            // create Bootloader Xmega view
+            Feldbus::BootloaderXmega* xmegaBoot = dynamic_cast<Feldbus::BootloaderXmega*>(selectedDevice_->device.get());
+            if (xmegaBoot) {
                 feldbusWidget = new FeldbusBootloaderXmegaView(xmegaBoot, this);
-				splitter->addWidget(feldbusWidget);
-				splitter->setStretchFactor(1,2);
-				return;
-			}
+                splitter->addWidget(feldbusWidget);
+                splitter->setStretchFactor(1,2);
+                return;
+            }
+
+            // create Muxer view
+            Feldbus::Muxer_64_32* muxer = dynamic_cast<Feldbus::Muxer_64_32*>(selectedDevice_->device.get());
+            if (muxer) {
+                feldbusWidget = new FeldbusMuxerView(muxer, this);
+                splitter->addWidget(feldbusWidget);
+                splitter->setStretchFactor(1,2);
+                return;
+            }
 
 
         }

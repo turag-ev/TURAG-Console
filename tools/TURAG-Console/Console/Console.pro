@@ -145,7 +145,8 @@ SOURCES +=\
     libs/popup/popupwidget.cpp \
     libs/popup/popupcontainerwidget.cpp \
     libs/popup/popuptoolbutton.cpp \
-    frontend/graphutils/plotmagnifier.cpp
+    frontend/graphutils/plotmagnifier.cpp \
+    frontend/feldbusviews/feldbusmuxerview.cpp
 
 HEADERS  += \
     mainwindow.h \
@@ -207,7 +208,8 @@ HEADERS  += \
     libs/popup/popupwidget.h \
     libs/popup/popupcontainerwidget.h \
     libs/popup/popuptoolbutton.h \
-    frontend/graphutils/plotmagnifier.h
+    frontend/graphutils/plotmagnifier.h \
+    frontend/feldbusviews/feldbusmuxerview.h
 
 INCLUDEPATH += \
     tina-platform/public \
