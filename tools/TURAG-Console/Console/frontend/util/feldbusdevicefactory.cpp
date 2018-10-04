@@ -121,9 +121,15 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
 
 		switch (device_info.device_info.deviceTypeId()) {
         case TURAG_FELDBUS_BOOTLOADER_GENERIC:
-            deviceTypeString = "generic - BMaX";
+        case TURAG_FELDBUS_BOOTLOADER_STM32:
+            device = new Feldbus::BootloaderAvrBase(
+                        device_info.device_name.constData(),
+                        device_info.address,
+                        bus,
+                        device_info.device_info.crcType(),
+                        device_info.addressLength);
+            deviceTypeString = "BMaX - generic";
             break;
-
         case TURAG_FELDBUS_BOOTLOADER_ATMEGA:
             device = new Feldbus::BootloaderAtmega(
                         device_info.device_name.constData(),
@@ -131,7 +137,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
 						bus,
 						device_info.device_info.crcType(),
                         device_info.addressLength);
-            deviceTypeString = "AtMega - BMaX";
+            deviceTypeString = "BMaX - ATmega";
             break;
 
         case TURAG_FELDBUS_BOOTLOADER_XMEGA:
@@ -141,9 +147,8 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
 						bus,
 						device_info.device_info.crcType(),
                         device_info.addressLength);
-			deviceTypeString = "XMEGA - BMaX";
+            deviceTypeString = "BMaX - ATxmega";
             break;
-
         default:
             deviceTypeString = "unbekannt";
             break;
