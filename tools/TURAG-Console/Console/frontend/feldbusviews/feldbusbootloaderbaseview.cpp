@@ -129,6 +129,10 @@ FeldbusBootloaderBaseView::FeldbusBootloaderBaseView(TURAG::Feldbus::BootloaderA
 		return;
 	}
 
+    // read mcu ID
+    uint16_t mcuId = bootloader->getMcuId();
+    mcuIdEdit->setText(Feldbus::Bootloader::getMcuName(mcuId) );
+
 	// read flash size
 	uint32_t flashSize = bootloader_->getFlashSize(false);
 	if (flashSize == 0) {

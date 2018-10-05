@@ -679,8 +679,14 @@ void FeldbusFrontend::onDeviceSelected(int row) {
 				splitter->setStretchFactor(1,2);
 				return;
 			}
-
-
+            // create generic Bootloader view
+            Feldbus::BootloaderAvrBase* genericBoot = dynamic_cast<Feldbus::BootloaderAvrBase*>(selectedDevice_->device.get());
+            if (genericBoot) {
+                feldbusWidget = new FeldbusBootloaderBaseView(genericBoot, this);
+                splitter->addWidget(feldbusWidget);
+                splitter->setStretchFactor(1,2);
+                return;
+            }
         }
     } else if (row >= devices_.size() && row < devices_.size() + dynamixelDevices_.size()) {
         Feldbus::DynamixelDevice* dev = dynamixelDevices_.at(row - devices_.size()).device_.get();
