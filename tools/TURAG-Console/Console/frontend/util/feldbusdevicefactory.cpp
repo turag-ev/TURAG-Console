@@ -58,6 +58,12 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
             break;
 
         default:
+            device = new Feldbus::Aktor(
+                         device_info.device_name.constData(),
+                         device_info.address,
+                         bus,
+                         device_info.device_info.crcType(),
+                         device_info.addressLength);
             deviceTypeString = "unbekannt";
             break;
         }

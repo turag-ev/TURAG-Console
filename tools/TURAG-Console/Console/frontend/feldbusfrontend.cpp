@@ -653,6 +653,15 @@ void FeldbusFrontend::onDeviceSelected(int row) {
                 return;
             }
 
+            // create Aktor view for generic Aktor
+            Feldbus::Aktor* aktor = dynamic_cast<Feldbus::Aktor*>(selectedDevice_->device.get());
+            if (aktor) {
+                feldbusWidget = new FeldbusAktorView(aktor);
+                splitter->addWidget(feldbusWidget);
+                splitter->setStretchFactor(1,2);
+                return;
+            }
+
             // create ASEB view
             Feldbus::Aseb* aseb = dynamic_cast<Feldbus::Aseb*>(selectedDevice_->device.get());
             if (aseb) {
