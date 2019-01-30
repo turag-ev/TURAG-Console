@@ -655,6 +655,15 @@ void FeldbusFrontend::onDeviceSelected(int row) {
                 return;
             }
 
+            // create Aktor view for generic Aktor
+            Feldbus::Aktor* aktor = dynamic_cast<Feldbus::Aktor*>(selectedDevice_->device.get());
+            if (aktor) {
+                feldbusWidget = new FeldbusAktorView(aktor);
+                splitter->addWidget(feldbusWidget);
+                splitter->setStretchFactor(1,2);
+                return;
+            }
+
             // create ASEB view
             Feldbus::Aseb* aseb = dynamic_cast<Feldbus::Aseb*>(selectedDevice_->device.get());
             if (aseb) {
@@ -681,6 +690,14 @@ void FeldbusFrontend::onDeviceSelected(int row) {
                 splitter->setStretchFactor(1,2);
                 return;
             }
+            // create generic Bootloader view
+            Feldbus::BootloaderAvrBase* genericBoot = dynamic_cast<Feldbus::BootloaderAvrBase*>(selectedDevice_->device.get());
+            if (genericBoot) {
+                feldbusWidget = new FeldbusBootloaderBaseView(genericBoot, this);
+                splitter->addWidget(feldbusWidget);
+                splitter->setStretchFactor(1,2);
+                return;
+        	}
 
             // create Muxer view
             Feldbus::Muxer_64_32* muxer = dynamic_cast<Feldbus::Muxer_64_32*>(selectedDevice_->device.get());
@@ -690,6 +707,7 @@ void FeldbusFrontend::onDeviceSelected(int row) {
                 splitter->setStretchFactor(1,2);
                 return;
             }
+
 
 
         }

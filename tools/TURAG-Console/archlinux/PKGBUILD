@@ -1,6 +1,6 @@
 # Maintainer: Hermann von Kleist <hermann.von_kleist@turag.de>
 pkgname="turag-console-git"
-pkgver=3.5.1
+pkgver=3.5.3
 pkgrel=1
 #epoch=1
 pkgdesc="Application for communicating with TURAG robots"
