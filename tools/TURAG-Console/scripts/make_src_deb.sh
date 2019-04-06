@@ -34,9 +34,9 @@ function texec() {
 	fi
 }
 
-# Git-Repro aktuallisieren
+# Git-Repro aktualisieren
 cd "${ROOT_DIR}"
-techo "Git-Repro aktuallisieren"
+techo "Git-Repro aktualisieren"
 texec git pull
 cd "${WORKING_DIR}"
 
