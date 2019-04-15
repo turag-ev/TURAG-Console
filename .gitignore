@@ -53,3 +53,6 @@ doxygen_sqlite3.db
 
 # VS Code
 .vscode
+
+# ros
+ros/.catkin_tools/VERSION
