@@ -56,3 +56,7 @@ doxygen_sqlite3.db
 
 # ros
 ros/.catkin_tools/VERSION
+
+# Telgram-Bot
+projects/telegram-bot/config.json
+projects/telegram-bot/config.json.bkp
