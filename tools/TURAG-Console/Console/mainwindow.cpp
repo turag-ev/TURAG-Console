@@ -57,7 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	// add all available connectionWidgets to list without a parent
 	availableConnectionWidgets.append(new ConnectionWidgetSerial);
 	availableConnectionWidgets.append(new ConnectionWidgetFile);
-	availableConnectionWidgets.append(new ConnectionWidgetTcp);
+    //availableConnectionWidgets.append(new ConnectionWidgetTcp);
 	availableConnectionWidgets.append(new ConnectionWidgetWebDAV);
 
 

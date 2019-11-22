@@ -36,12 +36,12 @@ Controller::Controller(QWidget *parent) :
 
     // add all available Frontends to list without a parent
 	availableFrontends.append(new PlainTextFrontend);
-	availableFrontends.append(new RobotFrontend);
+    //availableFrontends.append(new RobotFrontend);
     availableFrontends.append(new Oscilloscope);
     availableFrontends.append(new FeldbusFrontend);
-    availableFrontends.append(new STMCamFrontend);
+    //availableFrontends.append(new STMCamFrontend);
 	availableFrontends.append(new RawFrontend);
-    availableFrontends.append(new SCFrontend);
+    //availableFrontends.append(new SCFrontend);
 
 
     // ---------------------------------------------------------------
