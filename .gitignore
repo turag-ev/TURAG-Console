@@ -18,6 +18,12 @@ bin
 *.autosave
 *.creator.user
 *.creator.user.*
+*.creator
+*.config
+*.files
+*.includes
+*.cflags
+*.cxxflags
 
 # Qt
 .qmake.stash
