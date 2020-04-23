@@ -27,7 +27,7 @@
 #include <vector>
 
 
-FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
+FeldbusAktorView::FeldbusAktorView(LegacyStellantriebeDevice *aktor, QWidget *parent) :
     QWidget(parent), actor(aktor), commandset(nullptr)
 {
     QIntValidator* intervalValidator = new QIntValidator(1, 100000, this);
@@ -215,7 +215,7 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
         return;
     }
 
-    commandset = new Aktor::Command_t[commandsetLength];
+    commandset = new LegacyStellantriebeDevice::Command_t[commandsetLength];
     if (!actor->populateCommandSet(commandset, commandsetLength)) {
         return;
     }
@@ -224,7 +224,7 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
 
 	unsigned i = 0;
 	for (i = 0; i < commandsetLength; ++i) {
-		if (commandset[i].length == Aktor::Command_t::CommandLength::text) {
+		if (commandset[i].length == LegacyStellantriebeDevice::Command_t::CommandLength::text) {
 			// text entry command
 			QLabel* text = new QLabel;
 
@@ -236,7 +236,7 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
 
 			value_grid->addWidget(text, i, 0, 1, -1, Qt::AlignBottom);
 			value_grid->setRowMinimumHeight(i, 25);
-		} else if (commandset[i].length != Aktor::Command_t::CommandLength::none) {
+		} else if (commandset[i].length != LegacyStellantriebeDevice::Command_t::CommandLength::none) {
 			// actual command entry
             CommandsetEntry entry;
             entry.key = i+1;
@@ -250,7 +250,7 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
             }
 
             entry.value = new LineEditExt;
-            if (commandset[i].writeAccess == Aktor::Command_t::WriteAccess::no_write) {
+            if (commandset[i].writeAccess == LegacyStellantriebeDevice::Command_t::WriteAccess::no_write) {
                 entry.value->setReadOnly(true);
                 QPalette pal = entry.value->palette();
                 QColor clr = this->palette().color(QPalette::Window);
@@ -312,7 +312,7 @@ void FeldbusAktorView::onUpdateDeviceValues(void) {
             }
         }
 
-        if (commandset[entry.key-1].writeAccess == Aktor::Command_t::WriteAccess::write) {
+        if (commandset[entry.key-1].writeAccess == LegacyStellantriebeDevice::Command_t::WriteAccess::write) {
             QPalette pal = entry.value->palette();
             pal.setColor(QPalette::Active, QPalette::Base, Qt::white);
             entry.value->setPalette(pal);
@@ -404,11 +404,11 @@ void FeldbusAktorView::onTimeout(void) {
 
     int msecs = updateStartTime.elapsed();
 
-    std::vector<Aktor::StructuredDataPair_t> output;
+    std::vector<LegacyStellantriebeDevice::StructuredDataPair_t> output;
     actor->getStructuredOutput(&output);
 
     int channel = 0;
-	for (Aktor::StructuredDataPair_t& data_ : output) {
+	for (LegacyStellantriebeDevice::StructuredDataPair_t& data_ : output) {
 		plot->addData(channel, QPointF(msecs, data_.value));
         ++channel;
     }

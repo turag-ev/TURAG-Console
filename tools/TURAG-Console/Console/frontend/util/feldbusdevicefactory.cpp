@@ -46,7 +46,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
             break;
 
         case TURAG_FELDBUS_STELLANTRIEBE_DEVICE_TYPE_SERVO:
-            device = new Feldbus::Aktor(
+            device = new Feldbus::LegacyStellantriebeDevice(
                         device_info.device_name.constData(),
                         device_info.address,
 						bus,
@@ -56,7 +56,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
             break;
 
         default:
-            device = new Feldbus::Aktor(
+            device = new Feldbus::LegacyStellantriebeDevice(
                          device_info.device_name.constData(),
                          device_info.address,
                          bus,

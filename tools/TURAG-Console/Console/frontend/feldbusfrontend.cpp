@@ -11,7 +11,7 @@
 #include "plaintextfrontend.h"
 
 #include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
-#include <tina++/feldbus/host/aktor.h>
+#include <tina++/feldbus/host/legacystellantriebedevice.h>
 #include <tina++/feldbus/host/dcmotor.h>
 #include <tina++/feldbus/dynamixel/dynamixeldevice.h>
 #include <tina++/feldbus/dynamixel/dynamixel.h>
@@ -633,7 +633,7 @@ void FeldbusFrontend::onDeviceSelected(int row) {
             }
 
             // create Aktor view for generic Aktor
-            Feldbus::Aktor* aktor = dynamic_cast<Feldbus::Aktor*>(selectedDevice_->device.get());
+            Feldbus::LegacyStellantriebeDevice* aktor = dynamic_cast<Feldbus::LegacyStellantriebeDevice*>(selectedDevice_->device.get());
             if (aktor) {
                 feldbusWidget = new FeldbusAktorView(aktor);
                 splitter->addWidget(feldbusWidget);

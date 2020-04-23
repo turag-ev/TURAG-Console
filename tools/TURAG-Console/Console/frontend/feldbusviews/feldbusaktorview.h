@@ -2,7 +2,7 @@
 #define FELDBUSAKTORVIEW_H
 
 #include <QWidget>
-#include <tina++/feldbus/host/aktor.h>
+#include <tina++/feldbus/host/legacystellantriebedevice.h>
 #include <frontend/graphutils/datagraph.h>
 #include <QLabel>
 #include <QLineEdit>
@@ -33,7 +33,7 @@ class FeldbusAktorView : public QWidget
     Q_OBJECT
 
 public:
-    explicit FeldbusAktorView(Aktor* aktor, QWidget *parent = 0);
+    explicit FeldbusAktorView(LegacyStellantriebeDevice* aktor, QWidget *parent = 0);
     ~FeldbusAktorView(void);
 
 protected slots:
@@ -82,7 +82,7 @@ protected:
 		wait, startCapture
 	};
 
-    Aktor* actor;
+    LegacyStellantriebeDevice* actor;
 
     DataGraph* plot;
     QPushButton* getCommandSet;
@@ -95,7 +95,7 @@ protected:
     QLabel* updateDuration;
     QTimer* updateTimer;
     QList<CommandsetEntry> commandsetGrid;
-    Aktor::Command_t* commandset;
+    LegacyStellantriebeDevice::Command_t* commandset;
     QSignalMapper* setMapper;
 	QSignalMapper* addScriptSnippetMapper;
     QTime updateStartTime;
