@@ -12,7 +12,6 @@
 
 #include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
 #include <tina++/feldbus/host/legacystellantriebedevice.h>
-#include <tina++/feldbus/host/dcmotor.h>
 #include <tina++/feldbus/dynamixel/dynamixeldevice.h>
 #include <tina++/feldbus/dynamixel/dynamixel.h>
 
@@ -622,15 +621,6 @@ void FeldbusFrontend::onDeviceSelected(int row) {
         if (selectedDevice_->device.get()) {
             updateStatisticsTimer_.start(750);
             enableStatistics();
-
-            // create Aktor view for DC motor
-            Feldbus::DCMotor* dcmotor = dynamic_cast<Feldbus::DCMotor*>(selectedDevice_->device.get());
-            if (dcmotor) {
-                feldbusWidget = new FeldbusAktorView(dcmotor);
-                splitter->addWidget(feldbusWidget);
-                splitter->setStretchFactor(1,2);
-                return;
-            }
 
             // create Aktor view for generic Aktor
             Feldbus::LegacyStellantriebeDevice* aktor = dynamic_cast<Feldbus::LegacyStellantriebeDevice*>(selectedDevice_->device.get());

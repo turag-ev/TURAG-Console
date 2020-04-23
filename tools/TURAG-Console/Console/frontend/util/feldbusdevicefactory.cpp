@@ -4,7 +4,7 @@
 #include <tina/feldbus/protocol/turag_feldbus_fuer_lokalisierungssensoren.h>
 #include <tina/feldbus/protocol/turag_feldbus_fuer_aseb.h>
 #include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
-#include <tina++/feldbus/host/dcmotor.h>
+#include <tina++/feldbus/host/legacystellantriebedevice.h>
 #include <tina++/feldbus/host/aseb.h>
 #include <tina++/feldbus/host/bootloader.h>
 #include <tina++/feldbus/host/feldbusabstraction.h>
@@ -33,35 +33,39 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
 	switch (device_info.device_info.deviceProtocolId()) {
     case TURAG_FELDBUS_DEVICE_PROTOCOL_STELLANTRIEBE:
         protocolIdString = "Stellantrieb";
+        device = new Feldbus::LegacyStellantriebeDevice(
+                    device_info.device_name.constData(),
+                    device_info.address,
+                    bus,
+                    device_info.device_info.crcType(),
+                    device_info.addressLength);
 
 		switch (device_info.device_info.deviceTypeId()) {
         case TURAG_FELDBUS_STELLANTRIEBE_DEVICE_TYPE_DC:
-            device = new Feldbus::DCMotor(
-                        device_info.device_name.constData(),
-                        device_info.address,
-						bus,
-						device_info.device_info.crcType(),
-                        device_info.addressLength);
             deviceTypeString = "DC-Motor";
             break;
 
         case TURAG_FELDBUS_STELLANTRIEBE_DEVICE_TYPE_SERVO:
-            device = new Feldbus::LegacyStellantriebeDevice(
-                        device_info.device_name.constData(),
-                        device_info.address,
-						bus,
-						device_info.device_info.crcType(),
-                        device_info.addressLength);
             deviceTypeString = "Servo-Motor";
             break;
 
+        case TURAG_FELDBUS_STELLANTRIEBE_DEVICE_TYPE_STEPPER:
+            deviceTypeString = "Schrittmotor";
+            break;
+
+        case TURAG_FELDBUS_STELLANTRIEBE_DEVICE_TYPE_POWERPLANE:
+            deviceTypeString = "Powerplane";
+            break;
+
+        case TURAG_FELDBUS_STELLANTRIEBE_DEVICE_TYPE_ESCON:
+            deviceTypeString = "ESCON-Motherboard";
+            break;
+
+        case TURAG_FELDBUS_STELLANTRIEBE_DEVICE_TYPE_FARBSENSOR:
+            deviceTypeString = "Farbsensor";
+            break;
+
         default:
-            device = new Feldbus::LegacyStellantriebeDevice(
-                         device_info.device_name.constData(),
-                         device_info.address,
-                         bus,
-                         device_info.device_info.crcType(),
-                         device_info.addressLength);
             deviceTypeString = "unbekannt";
             break;
         }
@@ -104,7 +108,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
 						bus,
 						device_info.device_info.crcType(),
                         device_info.addressLength);
-            deviceTypeString = "generic ASEB";
+            deviceTypeString = "ASEB";
             break;
 
         default:
