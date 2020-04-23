@@ -642,7 +642,7 @@ void FeldbusFrontend::onDeviceSelected(int row) {
             }
 
             // create ASEB view
-            Feldbus::Aseb* aseb = dynamic_cast<Feldbus::Aseb*>(selectedDevice_->device.get());
+            Feldbus::ASEBBase* aseb = dynamic_cast<Feldbus::ASEBBase*>(selectedDevice_->device.get());
             if (aseb) {
                 feldbusWidget = new FeldbusAsebView(aseb);
                 splitter->addWidget(feldbusWidget);

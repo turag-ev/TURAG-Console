@@ -98,7 +98,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
 
 		switch (device_info.device_info.deviceTypeId()) {
         case TURAG_FELDBUS_ASEB_GENERIC:
-            device = new Feldbus::Aseb(
+            device = new Feldbus::ASEBBase(
                         device_info.device_name.constData(),
                         device_info.address,
 						bus,

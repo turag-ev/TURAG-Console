@@ -27,7 +27,7 @@ class FeldbusAsebView : public QWidget
     Q_OBJECT
 
 public:
-    explicit FeldbusAsebView(Aseb* aseb, QWidget *parent = 0);
+    explicit FeldbusAsebView(ASEBBase* aseb, QWidget *parent = 0);
     ~FeldbusAsebView(void);
 
 protected slots:
@@ -69,9 +69,9 @@ protected:
     QList<LabelLineeditCombo> pwmOutputs_;
     QList<LabelLineeditCombo> pwmSpeeds_;
 
-    Aseb* aseb_;
-    Aseb::Analog_t* asebAnalogInputSet_;
-    Aseb::Pwm_t* asebPwmOutputSet_;
+    ASEBBase* aseb_;
+    ASEBBase::Analog_t* asebAnalogInputSet_;
+    ASEBBase::Pwm_t* asebPwmOutputSet_;
     uint8_t* asebSyncBuffer_;
 
     QPushButton* resetOutputs_;

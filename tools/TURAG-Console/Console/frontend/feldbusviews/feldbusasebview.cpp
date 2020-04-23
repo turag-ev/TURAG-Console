@@ -13,7 +13,7 @@
 #include <QIntValidator>
 #include "frontend/graphutils/datagraph.h"
 
-FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
+FeldbusAsebView::FeldbusAsebView(ASEBBase* aseb, QWidget *parent) :
     QWidget(parent), aseb_(aseb), asebAnalogInputSet_(nullptr),
     asebPwmOutputSet_(nullptr), asebSyncBuffer_(nullptr)
 {
@@ -143,8 +143,8 @@ FeldbusAsebView::FeldbusAsebView(Aseb* aseb, QWidget *parent) :
     analogInputSize_->setText(QString("%1").arg(analogInSize));
     pwmOutputSize_->setText(QString("%1").arg(pwmOutSize));
 
-    asebAnalogInputSet_ = new Aseb::Analog_t[analogInSize];
-    asebPwmOutputSet_ = new Aseb::Pwm_t[pwmOutSize];
+    asebAnalogInputSet_ = new ASEBBase::Analog_t[analogInSize];
+    asebPwmOutputSet_ = new ASEBBase::Pwm_t[pwmOutSize];
     asebSyncBuffer_ = new uint8_t[syncSize];
 
     if (aseb_->initialize(asebSyncBuffer_, syncSize, asebAnalogInputSet_, analogInSize, asebPwmOutputSet_, pwmOutSize)) {
