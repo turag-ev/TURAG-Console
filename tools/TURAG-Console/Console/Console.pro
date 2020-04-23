@@ -109,7 +109,6 @@ SOURCES +=\
     frontend/feldbusviews/dynamixelview.cpp \
     frontend/feldbusviews/feldbusaktorview.cpp \
     frontend/feldbusviews/feldbusasebview.cpp \
-    frontend/feldbusviews/feldbusfarbsensorview.cpp \
     frontend/graphutils/canvaspicker.cpp \
     frontend/graphutils/colormap.cpp \
     frontend/graphutils/datagraph.cpp \
@@ -163,7 +162,6 @@ HEADERS  += \
     frontend/feldbusviews/dynamixelview.h \
     frontend/feldbusviews/feldbusaktorview.h \
     frontend/feldbusviews/feldbusasebview.h \
-    frontend/feldbusviews/feldbusfarbsensorview.h \
     frontend/graphutils/canvaspicker.h \
     frontend/graphutils/colormap.h \
     frontend/graphutils/datagraph.h \

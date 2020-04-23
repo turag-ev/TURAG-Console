@@ -5,8 +5,6 @@
 #include <tina/feldbus/protocol/turag_feldbus_fuer_aseb.h>
 #include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
 #include <tina++/feldbus/host/dcmotor.h>
-#include <tina++/feldbus/host/farbsensor.h>
-#include <tina++/feldbus/host/servo.h>
 #include <tina++/feldbus/host/aseb.h>
 #include <tina++/feldbus/host/bootloader.h>
 #include <tina++/feldbus/host/feldbusabstraction.h>
@@ -48,7 +46,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
             break;
 
         case TURAG_FELDBUS_STELLANTRIEBE_DEVICE_TYPE_SERVO:
-            device = new Feldbus::Servo(
+            device = new Feldbus::Aktor(
                         device_info.device_name.constData(),
                         device_info.address,
 						bus,
@@ -74,12 +72,6 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
 
 		switch (device_info.device_info.deviceTypeId()) {
         case TURAG_FELDBUS_LOKALISIERUNGSSENSOREN_DEVICE_TYPE_COLORSENSOR:
-            device = new Feldbus::Farbsensor(
-                        device_info.device_name.constData(),
-                        device_info.address,
-						bus,
-						device_info.device_info.crcType(),
-                        device_info.addressLength);
             deviceTypeString = "Farbsensor";
             break;
 
@@ -94,7 +86,6 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
         case TURAG_FELDBUS_LOKALISIERUNGSSENSOREN_DEVICE_TYPE_IMU_TESTBOARD:
             deviceTypeString = "IMU-Testboard";
             break;
-
 
         default:
             deviceTypeString = "unbekannt";

@@ -1,5 +1,4 @@
 #include "feldbusfrontend.h"
-#include "feldbusviews/feldbusfarbsensorview.h"
 #include "feldbusviews/dynamixelview.h"
 #include "feldbusviews/feldbusaktorview.h"
 #include "feldbusviews/feldbusasebview.h"
@@ -12,10 +11,8 @@
 #include "plaintextfrontend.h"
 
 #include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
-#include <tina++/feldbus/host/farbsensor.h>
 #include <tina++/feldbus/host/aktor.h>
 #include <tina++/feldbus/host/dcmotor.h>
-#include <tina++/feldbus/host/servo.h>
 #include <tina++/feldbus/dynamixel/dynamixeldevice.h>
 #include <tina++/feldbus/dynamixel/dynamixel.h>
 
@@ -626,28 +623,10 @@ void FeldbusFrontend::onDeviceSelected(int row) {
             updateStatisticsTimer_.start(750);
             enableStatistics();
 
-            // create Farbsensor view
-            Feldbus::Farbsensor* farbsensor = dynamic_cast<Feldbus::Farbsensor*>(selectedDevice_->device.get());
-            if (farbsensor) {
-                feldbusWidget = new FeldbusFarbsensorView(farbsensor);
-                splitter->addWidget(feldbusWidget);
-				splitter->setStretchFactor(1,2);
-                return;
-            }
-
             // create Aktor view for DC motor
             Feldbus::DCMotor* dcmotor = dynamic_cast<Feldbus::DCMotor*>(selectedDevice_->device.get());
             if (dcmotor) {
                 feldbusWidget = new FeldbusAktorView(dcmotor);
-                splitter->addWidget(feldbusWidget);
-                splitter->setStretchFactor(1,2);
-                return;
-            }
-
-            // create Aktor view for servo
-            Feldbus::Servo* servo = dynamic_cast<Feldbus::Servo*>(selectedDevice_->device.get());
-            if (servo) {
-                feldbusWidget = new FeldbusAktorView(servo);
                 splitter->addWidget(feldbusWidget);
                 splitter->setStretchFactor(1,2);
                 return;
