@@ -625,12 +625,18 @@ bool DataGraph::exportOutput(QString fileName) {
         if (fileName.endsWith(".csv")) {
 			QFile data_(fileName);
 			if (data_.open(QFile::WriteOnly | QFile::Truncate)) {
+                static constexpr char FIELD_DELIM[] = ",";
+                static constexpr char ROW_DELIM[] = "\n";
 				QTextStream out(&data_);
-
-
-
-                out << "Result: " << qSetFieldWidth(10) << left << 3.14 << 2.7;
-                // writes "Result: 3.14      2.7       "
+                out << "\"title\"" << FIELD_DELIM << "\"x\"" << FIELD_DELIM << "\"y\"" << ROW_DELIM;
+                for (QwtPlotCurve* curve : channels) {
+                    QString title = "\"" + curve->title().text().toHtmlEscaped() + "\"";
+                    for (size_t i = 0; i < curve->data()->size(); i++) {
+                        auto x = curve->data()->sample(i).x();
+                        auto y = curve->data()->sample(i).y();
+                        out << title << FIELD_DELIM << x << FIELD_DELIM << y << ROW_DELIM;
+                    }
+                }
                 return true;
             } else {
                 return false;
