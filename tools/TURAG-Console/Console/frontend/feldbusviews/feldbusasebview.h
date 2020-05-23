@@ -9,6 +9,7 @@
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QTime>
+#include <QElapsedTimer>
 #include <frontend/graphutils/datagraph.h>
 
 class QLabel;
@@ -83,7 +84,7 @@ protected:
 
 
     QTimer updateTimer_;
-    QTime updateStartTime;
+    QElapsedTimer updateStartTime;
 
     DataGraph* plot;
     LineEditExt* updateInterval;

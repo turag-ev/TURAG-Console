@@ -73,17 +73,17 @@ QVariant WebDAVTreeModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-	switch (role) {
-	case Qt::DisplayRole: {
-		WebDAVTreeItem *item = static_cast<WebDAVTreeItem*>(index.internalPointer());
-		return item->data(index.column());
-	}
-	case Qt::DecorationRole:
+    switch (role) {
+    case Qt::DisplayRole: {
+            WebDAVTreeItem *item = static_cast<WebDAVTreeItem*>(index.internalPointer());
+            return item->data(index.column());
+        }
+    case Qt::DecorationRole:
         return IconManager::get("folder");
 
-	default:
-		return QVariant();
-	}
+    default:
+        return QVariant();
+    }
 }
 
 Qt::ItemFlags WebDAVTreeModel::flags(const QModelIndex &index) const

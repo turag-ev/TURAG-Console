@@ -570,9 +570,9 @@ void MainWindow::dumpAllObjectTrees(void) {
                 if ( obj->isWidgetType() ) {
 					QWidget *w = static_cast<QWidget*>(obj);
                     if ( w->isVisible() ) {
-                        flags.sprintf( "<%d,%d,%d,%d>", w->x(),
-                                       w->y(), w->width(),
-                                       w->height() );
+                        flags = QString::asprintf( "<%d,%d,%d,%d>", w->x(),
+                                                   w->y(), w->width(),
+                                                   w->height() );
                     } else {
                         flags = "invisible";
                     }

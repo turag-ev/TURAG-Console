@@ -567,7 +567,7 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
     dynamixelDevices_.clear();
     deviceInfo_->clear();
 
-    turag_dxl_initialize((FeldbusAbstraction*)this);
+    turag_dxl_initialize(static_cast<FeldbusAbstraction*>(this));
 
     for (std::shared_ptr<FeldbusDeviceWrapper> pDevWrapper: devices_) {
         if (pDevWrapper.get()) {

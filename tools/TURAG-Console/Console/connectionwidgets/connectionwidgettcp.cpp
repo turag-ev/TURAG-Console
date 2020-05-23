@@ -289,7 +289,7 @@ void ConnectionWidgetTcp::fillDeviceList(void) {
         }
         else {
             descr.append(" <offline>");
-            item->setTextColor(Qt::red);
+            item->setForeground(Qt::red);
         }
 
         item->setText(descr);

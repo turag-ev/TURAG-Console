@@ -11,6 +11,7 @@
 #include <QList>
 #include <QString>
 #include <QTime>
+#include <QElapsedTimer>
 
 
 class QGridLayout;
@@ -98,7 +99,7 @@ protected:
     LegacyStellantriebeDevice::Command_t* commandset;
     QSignalMapper* setMapper;
 	QSignalMapper* addScriptSnippetMapper;
-    QTime updateStartTime;
+    QElapsedTimer updateStartTime;
 
 	QTextEdit* scriptEditor;
 	QTimer* scriptExecTimer;
