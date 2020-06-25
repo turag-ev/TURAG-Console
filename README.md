@@ -2,7 +2,7 @@
 ## Building
 ### Windows
 - download and unpack latest version of [Qwt](https://qwt.sourceforge.io/)
-- to speed up compilation, you can comment out the following entries in qwtconfig.pri:
+- to speed up compilation, you can comment out the following entries in *qwtconfig.pri*:
   - *QWT_CONFIG += QwtDll*
   - *QWT_CONFIG += QwtDesigner*
 - follow further steps as outlined in *doc/html/qwtinstall.html*
