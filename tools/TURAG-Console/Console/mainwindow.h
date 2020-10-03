@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef TURAG_CONSOLE_CONSOLE_MAINWINDOW_H
+#define TURAG_CONSOLE_CONSOLE_MAINWINDOW_H
 
 #include <QMainWindow>
 
@@ -97,4 +97,4 @@ private:
 	PopupContainerWidget* popupContainer;
 };
 
-#endif // MAINWINDOW_H
+#endif // TURAG_CONSOLE_CONSOLE_MAINWINDOW_H

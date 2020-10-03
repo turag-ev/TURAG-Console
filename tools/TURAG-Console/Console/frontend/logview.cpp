@@ -78,7 +78,7 @@ void RobotLogFrontend::activated(QModelIndex index)
 
 void RobotLogFrontend::onConnected(bool readOnly, QIODevice* dev)
 {
-	UNUSED(dev);
+	TURAG_USE(dev);
 
 	log_view_->setScrolling(true);
     log_view_->setReadOnly(readOnly);
@@ -87,7 +87,7 @@ void RobotLogFrontend::onConnected(bool readOnly, QIODevice* dev)
 
 void RobotLogFrontend::onDisconnected(bool reconnecting)
 {
-    UNUSED(reconnecting);
+    TURAG_USE(reconnecting);
 
 	refresh_log_timer_.stop();
 }

@@ -1,5 +1,5 @@
-#ifndef POPUPTOOLBUTTON_H
-#define POPUPTOOLBUTTON_H
+#ifndef TURAG_CONSOLE_CONSOLE_LIBS_POPUP_POPUPTOOLBUTTON_H
+#define TURAG_CONSOLE_CONSOLE_LIBS_POPUP_POPUPTOOLBUTTON_H
 
 #include "popupcontainerwidget.h"
 
@@ -39,4 +39,4 @@ private:
 	PopupContainerWidget::DisplayDirection direction;
 };
 
-#endif // POPUPTOOLBUTTON_H
+#endif // TURAG_CONSOLE_CONSOLE_LIBS_POPUP_POPUPTOOLBUTTON_H

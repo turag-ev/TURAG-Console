@@ -1,5 +1,5 @@
-#ifndef FELDBUSFRONTEND_H
-#define FELDBUSFRONTEND_H
+#ifndef TURAG_CONSOLE_CONSOLE_FRONTEND_FELDBUSFRONTEND_H
+#define TURAG_CONSOLE_CONSOLE_FRONTEND_FELDBUSFRONTEND_H
 
 #include "basefrontend.h"
 #include "util/feldbusdevicefactory.h"
@@ -159,4 +159,4 @@ private:
 	int feldbusTimeout_ms;
 };
 
-#endif // FELDBUSFRONTEND_H
+#endif // TURAG_CONSOLE_CONSOLE_FRONTEND_FELDBUSFRONTEND_H

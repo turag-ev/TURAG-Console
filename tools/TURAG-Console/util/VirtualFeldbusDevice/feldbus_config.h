@@ -4,8 +4,8 @@
  *  @author		Martin Oemus <martin@oemus.net>
  * 
  */
-#ifndef FELDBUS_CONFIG_H_
-#define FELDBUS_CONFIG_H_
+#ifndef TURAG_CONSOLE_UTIL_VIRTUALFELDBUSDEVICE_FELDBUS_CONFIG_H
+#define TURAG_CONSOLE_UTIL_VIRTUALFELDBUSDEVICE_FELDBUS_CONFIG_H
 
 #include <tina/feldbus/protocol/turag_feldbus_fuer_lokalisierungssensoren.h>
 #include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
@@ -30,4 +30,4 @@
 #define TURAG_FELDBUS_STELLANTRIEBE_COMMAND_NAMES_USING_AVR_PROGMEM	0
 
 
-#endif /* FELDBUS_CONFIG_H_ */
+#endif // TURAG_CONSOLE_UTIL_VIRTUALFELDBUSDEVICE_FELDBUS_CONFIG_H

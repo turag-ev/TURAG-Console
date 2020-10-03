@@ -1,5 +1,5 @@
-#ifndef MCFRONTEND_H
-#define MCFRONTEND_H
+#ifndef TURAG_CONSOLE_CONSOLE_FRONTEND_ROBOTFRONTEND_H
+#define TURAG_CONSOLE_CONSOLE_FRONTEND_ROBOTFRONTEND_H
 
 #include "basefrontend.h"
 
@@ -38,4 +38,4 @@ private:
     QTabWidget* tabs;
 };
 
-#endif // MCFRONTEND_H
+#endif // TURAG_CONSOLE_CONSOLE_FRONTEND_ROBOTFRONTEND_H

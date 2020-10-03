@@ -1,5 +1,5 @@
-#ifndef QLINEEDIT2_H
-#define QLINEEDIT2_H
+#ifndef TURAG_CONSOLE_CONSOLE_LIBS_LINEEDITEXT_H
+#define TURAG_CONSOLE_CONSOLE_LIBS_LINEEDITEXT_H
 
 #include <QLineEdit>
 #include <QSettings>
@@ -56,4 +56,4 @@ private:
 
 };
 
-#endif // QLINEEDIT2_H
+#endif // TURAG_CONSOLE_CONSOLE_LIBS_LINEEDITEXT_H

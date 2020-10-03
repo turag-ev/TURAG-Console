@@ -1,5 +1,5 @@
-#ifndef WEBDAVBACKEND_H
-#define WEBDAVBACKEND_H
+#ifndef TURAG_CONSOLE_CONSOLE_BACKEND_WEBDAVBACKEND_H
+#define TURAG_CONSOLE_CONSOLE_BACKEND_WEBDAVBACKEND_H
 
 #include "basebackend.h"
 #include <qt/qwebdav/qwebdavlib/qwebdav.h>
@@ -35,4 +35,4 @@ private:
 	State state;
 };
 
-#endif // WEBDAVBACKEND_H
+#endif // TURAG_CONSOLE_CONSOLE_BACKEND_WEBDAVBACKEND_H

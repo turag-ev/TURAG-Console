@@ -1,5 +1,5 @@
-#ifndef OSCILLOSCOPE_H
-#define OSCILLOSCOPE_H
+#ifndef TURAG_CONSOLE_CONSOLE_FRONTEND_OSCILLOSCOPE_H
+#define TURAG_CONSOLE_CONSOLE_FRONTEND_OSCILLOSCOPE_H
 
 #include "basefrontend.h"
 #include "graphutils/datagraph.h"
@@ -56,4 +56,4 @@ protected:
 
 
 
-#endif // OSCILLOSCOPE_H
+#endif // TURAG_CONSOLE_CONSOLE_FRONTEND_OSCILLOSCOPE_H

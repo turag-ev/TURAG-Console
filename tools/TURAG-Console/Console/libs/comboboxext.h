@@ -1,5 +1,5 @@
-#ifndef COMBOBOXEXT_H
-#define COMBOBOXEXT_H
+#ifndef TURAG_CONSOLE_CONSOLE_LIBS_COMBOBOXEXT_H
+#define TURAG_CONSOLE_CONSOLE_LIBS_COMBOBOXEXT_H
 
 #include <QComboBox>
 #include <QSettings>
@@ -42,4 +42,4 @@ private:
     int savedIndex;
 };
 
-#endif // COMBOBOXEXT_H
+#endif // TURAG_CONSOLE_CONSOLE_LIBS_COMBOBOXEXT_H

@@ -1,5 +1,5 @@
-#ifndef LOGINDIALOG_H
-#define LOGINDIALOG_H
+#ifndef TURAG_CONSOLE_CONSOLE_LIBS_LOGINDIALOG_H
+#define TURAG_CONSOLE_CONSOLE_LIBS_LOGINDIALOG_H
 
 #include <QDialog>
 #include <QLineEdit>
@@ -30,4 +30,4 @@ private:
 	QDialogButtonBox* buttons;
 };
 
-#endif // LOGINDIALOG_H
+#endif // TURAG_CONSOLE_CONSOLE_LIBS_LOGINDIALOG_H

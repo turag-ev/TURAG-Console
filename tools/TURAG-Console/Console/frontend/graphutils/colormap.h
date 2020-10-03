@@ -1,5 +1,5 @@
-#ifndef COLORMAP_H
-#define COLORMAP_H
+#ifndef TURAG_CONSOLE_CONSOLE_FRONTEND_GRAPHUTILS_COLORMAP_H
+#define TURAG_CONSOLE_CONSOLE_FRONTEND_GRAPHUTILS_COLORMAP_H
 
 #include <QColor>
 
@@ -58,4 +58,4 @@ public:
     virtual QColor getColor(int index);
 };
 
-#endif // COLORMAP_H
+#endif // TURAG_CONSOLE_CONSOLE_FRONTEND_GRAPHUTILS_COLORMAP_H

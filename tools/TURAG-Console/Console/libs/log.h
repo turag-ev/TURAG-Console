@@ -1,5 +1,5 @@
-#ifndef LOGGERMODEL_H
-#define LOGGERMODEL_H
+#ifndef TURAG_CONSOLE_CONSOLE_LIBS_LOG_H
+#define TURAG_CONSOLE_CONSOLE_LIBS_LOG_H
 
 #include <QAbstractTableModel>
 #include <QList>
@@ -212,4 +212,4 @@ private:
 
 
 
-#endif // LOGGERMODEL_H
+#endif // TURAG_CONSOLE_CONSOLE_LIBS_LOG_H

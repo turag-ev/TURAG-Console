@@ -1,5 +1,5 @@
-#ifndef BUTTONGROUPEXT
-#define BUTTONGROUPEXT
+#ifndef TURAG_CONSOLE_CONSOLE_LIBS_BUTTONGROUPEXT_H
+#define TURAG_CONSOLE_CONSOLE_LIBS_BUTTONGROUPEXT_H
 
 #include <QButtonGroup>
 #include <QSettings>
@@ -58,5 +58,5 @@ protected slots:
 };
 
 
-#endif // BUTTONGROUPEXT
+#endif // TURAG_CONSOLE_CONSOLE_LIBS_BUTTONGROUPEXT_H
 

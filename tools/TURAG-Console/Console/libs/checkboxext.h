@@ -1,5 +1,5 @@
-#ifndef CHECKBOXEXT_H
-#define CHECKBOXEXT_H
+#ifndef TURAG_CONSOLE_CONSOLE_LIBS_CHECKBOXEXT_H
+#define TURAG_CONSOLE_CONSOLE_LIBS_CHECKBOXEXT_H
 
 #include <QCheckBox>
 #include <QSettings>
@@ -39,4 +39,4 @@ protected slots:
 
 };
 
-#endif // CHECKBOXEXT_H
+#endif // TURAG_CONSOLE_CONSOLE_LIBS_CHECKBOXEXT_H

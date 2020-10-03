@@ -1,5 +1,5 @@
-#ifndef SPLITTEREXT_H
-#define SPLITTEREXT_H
+#ifndef TURAG_CONSOLE_CONSOLE_LIBS_SPLITTEREXT_H
+#define TURAG_CONSOLE_CONSOLE_LIBS_SPLITTEREXT_H
 
 #include <QSplitter>
 #include <QSettings>
@@ -47,4 +47,4 @@ protected slots:
 
 };
 
-#endif // SPLITTEREXT_H
+#endif // TURAG_CONSOLE_CONSOLE_LIBS_SPLITTEREXT_H

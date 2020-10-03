@@ -1,5 +1,5 @@
-#ifndef BASEBACKEND_H
-#define BASEBACKEND_H
+#ifndef TURAG_CONSOLE_CONSOLE_BACKEND_BASEBACKEND_H
+#define TURAG_CONSOLE_CONSOLE_BACKEND_BASEBACKEND_H
 
 #include <memory>
 #include <QObject>
@@ -157,4 +157,4 @@ private:
 	bool streamCloseWasCalled;
 };
 
-#endif // BASEBACKEND_H
+#endif // TURAG_CONSOLE_CONSOLE_BACKEND_BASEBACKEND_H

@@ -1,5 +1,5 @@
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#ifndef TURAG_CONSOLE_CONSOLE_CONTROLLER_H
+#define TURAG_CONSOLE_CONSOLE_CONTROLLER_H
 
 #include <QObject>
 #include <QList>
@@ -56,4 +56,4 @@ private:
     bool autoSaveOn;
 };
 
-#endif // CONTROLLER_H
+#endif // TURAG_CONSOLE_CONSOLE_CONTROLLER_H

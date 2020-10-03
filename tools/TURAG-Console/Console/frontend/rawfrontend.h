@@ -1,5 +1,5 @@
-#ifndef RawFrontend_H
-#define RawFrontend_H
+#ifndef TURAG_CONSOLE_CONSOLE_FRONTEND_RAWFRONTEND_H
+#define TURAG_CONSOLE_CONSOLE_FRONTEND_RAWFRONTEND_H
 
 #include "basefrontend.h"
 #include <QTimer>
@@ -86,4 +86,4 @@ private:
 
 };
 
-#endif // RawFrontend_H
+#endif // TURAG_CONSOLE_CONSOLE_FRONTEND_RAWFRONTEND_H

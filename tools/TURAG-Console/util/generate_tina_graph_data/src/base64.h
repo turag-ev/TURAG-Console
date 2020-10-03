@@ -22,8 +22,8 @@
  * \see http://en.wikipedia.org/wiki/Base64
  */
 
-#ifndef TINA_UTILS_BASE64_H_
-#define TINA_UTILS_BASE64_H_
+#ifndef TURAG_CONSOLE_UTIL_GENERATE_TINA_GRAPH_DATA_SRC_BASE64_H
+#define TURAG_CONSOLE_UTIL_GENERATE_TINA_GRAPH_DATA_SRC_BASE64_H
 
 #include <stdint.h>
 
@@ -80,4 +80,4 @@ int turag_base64_decode(const uint8_t *encoded, unsigned len, uint8_t *data);
 #endif
 
 
-#endif /* TINA_UTILS_BASE64_H_ */
+#endif // TURAG_CONSOLE_UTIL_GENERATE_TINA_GRAPH_DATA_SRC_BASE64_H

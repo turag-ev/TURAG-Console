@@ -1,5 +1,5 @@
-#ifndef POPUPWIDGET_H
-#define POPUPWIDGET_H
+#ifndef TURAG_CONSOLE_CONSOLE_LIBS_POPUP_POPUPWIDGET_H
+#define TURAG_CONSOLE_CONSOLE_LIBS_POPUP_POPUPWIDGET_H
 
 #include "resizableframe.h"
 
@@ -39,4 +39,4 @@ private:
 	QString saveGeometryIdentifier;
 };
 
-#endif // POPUPWIDGET_H
+#endif // TURAG_CONSOLE_CONSOLE_LIBS_POPUP_POPUPWIDGET_H

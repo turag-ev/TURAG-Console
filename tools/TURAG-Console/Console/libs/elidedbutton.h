@@ -7,8 +7,8 @@
 * http://www.gnu.org/licenses/lgpl.html
 */
 
-#ifndef ELIDEDBUTTON_H
-#define ELIDEDBUTTON_H
+#ifndef TURAG_CONSOLE_CONSOLE_LIBS_ELIDEDBUTTON_H
+#define TURAG_CONSOLE_CONSOLE_LIBS_ELIDEDBUTTON_H
 
 #include <QPushButton>
 
@@ -96,4 +96,4 @@ private:
    QString mElidedText;
 };
 
-#endif
+#endif // TURAG_CONSOLE_CONSOLE_LIBS_ELIDEDBUTTON_H

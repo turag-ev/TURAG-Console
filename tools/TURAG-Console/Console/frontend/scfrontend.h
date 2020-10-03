@@ -1,5 +1,5 @@
-#ifndef SCFRONTEND_H
-#define SCFRONTEND_H
+#ifndef TURAG_CONSOLE_CONSOLE_FRONTEND_SCFRONTEND_H
+#define TURAG_CONSOLE_CONSOLE_FRONTEND_SCFRONTEND_H
 
 #include <libsimeurobot/fwd.h>
 #include <libsimeurobot/appcontext.h>
@@ -58,4 +58,4 @@ private:
     friend class ConsoleRobotVis;
 };
 
-#endif // SCFRONTEND_H
+#endif // TURAG_CONSOLE_CONSOLE_FRONTEND_SCFRONTEND_H

@@ -1,5 +1,5 @@
-#ifndef TCPBACKEND_H
-#define TCPBACKEND_H
+#ifndef TURAG_CONSOLE_CONSOLE_BACKEND_TCPBACKEND_H
+#define TURAG_CONSOLE_CONSOLE_BACKEND_TCPBACKEND_H
 
 #include "basebackend.h"
 #include <Debug_Server/debugserver_protocol.h>
@@ -32,4 +32,4 @@ private:
 
 };
 
-#endif // TCPBACKEND_H
+#endif // TURAG_CONSOLE_CONSOLE_BACKEND_TCPBACKEND_H

@@ -1,5 +1,5 @@
-#ifndef LOGVIEW_H
-#define LOGVIEW_H
+#ifndef TURAG_CONSOLE_CONSOLE_FRONTEND_LOGVIEW_H
+#define TURAG_CONSOLE_CONSOLE_FRONTEND_LOGVIEW_H
 
 #include <QTimer>
 #include <QByteArray>
@@ -17,8 +17,10 @@ class TinaInterface;
 
 class RobotLogFrontend : public BaseFrontend {
     Q_OBJECT
-    NOT_COPYABLE(RobotLogFrontend);
-    NOT_MOVABLE(RobotLogFrontend);
+    RobotLogFrontend(const RobotLogFrontend&) = delete;
+    RobotLogFrontend& operator=(const RobotLogFrontend&) = delete;
+    RobotLogFrontend(RobotLogFrontend&&) = delete;
+    RobotLogFrontend& operator=(RobotLogFrontend&&) = delete;
 
 public:
   explicit
@@ -57,4 +59,4 @@ private:
   QTimer refresh_log_timer_;
 };
 
-#endif // LOGVIEW_H
+#endif // TURAG_CONSOLE_CONSOLE_FRONTEND_LOGVIEW_H

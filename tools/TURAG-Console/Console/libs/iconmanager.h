@@ -1,5 +1,5 @@
-#ifndef ICONMANAGER_H
-#define ICONMANAGER_H
+#ifndef TURAG_CONSOLE_CONSOLE_LIBS_ICONMANAGER_H
+#define TURAG_CONSOLE_CONSOLE_LIBS_ICONMANAGER_H
 
 #include <QIcon>
 
@@ -11,4 +11,4 @@ public:
 	static void clear();
 };
 
-#endif // ICONMANAGER_H
+#endif // TURAG_CONSOLE_CONSOLE_LIBS_ICONMANAGER_H
