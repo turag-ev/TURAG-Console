@@ -230,7 +230,6 @@ include($$TURAG_REPRO/libs/qt/expander-widget/expanderwidget.pri)
 include($$TURAG_REPRO/libs/libcintelhex.pri)
 include($$TURAG_REPRO/libs/qwebdav.pri)
 include($$TURAG_REPRO/tools/Debug-Server/Debug-Server-Protocol.pri)
-include($$TURAG_REPRO/common/TURAG-common.pri)
 include($$TURAG_REPRO/tina/tina.pri)
 include($$TURAG_REPRO/tina/platform/desktop/tina-desktop.pri)
 
