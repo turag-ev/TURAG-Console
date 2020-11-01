@@ -65,6 +65,9 @@ DEFINES *= QT_USE_QSTRINGBUILDER
 # was langsam sein kann.
 DEFINES += QT_STRICT_ITERATORS
 
+# Keine Deprecation Warnings
+DEFINES += QT_NO_DEPRECATED_WARNINGS
+
 # causes segfaults in qwt ?!?!?!?!
 #DEFINES += QT_COORD_TYPE=float
 
@@ -76,6 +79,9 @@ DEFINES += PACKAGE_NAME=$$TARGET
 
 QMAKE_CXXFLAGS += -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast \
     -Wcast-align -Wunused -Winit-self -Woverloaded-virtual -Wno-unused-parameter
+
+# No warnings for Qt system headers
+QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 
 win32: {
   # don't use broken -mms-bitfields flag for windows
