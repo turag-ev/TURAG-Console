@@ -36,6 +36,10 @@ core
 # NXT
 *.sym
 
+#GeGi
+*.elf
+*.hex
+
 #Eclipse
 .project
 .cproject
