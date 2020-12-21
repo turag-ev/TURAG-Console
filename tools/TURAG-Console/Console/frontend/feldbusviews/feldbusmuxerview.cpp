@@ -26,6 +26,10 @@ FeldbusMuxerView::FeldbusMuxerView(Muxer_64_32 *muxer_, QWidget *parent) :
     QWidget(parent), muxer(muxer_)
 {
     if (!muxer->intitialize()) {
+        QVBoxLayout* layout = new QVBoxLayout;
+        QLabel* title = new QLabel("<h1>64-32-Muxer: initialization failed</h1>");
+        layout->addWidget(title);
+        setLayout(layout);
         return;
     }
 
