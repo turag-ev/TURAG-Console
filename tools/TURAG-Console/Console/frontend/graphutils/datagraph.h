@@ -11,6 +11,7 @@
 #include <libs/splitterext.h>
 #include <QSplitter>
 #include <qwt_plot.h>
+#include <qwt_text.h>
 
 class QString;
 class QPointF;
@@ -164,12 +165,12 @@ public:
     virtual void append( const QPointF &point ) = 0;
 	virtual void resetBoundingRect(void) {
 		// invalidate bounding rect
-		d_boundingRect = QRectF();
+		cachedBoundingRect = QRectF();
 		// retrieve new bounding rect
-		d_boundingRect = boundingRect();
+		cachedBoundingRect = boundingRect();
     }
 	void clear(void) {
-		d_samples.clear();
+		m_samples.clear();
 	}
 	virtual CurveDataBase* createInstance(void) = 0;
 };
@@ -199,7 +200,7 @@ public:
 		return new CurveDataFixedX(left, right - left, keepHiddenPoints_);
 	}
 	virtual void resetBoundingRect(void) {
-		d_boundingRect = CurveDataBase::boundingRect();
+		cachedBoundingRect = CurveDataBase::boundingRect();
 	}
 };
 

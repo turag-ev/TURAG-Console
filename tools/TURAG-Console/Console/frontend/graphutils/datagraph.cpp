@@ -841,15 +841,15 @@ void DataGraph::resetChannelGrouping(void) {
 QRectF CurveDataBase::boundingRect() const {
     QRectF rect;
 
-    if (d_samples.size()) {
-        rect.setRight(d_samples[0].x());
-        rect.setLeft(d_samples[0].x());
-        rect.setTop(d_samples[0].y());
-        rect.setBottom(d_samples[0].y());
+    if (m_samples.size()) {
+        rect.setRight(m_samples[0].x());
+        rect.setLeft(m_samples[0].x());
+        rect.setTop(m_samples[0].y());
+        rect.setBottom(m_samples[0].y());
     }
 
-    for (int i = 1; i < d_samples.size(); ++i) {
-        const QPointF& point = d_samples[i];
+    for (int i = 1; i < m_samples.size(); ++i) {
+        const QPointF& point = m_samples[i];
         if (point.x() > rect.right()) {
             rect.setRight(point.x());
         } else if (point.x() < rect.left()) {
@@ -880,26 +880,26 @@ QRectF CurveDataBase::boundingRect() const {
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 QRectF CurveData::boundingRect() const {
-    if (!d_boundingRect.isValid()) {
-        d_boundingRect = CurveDataBase::boundingRect();
+    if (!cachedBoundingRect.isValid()) {
+        cachedBoundingRect = CurveDataBase::boundingRect();
     }
-    return d_boundingRect;
+    return cachedBoundingRect;
 }
 
 
 void CurveData::append( const QPointF &point ) {
-    d_samples += point;
+    m_samples += point;
 
-    if (d_boundingRect.isValid()) {
-        if (point.x() > d_boundingRect.right()) {
-            d_boundingRect.setRight(point.x());
-        } else if (point.x() < d_boundingRect.left()) {
-            d_boundingRect.setLeft(point.x());
+    if (cachedBoundingRect.isValid()) {
+        if (point.x() > cachedBoundingRect.right()) {
+            cachedBoundingRect.setRight(point.x());
+        } else if (point.x() < cachedBoundingRect.left()) {
+            cachedBoundingRect.setLeft(point.x());
         }
-        if (point.y() > d_boundingRect.bottom()) {
-            d_boundingRect.setBottom(point.y());
-        } else if (point.y() < d_boundingRect.top()) {
-            d_boundingRect.setTop(point.y());
+        if (point.y() > cachedBoundingRect.bottom()) {
+            cachedBoundingRect.setBottom(point.y());
+        } else if (point.y() < cachedBoundingRect.top()) {
+            cachedBoundingRect.setTop(point.y());
         }
     }
 }
@@ -912,23 +912,23 @@ void CurveData::append( const QPointF &point ) {
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 QRectF CurveDataFixedX::boundingRect() const {
-    if (!d_boundingRect.isValid()) {
-        d_boundingRect = CurveDataBase::boundingRect();
-        d_boundingRect.setLeft(left);
-        d_boundingRect.setRight(right);
+    if (!cachedBoundingRect.isValid()) {
+        cachedBoundingRect = CurveDataBase::boundingRect();
+        cachedBoundingRect.setLeft(left);
+        cachedBoundingRect.setRight(right);
     }
-    return d_boundingRect;
+    return cachedBoundingRect;
 }
 
 void CurveDataFixedX::append( const QPointF &point ) {
-    if (keepHiddenPoints_|| !d_boundingRect.isValid() || (point.x() >= left && point.x() <= right)) {
-        d_samples += point;
+    if (keepHiddenPoints_|| !cachedBoundingRect.isValid() || (point.x() >= left && point.x() <= right)) {
+        m_samples += point;
 
-        if (d_boundingRect.isValid()) {
-            if (point.y() > d_boundingRect.bottom()) {
-                d_boundingRect.setBottom(point.y());
-            } else if (point.y() < d_boundingRect.top()) {
-                d_boundingRect.setTop(point.y());
+        if (cachedBoundingRect.isValid()) {
+            if (point.y() > cachedBoundingRect.bottom()) {
+                cachedBoundingRect.setBottom(point.y());
+            } else if (point.y() < cachedBoundingRect.top()) {
+                cachedBoundingRect.setTop(point.y());
             }
         }
     }
@@ -942,23 +942,23 @@ void CurveDataFixedX::append( const QPointF &point ) {
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 QRectF CurveDataFixedY::boundingRect() const {
-    if (!d_boundingRect.isValid()) {
-        d_boundingRect = CurveDataBase::boundingRect();
-        d_boundingRect.setBottom(top);
-        d_boundingRect.setTop(bottom);
+    if (!cachedBoundingRect.isValid()) {
+        cachedBoundingRect = CurveDataBase::boundingRect();
+        cachedBoundingRect.setBottom(top);
+        cachedBoundingRect.setTop(bottom);
     }
-    return d_boundingRect;
+    return cachedBoundingRect;
 }
 
 void CurveDataFixedY::append( const QPointF &point ) {
-    if (keepHiddenPoints_|| !d_boundingRect.isValid() || (point.y() >= bottom && point.y() <= top)) {
-        d_samples += point;
+    if (keepHiddenPoints_|| !cachedBoundingRect.isValid() || (point.y() >= bottom && point.y() <= top)) {
+        m_samples += point;
 
-        if (d_boundingRect.isValid()) {
-            if (point.x() > d_boundingRect.right()) {
-                d_boundingRect.setRight(point.x());
-            } else if (point.x() < d_boundingRect.left()) {
-                d_boundingRect.setLeft(point.x());
+        if (cachedBoundingRect.isValid()) {
+            if (point.x() > cachedBoundingRect.right()) {
+                cachedBoundingRect.setRight(point.x());
+            } else if (point.x() < cachedBoundingRect.left()) {
+                cachedBoundingRect.setLeft(point.x());
             }
         }
     }
@@ -972,40 +972,40 @@ void CurveDataFixedY::append( const QPointF &point ) {
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 QRectF CurveDataTime::boundingRect() const {
-    if (!d_boundingRect.isValid()) {
-        d_boundingRect = CurveDataBase::boundingRect();
-        if (d_boundingRect.isValid()) {
-            d_boundingRect.setLeft(d_boundingRect.right() - timespan_);
+    if (!cachedBoundingRect.isValid()) {
+        cachedBoundingRect = CurveDataBase::boundingRect();
+        if (cachedBoundingRect.isValid()) {
+            cachedBoundingRect.setLeft(cachedBoundingRect.right() - timespan_);
         }
     }
-    return d_boundingRect;
+    return cachedBoundingRect;
 }
 
 void CurveDataTime::append( const QPointF &point ) {
-    if (keepHiddenPoints_|| !d_boundingRect.isValid() || point.x() >= d_boundingRect.left()) {
-        d_samples += point;
+    if (keepHiddenPoints_|| !cachedBoundingRect.isValid() || point.x() >= cachedBoundingRect.left()) {
+        m_samples += point;
 
-        if (d_boundingRect.isValid()) {
-            if (point.x() > d_boundingRect.right()) {
-                d_boundingRect.setRight(point.x());
-                d_boundingRect.setLeft(d_boundingRect.right() - timespan_);
+        if (cachedBoundingRect.isValid()) {
+            if (point.x() > cachedBoundingRect.right()) {
+                cachedBoundingRect.setRight(point.x());
+                cachedBoundingRect.setLeft(cachedBoundingRect.right() - timespan_);
 
                 if (!keepHiddenPoints_) {
                     // delete old points which are not inside bounding rectangle anymore
                     // We assume points to be chronologically ordered.
-                    QVector<QPointF>::Iterator iter = d_samples.begin();
-                    while(iter != d_samples.end()) {
-                        if (d_boundingRect.contains(*iter)) break;
+                    QVector<QPointF>::Iterator iter = m_samples.begin();
+                    while(iter != m_samples.end()) {
+                        if (cachedBoundingRect.contains(*iter)) break;
                         iter++;
                     }
-                    d_samples.erase(d_samples.begin(), iter);
+                    m_samples.erase(m_samples.begin(), iter);
                 }
             }
 
-            if (point.y() > d_boundingRect.bottom()) {
-                d_boundingRect.setBottom(point.y());
-            } else if (point.y() < d_boundingRect.top()) {
-                d_boundingRect.setTop(point.y());
+            if (point.y() > cachedBoundingRect.bottom()) {
+                cachedBoundingRect.setBottom(point.y());
+            } else if (point.y() < cachedBoundingRect.top()) {
+                cachedBoundingRect.setTop(point.y());
             }
         }
     }
@@ -1019,35 +1019,35 @@ void CurveDataTime::append( const QPointF &point ) {
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 QRectF CurveDataTimeFixedY::boundingRect() const {
-    if (!d_boundingRect.isValid()) {
-        d_boundingRect = CurveDataBase::boundingRect();
-        if (d_boundingRect.isValid()) {
-            d_boundingRect.setLeft(d_boundingRect.right() - timespan_);
-            d_boundingRect.setBottom(top);
-            d_boundingRect.setTop(bottom);
+    if (!cachedBoundingRect.isValid()) {
+        cachedBoundingRect = CurveDataBase::boundingRect();
+        if (cachedBoundingRect.isValid()) {
+            cachedBoundingRect.setLeft(cachedBoundingRect.right() - timespan_);
+            cachedBoundingRect.setBottom(top);
+            cachedBoundingRect.setTop(bottom);
         }
     }
-    return d_boundingRect;
+    return cachedBoundingRect;
 }
 
 void CurveDataTimeFixedY::append( const QPointF &point ) {
-    if (keepHiddenPoints_|| !d_boundingRect.isValid() || (point.x() >= d_boundingRect.left() && point.y() >= bottom && point.y() <= top)) {
-        d_samples += point;
+    if (keepHiddenPoints_|| !cachedBoundingRect.isValid() || (point.x() >= cachedBoundingRect.left() && point.y() >= bottom && point.y() <= top)) {
+        m_samples += point;
 
-        if (d_boundingRect.isValid()) {
-            if (point.x() > d_boundingRect.right()) {
-                d_boundingRect.setRight(point.x());
-                d_boundingRect.setLeft(d_boundingRect.right() - timespan_);
+        if (cachedBoundingRect.isValid()) {
+            if (point.x() > cachedBoundingRect.right()) {
+                cachedBoundingRect.setRight(point.x());
+                cachedBoundingRect.setLeft(cachedBoundingRect.right() - timespan_);
 
                 if (!keepHiddenPoints_) {
                     // delete old points which are not inside bounding rectangle anymore
                     // We assume points to be chronologically ordered.
-                    QVector<QPointF>::Iterator iter = d_samples.begin();
-                    while(iter != d_samples.end()) {
-                        if (d_boundingRect.contains(*iter)) break;
+                    QVector<QPointF>::Iterator iter = m_samples.begin();
+                    while(iter != m_samples.end()) {
+                        if (cachedBoundingRect.contains(*iter)) break;
                         iter++;
                     }
-                    d_samples.erase(d_samples.begin(), iter);
+                    m_samples.erase(m_samples.begin(), iter);
                 }
             }
         }
@@ -1062,21 +1062,21 @@ void CurveDataTimeFixedY::append( const QPointF &point ) {
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 QRectF CurveDataFixedXFixedY::boundingRect() const {
-	if (!d_boundingRect.isValid()) {
-		d_boundingRect.setLeft(left);
-		d_boundingRect.setRight(right);
-		d_boundingRect.setBottom(top);
-		d_boundingRect.setTop(bottom);
+	if (!cachedBoundingRect.isValid()) {
+		cachedBoundingRect.setLeft(left);
+		cachedBoundingRect.setRight(right);
+		cachedBoundingRect.setBottom(top);
+		cachedBoundingRect.setTop(bottom);
 	}
-	return d_boundingRect;
+	return cachedBoundingRect;
 }
 void CurveDataFixedXFixedY::append( const QPointF &point ) {
     if (keepHiddenPoints_|| (
-                point.y() >= d_boundingRect.top() &&
-                point.y() <= d_boundingRect.bottom() &&
-                point.x() >= d_boundingRect.left() &&
-                point.x() <= d_boundingRect.right())) {
-        d_samples += point;
+                point.y() >= cachedBoundingRect.top() &&
+                point.y() <= cachedBoundingRect.bottom() &&
+                point.x() >= cachedBoundingRect.left() &&
+                point.x() <= cachedBoundingRect.right())) {
+        m_samples += point;
     }
 }
 
