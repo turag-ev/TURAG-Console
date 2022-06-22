@@ -151,11 +151,22 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
             device = new Feldbus::BootloaderXmega(
                         device_info.device_name.constData(),
                         device_info.address,
-						bus,
-						device_info.device_info.crcType(),
+                        bus,
+                        device_info.device_info.crcType(),
                         device_info.addressLength);
             deviceTypeString = "BMaX - ATxmega";
             break;
+
+        case TURAG_FELDBUS_BOOTLOADER_STM32V2:
+            device = new Feldbus::BootloaderStm32v2(
+                        device_info.device_name.constData(),
+                        device_info.address,
+                        bus,
+                        device_info.device_info.crcType(),
+                        device_info.addressLength);
+            deviceTypeString = "STM32 (bootloader v2)";
+            break;
+
         default:
             deviceTypeString = "unbekannt";
             break;

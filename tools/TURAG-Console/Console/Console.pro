@@ -94,6 +94,7 @@ QMAKE_CXXFLAGS_RELEASE += -flto
 QMAKE_LFLAGS_RELEASE += -flto
 
 SOURCES +=\
+    frontend/feldbusviews/feldbusbootloaderstm32v2view.cpp \
         mainwindow.cpp \
     backend/basebackend.cpp \
     backend/filebackend.cpp \
@@ -149,6 +150,7 @@ SOURCES +=\
     frontend/feldbusviews/feldbusmuxerview.cpp
 
 HEADERS  += \
+    frontend/feldbusviews/feldbusbootloaderstm32v2view.h \
     mainwindow.h \
     backend/basebackend.h \
     backend/filebackend.h \

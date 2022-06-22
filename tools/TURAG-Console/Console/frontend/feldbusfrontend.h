@@ -61,6 +61,8 @@ protected slots:
 	void onStartInquiry(void);
 	void onDeviceSelected(int row);
 
+    void onReenumerateDevices(void);
+
 	void onStartBootInquiry(void);
 
 	void onStartDynamixelInquiry(void);
@@ -87,6 +89,7 @@ protected:
     ComboBoxExt* checksumCombobox_;
     CheckBoxExt* twoByteAddressCheckbox_;
     QPushButton* startInquiry_;
+    QPushButton* reenumerateDevices_;
     LineEditExt* fromEdit_;
     LineEditExt* toEdit_;
     QIntValidator* fromValidator_;

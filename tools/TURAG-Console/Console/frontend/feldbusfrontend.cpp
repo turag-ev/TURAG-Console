@@ -5,6 +5,7 @@
 #include "feldbusviews/feldbusasebview.h"
 #include "feldbusviews/feldbusbootloaderatmegaview.h"
 #include "feldbusviews/feldbusbootloaderxmegaview.h"
+#include "feldbusviews/feldbusbootloaderstm32v2view.h"
 #include "feldbusviews/feldbusmuxerview.h"
 #include <libs/checkboxext.h>
 #include <libs/comboboxext.h>
@@ -98,6 +99,8 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 	layoutTop->addWidget(toEdit_);
     startInquiry_ = new QPushButton("Geräte suchen");
     layoutTop->addWidget(startInquiry_);
+    reenumerateDevices_ = new QPushButton("Bus adressieren");
+    layoutTop->addWidget(reenumerateDevices_);
 
     dynamixelFromValidator_ = new QIntValidator(0, 252, this);
     dynamixelToValidator_ = new QIntValidator(1, 253, this);
@@ -279,6 +282,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     setLayout(layout);
 
     connect(startInquiry_, SIGNAL(clicked()), this, SLOT(onStartInquiry()));
+    connect(reenumerateDevices_, SIGNAL(clicked()), this, SLOT(onReenumerateDevices()));
     connect(bootloadertoolsStartInquiry_, SIGNAL(clicked()), this, SLOT(onStartBootInquiry()));
     connect(dynamixelStartInquiry_, SIGNAL(clicked()), SLOT(onStartDynamixelInquiry()));
     connect(startBootloader_, SIGNAL(clicked()), this, SLOT(onStartBoot()));
@@ -608,6 +612,41 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
 	setDynamixelInquiryWidgetsEnabled(true);
 }
 
+void FeldbusFrontend::onReenumerateDevices() {
+    Feldbus::Device* dev = new TURAG::Feldbus::Device("", 0, *this, Feldbus::ChecksumType::crc8_icode, TURAG::Feldbus::Device::AddressLength::byte_, 2, 100);
+
+    uint32_t uuid;
+    bool success;
+
+    success = dev->resetAllBusAddresses();
+    onRs485DebugMsg(QString("resetAllBusAddresses: %1").arg(success));
+
+    success = dev->disableBusNeighbors();
+    onRs485DebugMsg(QString("disableBusNeighbors: %1").arg(success));
+
+    unsigned address = 1;
+    unsigned read_address;
+
+    while (dev->executeUuidBroadcastPing(&uuid)) {
+        onRs485DebugMsg(QString("found device: %1").arg(uuid));
+
+        success = dev->setBusAddress(uuid, address);
+        onRs485DebugMsg(QString("setBusAddress: %1").arg(success));
+
+        read_address = 0;
+        success = dev->receiveBusAddress(uuid, &read_address);
+        onRs485DebugMsg(QString("receiveBusAddress: %1 %2").arg(success).arg(read_address));
+
+        ++address;
+
+        success = dev->enableBusNeighbors();
+        onRs485DebugMsg(QString("enableBusNeighbors: %1").arg(success));
+    }
+
+
+    delete dev;
+}
+
 void FeldbusFrontend::onDeviceSelected(int row) {
     feldbusWidget->hide();
 	delete feldbusWidget;
@@ -690,6 +729,16 @@ void FeldbusFrontend::onDeviceSelected(int row) {
                 splitter->setStretchFactor(1,2);
                 return;
             }
+
+            // create Bootloader STM32v2 view
+            Feldbus::BootloaderStm32v2* stm32v2Boot = dynamic_cast<Feldbus::BootloaderStm32v2*>(selectedDevice_->device.get());
+            if (stm32v2Boot) {
+                feldbusWidget = new FeldbusBootloaderStm32v2View(stm32v2Boot, this);
+                splitter->addWidget(feldbusWidget);
+                splitter->setStretchFactor(1,2);
+                return;
+            }
+
             // create generic Bootloader view
             Feldbus::BootloaderAvrBase* genericBoot = dynamic_cast<Feldbus::BootloaderAvrBase*>(selectedDevice_->device.get());
             if (genericBoot) {

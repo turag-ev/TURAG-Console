@@ -14,6 +14,7 @@
 #include <QByteArray>
 #include <QMessageBox>
 #include <QCoreApplication>
+#include <QDebug>
 
 #include <libcintelhex/cintelhex.h>
 
@@ -131,7 +132,17 @@ FeldbusBootloaderBaseView::FeldbusBootloaderBaseView(TURAG::Feldbus::BootloaderA
 
     // read mcu ID
     uint16_t mcuId = bootloader->getMcuId();
-    mcuIdEdit->setText(Feldbus::Bootloader::getMcuName(mcuId) );
+
+    if (mcuId == TURAG_FELDBUS_BOOTLOADER_MCU_ID_STRING) {
+        char id_buffer[300];
+        if (bootloader->receiveMcuIdString(id_buffer)) {
+            mcuIdEdit->setText(id_buffer);
+        } else {
+            mcuIdEdit->setText("error receiveing ID string");
+        }
+    } else {
+        mcuIdEdit->setText(Feldbus::Bootloader::getMcuName(mcuId) );
+    }
 
 	// read flash size
 	uint32_t flashSize = bootloader_->getFlashSize(false);
@@ -289,26 +300,30 @@ void FeldbusBootloaderBaseView::flashImageFile(void) {
 		return;
 	}
 
-	this->setEnabled(false);
+    this->setEnabled(false);
 	QCoreApplication::processEvents();
 
 	// the bootloader might take a little longer to reply
     unsigned originalTimeout = bus->getFeldbusTimeout();
     bus->setFeldbusTimeout(100);
 
-	TURAG::Feldbus::BootloaderAtmega::ErrorCode result = bootloader_->writeFlash(0, dataLength, rawData);
+    TURAG::Feldbus::BootloaderAvrBase::ErrorCode result = doFlashImage(rawData, dataLength);
 
-	if (result == TURAG::Feldbus::BootloaderAtmega::ErrorCode::success) {
+    if (result == TURAG::Feldbus::BootloaderAvrBase::ErrorCode::success) {
 		QMessageBox msg(QMessageBox::Information, "Erfolgreich", "Image erfolgreich zum Gerät übertragen", QMessageBox::Ok);
 		msg.exec();
 	} else {
-		QMessageBox msg(QMessageBox::Critical, bootloader_->errorName(result), bootloader_->errorDescription(result), QMessageBox::Ok);
+        QMessageBox msg(QMessageBox::Critical, bootloader_->errorName(result), bootloader_->errorDescription(result), QMessageBox::Ok);
 		msg.exec();
 	}
 
     bus->setFeldbusTimeout(originalTimeout);
 
 	this->setEnabled(true);
+}
+
+TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderBaseView::doFlashImage(uint8_t* data, uint32_t length) {
+    return bootloader_->writeFlash(0, length, data);
 }
 
 
