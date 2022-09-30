@@ -9,6 +9,7 @@ class QPushButton;
 class QLineEdit;
 class QFormLayout;
 class FeldbusFrontend;
+class QCheckBox;
 
 
 class FeldbusBootloaderBaseView : public QWidget
@@ -24,7 +25,8 @@ public slots:
 protected slots:
 	void openImageFile(void);
 	void checkImageFile(QString path);
-	void flashImageFile(void);
+    void flashImageFile(void);
+    void verifyImageFile(void);
 
 	void openReadImageFile(void);
 	void checkReadImageFile(QString path);
@@ -34,13 +36,16 @@ protected slots:
 
 protected:
     virtual TURAG::Feldbus::BootloaderAvrBase::ErrorCode doFlashImage(uint8_t* data, uint32_t length);
-	void setDisabledTheme(QLineEdit *lineedit);
+    virtual TURAG::Feldbus::BootloaderAvrBase::ErrorCode doVerifyImage(uint8_t* data, uint32_t length);
+    void setDisabledTheme(QLineEdit *lineedit);
 
 	QFormLayout* infoLayout;
 	QLineEdit* mcuIdEdit;
     FeldbusFrontend* bus;
 
 private:
+    void flashAndVerifyImageFile(bool flashImage, bool verifyImage);
+
 	TURAG::Feldbus::BootloaderAvrBase* bootloader_;
 
 	QPushButton* openFileDialogButton;
@@ -49,8 +54,10 @@ private:
 
 	QLineEdit* imagePathEdit;
 	QPushButton* loadImageFileButton;
-	QPushButton* flashImageFileButton;
-	QLineEdit* imageFileSizeEdit;
+    QPushButton* flashImageFileButton;
+    QPushButton* verifyImageFileButton;
+    QLineEdit* imageFileSizeEdit;
+    QCheckBox* verifyImageCheckbox;
 
 	QLineEdit* imageReadPathEdit;
 	QPushButton* selectImageReadFileButton;
