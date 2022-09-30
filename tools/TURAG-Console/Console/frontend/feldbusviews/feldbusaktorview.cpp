@@ -250,7 +250,7 @@ FeldbusAktorView::FeldbusAktorView(Aktor *aktor, QWidget *parent) :
             }
 
             entry.value = new LineEditExt;
-            if (commandset[i].writeAccess == Aktor::Command_t::WriteAccess::no_write) {
+            if (commandset[i].writeAccess == Aktor::Command_t::WriteAccess::read_only) {
                 entry.value->setReadOnly(true);
                 QPalette pal = entry.value->palette();
                 QColor clr = this->palette().color(QPalette::Window);
@@ -312,7 +312,7 @@ void FeldbusAktorView::onUpdateDeviceValues(void) {
             }
         }
 
-        if (commandset[entry.key-1].writeAccess == Aktor::Command_t::WriteAccess::write) {
+        if (commandset[entry.key-1].writeAccess == Aktor::Command_t::WriteAccess::write_only) {
             QPalette pal = entry.value->palette();
             pal.setColor(QPalette::Active, QPalette::Base, Qt::white);
             entry.value->setPalette(pal);

@@ -13,12 +13,10 @@ using namespace TURAG; // FIXME: evil!
 class FeldbusDeviceInfoExt {
 public:
     FeldbusDeviceInfoExt() :
-        addressLength(Feldbus::Device::AddressLength::byte_),
         address(0),
         device_name(QByteArray("unnamed")) {}
 
     Feldbus::Device::DeviceInfo device_info;
-    Feldbus::Device::AddressLength addressLength;
     int address;
     QByteArray device_name;
     QByteArray versionInfo;

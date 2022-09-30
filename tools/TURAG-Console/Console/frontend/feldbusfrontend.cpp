@@ -14,6 +14,8 @@
 #include "plaintextfrontend.h"
 
 #include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
+#include <tina++/feldbus/host/feldbus_devicelocator.h>
+#include <tina++/feldbus/host/feldbus_binaryaddresssearcher.h>
 #include <tina++/feldbus/host/farbsensor.h>
 #include <tina++/feldbus/host/aktor.h>
 #include <tina++/feldbus/host/dcmotor.h>
@@ -21,6 +23,7 @@
 #include <tina++/feldbus/host/muxer_64_32.h>
 #include <tina++/feldbus/dynamixel/dynamixeldevice.h>
 #include <tina++/feldbus/dynamixel/dynamixel.h>
+#include <tina++/time.h>
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -36,6 +39,8 @@
 #include <QTabWidget>
 #include <QTextEdit>
 #include <QVBoxLayout>
+#include <QSerialPort>
+#include <QThread>
 
 #include <cmath>
 #ifdef Q_OS_WIN32
@@ -50,9 +55,8 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 	FeldbusAbstraction("Bus", false),
     fromValidator_(nullptr), toValidator_(nullptr), bootloaderFromValidator_(nullptr),
     bootloaderToValidator_(nullptr), selectedDevice_(nullptr), broadcastBootloader(nullptr),
-    deviceAddressLength(Feldbus::Device::AddressLength::byte_),
-	bootloaderAddressLength(Feldbus::Device::AddressLength::byte_),
-	inquiryRunning(false),
+    inquiryRunning(false),
+    enumerationRunning(false),
     bootloaderActivationRunning(false),
 	connected(false),
 	turag_rs485_io_device(nullptr)
@@ -79,10 +83,30 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 	inquiryWidgetList.append(checksumLabel);
 	layoutAboveTopFormLayout->addRow(checksumLabel, checksumCombobox_);
     layoutAboveTop->addLayout(layoutAboveTopFormLayout);
-    twoByteAddressCheckbox_ = new CheckBoxExt("2-Byte-Adresse", "twoByteAddressConventionalDevicesCheckbox", false);
-	inquiryWidgetList.append(twoByteAddressCheckbox_);
-	connect(twoByteAddressCheckbox_, SIGNAL(toggled(bool)), this, SLOT(onTwoByteAddressCheckBoxToggled(bool)));
-    layoutAboveTop->addWidget(twoByteAddressCheckbox_);
+
+    QHBoxLayout* layoutEnumerate = new QHBoxLayout;
+    QLabel* enumerateLabel = new QLabel("Enumerate devices:");
+    layoutEnumerate->addWidget(enumerateLabel);
+    enumerateSequentialButton = new QPushButton("Sequential");
+    layoutEnumerate->addWidget(enumerateSequentialButton);
+    connect(enumerateSequentialButton, SIGNAL(clicked()), this, SLOT(onReenumerateDevicesSequential()));
+    inquiryWidgetList.append(enumerateSequentialButton);
+    enumerateBinaryButton = new QPushButton("Binary");
+    layoutEnumerate->addWidget(enumerateBinaryButton);
+    connect(enumerateBinaryButton, SIGNAL(clicked()), this, SLOT(onReenumerateDevicesBinary()));
+    inquiryWidgetList.append(enumerateBinaryButton);
+    enumerateBothButton = new QPushButton("Both");
+    layoutEnumerate->addWidget(enumerateBothButton);
+    connect(enumerateBothButton, SIGNAL(clicked()), this, SLOT(onReenumerateDevicesBoth()));
+    inquiryWidgetList.append(enumerateBothButton);
+    stopEnumerateButton = new QPushButton("Abbrechen");
+    //stopEnumerateButton->setVisible(false);
+    stopEnumerateButton->setEnabled(false);
+    layoutEnumerate->addWidget(stopEnumerateButton);
+    connect(stopEnumerateButton, SIGNAL(clicked()), this, SLOT(onStopEnumerate()));
+    inquiryWidgetList.append(stopEnumerateButton);
+    layoutEnumerate->addStretch();
+
 
     QHBoxLayout* layoutTop = new QHBoxLayout;
     QLabel* fromLabel = new QLabel("Von:");
@@ -98,9 +122,8 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 	inquiryWidgetList.append(toEdit_);
 	layoutTop->addWidget(toEdit_);
     startInquiry_ = new QPushButton("Geräte suchen");
+    inquiryWidgetList.append(startInquiry_);
     layoutTop->addWidget(startInquiry_);
-    reenumerateDevices_ = new QPushButton("Bus adressieren");
-    layoutTop->addWidget(reenumerateDevices_);
 
     dynamixelFromValidator_ = new QIntValidator(0, 252, this);
     dynamixelToValidator_ = new QIntValidator(1, 253, this);
@@ -122,9 +145,11 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     dynamixel_layoutTop->addWidget(dynamixelToEdit_);
     dynamixelStartInquiry_ = new QPushButton("Dynamixel-Servos suchen");
     dynamixel_layoutTop->addWidget(dynamixelStartInquiry_);
+    inquiryWidgetList.append(dynamixelStartInquiry_);
 
     QVBoxLayout* defaultInquiryLayout = new QVBoxLayout;
     defaultInquiryLayout->addLayout(layoutAboveTop);
+    defaultInquiryLayout->addLayout(layoutEnumerate);
     defaultInquiryLayout->addLayout(layoutTop);
     defaultInquiryLayout->addLayout(dynamixel_layoutTop);
     defaultInquiryLayout->addStretch();
@@ -146,11 +171,6 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 	bootloaderInquiryWidgetList.append(bootloaderChecksumLabel);
 	bootloaderLayoutAboveSetupLayoutFormLayout->addRow(bootloaderChecksumLabel, bootloaderChecksumCombobox_);
     bootloaderLayoutAboveSetupLayout->addLayout(bootloaderLayoutAboveSetupLayoutFormLayout);
-    bootloaderTwoByteAddressCheckbox_ = new CheckBoxExt("2-Byte-Adresse", "BootloaderTwoByteAddressConventionalDevicesCheckbox", true);
-	bootloaderStartBootloaderWidgetList.append(bootloaderTwoByteAddressCheckbox_);
-	bootloaderInquiryWidgetList.append(bootloaderTwoByteAddressCheckbox_);
-	connect(bootloaderTwoByteAddressCheckbox_, SIGNAL(toggled(bool)), this, SLOT(onBootloaderTwoByteAddressCheckBoxToggled(bool)));
-    bootloaderLayoutAboveSetupLayout->addWidget(bootloaderTwoByteAddressCheckbox_);
 
 
     QHBoxLayout* bootloadertools_layoutTop = new QHBoxLayout;
@@ -171,11 +191,37 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 	bootloaderInquiryWidgetList.append(startBootloader_);
 	bootButtonLayout->addWidget(startBootloader_);
 	bootloadertoolsStartInquiry_ = new QPushButton("Geräte suchen");
-	bootButtonLayout->addWidget(bootloadertoolsStartInquiry_);
+    bootloaderInquiryWidgetList.append(bootloadertoolsStartInquiry_);
+    bootButtonLayout->addWidget(bootloadertoolsStartInquiry_);
 	bootloadertools_layoutTop->addLayout(bootButtonLayout);
+
+    QHBoxLayout* bootloaderLayoutEnumerate = new QHBoxLayout;
+    QLabel* bootloaderEnumerateLabel = new QLabel("Enumerate devices:");
+    bootloaderLayoutEnumerate->addWidget(bootloaderEnumerateLabel);
+    bootloaderEnumerateSequentialButton = new QPushButton("Sequential");
+    bootloaderLayoutEnumerate->addWidget(bootloaderEnumerateSequentialButton);
+    connect(bootloaderEnumerateSequentialButton, SIGNAL(clicked()), this, SLOT(onBootloaderReenumerateDevicesSequential()));
+    bootloaderInquiryWidgetList.append(bootloaderEnumerateSequentialButton);
+    bootloaderEnumerateBinaryButton = new QPushButton("Binary");
+    bootloaderLayoutEnumerate->addWidget(bootloaderEnumerateBinaryButton);
+    connect(bootloaderEnumerateBinaryButton, SIGNAL(clicked()), this, SLOT(onBootloaderReenumerateDevicesBinary()));
+    bootloaderInquiryWidgetList.append(bootloaderEnumerateBinaryButton);
+    bootloaderEnumerateBothButton = new QPushButton("Both");
+    bootloaderLayoutEnumerate->addWidget(bootloaderEnumerateBothButton);
+    connect(bootloaderEnumerateBothButton, SIGNAL(clicked()), this, SLOT(onBootloaderReenumerateDevicesBoth()));
+    bootloaderInquiryWidgetList.append(bootloaderEnumerateBothButton);
+    bootloaderStopEnumerateButton = new QPushButton("Abbrechen");
+    bootloaderLayoutEnumerate->addWidget(bootloaderStopEnumerateButton);
+    //bootloaderStopEnumerateButton->setVisible(false);
+    bootloaderStopEnumerateButton->setEnabled(false);
+    connect(bootloaderStopEnumerateButton, SIGNAL(clicked()), this, SLOT(onStopEnumerate()));
+    bootloaderInquiryWidgetList.append(bootloaderStopEnumerateButton);
+    bootloaderLayoutEnumerate->addStretch();
+
 
     QVBoxLayout* bootloaderLayout = new QVBoxLayout;
     bootloaderLayout->addLayout(bootloaderLayoutAboveSetupLayout);
+    bootloaderLayout->addLayout(bootloaderLayoutEnumerate);
     bootloaderLayout->addLayout(bootloadertools_layoutTop);
     bootloaderLayout->addStretch();
 
@@ -282,7 +328,6 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     setLayout(layout);
 
     connect(startInquiry_, SIGNAL(clicked()), this, SLOT(onStartInquiry()));
-    connect(reenumerateDevices_, SIGNAL(clicked()), this, SLOT(onReenumerateDevices()));
     connect(bootloadertoolsStartInquiry_, SIGNAL(clicked()), this, SLOT(onStartBootInquiry()));
     connect(dynamixelStartInquiry_, SIGNAL(clicked()), SLOT(onStartDynamixelInquiry()));
     connect(startBootloader_, SIGNAL(clicked()), this, SLOT(onStartBoot()));
@@ -299,8 +344,8 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     setFeldbusTimeout(20); // [ms]
 #endif
 
-    onTwoByteAddressCheckBoxToggled(twoByteAddressCheckbox_->isChecked());
-    onBootloaderTwoByteAddressCheckBoxToggled(bootloaderTwoByteAddressCheckbox_->isChecked());
+    onTwoByteAddressCheckBoxToggled(false);
+    onBootloaderTwoByteAddressCheckBoxToggled(false);
 
 //#warning please remove me
 //    feldbusWidget->hide();
@@ -392,15 +437,12 @@ void FeldbusFrontend::onInquiry(bool boot) {
 	inquiryRunning = true;
 	bootloaderActivationRunning = false;
 
-    TURAG::Feldbus::Device::AddressLength addressLength;
     int checksumTypeIndex;
     if (!boot) {
 		setInquiryWidgetsEnabled(false);
-        addressLength = deviceAddressLength;
         checksumTypeIndex = checksumCombobox_->currentIndex();
     } else {
 		setBootInquiryWidgetsEnabled(false);
-        addressLength = bootloaderAddressLength;
         checksumTypeIndex = bootloaderChecksumCombobox_->currentIndex();
     }
 
@@ -438,14 +480,14 @@ void FeldbusFrontend::onInquiry(bool boot) {
                 // the condition for detecting the device is a successful ping-request
                 // plus successful receiving of the device info making it possible
                 // to double check the assumed checksum type
-				Feldbus::Device* dev = new TURAG::Feldbus::Device("", i, *this, chksum_type, addressLength, 2, 1);
+                Feldbus::Device* dev = new TURAG::Feldbus::Device("", i, *this, chksum_type, 2, 1);
                 if (dev->isAvailable()) {
                     if (dev->getDeviceInfo(&dev_info.device_info)) {
 						if (dev_info.device_info.crcType() == chksum_type) {
                             dev_info.address = i;
                             delete dev;
 
-							Feldbus::Device* detectedDev = new TURAG::Feldbus::Device("", dev_info.address, *this, static_cast<Feldbus::ChecksumType>(dev_info.device_info.crcType()), addressLength, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ATTEMPTS, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ERRORS);
+                            Feldbus::Device* detectedDev = new TURAG::Feldbus::Device("", dev_info.address, *this, static_cast<Feldbus::ChecksumType>(dev_info.device_info.crcType()), TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ATTEMPTS, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ERRORS);
 							QByteArray name_buffer(dev_info.device_info.nameLength() + 2, '\0');
 							if (detectedDev->receiveDeviceRealName(name_buffer.data())) {
                                 dev_info.device_name = name_buffer;
@@ -461,7 +503,6 @@ void FeldbusFrontend::onInquiry(bool boot) {
                             }
 
                             deviceList_->addItem(dev_info.toString());
-                            dev_info.addressLength = addressLength;
                             std::shared_ptr<FeldbusDeviceWrapper> sptr;
 							sptr.reset(FeldbusDeviceFactory::createFeldbusDevice(dev_info, *this));
                             devices_.append(sptr);
@@ -612,39 +653,111 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
 	setDynamixelInquiryWidgetsEnabled(true);
 }
 
-void FeldbusFrontend::onReenumerateDevices() {
-    Feldbus::Device* dev = new TURAG::Feldbus::Device("", 0, *this, Feldbus::ChecksumType::crc8_icode, TURAG::Feldbus::Device::AddressLength::byte_, 2, 100);
 
-    uint32_t uuid;
-    bool success;
-
-    success = dev->resetAllBusAddresses();
-    onRs485DebugMsg(QString("resetAllBusAddresses: %1").arg(success));
-
-    success = dev->disableBusNeighbors();
-    onRs485DebugMsg(QString("disableBusNeighbors: %1").arg(success));
-
-    unsigned address = 1;
-    unsigned read_address;
-
-    while (dev->executeUuidBroadcastPing(&uuid)) {
-        onRs485DebugMsg(QString("found device: %1").arg(uuid));
-
-        success = dev->setBusAddress(uuid, address);
-        onRs485DebugMsg(QString("setBusAddress: %1").arg(success));
-
-        read_address = 0;
-        success = dev->receiveBusAddress(uuid, &read_address);
-        onRs485DebugMsg(QString("receiveBusAddress: %1 %2").arg(success).arg(read_address));
-
-        ++address;
-
-        success = dev->enableBusNeighbors();
-        onRs485DebugMsg(QString("enableBusNeighbors: %1").arg(success));
+void FeldbusFrontend::enumerate(bool useSequentialSearch, bool useBinarySearch, bool boot)
+{
+    if (enumerationRunning) {
+        return;
     }
 
+    enumerationRunning = true;
 
-    delete dev;
+    setEnumerateWidgetsEnabled(false, boot);
+    availabilityChecker_.stop();
+
+    deviceList_->clearSelection();
+    deviceList_->clear();
+    devices_.clear();
+    deviceInfo_->clear();
+    busDataBuffer.clear();
+
+
+    int checksumTypeIndex;
+    Feldbus::ChecksumType checksumType;
+    if (!boot) {
+        checksumTypeIndex = checksumCombobox_->currentIndex();
+    } else {
+        checksumTypeIndex = bootloaderChecksumCombobox_->currentIndex();
+    }
+
+    // use crc8_icode even if "both" is selected, because nobody ever uses anything else
+    // but the default crc.
+    if (checksumTypeIndex > static_cast<int>(Feldbus::ChecksumType::crc8_icode)) {
+        checksumType = Feldbus::ChecksumType::crc8_icode;
+    } else {
+        checksumType = static_cast<Feldbus::ChecksumType>(checksumTypeIndex);
+    }
+
+    Feldbus::DeviceLocator locator(*this, checksumType);
+
+    QList<uint32_t> foundUuids;
+    std::tie(foundUuids, std::ignore) =
+            enumerateBusNodes(locator, useSequentialSearch, useBinarySearch, &enumerationRunning, [&](int count) {
+        QString progress = QStringLiteral("Abbrechen (%1)").arg(count);
+        if (boot) {
+            bootloaderStopEnumerateButton->setText(progress);
+        } else {
+            stopEnumerateButton->setText(progress);
+        }
+        QCoreApplication::processEvents();
+    });
+
+    if (boot) {
+        bootloaderStopEnumerateButton->setText("Abbrechen");
+    } else {
+        stopEnumerateButton->setText("Abbrechen");
+    }
+    setEnumerateWidgetsEnabled(true, boot);
+
+    enumerationRunning = false;
+    availabilityChecker_.start(250);
+
+
+    if (foundUuids.length() > 0) {
+        if (boot) {
+            bootFromEdit_->setText(QString::number(1));
+            bootToEdit_->setText(QString::number(foundUuids.length()));
+        } else {
+            fromEdit_->setText(QString::number(1));
+            toEdit_->setText(QString::number(foundUuids.length()));
+        }
+
+        onInquiry(boot);
+    }
+
+}
+
+void FeldbusFrontend::onStopEnumerate()
+{
+    enumerationRunning = false;
+}
+
+void FeldbusFrontend::onReenumerateDevicesSequential() {
+    enumerate(true, false, false);
+}
+
+void FeldbusFrontend::onReenumerateDevicesBinary()
+{
+    enumerate(false, true, false);
+}
+
+void FeldbusFrontend::onReenumerateDevicesBoth()
+{
+    enumerate(true, true, false);
+}
+
+void FeldbusFrontend::onBootloaderReenumerateDevicesSequential() {
+    enumerate(true, false, true);
+}
+
+void FeldbusFrontend::onBootloaderReenumerateDevicesBinary()
+{
+    enumerate(false, true, true);
+}
+
+void FeldbusFrontend::onBootloaderReenumerateDevicesBoth()
+{
+    enumerate(true, true, true);
 }
 
 void FeldbusFrontend::onDeviceSelected(int row) {
@@ -869,9 +982,8 @@ void FeldbusFrontend::onStartBoot(void) {
 	if (broadcastBootloader) {
 		delete broadcastBootloader;
 	}
-	broadcastBootloader = new Feldbus::Bootloader("broadcastBootloader", 0, *this,
-												  static_cast<Feldbus::ChecksumType>(bootloaderChecksumCombobox_->currentIndex()),
-												  bootloaderAddressLength);
+    broadcastBootloader = new Feldbus::Bootloader(
+                "broadcastBootloader", 0, *this, static_cast<Feldbus::ChecksumType>(bootloaderChecksumCombobox_->currentIndex()));
 }
 
 void FeldbusFrontend::onUpdateStatistics(void) {
@@ -957,6 +1069,123 @@ void FeldbusFrontend::resetStatistics(void) {
     slaveUptime_->setText("0");
 }
 
+
+std::tuple<QList<uint32_t>, bool>
+FeldbusFrontend::enumerateBusNodes(Feldbus::DeviceLocator &locator,
+                                   bool useSequentialSearch,
+                                   bool useBinarySearch, bool *keepRunning,
+                                   std::function<void(int)> onDeviceCountChanged) {
+    QList<uint32_t> foundUuids;
+    unsigned binarySearchDelayTimeMs = 5;
+
+    // in case the user does not supply means to cancel.
+    bool keepRunningDummy = true;
+    if (keepRunning == nullptr) {
+        keepRunning = &keepRunningDummy;
+    }
+
+    if (!useSequentialSearch && !useBinarySearch) {
+        return std::make_tuple(foundUuids, false);
+    }
+
+    // first reset all bus addresses
+    if (!locator.resetAllBusAddresses()) {
+        return {};
+    }
+
+    // directly return result of a binary only search function
+    if (useSequentialSearch == false) {
+        auto searcher = BinaryAddressSearcher(locator, binarySearchDelayTimeMs);
+
+        while (*keepRunning && !searcher.searchFinished()) {
+            bool foundDevice = false;
+            uint32_t address = 0;
+            if (!searcher.TryFindNextDevice(&foundDevice, &address)) {
+                return std::make_tuple(foundUuids, false);
+            }
+
+            if (foundDevice) {
+                if (!locator.setBusAddress(address, foundUuids.length() + 1)) {
+                    return std::make_tuple(foundUuids, false);
+                }
+
+                foundUuids.push_back(address);
+                if (onDeviceCountChanged) {
+                    onDeviceCountChanged(foundUuids.length());
+                }
+            }
+        }
+        return std::make_tuple(foundUuids, false);
+    }
+
+    // Thus we can assume here that useSequentialSearch == true
+    // and useBinarySearch is true or false
+    bool deviceOrderKnown = true;
+
+    if (!locator.disableBusNeighbors()) {
+        return std::make_tuple(foundUuids, false);
+    }
+
+    while (*keepRunning) {
+        uint32_t address = 0;
+        if (!locator.sendBroadcastPing(&address)) {
+            // if the broadcast ping fails it can mean that either there are no more
+            // devices or more than one device tried to respond. If enabled, we fall
+            // back to binary search.
+            if (useBinarySearch) {
+                int deviceCountBeforeBinarySearch = foundUuids.length();
+
+                // enumerate devices which do not have valid bus address yet
+                auto searcher = BinaryAddressSearcher(locator, binarySearchDelayTimeMs, true);
+
+                while (*keepRunning && !searcher.searchFinished()) {
+                    bool foundDevice = false;
+                    if (!searcher.TryFindNextDevice(&foundDevice, &address)) {
+                        return std::make_tuple(foundUuids, deviceOrderKnown);
+                    }
+
+                    if (foundDevice) {
+                        if (!locator.setBusAddress(address, foundUuids.length() + 1)) {
+                            return std::make_tuple(foundUuids, deviceOrderKnown);
+                        }
+                        deviceOrderKnown = false;
+                        foundUuids.push_back(address);
+                        if (onDeviceCountChanged) {
+                            onDeviceCountChanged(foundUuids.length());
+                        }
+                    }
+                }
+
+                // return on cancel or if the binary search did not yield any more devices.
+                if (!*keepRunning || deviceCountBeforeBinarySearch == foundUuids.length()) {
+                    return std::make_tuple(foundUuids, deviceOrderKnown);
+                }
+            } else {
+                // if the broadcast ping failed but we cannot do binary search,
+                // just return the current result
+                return std::make_tuple(foundUuids, deviceOrderKnown);
+            }
+        } else {
+            // we found a device while doing sequential search
+            if (!locator.setBusAddress(address, foundUuids.length() + 1)) {
+                return std::make_tuple(foundUuids, deviceOrderKnown);
+            }
+            foundUuids.push_back(address);
+            if (onDeviceCountChanged) {
+                onDeviceCountChanged(foundUuids.length());
+            }
+        }
+
+        // enable the next bus node
+        if (!locator.enableBusNeighbors()) {
+            return std::make_tuple(foundUuids, deviceOrderKnown);
+        }
+    }
+
+    // the loop was cancelled
+    return std::make_tuple(foundUuids, deviceOrderKnown);
+}
+
 void FeldbusFrontend::onTwoByteAddressCheckBoxToggled(bool state) {
     fromEdit_->setValidator(0);
     toEdit_->setValidator(0);
@@ -971,11 +1200,9 @@ void FeldbusFrontend::onTwoByteAddressCheckBoxToggled(bool state) {
     if (!state) {
         fromValidator_ = new QIntValidator(1, 127, this);
         toValidator_ = new QIntValidator(1, 127, this);
-        deviceAddressLength = Feldbus::Device::AddressLength::byte_;
     } else {
         fromValidator_ = new QIntValidator(1, 32767, this);
         toValidator_ = new QIntValidator(1, 32767, this);
-        deviceAddressLength = Feldbus::Device::AddressLength::short_;
     }
 
     fromEdit_->setValidator(fromValidator_);
@@ -998,11 +1225,9 @@ void FeldbusFrontend::onBootloaderTwoByteAddressCheckBoxToggled(bool state) {
     if (!state) {
         bootloaderFromValidator_ = new QIntValidator(1, 127, this);
         bootloaderToValidator_ = new QIntValidator(1, 127, this);
-        bootloaderAddressLength = Feldbus::Device::AddressLength::byte_;
     } else {
         bootloaderFromValidator_ = new QIntValidator(1, 32767, this);
         bootloaderToValidator_ = new QIntValidator(1, 32767, this);
-        bootloaderAddressLength = Feldbus::Device::AddressLength::short_;
     }
 
     bootFromEdit_->setValidator(bootloaderFromValidator_);
@@ -1017,15 +1242,16 @@ void FeldbusFrontend::setInquiryWidgetsEnabled(bool enabled) {
 		for (QWidget* child : inquiryWidgetList) {
 			child->setEnabled(true);
 		}
-		dynamixelStartInquiry_->setEnabled(true);
 		startInquiry_->setText("Geräte suchen");
 	} else {
 		inquiryTabwidget->setTabEnabled(1, false);
 		for (QWidget* child : inquiryWidgetList) {
 			child->setEnabled(false);
 		}
-		dynamixelStartInquiry_->setEnabled(false);
+        startInquiry_->setEnabled(true);
 	}
+    bootloaderStopEnumerateButton->setEnabled(false);
+    stopEnumerateButton->setEnabled(false);
 }
 
 void FeldbusFrontend::setBootInquiryWidgetsEnabled(bool enabled) {
@@ -1042,7 +1268,10 @@ void FeldbusFrontend::setBootInquiryWidgetsEnabled(bool enabled) {
 		for (QWidget* child : bootloaderInquiryWidgetList) {
 			child->setEnabled(false);
 		}
+        bootloadertoolsStartInquiry_->setEnabled(true);
 	}
+    bootloaderStopEnumerateButton->setEnabled(false);
+    stopEnumerateButton->setEnabled(false);
 }
 
 void FeldbusFrontend::setDynamixelInquiryWidgetsEnabled(bool enabled) {
@@ -1052,23 +1281,65 @@ void FeldbusFrontend::setDynamixelInquiryWidgetsEnabled(bool enabled) {
 		for (QWidget* child : inquiryWidgetList) {
 			child->setEnabled(true);
 		}
-		startInquiry_->setEnabled(true);
 		dynamixelStartInquiry_->setText("Dynamixel-Servos suchen");
 	} else {
 		inquiryTabwidget->setTabEnabled(1, false);
 		for (QWidget* child : inquiryWidgetList) {
 			child->setEnabled(false);
 		}
-		startInquiry_->setEnabled(false);
-	}
+        dynamixelStartInquiry_->setEnabled(true);
+    }
+    bootloaderStopEnumerateButton->setEnabled(false);
+    stopEnumerateButton->setEnabled(false);
 }
 
-bool FeldbusFrontend::doTransceive(const uint8_t *transmit, int *transmit_length, uint8_t *receive, int *receive_length, bool) {
-	if (!connected || !turag_rs485_io_device) {
+void FeldbusFrontend::setEnumerateWidgetsEnabled(bool enabled, bool boot)
+{
+    if (enabled) {
+        for (QWidget* child : inquiryWidgetList) {
+            child->setEnabled(true);
+        }
+        if (boot) {
+            bootloaderStopEnumerateButton->setEnabled(false);
+            inquiryTabwidget->setTabEnabled(0, true);
+        } else {
+            stopEnumerateButton->setEnabled(false);
+            inquiryTabwidget->setTabEnabled(1, true);
+        }
+    } else {
+        for (QWidget* child : inquiryWidgetList) {
+            child->setEnabled(false);
+        }
+        if (boot) {
+            bootloaderStopEnumerateButton->setEnabled(true);
+            inquiryTabwidget->setTabEnabled(0, false);
+        } else {
+            stopEnumerateButton->setEnabled(true);
+            inquiryTabwidget->setTabEnabled(1, false);
+        }
+    }
+}
+
+bool FeldbusFrontend::doTransceive(const uint8_t *transmit, int *transmit_length, uint8_t *receive, int *receive_length, bool delayTransmission) {
+    QSerialPort* serialPort = dynamic_cast<QSerialPort*>(turag_rs485_io_device);
+    static SystemTime lastTransmission;
+
+    // TODO: move at a better place.
+    SystemTime requiredProcessingTime = SystemTime::fromMsec(1);
+
+    if (!connected || serialPort == nullptr) {
         return false;
     }
 
 	if (transmit_length && transmit) {
+        if (delayTransmission) {
+            unsigned requiredFrameDelayUs = static_cast<unsigned>(15.0 /serialPort->baudRate() * 1e6);
+            while (lastTransmission + SystemTime::fromUsec(requiredFrameDelayUs) +
+                   requiredProcessingTime > SystemTime::now()) {
+                QThread::msleep(1);
+            }
+        }
+
 		int transmit_length_copy = *transmit_length;
 
 		if (transmit_length_copy > 0) {
@@ -1094,6 +1365,7 @@ bool FeldbusFrontend::doTransceive(const uint8_t *transmit, int *transmit_length
 				}
 				return false;
 			}
+            lastTransmission = SystemTime::now();
 			onRs485DebugMsg(transmitmsg + " ok");
 		}
 	}
@@ -1149,6 +1421,9 @@ bool FeldbusFrontend::doTransceive(const uint8_t *transmit, int *transmit_length
 }
 
 void FeldbusFrontend::clearBuffer(void) {
+    if (busDataBuffer.length() > 0) {
+        onRs485DebugMsg(QString("cleared %1 byte").arg(busDataBuffer.length()));
+    }
     busDataBuffer.clear();
 }
 
