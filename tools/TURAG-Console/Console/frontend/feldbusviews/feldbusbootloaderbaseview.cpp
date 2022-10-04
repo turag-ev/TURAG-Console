@@ -365,11 +365,11 @@ void FeldbusBootloaderBaseView::flashAndVerifyImageFile(bool flashImage, bool ve
 	this->setEnabled(true);
 }
 
-TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderBaseView::doFlashImage(uint8_t* data, uint32_t length) {
-    return bootloader_->writeFlash(0, length, data);
+TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderBaseView::doFlashImage(uint8_t* imageData, uint32_t length) {
+    return bootloader_->writeFlash(0, length, imageData);
 }
 
-TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderBaseView::doVerifyImage(uint8_t* data, uint32_t length) {
+TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderBaseView::doVerifyImage(uint8_t* imageData, uint32_t length) {
     // verify
     qDebug() << "verifying flash content\n";
     uint8_t readData[length];
@@ -380,7 +380,7 @@ TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderBaseView::doVerify
     }
 
     for (uint32_t i = 0; i < length; ++i) {
-        if (data[i] != readData[i]) {
+        if (imageData[i] != readData[i]) {
             return TURAG::Feldbus::BootloaderAvrBase::ErrorCode::content_mismatch;
         }
     }

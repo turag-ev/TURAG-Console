@@ -46,11 +46,6 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
             break;
 
         case TURAG_FELDBUS_STELLANTRIEBE_DEVICE_TYPE_SERVO:
-            device = new Feldbus::Servo(
-                        device_info.device_name.constData(),
-                        device_info.address,
-						bus,
-                        device_info.device_info.crcType());
             deviceTypeString = "Servo-Motor";
             break;
 
@@ -71,11 +66,6 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
             break;
 
         default:
-            device = new Feldbus::Aktor(
-                         device_info.device_name.constData(),
-                         device_info.address,
-                         bus,
-                         device_info.device_info.crcType());
             deviceTypeString = "unbekannt";
             break;
         }
@@ -86,11 +76,6 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
 
 		switch (device_info.device_info.deviceTypeId()) {
         case TURAG_FELDBUS_LOKALISIERUNGSSENSOREN_DEVICE_TYPE_COLORSENSOR:
-            device = new Feldbus::Farbsensor(
-                        device_info.device_name.constData(),
-                        device_info.address,
-						bus,
-                        device_info.device_info.crcType());
             deviceTypeString = "Farbsensor";
             break;
 

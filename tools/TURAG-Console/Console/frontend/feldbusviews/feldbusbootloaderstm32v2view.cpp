@@ -4,8 +4,8 @@
 #include <QDebug>
 
 
-FeldbusBootloaderStm32v2View::FeldbusBootloaderStm32v2View(TURAG::Feldbus::BootloaderStm32v2 *bootloader, FeldbusFrontend *bus_, QWidget *parent) :
-    FeldbusBootloaderBaseView(bootloader, bus_, parent), bootloader(bootloader)
+FeldbusBootloaderStm32v2View::FeldbusBootloaderStm32v2View(TURAG::Feldbus::BootloaderStm32v2 *stm32Bootloader, FeldbusFrontend *bus_, QWidget *parent) :
+    FeldbusBootloaderBaseView(stm32Bootloader, bus_, parent), bootloader(stm32Bootloader)
 {
     QLineEdit* resetHandlerStorageAddress = new QLineEdit;
     setDisabledTheme(resetHandlerStorageAddress);
@@ -25,7 +25,7 @@ FeldbusBootloaderStm32v2View::FeldbusBootloaderStm32v2View(TURAG::Feldbus::Bootl
 }
 
 
-TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderStm32v2View::doFlashImage(uint8_t* data, uint32_t length) {
+TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderStm32v2View::doFlashImage(uint8_t* imageData, uint32_t length) {
     uint32_t resetVectorStorageAddress = bootloader->getResetVectorStorageAddress();
 
     if (resetVectorStorageAddress == 0xFFFFFFFF) {
@@ -34,8 +34,8 @@ TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderStm32v2View::doFla
 
     // save original addresses
     uint32_t userAppStackAddress, userAppResetHandlerAddress;
-    memcpy(&userAppStackAddress, data, 4);
-    memcpy(&userAppResetHandlerAddress, data + 4, 4);
+    memcpy(&userAppStackAddress, imageData, 4);
+    memcpy(&userAppResetHandlerAddress, imageData + 4, 4);
 
     // send these addresses to the device
     qDebug() << "transmitting app reset vectors\n";
@@ -46,7 +46,7 @@ TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderStm32v2View::doFla
 
     // write image to device
     qDebug() << "writing " << length << " bytes to address " << stmFlashBaseAddress << "\n";
-    result = bootloader->writeFlash(stmFlashBaseAddress, length, data);
+    result = bootloader->writeFlash(stmFlashBaseAddress, length, imageData);
     if (result != TURAG::Feldbus::BootloaderAvrBase::ErrorCode::success) {
         return result;
     }
@@ -61,7 +61,7 @@ TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderStm32v2View::doFla
     return TURAG::Feldbus::BootloaderAvrBase::ErrorCode::success;
 }
 
-TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderStm32v2View::doVerifyImage(uint8_t* data, uint32_t length) {
+TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderStm32v2View::doVerifyImage(uint8_t* imageData, uint32_t length) {
     // verify
     qDebug() << "verifying flash content\n";
     uint8_t readData[length];
@@ -72,17 +72,17 @@ TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderStm32v2View::doVer
     }
 
     // replace the first 8 byte because they are changed by the bootloader
-    memcpy(readData, data, 8);
+    memcpy(readData, imageData, 8);
 
     // if the reset vector is stored someplace within the image we need to replace this data
     // with the original, otherwise the verification would fail
     uint32_t maskOffset = bootloader->getResetVectorStorageAddress() & ~stmFlashBaseAddress;
     if (maskOffset + 8 <= length) {
-        memcpy(readData + maskOffset, data + maskOffset, 8);
+        memcpy(readData + maskOffset, imageData + maskOffset, 8);
     }
 
     for (uint32_t i = 0; i < length; ++i) {
-        if (data[i] != readData[i]) {
+        if (imageData[i] != readData[i]) {
             return TURAG::Feldbus::BootloaderAvrBase::ErrorCode::content_mismatch;
         }
     }

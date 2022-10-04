@@ -15,13 +15,10 @@
 #include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
 #include <tina++/feldbus/host/feldbus_devicelocator.h>
 #include <tina++/feldbus/host/feldbus_binaryaddresssearcher.h>
-#include <tina++/feldbus/host/farbsensor.h>
-#include <tina++/feldbus/host/aktor.h>
-#include <tina++/feldbus/host/dcmotor.h>
-#include <tina++/feldbus/host/servo.h>
 #include <tina++/feldbus/host/muxer_64_32.h>
 #include <tina++/feldbus/dynamixel/dynamixeldevice.h>
 #include <tina++/feldbus/dynamixel/dynamixel.h>
+#include <tina++/feldbus/host/legacystellantriebedevice.h>
 #include <tina++/time.h>
 
 #include <QCoreApplication>
@@ -1360,7 +1357,7 @@ bool FeldbusFrontend::doTransceive(const uint8_t *transmit, int *transmit_length
 					}
 
 
-					if (GetTickCount() - startTick > feldbusTimeout_ms) {
+                    if (GetTickCount() - startTick > static_cast<unsigned long>(feldbusTimeout_ms)) {
 						onRs485DebugMsg(outmsg + QString(" Timeout (%1)").arg(busDataBuffer.size()));
 						*receive_length = busDataBuffer.size();
 						clearBuffer();
