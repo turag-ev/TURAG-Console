@@ -21,7 +21,7 @@ class ConnectionWidgetWebDAV: public ConnectionWidget {
     Q_OBJECT
 
 public:
-	static constexpr const char* DEFAULTHOST = "http://foxie/webdav/public";
+    static constexpr const char* DEFAULTHOST = "http://localhost";
 
 	ConnectionWidgetWebDAV(QWidget *parent = 0);
 	~ConnectionWidgetWebDAV();

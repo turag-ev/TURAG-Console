@@ -1,6 +1,5 @@
 #include "connectionwidgets/connectionwidgetfile.h"
 #include "connectionwidgets/connectionwidgetserial.h"
-#include "connectionwidgets/connectionwidgettcp.h"
 #include "connectionwidgets/connectionwidgetwebdav.h"
 #include "controller.h"
 #include "frontend/basefrontend.h"
@@ -57,7 +56,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	// add all available connectionWidgets to list without a parent
 	availableConnectionWidgets.append(new ConnectionWidgetSerial);
 	availableConnectionWidgets.append(new ConnectionWidgetFile);
-	availableConnectionWidgets.append(new ConnectionWidgetTcp);
 	availableConnectionWidgets.append(new ConnectionWidgetWebDAV);
 
 

@@ -100,6 +100,8 @@ QMAKE_CXXFLAGS_RELEASE += -flto
 QMAKE_LFLAGS_RELEASE += -flto
 
 SOURCES +=\
+    libs/recent.cpp \
+    libs/searchwidget.cpp \
         mainwindow.cpp \
     backend/basebackend.cpp \
     backend/filebackend.cpp \
@@ -108,7 +110,6 @@ SOURCES +=\
     connectionwidgets/connectionwidget.cpp \
     connectionwidgets/connectionwidgetfile.cpp \
     connectionwidgets/connectionwidgetserial.cpp \
-    connectionwidgets/connectionwidgettcp.cpp \
     controller.cpp \
     frontend/basefrontend.cpp \
     frontend/feldbusfrontend.cpp \
@@ -118,10 +119,8 @@ SOURCES +=\
     frontend/graphutils/canvaspicker.cpp \
     frontend/graphutils/colormap.cpp \
     frontend/graphutils/datagraph.cpp \
-    frontend/logview.cpp \
     frontend/oscilloscope.cpp \
     frontend/plaintextfrontend.cpp \
-    frontend/stmcamfrontend.cpp \
     frontend/tinacamerafrontend.cpp \
     frontend/tinagraphfrontend.cpp \
     frontend/util/datapointinterface.cpp \
@@ -136,14 +135,12 @@ SOURCES +=\
     frontend/feldbusviews/feldbusbootloaderbaseview.cpp \
     frontend/feldbusviews/feldbusbootloaderxmegaview.cpp \
     frontend/rawfrontend.cpp \
-    frontend/robotfrontend.cpp \
     connectionwidgets/connectionwidgetwebdav.cpp \
     libs/logindialog.cpp \
     backend/webdavbackend.cpp \
     connectionwidgets/connectionwidgetwebdav/webdavtreeitem.cpp \
     connectionwidgets/connectionwidgetwebdav/webdavtreemodel.cpp \
     libs/iconmanager.cpp \
-    frontend/scfrontend.cpp \
     main.cpp \
     libs/tcpsocketext.cpp \
     libs/popup/resizableframe.cpp \
@@ -153,6 +150,8 @@ SOURCES +=\
     frontend/graphutils/plotmagnifier.cpp
 
 HEADERS  += \
+    libs/recent.h \
+    libs/searchwidget.h \
     mainwindow.h \
     backend/basebackend.h \
     backend/filebackend.h \
@@ -161,7 +160,6 @@ HEADERS  += \
     connectionwidgets/connectionwidget.h \
     connectionwidgets/connectionwidgetfile.h \
     connectionwidgets/connectionwidgetserial.h \
-    connectionwidgets/connectionwidgettcp.h \
     controller.h \
     frontend/basefrontend.h \
     frontend/feldbusfrontend.h \
@@ -173,10 +171,8 @@ HEADERS  += \
     frontend/graphutils/datagraph.h \
     frontend/graphutils/hoverableqwtlegend.h \
     frontend/graphutils/hoverableqwtlegendlabel.h \
-    frontend/logview.h \
     frontend/oscilloscope.h \
     frontend/plaintextfrontend.h \
-    frontend/stmcamfrontend.h \
     frontend/tinacamerafrontend.h \
     frontend/tinagraphfrontend.h \
     frontend/util/datapointinterface.h \
@@ -198,14 +194,12 @@ HEADERS  += \
     frontend/feldbusviews/feldbusbootloaderbaseview.h \
     frontend/feldbusviews/feldbusbootloaderxmegaview.h \
     frontend/rawfrontend.h \
-    frontend/robotfrontend.h \
     connectionwidgets/connectionwidgetwebdav.h \
     libs/logindialog.h \
     backend/webdavbackend.h \
     connectionwidgets/connectionwidgetwebdav/webdavtreeitem.h \
     connectionwidgets/connectionwidgetwebdav/webdavtreemodel.h \
     libs/iconmanager.h \
-    frontend/scfrontend.h \
     libs/tcpsocketext.h \
     libs/popup/resizableframe.h \
     libs/popup/popupwidget.h \
@@ -231,13 +225,11 @@ APPLICATIONS = turag-console.desktop
 MIMES        = turag-console.xml
 
 TURAG_REPRO = ../../..
-include($$TURAG_REPRO/libs/libsimeurobot.pri)
 include($$TURAG_REPRO/libs/qt/expander-widget/expanderwidget.pri)
 include($$TURAG_REPRO/libs/libcintelhex.pri)
 include($$TURAG_REPRO/libs/qwebdav.pri)
-include($$TURAG_REPRO/tools/Debug-Server/Debug-Server-Protocol.pri)
-include($$TURAG_REPRO/tina/tina.pri)
-include($$TURAG_REPRO/tina/platform/desktop/tina-desktop.pri)
+include($$TURAG_REPRO/tina/src/tina.pri)
+include($$TURAG_REPRO/tina/src/platform/desktop/tina-desktop.pri)
 
 
 # install & distr
