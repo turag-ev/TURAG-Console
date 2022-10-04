@@ -1265,24 +1265,30 @@ void FeldbusFrontend::setDynamixelInquiryWidgetsEnabled(bool enabled) {
 void FeldbusFrontend::setEnumerateWidgetsEnabled(bool enabled, bool boot)
 {
     if (enabled) {
-        for (QWidget* child : inquiryWidgetList) {
-            child->setEnabled(true);
-        }
         if (boot) {
+            for (QWidget* child : bootloaderInquiryWidgetList) {
+                child->setEnabled(true);
+            }
             bootloaderStopEnumerateButton->setEnabled(false);
             inquiryTabwidget->setTabEnabled(0, true);
         } else {
+            for (QWidget* child : inquiryWidgetList) {
+                child->setEnabled(true);
+            }
             stopEnumerateButton->setEnabled(false);
             inquiryTabwidget->setTabEnabled(1, true);
         }
     } else {
-        for (QWidget* child : inquiryWidgetList) {
-            child->setEnabled(false);
-        }
         if (boot) {
+            for (QWidget* child : bootloaderInquiryWidgetList) {
+                child->setEnabled(false);
+            }
             bootloaderStopEnumerateButton->setEnabled(true);
             inquiryTabwidget->setTabEnabled(0, false);
         } else {
+            for (QWidget* child : inquiryWidgetList) {
+                child->setEnabled(false);
+            }
             stopEnumerateButton->setEnabled(true);
             inquiryTabwidget->setTabEnabled(1, false);
         }
