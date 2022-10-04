@@ -1,0 +1,3 @@
+[submodule "tina"]
+	path = tina
+	url = https://github.com/turag-ev/Tina.git
