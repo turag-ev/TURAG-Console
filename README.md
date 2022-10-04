@@ -10,3 +10,10 @@
 - log out and back in to update environment
 - clone repository and update submodules
 - open Console.pro in Qt Creator, re-run qmake and compile
+- for easy deployment with alle required DLLs the [windeployqt](https://doc.qt.io/qt-6/windows-deployment.html) tool can be used as follows:
+  - copy turag_console.exe into an empty release folder
+  - open Qt cmd window and change to the bin folder
+  - run windeployqt.exe and specify the absolute path to turag_console.exe in the release folder as an argument
+  - copy qwt.dll into the release folder
+  - run windeployqt.exe again, this time specifying qwt.dll in the release folder as the argument
+  
