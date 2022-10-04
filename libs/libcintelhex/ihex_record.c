@@ -102,8 +102,9 @@ int ihex_rs_get_address_range(ihex_recordset_t* rs, uint32_t *min, uint32_t *max
 				#endif
 				
 				break;
-			case IHEX_SSA:
-				break;
+            case IHEX_SSA:
+            case IHEX_SLA:
+                break;
 			default:
 				IHEX_SET_ERROR_RETURN(IHEX_ERR_UNKNOWN_RECORD_TYPE,
 					"Unknown record type in record %i: 0x%02x",

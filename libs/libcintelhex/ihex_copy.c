@@ -40,7 +40,7 @@
 
 void ihex_set_error(ihex_error_t errnum, char* error);
 
-int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n)
+int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n, ulong_t baseAddress)
 {
 	int      r;
 	uint_t   i, j;
@@ -94,6 +94,7 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n)
 				}
 			case IHEX_ESA:
 				offset = *(x->ihr_data) << 4;
+                offset -= baseAddress;
 				
 				#ifdef IHEX_DEBUG
 				printf("Switched offset to 0x%08x.\n", offset);
@@ -102,14 +103,16 @@ int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n)
 				break;
 			case IHEX_ELA:
 				offset = (x->ihr_data[0] << 24) + (x->ihr_data[1] << 16);
-				
+                offset -= baseAddress;
+
 				#ifdef IHEX_DEBUG
 				printf("Switched offset to 0x%08x.\n", offset);
 				#endif
 				
 				break;
-			case IHEX_SSA:
-				break;
+        case IHEX_SSA:
+        case IHEX_SLA:
+                break;
 			default:
 				IHEX_SET_ERROR_RETURN(IHEX_ERR_UNKNOWN_RECORD_TYPE,
 					"Unknown record type in record %i: 0x%02x",

@@ -180,7 +180,7 @@ int ihex_check_record(ihex_record_t *r);
  *  @param dst A pointer to the destination address.
  *  @param n   The size of the allocated target area.
  *  @return    0 on success, an error code otherwise. */
-int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n);
+int ihex_mem_copy(ihex_recordset_t *rs, void* dst, ulong_t n, ulong_t baseAddress);
 
 /// Fill a memory area with zeroes.
 /** This method fills a whole memory area with zeros.

@@ -35,8 +35,8 @@ protected slots:
 	void leaveBootloader(void);
 
 protected:
-    virtual TURAG::Feldbus::BootloaderAvrBase::ErrorCode doFlashImage(uint8_t* data, uint32_t length);
-    virtual TURAG::Feldbus::BootloaderAvrBase::ErrorCode doVerifyImage(uint8_t* data, uint32_t length);
+    virtual TURAG::Feldbus::BootloaderAvrBase::ErrorCode doFlashImage(uint8_t* data, uint32_t offset, uint32_t length);
+    virtual TURAG::Feldbus::BootloaderAvrBase::ErrorCode doVerifyImage(uint8_t* data, uint32_t offset, uint32_t length);
     void setDisabledTheme(QLineEdit *lineedit);
 
 	QFormLayout* infoLayout;

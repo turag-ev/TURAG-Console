@@ -25,7 +25,7 @@ FeldbusBootloaderStm32v2View::FeldbusBootloaderStm32v2View(TURAG::Feldbus::Bootl
 }
 
 
-TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderStm32v2View::doFlashImage(uint8_t* imageData, uint32_t length) {
+TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderStm32v2View::doFlashImage(uint8_t* imageData, uint32_t offset, uint32_t length) {
     uint32_t resetVectorStorageAddress = bootloader->getResetVectorStorageAddress();
 
     if (resetVectorStorageAddress == 0xFFFFFFFF) {
@@ -45,8 +45,8 @@ TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderStm32v2View::doFla
     }
 
     // write image to device
-    qDebug() << "writing " << length << " bytes to address " << stmFlashBaseAddress << "\n";
-    result = bootloader->writeFlash(stmFlashBaseAddress, length, imageData);
+    qDebug() << "writing " << length << " bytes to address " << offset << "\n";
+    result = bootloader->writeFlash(offset, length, imageData);
     if (result != TURAG::Feldbus::BootloaderAvrBase::ErrorCode::success) {
         return result;
     }
@@ -61,12 +61,12 @@ TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderStm32v2View::doFla
     return TURAG::Feldbus::BootloaderAvrBase::ErrorCode::success;
 }
 
-TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderStm32v2View::doVerifyImage(uint8_t* imageData, uint32_t length) {
+TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderStm32v2View::doVerifyImage(uint8_t* imageData, uint32_t offset, uint32_t length) {
     // verify
     qDebug() << "verifying flash content\n";
     uint8_t readData[length];
 
-    auto result = bootloader->readFlash(stmFlashBaseAddress, length, readData);
+    auto result = bootloader->readFlash(offset, length, readData);
     if (result != TURAG::Feldbus::BootloaderAvrBase::ErrorCode::success) {
         return result;
     }
@@ -76,7 +76,7 @@ TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderStm32v2View::doVer
 
     // if the reset vector is stored someplace within the image we need to replace this data
     // with the original, otherwise the verification would fail
-    uint32_t maskOffset = bootloader->getResetVectorStorageAddress() & ~stmFlashBaseAddress;
+    uint32_t maskOffset = bootloader->getResetVectorStorageAddress() & ~bootloader->getFlashBaseAddress();
     if (maskOffset + 8 <= length) {
         memcpy(readData + maskOffset, imageData + maskOffset, 8);
     }

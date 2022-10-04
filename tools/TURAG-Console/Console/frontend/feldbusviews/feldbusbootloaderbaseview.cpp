@@ -248,9 +248,9 @@ void FeldbusBootloaderBaseView::checkImageFile(QString path) {
 				imageFileSizeEditString = QString(imageFileSizeEditString + " %3 %").arg(100 * size / bootloader_->getFlashSize(true));
 			}
 			if (min > 0) {
-				imageFileSizeEditString = QString(imageFileSizeEditString + " (Adresse %1 - %2)")
-						.arg(min)
-						.arg(max - 1);
+                imageFileSizeEditString = QString(imageFileSizeEditString + " (Adresse 0x%1 - 0x%2)")
+                        .arg(min, 0, 16)
+                        .arg(max - 1, 0, 16);
 			}
 			imageFileSizeEdit->setText(imageFileSizeEditString);
             flashImageFileButton->setEnabled(true);
@@ -290,7 +290,8 @@ void FeldbusBootloaderBaseView::flashAndVerifyImageFile(bool flashImage, bool ve
 	QByteArray data_(image.readAll());
 	image.close();
 	uint8_t* rawData;
-	unsigned dataLength = 0;
+    uint32_t dataLength = 0, dataOffset = 0;
+    uint8_t* intelHexDataBuffer = nullptr;
 
 	if (imagePathEdit->text().endsWith(".hex")) {
 		ihex_recordset_t* hexRecordset = ihex_rs_from_mem(data_.constData(), data_.size());
@@ -306,19 +307,17 @@ void FeldbusBootloaderBaseView::flashAndVerifyImageFile(bool flashImage, bool ve
 			return;
 		}
 
-		// TODO: increase efficiency for images that do not start at address zero by only transmitting
-		// the data from where it actually starts.
-		int size = max;
-		uint8_t imageBuffer[size];
+        int size = max - min;
+        intelHexDataBuffer = new uint8_t[size];
 
-		if (ihex_mem_copy(hexRecordset, imageBuffer, size) != 0) {
+        if (ihex_mem_copy(hexRecordset, intelHexDataBuffer, size, bootloader_->getFlashBaseAddress()) != 0) {
 			QMessageBox msg(QMessageBox::Warning, "Fehler", "Hex-Datei konnte nicht verarbeitet werden", QMessageBox::Ok);
 			msg.exec();
 			return;
 		}
-		rawData = imageBuffer;
+        rawData = intelHexDataBuffer;
 		dataLength = size;
-
+        dataOffset = min;
 	} else if (imagePathEdit->text().endsWith(".bin")) {
 		rawData = reinterpret_cast<uint8_t*>(const_cast<char*>(data_.constData()));
 		dataLength = data_.size();
@@ -337,11 +336,15 @@ void FeldbusBootloaderBaseView::flashAndVerifyImageFile(bool flashImage, bool ve
     TURAG::Feldbus::BootloaderAvrBase::ErrorCode verifyResult = TURAG::Feldbus::BootloaderAvrBase::ErrorCode::success;
 
     if (flashImage) {
-       flashResult = doFlashImage(rawData, dataLength);
+       flashResult = doFlashImage(rawData, dataOffset, dataLength);
     }
 
     if (verifyImage) {
-        verifyResult = doVerifyImage(rawData, dataLength);
+        verifyResult = doVerifyImage(rawData, dataOffset, dataLength);
+    }
+
+    if (intelHexDataBuffer != nullptr) {
+        delete[] intelHexDataBuffer;
     }
 
     if (flashResult != TURAG::Feldbus::BootloaderAvrBase::ErrorCode::success) {
@@ -365,16 +368,16 @@ void FeldbusBootloaderBaseView::flashAndVerifyImageFile(bool flashImage, bool ve
 	this->setEnabled(true);
 }
 
-TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderBaseView::doFlashImage(uint8_t* imageData, uint32_t length) {
-    return bootloader_->writeFlash(0, length, imageData);
+TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderBaseView::doFlashImage(uint8_t* imageData, uint32_t offset, uint32_t length) {
+    return bootloader_->writeFlash(offset, length, imageData);
 }
 
-TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderBaseView::doVerifyImage(uint8_t* imageData, uint32_t length) {
+TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderBaseView::doVerifyImage(uint8_t* imageData, uint32_t offset, uint32_t length) {
     // verify
     qDebug() << "verifying flash content\n";
     uint8_t readData[length];
 
-    auto result = bootloader_->readFlash(0, length, readData);
+    auto result = bootloader_->readFlash(offset, length, readData);
     if (result != TURAG::Feldbus::BootloaderAvrBase::ErrorCode::success) {
         return result;
     }
