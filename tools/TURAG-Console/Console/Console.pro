@@ -100,6 +100,7 @@ QMAKE_CXXFLAGS_RELEASE += -flto
 QMAKE_LFLAGS_RELEASE += -flto
 
 SOURCES +=\
+    frontend/feldbusviews/feldbusbootloaderstm32v2view.cpp \
     libs/recent.cpp \
     libs/searchwidget.cpp \
         mainwindow.cpp \
@@ -147,9 +148,11 @@ SOURCES +=\
     libs/popup/popupwidget.cpp \
     libs/popup/popupcontainerwidget.cpp \
     libs/popup/popuptoolbutton.cpp \
-    frontend/graphutils/plotmagnifier.cpp
+    frontend/graphutils/plotmagnifier.cpp \
+    frontend/feldbusviews/feldbusmuxerview.cpp
 
 HEADERS  += \
+    frontend/feldbusviews/feldbusbootloaderstm32v2view.h \
     libs/recent.h \
     libs/searchwidget.h \
     mainwindow.h \
@@ -205,7 +208,8 @@ HEADERS  += \
     libs/popup/popupwidget.h \
     libs/popup/popupcontainerwidget.h \
     libs/popup/popuptoolbutton.h \
-    frontend/graphutils/plotmagnifier.h
+    frontend/graphutils/plotmagnifier.h \
+    frontend/feldbusviews/feldbusmuxerview.h
 
 INCLUDEPATH += \
     tina-platform/public \

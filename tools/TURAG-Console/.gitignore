@@ -1,3 +1,4 @@
 /build*/
 Console.pro.user*
 *.autosave
+.qtc_clangd/

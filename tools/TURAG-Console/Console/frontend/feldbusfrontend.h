@@ -14,6 +14,9 @@
 #include <QTimer>
 #include <QCheckBox>
 
+#include <tuple>
+#include <functional>
+
 
 
 class QPushButton;
@@ -30,6 +33,10 @@ class ComboBoxExt;
 class LineEditExt;
 class QGroupBox;
 class QTabWidget;
+
+namespace TURAG::Feldbus {
+    class DeviceLocator;
+}
 
 
 using namespace TURAG; // FIXME: evil!
@@ -61,6 +68,14 @@ protected slots:
 	void onStartInquiry(void);
 	void onDeviceSelected(int row);
 
+    void onReenumerateDevicesSequential(void);
+    void onReenumerateDevicesBinary(void);
+    void onReenumerateDevicesBoth(void);
+    void onBootloaderReenumerateDevicesSequential(void);
+    void onBootloaderReenumerateDevicesBinary(void);
+    void onBootloaderReenumerateDevicesBoth(void);
+    void onStopEnumerate(void);
+
 	void onStartBootInquiry(void);
 
 	void onStartDynamixelInquiry(void);
@@ -74,8 +89,8 @@ protected slots:
 	void onUpdateStatistics(void);
 	void onUpdateStatisticsSlave(void);
 
-	void onTwoByteAddressCheckBoxToggled(bool state);
-	void onBootloaderTwoByteAddressCheckBoxToggled(bool state);
+    void onTwoByteAddressCheckBoxToggled(bool state);
+    void onBootloaderTwoByteAddressCheckBoxToggled(bool state);
 
 protected:
     QWidget* feldbusWidget;
@@ -85,16 +100,18 @@ protected:
     QTabWidget* inquiryTabwidget;
 
     ComboBoxExt* checksumCombobox_;
-    CheckBoxExt* twoByteAddressCheckbox_;
     QPushButton* startInquiry_;
     LineEditExt* fromEdit_;
     LineEditExt* toEdit_;
     QIntValidator* fromValidator_;
     QIntValidator* toValidator_;
 	QList<QWidget*> inquiryWidgetList;
+    QPushButton* enumerateSequentialButton;
+    QPushButton* enumerateBinaryButton;
+    QPushButton* enumerateBothButton;
+    QPushButton* stopEnumerateButton;
 
     ComboBoxExt* bootloaderChecksumCombobox_;
-    CheckBoxExt* bootloaderTwoByteAddressCheckbox_;
     QPushButton* startBootloader_;
     QPushButton* bootloadertoolsStartInquiry_;
     LineEditExt* bootFromEdit_;
@@ -103,6 +120,10 @@ protected:
     QIntValidator* bootloaderToValidator_;
 	QList<QWidget*> bootloaderInquiryWidgetList;
 	QList<QWidget*> bootloaderStartBootloaderWidgetList;
+    QPushButton* bootloaderEnumerateSequentialButton;
+    QPushButton* bootloaderEnumerateBinaryButton;
+    QPushButton* bootloaderEnumerateBothButton;
+    QPushButton* bootloaderStopEnumerateButton;
 
     QPushButton* dynamixelStartInquiry_;
     LineEditExt* dynamixelFromEdit_;
@@ -136,21 +157,25 @@ protected:
     FeldbusDeviceWrapper* selectedDevice_;
     TURAG::Feldbus::Bootloader* broadcastBootloader;
 
-    TURAG::Feldbus::Device::AddressLength deviceAddressLength;
-    TURAG::Feldbus::Device::AddressLength bootloaderAddressLength;
-
 private:
 	void setInquiryWidgetsEnabled(bool enabled);
 	void setBootInquiryWidgetsEnabled(bool enabled);
-	void setDynamixelInquiryWidgetsEnabled(bool enabled);
+    void setDynamixelInquiryWidgetsEnabled(bool enabled);
+    void setEnumerateWidgetsEnabled(bool enabled, bool boot);
 
     void validateAdressFields();
     void dynamixelValidateAdressFields();
     void disableStatistics(void);
     void enableStatistics(void);
     void resetStatistics(void);
+    void enumerate(bool useSequentialSearch, bool useBinarySearch, bool boot);
+
+    std::tuple<QList<uint32_t>, bool>
+    enumerateBusNodes(Feldbus::DeviceLocator& locator, bool useSequentialSearch, bool useBinarySearch, bool* keepRunning,
+                      std::function<void(int)> onDeviceCountChanged = {});
 
 	bool inquiryRunning;
+    bool enumerationRunning;
 	bool bootloaderActivationRunning;
     bool connected;
 

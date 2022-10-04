@@ -14,6 +14,7 @@
 #include <QByteArray>
 #include <QMessageBox>
 #include <QCoreApplication>
+#include <QDebug>
 
 #include <libcintelhex/cintelhex.h>
 
@@ -63,14 +64,24 @@ FeldbusBootloaderBaseView::FeldbusBootloaderBaseView(TURAG::Feldbus::BootloaderA
 	imageLayout2->addWidget(new QLabel("Größe:"));
 	imageFileSizeEdit = new QLineEdit;
 	setDisabledTheme(imageFileSizeEdit);
-	imageFileSizeEdit->setMinimumWidth(500);
+    imageFileSizeEdit->setMinimumWidth(500);
 	imageLayout2->addWidget(imageFileSizeEdit);
-	flashImageFileButton = new QPushButton("Flashen");
-	flashImageFileButton->setDisabled(true);
-	connect(flashImageFileButton, SIGNAL(clicked()), this, SLOT(flashImageFile()));
-	imageLayout2->addWidget(flashImageFileButton);
-	layout->addLayout(imageLayout2);
-	layout->addSpacing(30);
+    verifyImageCheckbox = new QCheckBox;
+    verifyImageCheckbox->setText("verify");
+    imageLayout2->addWidget(verifyImageCheckbox);
+    flashImageFileButton = new QPushButton("Flashen");
+    flashImageFileButton->setDisabled(true);
+    connect(flashImageFileButton, SIGNAL(clicked()), this, SLOT(flashImageFile()));
+    imageLayout2->addWidget(flashImageFileButton);
+    layout->addLayout(imageLayout2);
+    QHBoxLayout* imageLayout3 = new QHBoxLayout;
+    imageLayout3->addStretch();
+    verifyImageFileButton = new QPushButton("Verify");
+    verifyImageFileButton->setDisabled(true);
+    connect(verifyImageFileButton, SIGNAL(clicked()), this, SLOT(verifyImageFile()));
+    imageLayout3->addWidget(verifyImageFileButton);
+    layout->addLayout(imageLayout3);
+    layout->addSpacing(30);
 
 	QLabel* readImageLabel = new QLabel("Binäres Image aus dem Flash lesen");
 	label_font = readImageLabel->font();
@@ -131,7 +142,17 @@ FeldbusBootloaderBaseView::FeldbusBootloaderBaseView(TURAG::Feldbus::BootloaderA
 
     // read mcu ID
     uint16_t mcuId = bootloader->getMcuId();
-    mcuIdEdit->setText(Feldbus::Bootloader::getMcuName(mcuId) );
+
+    if (mcuId == TURAG_FELDBUS_BOOTLOADER_MCU_ID_STRING) {
+        char id_buffer[300];
+        if (bootloader->receiveMcuIdString(id_buffer)) {
+            mcuIdEdit->setText(id_buffer);
+        } else {
+            mcuIdEdit->setText("error receiveing ID string");
+        }
+    } else {
+        mcuIdEdit->setText(Feldbus::Bootloader::getMcuName(mcuId) );
+    }
 
 	// read flash size
 	uint32_t flashSize = bootloader_->getFlashSize(false);
@@ -190,8 +211,9 @@ void FeldbusBootloaderBaseView::openImageFile(void) {
 }
 
 void FeldbusBootloaderBaseView::checkImageFile(QString path) {
-	flashImageFileButton->setEnabled(false);
-	imageFileSizeEdit->setText("");
+    flashImageFileButton->setEnabled(false);
+    verifyImageFileButton->setEnabled(false);
+    imageFileSizeEdit->setText("");
 
 	QFile image(path);
 	if (image.exists()) {
@@ -203,8 +225,9 @@ void FeldbusBootloaderBaseView::checkImageFile(QString path) {
 				imageFileSizeEditString = QString(imageFileSizeEditString + " %3 %").arg(100 * image.size() / bootloader_->getFlashSize(true));
 			}
 			imageFileSizeEdit->setText(imageFileSizeEditString);
-			flashImageFileButton->setEnabled(true);
-		} else if (path.endsWith(".hex")) {
+            flashImageFileButton->setEnabled(true);
+            verifyImageFileButton->setEnabled(true);
+        } else if (path.endsWith(".hex")) {
 			ihex_recordset_t* hexRecordset = ihex_rs_from_file(path.toLatin1().constData());
 			if (!hexRecordset) {
 				imageFileSizeEdit->setText("Error parsing hex file");
@@ -230,15 +253,29 @@ void FeldbusBootloaderBaseView::checkImageFile(QString path) {
 						.arg(max - 1);
 			}
 			imageFileSizeEdit->setText(imageFileSizeEditString);
-			flashImageFileButton->setEnabled(true);
-		} else {
+            flashImageFileButton->setEnabled(true);
+            verifyImageFileButton->setEnabled(true);
+        } else {
 			imageFileSizeEdit->setText("only *.hex and *.bin files are supported");
-			flashImageFileButton->setEnabled(false);
-		}
+            flashImageFileButton->setEnabled(false);
+            verifyImageFileButton->setEnabled(false);
+        }
 	}
 }
 
 void FeldbusBootloaderBaseView::flashImageFile(void) {
+    flashAndVerifyImageFile(true, verifyImageCheckbox->isChecked());
+}
+
+void FeldbusBootloaderBaseView::verifyImageFile(void) {
+    flashAndVerifyImageFile(false, true);
+}
+
+void FeldbusBootloaderBaseView::flashAndVerifyImageFile(bool flashImage, bool verifyImage) {
+    if (!flashImage && !verifyImage) {
+        return;
+    }
+
 	QFile image(imagePathEdit->text());
 	if (!image.exists()) {
 		return;
@@ -289,26 +326,66 @@ void FeldbusBootloaderBaseView::flashImageFile(void) {
 		return;
 	}
 
-	this->setEnabled(false);
+    this->setEnabled(false);
 	QCoreApplication::processEvents();
 
 	// the bootloader might take a little longer to reply
     unsigned originalTimeout = bus->getFeldbusTimeout();
-    bus->setFeldbusTimeout(100);
+    bus->setFeldbusTimeout(250);
 
-	TURAG::Feldbus::BootloaderAtmega::ErrorCode result = bootloader_->writeFlash(0, dataLength, rawData);
+    TURAG::Feldbus::BootloaderAvrBase::ErrorCode flashResult = TURAG::Feldbus::BootloaderAvrBase::ErrorCode::success;
+    TURAG::Feldbus::BootloaderAvrBase::ErrorCode verifyResult = TURAG::Feldbus::BootloaderAvrBase::ErrorCode::success;
 
-	if (result == TURAG::Feldbus::BootloaderAtmega::ErrorCode::success) {
-		QMessageBox msg(QMessageBox::Information, "Erfolgreich", "Image erfolgreich zum Gerät übertragen", QMessageBox::Ok);
-		msg.exec();
-	} else {
-		QMessageBox msg(QMessageBox::Critical, bootloader_->errorName(result), bootloader_->errorDescription(result), QMessageBox::Ok);
-		msg.exec();
-	}
+    if (flashImage) {
+       flashResult = doFlashImage(rawData, dataLength);
+    }
+
+    if (verifyImage) {
+        verifyResult = doVerifyImage(rawData, dataLength);
+    }
+
+    if (flashResult != TURAG::Feldbus::BootloaderAvrBase::ErrorCode::success) {
+        QMessageBox msg(QMessageBox::Critical, bootloader_->errorName(flashResult), bootloader_->errorDescription(flashResult), QMessageBox::Ok);
+        msg.exec();
+    } else if (verifyResult != TURAG::Feldbus::BootloaderAvrBase::ErrorCode::success) {
+        QMessageBox msg(QMessageBox::Critical, bootloader_->errorName(verifyResult), bootloader_->errorDescription(verifyResult), QMessageBox::Ok);
+        msg.exec();
+    } else if (flashImage && verifyImage) {
+        QMessageBox msg(QMessageBox::Information, "Erfolgreich", "Image erfolgreich zum Gerät übertragen und verifiziert", QMessageBox::Ok);
+        msg.exec();
+    } else if (flashImage && !verifyImage) {
+        QMessageBox msg(QMessageBox::Information, "Erfolgreich", "Image erfolgreich zum Gerät übertragen", QMessageBox::Ok);
+        msg.exec();
+    } else if (!flashImage && verifyImage) {
+        QMessageBox msg(QMessageBox::Information, "Erfolgreich", "Image erfolgreich verifiziert", QMessageBox::Ok);
+        msg.exec();
+    }
 
     bus->setFeldbusTimeout(originalTimeout);
-
 	this->setEnabled(true);
+}
+
+TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderBaseView::doFlashImage(uint8_t* data, uint32_t length) {
+    return bootloader_->writeFlash(0, length, data);
+}
+
+TURAG::Feldbus::BootloaderAvrBase::ErrorCode FeldbusBootloaderBaseView::doVerifyImage(uint8_t* data, uint32_t length) {
+    // verify
+    qDebug() << "verifying flash content\n";
+    uint8_t readData[length];
+
+    auto result = bootloader_->readFlash(0, length, readData);
+    if (result != TURAG::Feldbus::BootloaderAvrBase::ErrorCode::success) {
+        return result;
+    }
+
+    for (uint32_t i = 0; i < length; ++i) {
+        if (data[i] != readData[i]) {
+            return TURAG::Feldbus::BootloaderAvrBase::ErrorCode::content_mismatch;
+        }
+    }
+
+    return TURAG::Feldbus::BootloaderAvrBase::ErrorCode::success;
 }
 
 

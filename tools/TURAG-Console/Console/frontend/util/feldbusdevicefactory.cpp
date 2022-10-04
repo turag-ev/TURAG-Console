@@ -6,6 +6,7 @@
 #include <tina/feldbus/protocol/turag_feldbus_fuer_bootloader.h>
 #include <tina++/feldbus/host/legacystellantriebedevice.h>
 #include <tina++/feldbus/host/aseb.h>
+#include <tina++/feldbus/host/muxer_64_32.h>
 #include <tina++/feldbus/host/bootloader.h>
 #include <tina++/feldbus/host/feldbusabstraction.h>
 
@@ -37,8 +38,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
                     device_info.device_name.constData(),
                     device_info.address,
                     bus,
-                    device_info.device_info.crcType(),
-                    device_info.addressLength);
+                        device_info.device_info.crcType());
 
 		switch (device_info.device_info.deviceTypeId()) {
         case TURAG_FELDBUS_STELLANTRIEBE_DEVICE_TYPE_DC:
@@ -46,6 +46,11 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
             break;
 
         case TURAG_FELDBUS_STELLANTRIEBE_DEVICE_TYPE_SERVO:
+            device = new Feldbus::Servo(
+                        device_info.device_name.constData(),
+                        device_info.address,
+						bus,
+                        device_info.device_info.crcType());
             deviceTypeString = "Servo-Motor";
             break;
 
@@ -66,6 +71,11 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
             break;
 
         default:
+            device = new Feldbus::Aktor(
+                         device_info.device_name.constData(),
+                         device_info.address,
+                         bus,
+                         device_info.device_info.crcType());
             deviceTypeString = "unbekannt";
             break;
         }
@@ -76,6 +86,11 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
 
 		switch (device_info.device_info.deviceTypeId()) {
         case TURAG_FELDBUS_LOKALISIERUNGSSENSOREN_DEVICE_TYPE_COLORSENSOR:
+            device = new Feldbus::Farbsensor(
+                        device_info.device_name.constData(),
+                        device_info.address,
+						bus,
+                        device_info.device_info.crcType());
             deviceTypeString = "Farbsensor";
             break;
 
@@ -106,8 +121,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
                         device_info.device_name.constData(),
                         device_info.address,
 						bus,
-						device_info.device_info.crcType(),
-                        device_info.addressLength);
+                        device_info.device_info.crcType());
             deviceTypeString = "ASEB";
             break;
 
@@ -127,8 +141,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
                         device_info.device_name.constData(),
                         device_info.address,
                         bus,
-                        device_info.device_info.crcType(),
-                        device_info.addressLength);
+                        device_info.device_info.crcType());
             deviceTypeString = "BMaX - generic";
             break;
         case TURAG_FELDBUS_BOOTLOADER_ATMEGA:
@@ -136,8 +149,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
                         device_info.device_name.constData(),
                         device_info.address,
 						bus,
-						device_info.device_info.crcType(),
-                        device_info.addressLength);
+                        device_info.device_info.crcType());
             deviceTypeString = "BMaX - ATmega";
             break;
 
@@ -146,10 +158,19 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
                         device_info.device_name.constData(),
                         device_info.address,
 						bus,
-						device_info.device_info.crcType(),
-                        device_info.addressLength);
+                        device_info.device_info.crcType());
             deviceTypeString = "BMaX - ATxmega";
             break;
+
+        case TURAG_FELDBUS_BOOTLOADER_STM32V2:
+            device = new Feldbus::BootloaderStm32v2(
+                        device_info.device_name.constData(),
+                        device_info.address,
+                        bus,
+                        device_info.device_info.crcType());
+            deviceTypeString = "STM32 (bootloader v2)";
+            break;
+
         default:
             deviceTypeString = "unbekannt";
             break;
@@ -159,13 +180,26 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
 
     default:
         protocolIdString = "unbekannt";
+
+        switch (device_info.device_info.deviceTypeId()) {
+        case 0x01:
+            device = new Feldbus::Muxer_64_32(
+                        device_info.device_name.constData(),
+                        device_info.address,
+                        bus,
+                        device_info.device_info.crcType());
+            deviceTypeString = "64-32-Muxer";
+            break;
+
+        default:
         deviceTypeString = "unbekannt";
         device = new Feldbus::Device(
                     device_info.device_name.constData(),
                     device_info.address,
 					bus,
-					device_info.device_info.crcType(),
-                    device_info.addressLength);
+                        device_info.device_info.crcType());
+        break;
+    }
         break;
     }
 
