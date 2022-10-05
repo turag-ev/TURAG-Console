@@ -99,7 +99,7 @@ protected:
     QList<std::shared_ptr<FeldbusDeviceWrapper>> devices_;
     QTabWidget* inquiryTabwidget;
 
-    ComboBoxExt* checksumCombobox_;
+    //ComboBoxExt* checksumCombobox_;
     QPushButton* startInquiry_;
     LineEditExt* fromEdit_;
     LineEditExt* toEdit_;
@@ -111,7 +111,7 @@ protected:
     QPushButton* enumerateBothButton;
     QPushButton* stopEnumerateButton;
 
-    ComboBoxExt* bootloaderChecksumCombobox_;
+    //ComboBoxExt* bootloaderChecksumCombobox_;
     QPushButton* startBootloader_;
     QPushButton* bootloadertoolsStartInquiry_;
     LineEditExt* bootFromEdit_;

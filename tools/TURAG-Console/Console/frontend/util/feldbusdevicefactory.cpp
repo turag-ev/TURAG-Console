@@ -22,7 +22,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
         checksumString = "xor-Checksumme";
         break;
 
-    case TURAG::Feldbus::ChecksumType::crc8_icode:
+    case TURAG::Feldbus::ChecksumType::crc8:
         checksumString = "CRC-8";
         break;
 

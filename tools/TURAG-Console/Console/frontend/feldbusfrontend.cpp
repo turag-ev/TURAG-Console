@@ -66,6 +66,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     QWidget* left_layout_widget = new QWidget;
     QVBoxLayout* left_layout = new QVBoxLayout;
 
+    /*
     QHBoxLayout* layoutAboveTop = new QHBoxLayout;
     checksumCombobox_ = new ComboBoxExt("ChecksumConventionalDevices", 2);
 	inquiryWidgetList.append(checksumCombobox_);
@@ -79,6 +80,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 	inquiryWidgetList.append(checksumLabel);
 	layoutAboveTopFormLayout->addRow(checksumLabel, checksumCombobox_);
     layoutAboveTop->addLayout(layoutAboveTopFormLayout);
+*/
 
     QHBoxLayout* layoutEnumerate = new QHBoxLayout;
     QLabel* enumerateLabel = new QLabel("Enumerate devices:");
@@ -144,7 +146,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     inquiryWidgetList.append(dynamixelStartInquiry_);
 
     QVBoxLayout* defaultInquiryLayout = new QVBoxLayout;
-    defaultInquiryLayout->addLayout(layoutAboveTop);
+    //defaultInquiryLayout->addLayout(layoutAboveTop);
     defaultInquiryLayout->addLayout(layoutEnumerate);
     defaultInquiryLayout->addLayout(layoutTop);
     defaultInquiryLayout->addLayout(dynamixel_layoutTop);
@@ -153,6 +155,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     /*
      * BMax inquiry Interface
      */
+    /*
     QHBoxLayout* bootloaderLayoutAboveSetupLayout = new QHBoxLayout;
     bootloaderChecksumCombobox_ = new ComboBoxExt("BootloaderChecksumConventionalDevices", 1);
 	bootloaderStartBootloaderWidgetList.append(bootloaderChecksumCombobox_);
@@ -167,6 +170,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 	bootloaderInquiryWidgetList.append(bootloaderChecksumLabel);
 	bootloaderLayoutAboveSetupLayoutFormLayout->addRow(bootloaderChecksumLabel, bootloaderChecksumCombobox_);
     bootloaderLayoutAboveSetupLayout->addLayout(bootloaderLayoutAboveSetupLayoutFormLayout);
+    */
 
 
     QHBoxLayout* bootloadertools_layoutTop = new QHBoxLayout;
@@ -216,7 +220,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 
 
     QVBoxLayout* bootloaderLayout = new QVBoxLayout;
-    bootloaderLayout->addLayout(bootloaderLayoutAboveSetupLayout);
+    //bootloaderLayout->addLayout(bootloaderLayoutAboveSetupLayout);
     bootloaderLayout->addLayout(bootloaderLayoutEnumerate);
     bootloaderLayout->addLayout(bootloadertools_layoutTop);
     bootloaderLayout->addStretch();
@@ -434,12 +438,14 @@ void FeldbusFrontend::onInquiry(bool boot) {
 	bootloaderActivationRunning = false;
 
     int checksumTypeIndex;
+    checksumTypeIndex = static_cast<int>(Feldbus::ChecksumType::crc8);
+
     if (!boot) {
 		setInquiryWidgetsEnabled(false);
-        checksumTypeIndex = checksumCombobox_->currentIndex();
+        //checksumTypeIndex = checksumCombobox_->currentIndex();
     } else {
 		setBootInquiryWidgetsEnabled(false);
-        checksumTypeIndex = bootloaderChecksumCombobox_->currentIndex();
+        //checksumTypeIndex = bootloaderChecksumCombobox_->currentIndex();
     }
 
 	availabilityChecker_.stop();
@@ -469,8 +475,8 @@ void FeldbusFrontend::onInquiry(bool boot) {
         } else {
 			startInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg((i - fromAddress) * 100 / (toAddress - fromAddress + 1)));
         }
-		for (int j = 0; j <= static_cast<int>(Feldbus::ChecksumType::crc8_icode); j++) {
-			if (j == checksumTypeIndex || checksumTypeIndex > static_cast<int>(Feldbus::ChecksumType::crc8_icode)) {
+        for (int j = 0; j <= static_cast<int>(Feldbus::ChecksumType::crc8); j++) {
+            if (j == checksumTypeIndex || checksumTypeIndex > static_cast<int>(Feldbus::ChecksumType::crc8)) {
 				Feldbus::ChecksumType chksum_type = static_cast<Feldbus::ChecksumType>(j);
 
                 // the condition for detecting the device is a successful ping-request
@@ -669,17 +675,22 @@ void FeldbusFrontend::enumerate(bool useSequentialSearch, bool useBinarySearch, 
 
 
     int checksumTypeIndex;
+    checksumTypeIndex = static_cast<int>(Feldbus::ChecksumType::crc8);
+
+
     Feldbus::ChecksumType checksumType;
+    /*
     if (!boot) {
         checksumTypeIndex = checksumCombobox_->currentIndex();
     } else {
         checksumTypeIndex = bootloaderChecksumCombobox_->currentIndex();
     }
+    */
 
     // use crc8_icode even if "both" is selected, because nobody ever uses anything else
     // but the default crc.
-    if (checksumTypeIndex > static_cast<int>(Feldbus::ChecksumType::crc8_icode)) {
-        checksumType = Feldbus::ChecksumType::crc8_icode;
+    if (checksumTypeIndex > static_cast<int>(Feldbus::ChecksumType::crc8)) {
+        checksumType = Feldbus::ChecksumType::crc8;
     } else {
         checksumType = static_cast<Feldbus::ChecksumType>(checksumTypeIndex);
     }
@@ -951,8 +962,10 @@ void FeldbusFrontend::onStartBoot(void) {
 	if (broadcastBootloader) {
 		delete broadcastBootloader;
 	}
+    /*broadcastBootloader = new Feldbus::Bootloader(
+                "broadcastBootloader", 0, *this, static_cast<Feldbus::ChecksumType>(bootloaderChecksumCombobox_->currentIndex()));*/
     broadcastBootloader = new Feldbus::Bootloader(
-                "broadcastBootloader", 0, *this, static_cast<Feldbus::ChecksumType>(bootloaderChecksumCombobox_->currentIndex()));
+                "broadcastBootloader", 0, *this, Feldbus::ChecksumType::crc8);
 }
 
 void FeldbusFrontend::onUpdateStatistics(void) {
@@ -1300,7 +1313,7 @@ bool FeldbusFrontend::doTransceive(const uint8_t *transmit, int *transmit_length
     static SystemTime lastTransmission;
 
     // TODO: move at a better place.
-    SystemTime requiredProcessingTime = SystemTime::fromMsec(1);
+    SystemTime requiredProcessingTime = SystemTime::fromMsec(10);
 
     if (!connected || serialPort == nullptr) {
         return false;
@@ -1313,6 +1326,8 @@ bool FeldbusFrontend::doTransceive(const uint8_t *transmit, int *transmit_length
                    requiredProcessingTime > SystemTime::now()) {
                 QThread::msleep(1);
             }
+
+            clearBuffer();
         }
 
 		int transmit_length_copy = *transmit_length;
