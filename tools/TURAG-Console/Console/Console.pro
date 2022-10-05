@@ -27,7 +27,7 @@ defineTest(minQtVersion) {
 #
 #-------------------------------------------------
 
-VERSION = 3.5.3
+VERSION = 3.6
 
 CONFIG +=  qwt
 QT     += core gui

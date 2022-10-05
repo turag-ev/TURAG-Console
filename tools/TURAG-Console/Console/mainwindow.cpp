@@ -426,6 +426,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 void MainWindow::about() {
+    // authors sorted by lines of code using
+    //  git ls-tree --name-only -z -r HEAD|egrep -z -Z -E '\.(h|cpp|c|txt)$' |xargs -0 -n1 git blame --line-porcelain|grep "^author "|sort|uniq -c|sort -nr
+    //
 	QString aboutText(QString::fromUtf8("<b>TURAG-Console v" TURAG_STRINGIFY(PACKAGE_VERSION) "</b><br />"
 										"compiled on " __DATE__ " " __TIME__
 									#ifdef __GNUC__
@@ -433,19 +436,26 @@ void MainWindow::about() {
 									#endif
 										"<br />built with Qt v" QT_VERSION_STR
 										"<br />running on Qt v%1"
-										"<br /><br />"
-										"Entwickelt von/für die <a href=\"http://www.turag.de\">TURAG e.V.</a>"
-										"<br />"
-										"insbesondere von:<br/><br />"
-										"&nbsp; Richard Liebscher<br />"
-										"&nbsp; Martin Oemus<br />"
-										"&nbsp; Pascal Below<br />"
-										"&nbsp; Kevin Seidel<br />"
+                                        "<br /><br />"
+                                        "Authors:<br/>"
+                                        "&nbsp; Martin Oemus<br />"
+                                        "&nbsp; Richard Rudat<br />"
+                                        "&nbsp; Hermann von Kleist<br />"
+                                        "&nbsp; Pascal Below<br />"
+                                        "&nbsp; Richard Liebscher<br />"
+                                        "&nbsp; Lukas Müller<br />"
+                                        "&nbsp; Sebastian Schwabe<br />"
                                         "&nbsp; Florian Völker<br />"
-                                        "&nbsp; Hermann von Kleist<br /><br />"
-                                        "Copyright © 2013 - 2018 TURAG e.V.<br /><br />"
-										"Based in part on the work of the <a href=\"http://qwt.sf.net\">Qwt project</href>."
-										).arg(qVersion()));
+                                        "&nbsp; Kevin Seidel<br />"
+                                        "<br />"
+                                        "License: GPL v3<br />"
+                                        "Originally developed by <a href=\"http://www.turag.de\">TURAG e.V.</a><br />"
+                                        "<br />"
+                                        "Used third party libraries:<br />"
+                                        "&nbsp;&nbsp; <a href=\"http://qwt.sf.net\">Qwt project</a><br />"
+                                        "&nbsp;&nbsp; <a href=\"https://github.com/mhaller/qwebdavlib\">qwebdavlib</a><br />"
+                                        "&nbsp;&nbsp; <a href=\"https://github.com/martin-helmich/libcintelhex\">libcintelhex</a><br />"
+                                        ).arg(qVersion()));
 
 	QMessageBox aboutBox(QMessageBox::Information, QString("About %1").arg(qApp->applicationName()), aboutText, QMessageBox::Ok, this);
 	QPushButton* aboutQtButton = aboutBox.addButton("About Qt...", QMessageBox::HelpRole);
