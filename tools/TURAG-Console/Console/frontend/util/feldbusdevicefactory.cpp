@@ -23,7 +23,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
         break;
 
     case TURAG::Feldbus::ChecksumType::crc8_icode:
-        checksumString = "CRC-8 I-CODE";
+        checksumString = "CRC-8";
         break;
 
     default:
@@ -194,6 +194,8 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
         devString += device_info.device_name;
         devString += "</td></tr>\n<tr><td>Adresse: </td><td>";
         devString += QString("%1").arg(device_info.address);
+        devString += "</td></tr>\n<tr><td>UUID: </td><td>";
+        devString += QString("%1").arg(device_info.uuidString());
         devString += "</td></tr>\n<tr><td>Protokoll: </td><td>";
         devString += protocolIdString;
         devString += "</td></tr>\n<tr><td>Gerätetyp: </td><td>";
@@ -201,7 +203,7 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
         devString += "</td></tr>\n<tr><td>Checksumme: </td><td>";
         devString += checksumString;
         devString += "</td></tr>\n<tr><td>Puffer-Größe: </td><td>";
-		devString += QString("%1").arg(device_info.device_info.bufferSize());
+        devString += QString("%1").arg(device_info.extended_device_info.bufferSize());
         devString += "</td></tr>\n<tr><td>Uptime-Frequ.: </td><td>";
 		devString += device_info.device_info.uptimeFrequency() ? QString("%1 Hz").arg(device_info.device_info.uptimeFrequency()) : "n/a";
         devString += "</td></tr>\n<tr><td>Versions-Info: </td><td>";

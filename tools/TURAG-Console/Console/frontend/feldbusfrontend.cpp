@@ -243,7 +243,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     deviceList_->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::QSizePolicy::MinimumExpanding);
     deviceInfo_ = new QTextEdit;
     deviceInfo_->setReadOnly(true);
-    deviceInfo_->setMinimumHeight(140);
+    deviceInfo_->setMinimumHeight(205);
     deviceInfo_->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
     deviceLayout->addWidget(deviceList_);
     deviceLayout->addWidget(deviceInfo_);
@@ -478,20 +478,20 @@ void FeldbusFrontend::onInquiry(bool boot) {
                 // to double check the assumed checksum type
                 Feldbus::Device* dev = new TURAG::Feldbus::Device("", i, *this, chksum_type, 2, 1);
                 if (dev->isAvailable()) {
-                    if (dev->getDeviceInfo(&dev_info.device_info)) {
+                    if (dev->getDeviceInfo(&dev_info.device_info) && dev->getExtendedDeviceInfo(&dev_info.extended_device_info)) {
 						if (dev_info.device_info.crcType() == chksum_type) {
                             dev_info.address = i;
                             delete dev;
 
                             Feldbus::Device* detectedDev = new TURAG::Feldbus::Device("", dev_info.address, *this, static_cast<Feldbus::ChecksumType>(dev_info.device_info.crcType()), TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ATTEMPTS, TURAG_FELDBUS_DEVICE_CONFIG_MAX_TRANSMISSION_ERRORS);
-							QByteArray name_buffer(dev_info.device_info.nameLength() + 2, '\0');
+                            QByteArray name_buffer(dev_info.extended_device_info.nameLength() + 2, '\0');
 							if (detectedDev->receiveDeviceRealName(name_buffer.data())) {
                                 dev_info.device_name = name_buffer;
                             } else {
                                 dev_info.device_name = "???";
                             }
 
-							QByteArray versioninfo_buffer(dev_info.device_info.versionInfoLength() + 2, '\0');
+                            QByteArray versioninfo_buffer(dev_info.extended_device_info.versionInfoLength() + 2, '\0');
 							if (detectedDev->receiveVersionInfo(versioninfo_buffer.data())) {
                                 dev_info.versionInfo = versioninfo_buffer;
                             } else {

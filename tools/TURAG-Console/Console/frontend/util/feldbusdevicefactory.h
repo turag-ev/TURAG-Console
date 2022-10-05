@@ -17,11 +17,13 @@ public:
         device_name(QByteArray("unnamed")) {}
 
     Feldbus::Device::DeviceInfo device_info;
+    Feldbus::Device::ExtendedDeviceInfo extended_device_info;
     int address;
     QByteArray device_name;
     QByteArray versionInfo;
 
-    QString toString() { return QString("%1: %2").arg(address).arg(QString(device_name)); }
+    QString uuidString() { return QString("%1").arg(device_info.uuid(), 8, 16, QChar('0')).toUpper(); }
+    QString toString() { return QString("%1 - %2 - %3").arg(address).arg(uuidString()).arg(QString(device_name)); }
 };
 
 struct FeldbusDeviceWrapper {
