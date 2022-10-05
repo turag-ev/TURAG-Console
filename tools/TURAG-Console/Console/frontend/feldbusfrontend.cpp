@@ -97,13 +97,13 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     layoutEnumerate->addWidget(enumerateBothButton);
     connect(enumerateBothButton, SIGNAL(clicked()), this, SLOT(onReenumerateDevicesBoth()));
     inquiryWidgetList.append(enumerateBothButton);
-    stopEnumerateButton = new QPushButton("Abbrechen");
+    stopEnumerateButton = new QPushButton("Cancel");
     //stopEnumerateButton->setVisible(false);
     stopEnumerateButton->setEnabled(false);
     layoutEnumerate->addWidget(stopEnumerateButton);
     connect(stopEnumerateButton, SIGNAL(clicked()), this, SLOT(onStopEnumerate()));
     inquiryWidgetList.append(stopEnumerateButton);
-    layoutEnumerate->addStretch();
+    //layoutEnumerate->addStretch();
 
 
     QHBoxLayout* layoutTop = new QHBoxLayout;
@@ -119,7 +119,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     toEdit_ = new LineEditExt(objectName() + "toAddress", "25");
 	inquiryWidgetList.append(toEdit_);
 	layoutTop->addWidget(toEdit_);
-    startInquiry_ = new QPushButton("Geräte suchen");
+    startInquiry_ = new QPushButton("Search Devices");
     inquiryWidgetList.append(startInquiry_);
     layoutTop->addWidget(startInquiry_);
 
@@ -155,8 +155,9 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     /*
      * BMax inquiry Interface
      */
-    /*
+
     QHBoxLayout* bootloaderLayoutAboveSetupLayout = new QHBoxLayout;
+    /*
     bootloaderChecksumCombobox_ = new ComboBoxExt("BootloaderChecksumConventionalDevices", 1);
 	bootloaderStartBootloaderWidgetList.append(bootloaderChecksumCombobox_);
 	bootloaderInquiryWidgetList.append(bootloaderChecksumCombobox_);
@@ -171,6 +172,10 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
 	bootloaderLayoutAboveSetupLayoutFormLayout->addRow(bootloaderChecksumLabel, bootloaderChecksumCombobox_);
     bootloaderLayoutAboveSetupLayout->addLayout(bootloaderLayoutAboveSetupLayoutFormLayout);
     */
+    startBootloader_ = new QPushButton("Send Start-Bootloader packets");
+    bootloaderInquiryWidgetList.append(startBootloader_);
+    bootloaderLayoutAboveSetupLayout->addStretch();
+    bootloaderLayoutAboveSetupLayout->addWidget(startBootloader_);
 
 
     QHBoxLayout* bootloadertools_layoutTop = new QHBoxLayout;
@@ -186,14 +191,9 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     bootToEdit_ = new LineEditExt(objectName() + "bootToAddress", "25");
 	bootloaderInquiryWidgetList.append(bootToEdit_);
 	bootloadertools_layoutTop->addWidget(bootToEdit_);
-	QVBoxLayout* bootButtonLayout = new QVBoxLayout;
-	startBootloader_ = new QPushButton("Bootloader starten");
-	bootloaderInquiryWidgetList.append(startBootloader_);
-	bootButtonLayout->addWidget(startBootloader_);
-	bootloadertoolsStartInquiry_ = new QPushButton("Geräte suchen");
+    bootloadertoolsStartInquiry_ = new QPushButton("Search Devices");
     bootloaderInquiryWidgetList.append(bootloadertoolsStartInquiry_);
-	bootButtonLayout->addWidget(bootloadertoolsStartInquiry_);
-	bootloadertools_layoutTop->addLayout(bootButtonLayout);
+    bootloadertools_layoutTop->addWidget(bootloadertoolsStartInquiry_);
 
     QHBoxLayout* bootloaderLayoutEnumerate = new QHBoxLayout;
     QLabel* bootloaderEnumerateLabel = new QLabel("Enumerate devices:");
@@ -210,17 +210,17 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     bootloaderLayoutEnumerate->addWidget(bootloaderEnumerateBothButton);
     connect(bootloaderEnumerateBothButton, SIGNAL(clicked()), this, SLOT(onBootloaderReenumerateDevicesBoth()));
     bootloaderInquiryWidgetList.append(bootloaderEnumerateBothButton);
-    bootloaderStopEnumerateButton = new QPushButton("Abbrechen");
+    bootloaderStopEnumerateButton = new QPushButton("Cancel");
     bootloaderLayoutEnumerate->addWidget(bootloaderStopEnumerateButton);
     //bootloaderStopEnumerateButton->setVisible(false);
     bootloaderStopEnumerateButton->setEnabled(false);
     connect(bootloaderStopEnumerateButton, SIGNAL(clicked()), this, SLOT(onStopEnumerate()));
     bootloaderInquiryWidgetList.append(bootloaderStopEnumerateButton);
-    bootloaderLayoutEnumerate->addStretch();
+    //bootloaderLayoutEnumerate->addStretch();
 
 
     QVBoxLayout* bootloaderLayout = new QVBoxLayout;
-    //bootloaderLayout->addLayout(bootloaderLayoutAboveSetupLayout);
+    bootloaderLayout->addLayout(bootloaderLayoutAboveSetupLayout);
     bootloaderLayout->addLayout(bootloaderLayoutEnumerate);
     bootloaderLayout->addLayout(bootloadertools_layoutTop);
     bootloaderLayout->addStretch();
@@ -234,7 +234,7 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     bmaxInquiryWidget->setLayout(bootloaderLayout);
 
     inquiryTabwidget = new QTabWidget;
-    inquiryTabwidget->addTab(defaultInquiryWidget, "Standard");
+    inquiryTabwidget->addTab(defaultInquiryWidget, "Default");
     inquiryTabwidget->addTab(bmaxInquiryWidget, "BMax");
 
 
@@ -264,39 +264,38 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     /*
      * Statistics labels
      */
-    masterGroupBox_ = new QGroupBox("Master-Statistiken");
+    masterGroupBox_ = new QGroupBox("Host Statistics");
     QFormLayout* masterStatisticsLayout = new QFormLayout();
     masterNoErrorPackages_ = new QLabel("0");
-    masterStatisticsLayout->addRow("Fehlerfrei", masterNoErrorPackages_);
+    masterStatisticsLayout->addRow("Successful", masterNoErrorPackages_);
     masterSendError_ = new QLabel("0");
-    masterStatisticsLayout->addRow("Sendefehler", masterSendError_);
+    masterStatisticsLayout->addRow("Transmit Error", masterSendError_);
     masterMissingData_ = new QLabel("0");
-    masterStatisticsLayout->addRow("Fehlende Daten", masterMissingData_);
+    masterStatisticsLayout->addRow("Missing data", masterMissingData_);
     masterNoAnswer_ = new QLabel("0");
-    masterStatisticsLayout->addRow("Keine Antwort", masterNoAnswer_);
+    masterStatisticsLayout->addRow("No Answer", masterNoAnswer_);
     masterChecksumError_ = new QLabel("0");
-    masterStatisticsLayout->addRow("Checksummen-Fehler", masterChecksumError_);
+    masterStatisticsLayout->addRow("Checksum Error", masterChecksumError_);
     masterGroupBox_->setLayout(masterStatisticsLayout);
 
-    slaveGroupBox_ = new QGroupBox("Slave-Statistiken");
+    slaveGroupBox_ = new QGroupBox("Device Statistics");
     QFormLayout* slaveStatisticsLayout = new QFormLayout();
     slaveAcceptedPackages_ = new QLabel("0");
-    slaveStatisticsLayout->addRow("Fehlerfrei", slaveAcceptedPackages_);
+    slaveStatisticsLayout->addRow("Successful", slaveAcceptedPackages_);
     slaveOverflow_ = new QLabel("0");
     slaveStatisticsLayout->addRow("Overflow", slaveOverflow_);
     slaveLostPackages_ = new QLabel("0");
-    slaveStatisticsLayout->addRow("Verlorene Pakete", slaveLostPackages_);
+    slaveStatisticsLayout->addRow("Lost Packets", slaveLostPackages_);
     slaveChecksumError_ = new QLabel("0");
-    slaveStatisticsLayout->addRow("Checksummen-Fehler", slaveChecksumError_);
+    slaveStatisticsLayout->addRow("Checksum Error", slaveChecksumError_);
     slaveUptime_ = new QLabel("0");
     slaveStatisticsLayout->addRow("Uptime", slaveUptime_);
     QVBoxLayout* slaveStatisticsVLayout = new QVBoxLayout;
     slaveStatisticsVLayout->addLayout(slaveStatisticsLayout);
     slaveGroupBox_->setLayout(slaveStatisticsVLayout);
     slaveGroupBox_->setToolTip(
-                "Zeigt Paketstatistiken seit der letzten Gerätesuche an.\n"
-                "Werte in Klammern sind vor der letzten Gerätesuche entstanden.\n"
-                "Es ist zu beachten, dass die Gerätesuche Checksummenfehler im Slave verursachen kann.");
+                "Shows packet statistics since the last device search.\n"
+                "Values in brackets originated before the last device search.");
 
     QHBoxLayout* statisticsLayout = new QHBoxLayout;
     statisticsLayout->addWidget(masterGroupBox_);
@@ -471,9 +470,9 @@ void FeldbusFrontend::onInquiry(bool boot) {
 
     for (int i = fromAddress; i <= toAddress; i++) {
         if (boot) {
-			bootloadertoolsStartInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg((i - fromAddress) * 100 / (toAddress - fromAddress + 1)));
+            bootloadertoolsStartInquiry_->setText(QStringLiteral("Cancel (%1 %)").arg((i - fromAddress) * 100 / (toAddress - fromAddress + 1)));
         } else {
-			startInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg((i - fromAddress) * 100 / (toAddress - fromAddress + 1)));
+            startInquiry_->setText(QStringLiteral("Cancel (%1 %)").arg((i - fromAddress) * 100 / (toAddress - fromAddress + 1)));
         }
         for (int j = 0; j <= static_cast<int>(Feldbus::ChecksumType::crc8); j++) {
             if (j == checksumTypeIndex || checksumTypeIndex > static_cast<int>(Feldbus::ChecksumType::crc8)) {
@@ -629,7 +628,7 @@ void FeldbusFrontend::onStartDynamixelInquiry(void) {
     }
 
     for (int i = fromAddress; i <= toAddress; i++) {
-        dynamixelStartInquiry_->setText(QStringLiteral("Abbrechen (%1 %)").arg(i * 100 / (toAddress - fromAddress + 1)));
+        dynamixelStartInquiry_->setText(QStringLiteral("Cancel (%1 %)").arg(i * 100 / (toAddress - fromAddress + 1)));
 
         Feldbus::DynamixelDevice* dev = new Feldbus::DynamixelDevice("", i, 2, 1);
         int modelNumber = 0;
@@ -700,7 +699,7 @@ void FeldbusFrontend::enumerate(bool useSequentialSearch, bool useBinarySearch, 
     QList<uint32_t> foundUuids;
     std::tie(foundUuids, std::ignore) =
             enumerateBusNodes(locator, useSequentialSearch, useBinarySearch, &enumerationRunning, [&](int count) {
-        QString progress = QStringLiteral("Abbrechen (%1)").arg(count);
+        QString progress = QStringLiteral("Cancel (%1)").arg(count);
         if (boot) {
             bootloaderStopEnumerateButton->setText(progress);
         } else {
@@ -710,9 +709,9 @@ void FeldbusFrontend::enumerate(bool useSequentialSearch, bool useBinarySearch, 
     });
 
     if (boot) {
-        bootloaderStopEnumerateButton->setText("Abbrechen");
+        bootloaderStopEnumerateButton->setText("Cancel");
     } else {
-        stopEnumerateButton->setText("Abbrechen");
+        stopEnumerateButton->setText("Cancel");
     }
     setEnumerateWidgetsEnabled(true, boot);
 
@@ -925,7 +924,7 @@ void FeldbusFrontend::requestStartBootBroad(void) {
 			}
 		}
 	} else {
-		startBootloader_->setText(QStringLiteral("Bootloader starten"));
+        startBootloader_->setText(QStringLiteral("Send Start-Bootloader packets"));
 		QFont font = startBootloader_->font();
 		font.setWeight(QFont::Normal);
 		startBootloader_->setFont(font);
@@ -950,7 +949,7 @@ void FeldbusFrontend::onStartBoot(void) {
 
 	bootloaderActivationRunning = true;
 	sendBroadcastTimer_.start(10);
-	startBootloader_->setText(QStringLiteral("Abbrechen"));
+    startBootloader_->setText(QStringLiteral("Cancel"));
 	QFont font = startBootloader_->font();
 	font.setWeight(QFont::Bold);
 	startBootloader_->setFont(font);
@@ -1224,7 +1223,7 @@ void FeldbusFrontend::setInquiryWidgetsEnabled(bool enabled) {
 		for (QWidget* child : inquiryWidgetList) {
 			child->setEnabled(true);
 		}
-		startInquiry_->setText("Geräte suchen");
+        startInquiry_->setText("Search Devices");
 	} else {
 		inquiryTabwidget->setTabEnabled(1, false);
 		for (QWidget* child : inquiryWidgetList) {
@@ -1239,7 +1238,7 @@ void FeldbusFrontend::setInquiryWidgetsEnabled(bool enabled) {
 void FeldbusFrontend::setBootInquiryWidgetsEnabled(bool enabled) {
 	if (enabled) {
 		inquiryTabwidget->setTabEnabled(0, true);
-		bootloadertoolsStartInquiry_->setText("Geräte suchen");
+        bootloadertoolsStartInquiry_->setText("Search Devices");
 
 		for (QWidget* child : bootloaderInquiryWidgetList) {
 			child->setEnabled(true);
