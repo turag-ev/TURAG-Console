@@ -100,13 +100,14 @@ FeldbusDeviceWrapper* FeldbusDeviceFactory::createFeldbusDevice(FeldbusDeviceInf
     case TURAG_FELDBUS_DEVICE_PROTOCOL_ASEB:
         protocolIdString = "ASEB (Application Specific Extension Board)";
 
+        device = new Feldbus::ASEBBase(
+                    device_info.device_name.constData(),
+                    device_info.address,
+                    bus,
+                    device_info.device_info.crcType());
+
 		switch (device_info.device_info.deviceTypeId()) {
         case TURAG_FELDBUS_ASEB_GENERIC:
-            device = new Feldbus::ASEBBase(
-                        device_info.device_name.constData(),
-                        device_info.address,
-						bus,
-                        device_info.device_info.crcType());
             deviceTypeString = "ASEB";
             break;
 
