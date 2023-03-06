@@ -1,4 +1,7 @@
 # TURAG-Console
+## Prebuilt Executables
+See Releases on the right side.
+
 ## Building
 ### Windows
 - download and unpack latest version of [Qwt](https://qwt.sourceforge.io/)
