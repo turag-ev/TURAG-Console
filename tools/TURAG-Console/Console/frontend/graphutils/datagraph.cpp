@@ -841,15 +841,15 @@ void DataGraph::resetChannelGrouping(void) {
 QRectF CurveDataBase::boundingRect() const {
     QRectF rect;
 
-    if (m_samples.size()) {
-        rect.setRight(m_samples[0].x());
-        rect.setLeft(m_samples[0].x());
-        rect.setTop(m_samples[0].y());
-        rect.setBottom(m_samples[0].y());
+    if (QWT_SERIES_SAMPLES.size()) {
+        rect.setRight(QWT_SERIES_SAMPLES[0].x());
+        rect.setLeft(QWT_SERIES_SAMPLES[0].x());
+        rect.setTop(QWT_SERIES_SAMPLES[0].y());
+        rect.setBottom(QWT_SERIES_SAMPLES[0].y());
     }
 
-    for (int i = 1; i < m_samples.size(); ++i) {
-        const QPointF& point = m_samples[i];
+    for (int i = 1; i < QWT_SERIES_SAMPLES.size(); ++i) {
+        const QPointF& point = QWT_SERIES_SAMPLES[i];
         if (point.x() > rect.right()) {
             rect.setRight(point.x());
         } else if (point.x() < rect.left()) {
@@ -880,26 +880,26 @@ QRectF CurveDataBase::boundingRect() const {
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 QRectF CurveData::boundingRect() const {
-    if (!cachedBoundingRect.isValid()) {
-        cachedBoundingRect = CurveDataBase::boundingRect();
+    if (!QWT_SERIES_BOUNDING_RECT.isValid()) {
+        QWT_SERIES_BOUNDING_RECT = CurveDataBase::boundingRect();
     }
-    return cachedBoundingRect;
+    return QWT_SERIES_BOUNDING_RECT;
 }
 
 
 void CurveData::append( const QPointF &point ) {
-    m_samples += point;
+    QWT_SERIES_SAMPLES += point;
 
-    if (cachedBoundingRect.isValid()) {
-        if (point.x() > cachedBoundingRect.right()) {
-            cachedBoundingRect.setRight(point.x());
-        } else if (point.x() < cachedBoundingRect.left()) {
-            cachedBoundingRect.setLeft(point.x());
+    if (QWT_SERIES_BOUNDING_RECT.isValid()) {
+        if (point.x() > QWT_SERIES_BOUNDING_RECT.right()) {
+            QWT_SERIES_BOUNDING_RECT.setRight(point.x());
+        } else if (point.x() < QWT_SERIES_BOUNDING_RECT.left()) {
+            QWT_SERIES_BOUNDING_RECT.setLeft(point.x());
         }
-        if (point.y() > cachedBoundingRect.bottom()) {
-            cachedBoundingRect.setBottom(point.y());
-        } else if (point.y() < cachedBoundingRect.top()) {
-            cachedBoundingRect.setTop(point.y());
+        if (point.y() > QWT_SERIES_BOUNDING_RECT.bottom()) {
+            QWT_SERIES_BOUNDING_RECT.setBottom(point.y());
+        } else if (point.y() < QWT_SERIES_BOUNDING_RECT.top()) {
+            QWT_SERIES_BOUNDING_RECT.setTop(point.y());
         }
     }
 }
@@ -912,23 +912,23 @@ void CurveData::append( const QPointF &point ) {
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 QRectF CurveDataFixedX::boundingRect() const {
-    if (!cachedBoundingRect.isValid()) {
-        cachedBoundingRect = CurveDataBase::boundingRect();
-        cachedBoundingRect.setLeft(left);
-        cachedBoundingRect.setRight(right);
+    if (!QWT_SERIES_BOUNDING_RECT.isValid()) {
+        QWT_SERIES_BOUNDING_RECT = CurveDataBase::boundingRect();
+        QWT_SERIES_BOUNDING_RECT.setLeft(left);
+        QWT_SERIES_BOUNDING_RECT.setRight(right);
     }
-    return cachedBoundingRect;
+    return QWT_SERIES_BOUNDING_RECT;
 }
 
 void CurveDataFixedX::append( const QPointF &point ) {
-    if (keepHiddenPoints_|| !cachedBoundingRect.isValid() || (point.x() >= left && point.x() <= right)) {
-        m_samples += point;
+    if (keepHiddenPoints_|| !QWT_SERIES_BOUNDING_RECT.isValid() || (point.x() >= left && point.x() <= right)) {
+        QWT_SERIES_SAMPLES += point;
 
-        if (cachedBoundingRect.isValid()) {
-            if (point.y() > cachedBoundingRect.bottom()) {
-                cachedBoundingRect.setBottom(point.y());
-            } else if (point.y() < cachedBoundingRect.top()) {
-                cachedBoundingRect.setTop(point.y());
+        if (QWT_SERIES_BOUNDING_RECT.isValid()) {
+            if (point.y() > QWT_SERIES_BOUNDING_RECT.bottom()) {
+                QWT_SERIES_BOUNDING_RECT.setBottom(point.y());
+            } else if (point.y() < QWT_SERIES_BOUNDING_RECT.top()) {
+                QWT_SERIES_BOUNDING_RECT.setTop(point.y());
             }
         }
     }
@@ -942,23 +942,23 @@ void CurveDataFixedX::append( const QPointF &point ) {
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 QRectF CurveDataFixedY::boundingRect() const {
-    if (!cachedBoundingRect.isValid()) {
-        cachedBoundingRect = CurveDataBase::boundingRect();
-        cachedBoundingRect.setBottom(top);
-        cachedBoundingRect.setTop(bottom);
+    if (!QWT_SERIES_BOUNDING_RECT.isValid()) {
+        QWT_SERIES_BOUNDING_RECT = CurveDataBase::boundingRect();
+        QWT_SERIES_BOUNDING_RECT.setBottom(top);
+        QWT_SERIES_BOUNDING_RECT.setTop(bottom);
     }
-    return cachedBoundingRect;
+    return QWT_SERIES_BOUNDING_RECT;
 }
 
 void CurveDataFixedY::append( const QPointF &point ) {
-    if (keepHiddenPoints_|| !cachedBoundingRect.isValid() || (point.y() >= bottom && point.y() <= top)) {
-        m_samples += point;
+    if (keepHiddenPoints_|| !QWT_SERIES_BOUNDING_RECT.isValid() || (point.y() >= bottom && point.y() <= top)) {
+        QWT_SERIES_SAMPLES += point;
 
-        if (cachedBoundingRect.isValid()) {
-            if (point.x() > cachedBoundingRect.right()) {
-                cachedBoundingRect.setRight(point.x());
-            } else if (point.x() < cachedBoundingRect.left()) {
-                cachedBoundingRect.setLeft(point.x());
+        if (QWT_SERIES_BOUNDING_RECT.isValid()) {
+            if (point.x() > QWT_SERIES_BOUNDING_RECT.right()) {
+                QWT_SERIES_BOUNDING_RECT.setRight(point.x());
+            } else if (point.x() < QWT_SERIES_BOUNDING_RECT.left()) {
+                QWT_SERIES_BOUNDING_RECT.setLeft(point.x());
             }
         }
     }
@@ -972,40 +972,40 @@ void CurveDataFixedY::append( const QPointF &point ) {
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 QRectF CurveDataTime::boundingRect() const {
-    if (!cachedBoundingRect.isValid()) {
-        cachedBoundingRect = CurveDataBase::boundingRect();
-        if (cachedBoundingRect.isValid()) {
-            cachedBoundingRect.setLeft(cachedBoundingRect.right() - timespan_);
+    if (!QWT_SERIES_BOUNDING_RECT.isValid()) {
+        QWT_SERIES_BOUNDING_RECT = CurveDataBase::boundingRect();
+        if (QWT_SERIES_BOUNDING_RECT.isValid()) {
+            QWT_SERIES_BOUNDING_RECT.setLeft(QWT_SERIES_BOUNDING_RECT.right() - timespan_);
         }
     }
-    return cachedBoundingRect;
+    return QWT_SERIES_BOUNDING_RECT;
 }
 
 void CurveDataTime::append( const QPointF &point ) {
-    if (keepHiddenPoints_|| !cachedBoundingRect.isValid() || point.x() >= cachedBoundingRect.left()) {
-        m_samples += point;
+    if (keepHiddenPoints_|| !QWT_SERIES_BOUNDING_RECT.isValid() || point.x() >= QWT_SERIES_BOUNDING_RECT.left()) {
+        QWT_SERIES_SAMPLES += point;
 
-        if (cachedBoundingRect.isValid()) {
-            if (point.x() > cachedBoundingRect.right()) {
-                cachedBoundingRect.setRight(point.x());
-                cachedBoundingRect.setLeft(cachedBoundingRect.right() - timespan_);
+        if (QWT_SERIES_BOUNDING_RECT.isValid()) {
+            if (point.x() > QWT_SERIES_BOUNDING_RECT.right()) {
+                QWT_SERIES_BOUNDING_RECT.setRight(point.x());
+                QWT_SERIES_BOUNDING_RECT.setLeft(QWT_SERIES_BOUNDING_RECT.right() - timespan_);
 
                 if (!keepHiddenPoints_) {
                     // delete old points which are not inside bounding rectangle anymore
                     // We assume points to be chronologically ordered.
-                    QVector<QPointF>::Iterator iter = m_samples.begin();
-                    while(iter != m_samples.end()) {
-                        if (cachedBoundingRect.contains(*iter)) break;
+                    QVector<QPointF>::Iterator iter = QWT_SERIES_SAMPLES.begin();
+                    while(iter != QWT_SERIES_SAMPLES.end()) {
+                        if (QWT_SERIES_BOUNDING_RECT.contains(*iter)) break;
                         iter++;
                     }
-                    m_samples.erase(m_samples.begin(), iter);
+                    QWT_SERIES_SAMPLES.erase(QWT_SERIES_SAMPLES.begin(), iter);
                 }
             }
 
-            if (point.y() > cachedBoundingRect.bottom()) {
-                cachedBoundingRect.setBottom(point.y());
-            } else if (point.y() < cachedBoundingRect.top()) {
-                cachedBoundingRect.setTop(point.y());
+            if (point.y() > QWT_SERIES_BOUNDING_RECT.bottom()) {
+                QWT_SERIES_BOUNDING_RECT.setBottom(point.y());
+            } else if (point.y() < QWT_SERIES_BOUNDING_RECT.top()) {
+                QWT_SERIES_BOUNDING_RECT.setTop(point.y());
             }
         }
     }
@@ -1019,35 +1019,35 @@ void CurveDataTime::append( const QPointF &point ) {
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 QRectF CurveDataTimeFixedY::boundingRect() const {
-    if (!cachedBoundingRect.isValid()) {
-        cachedBoundingRect = CurveDataBase::boundingRect();
-        if (cachedBoundingRect.isValid()) {
-            cachedBoundingRect.setLeft(cachedBoundingRect.right() - timespan_);
-            cachedBoundingRect.setBottom(top);
-            cachedBoundingRect.setTop(bottom);
+    if (!QWT_SERIES_BOUNDING_RECT.isValid()) {
+        QWT_SERIES_BOUNDING_RECT = CurveDataBase::boundingRect();
+        if (QWT_SERIES_BOUNDING_RECT.isValid()) {
+            QWT_SERIES_BOUNDING_RECT.setLeft(QWT_SERIES_BOUNDING_RECT.right() - timespan_);
+            QWT_SERIES_BOUNDING_RECT.setBottom(top);
+            QWT_SERIES_BOUNDING_RECT.setTop(bottom);
         }
     }
-    return cachedBoundingRect;
+    return QWT_SERIES_BOUNDING_RECT;
 }
 
 void CurveDataTimeFixedY::append( const QPointF &point ) {
-    if (keepHiddenPoints_|| !cachedBoundingRect.isValid() || (point.x() >= cachedBoundingRect.left() && point.y() >= bottom && point.y() <= top)) {
-        m_samples += point;
+    if (keepHiddenPoints_|| !QWT_SERIES_BOUNDING_RECT.isValid() || (point.x() >= QWT_SERIES_BOUNDING_RECT.left() && point.y() >= bottom && point.y() <= top)) {
+        QWT_SERIES_SAMPLES += point;
 
-        if (cachedBoundingRect.isValid()) {
-            if (point.x() > cachedBoundingRect.right()) {
-                cachedBoundingRect.setRight(point.x());
-                cachedBoundingRect.setLeft(cachedBoundingRect.right() - timespan_);
+        if (QWT_SERIES_BOUNDING_RECT.isValid()) {
+            if (point.x() > QWT_SERIES_BOUNDING_RECT.right()) {
+                QWT_SERIES_BOUNDING_RECT.setRight(point.x());
+                QWT_SERIES_BOUNDING_RECT.setLeft(QWT_SERIES_BOUNDING_RECT.right() - timespan_);
 
                 if (!keepHiddenPoints_) {
                     // delete old points which are not inside bounding rectangle anymore
                     // We assume points to be chronologically ordered.
-                    QVector<QPointF>::Iterator iter = m_samples.begin();
-                    while(iter != m_samples.end()) {
-                        if (cachedBoundingRect.contains(*iter)) break;
+                    QVector<QPointF>::Iterator iter = QWT_SERIES_SAMPLES.begin();
+                    while(iter != QWT_SERIES_SAMPLES.end()) {
+                        if (QWT_SERIES_BOUNDING_RECT.contains(*iter)) break;
                         iter++;
                     }
-                    m_samples.erase(m_samples.begin(), iter);
+                    QWT_SERIES_SAMPLES.erase(QWT_SERIES_SAMPLES.begin(), iter);
                 }
             }
         }
@@ -1062,21 +1062,21 @@ void CurveDataTimeFixedY::append( const QPointF &point ) {
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 QRectF CurveDataFixedXFixedY::boundingRect() const {
-	if (!cachedBoundingRect.isValid()) {
-		cachedBoundingRect.setLeft(left);
-		cachedBoundingRect.setRight(right);
-		cachedBoundingRect.setBottom(top);
-		cachedBoundingRect.setTop(bottom);
+    if (!QWT_SERIES_BOUNDING_RECT.isValid()) {
+        QWT_SERIES_BOUNDING_RECT.setLeft(left);
+        QWT_SERIES_BOUNDING_RECT.setRight(right);
+        QWT_SERIES_BOUNDING_RECT.setBottom(top);
+        QWT_SERIES_BOUNDING_RECT.setTop(bottom);
 	}
-	return cachedBoundingRect;
+    return QWT_SERIES_BOUNDING_RECT;
 }
 void CurveDataFixedXFixedY::append( const QPointF &point ) {
     if (keepHiddenPoints_|| (
-                point.y() >= cachedBoundingRect.top() &&
-                point.y() <= cachedBoundingRect.bottom() &&
-                point.x() >= cachedBoundingRect.left() &&
-                point.x() <= cachedBoundingRect.right())) {
-        m_samples += point;
+                point.y() >= QWT_SERIES_BOUNDING_RECT.top() &&
+                point.y() <= QWT_SERIES_BOUNDING_RECT.bottom() &&
+                point.x() >= QWT_SERIES_BOUNDING_RECT.left() &&
+                point.x() <= QWT_SERIES_BOUNDING_RECT.right())) {
+        QWT_SERIES_SAMPLES += point;
     }
 }
 

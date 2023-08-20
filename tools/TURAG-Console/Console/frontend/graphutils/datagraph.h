@@ -28,6 +28,18 @@ class QComboBox;
 class QwtPlotMarker;
 
 
+/*
+ * At the time of this writing Debian and Ubuntu unfortunately still ship
+ * Qwt 6.1.4 while Arch already moved to Qwt 6.2 which makes it necessary to support
+ * both versions.
+ */
+#if QWT_VERSION >= 0x060200
+# define QWT_SERIES_SAMPLES m_samples
+# define QWT_SERIES_BOUNDING_RECT cachedBoundingRect
+#else
+# define QWT_SERIES_SAMPLES d_samples
+# define QWT_SERIES_BOUNDING_RECT d_boundingRect
+#endif
 
 
 class DataGraph : public QSplitter
@@ -165,12 +177,12 @@ public:
     virtual void append( const QPointF &point ) = 0;
 	virtual void resetBoundingRect(void) {
 		// invalidate bounding rect
-		cachedBoundingRect = QRectF();
+        QWT_SERIES_BOUNDING_RECT = QRectF();
 		// retrieve new bounding rect
-		cachedBoundingRect = boundingRect();
+        QWT_SERIES_BOUNDING_RECT = boundingRect();
     }
 	void clear(void) {
-		m_samples.clear();
+        QWT_SERIES_SAMPLES.clear();
 	}
 	virtual CurveDataBase* createInstance(void) = 0;
 };
@@ -200,7 +212,7 @@ public:
 		return new CurveDataFixedX(left, right - left, keepHiddenPoints_);
 	}
 	virtual void resetBoundingRect(void) {
-		cachedBoundingRect = CurveDataBase::boundingRect();
+        QWT_SERIES_BOUNDING_RECT = CurveDataBase::boundingRect();
 	}
 };
 
