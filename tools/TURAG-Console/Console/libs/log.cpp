@@ -76,6 +76,7 @@ void Log::messageHandler(QtMsgType type, const QMessageLogContext & context, con
 		case QtWarningMsg: logType = Log::MessageType::Warning; break;
 		case QtCriticalMsg: logType = Log::MessageType::Critical; break;
 		case QtFatalMsg: logType = Log::MessageType::Fatal; break;
+        default: logType = Log::MessageType::Debug; break;
 	}
 
 	get()->gotMsg(true, logType, context.file, context.line, context.function, localMsg);
