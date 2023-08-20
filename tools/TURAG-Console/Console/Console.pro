@@ -36,9 +36,7 @@ QT     += printsupport
 QT     += serialport
 QT     += widgets
 QT     += xml
-# camera stuff
-QT     += multimedia
-QT     += multimediawidgets
+
 
 TINA   += feldbus-host feldbus-dynamixel feldbus-protocol crc base64 debug geometry
     
@@ -67,9 +65,6 @@ DEFINES += QT_STRICT_ITERATORS
 
 # Keine Deprecation Warnings
 DEFINES += QT_NO_DEPRECATED_WARNINGS
-
-# causes segfaults in qwt ?!?!?!?!
-#DEFINES += QT_COORD_TYPE=float
 
 # Version für Quelldateien
 DEFINES += PACKAGE_VERSION=$$VERSION
@@ -122,7 +117,6 @@ SOURCES +=\
     frontend/graphutils/datagraph.cpp \
     frontend/oscilloscope.cpp \
     frontend/plaintextfrontend.cpp \
-    frontend/tinacamerafrontend.cpp \
     frontend/tinagraphfrontend.cpp \
     frontend/util/datapointinterface.cpp \
     frontend/util/feldbusdevicefactory.cpp \
@@ -176,7 +170,6 @@ HEADERS  += \
     frontend/graphutils/hoverableqwtlegendlabel.h \
     frontend/oscilloscope.h \
     frontend/plaintextfrontend.h \
-    frontend/tinacamerafrontend.h \
     frontend/tinagraphfrontend.h \
     frontend/util/datapointinterface.h \
     frontend/util/feldbusdevicefactory.h \
