@@ -39,7 +39,7 @@ namespace TURAG::Feldbus {
 }
 
 
-using namespace TURAG; // FIXME: evil!
+using namespace TURAG;
 
 
 class FeldbusFrontend : public BaseFrontend, public Feldbus::FeldbusAbstraction
@@ -71,9 +71,7 @@ protected slots:
     void onReenumerateDevicesSequential(void);
     void onReenumerateDevicesBinary(void);
     void onReenumerateDevicesBoth(void);
-    void onBootloaderReenumerateDevicesSequential(void);
     void onBootloaderReenumerateDevicesBinary(void);
-    void onBootloaderReenumerateDevicesBoth(void);
     void onStopEnumerate(void);
 
 	void onStartBootInquiry(void);
@@ -99,7 +97,6 @@ protected:
     QList<std::shared_ptr<FeldbusDeviceWrapper>> devices_;
     QTabWidget* inquiryTabwidget;
 
-    //ComboBoxExt* checksumCombobox_;
     QPushButton* startInquiry_;
     LineEditExt* fromEdit_;
     LineEditExt* toEdit_;
@@ -111,7 +108,6 @@ protected:
     QPushButton* enumerateBothButton;
     QPushButton* stopEnumerateButton;
 
-    //ComboBoxExt* bootloaderChecksumCombobox_;
     QPushButton* startBootloader_;
     QPushButton* bootloadertoolsStartInquiry_;
     LineEditExt* bootFromEdit_;
@@ -120,9 +116,7 @@ protected:
     QIntValidator* bootloaderToValidator_;
 	QList<QWidget*> bootloaderInquiryWidgetList;
 	QList<QWidget*> bootloaderStartBootloaderWidgetList;
-    QPushButton* bootloaderEnumerateSequentialButton;
     QPushButton* bootloaderEnumerateBinaryButton;
-    QPushButton* bootloaderEnumerateBothButton;
     QPushButton* bootloaderStopEnumerateButton;
 
     QPushButton* dynamixelStartInquiry_;

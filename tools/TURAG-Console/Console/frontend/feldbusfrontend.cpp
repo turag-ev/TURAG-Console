@@ -66,21 +66,6 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     QWidget* left_layout_widget = new QWidget;
     QVBoxLayout* left_layout = new QVBoxLayout;
 
-    /*
-    QHBoxLayout* layoutAboveTop = new QHBoxLayout;
-    checksumCombobox_ = new ComboBoxExt("ChecksumConventionalDevices", 2);
-	inquiryWidgetList.append(checksumCombobox_);
-    checksumCombobox_->addItem("xor");
-    checksumCombobox_->addItem("crc8_icode");
-    checksumCombobox_->addItem("Alle");
-    checksumCombobox_->selectStandardItem();
-    checksumCombobox_->setToolTip("Stellt ein, mit welcher Checksumme nach Geräten gesucht wird. Bei Auswahl von `Alle' dauert die Suche entsprechend länger.");
-    QFormLayout* layoutAboveTopFormLayout = new QFormLayout;
-	QLabel* checksumLabel = new QLabel("Checksumme:");
-	inquiryWidgetList.append(checksumLabel);
-	layoutAboveTopFormLayout->addRow(checksumLabel, checksumCombobox_);
-    layoutAboveTop->addLayout(layoutAboveTopFormLayout);
-*/
 
     QHBoxLayout* layoutEnumerate = new QHBoxLayout;
     QLabel* enumerateLabel = new QLabel("Enumerate devices:");
@@ -98,7 +83,6 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     connect(enumerateBothButton, SIGNAL(clicked()), this, SLOT(onReenumerateDevicesBoth()));
     inquiryWidgetList.append(enumerateBothButton);
     stopEnumerateButton = new QPushButton("Cancel");
-    //stopEnumerateButton->setVisible(false);
     stopEnumerateButton->setEnabled(false);
     layoutEnumerate->addWidget(stopEnumerateButton);
     connect(stopEnumerateButton, SIGNAL(clicked()), this, SLOT(onStopEnumerate()));
@@ -157,21 +141,6 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
      */
 
     QHBoxLayout* bootloaderLayoutAboveSetupLayout = new QHBoxLayout;
-    /*
-    bootloaderChecksumCombobox_ = new ComboBoxExt("BootloaderChecksumConventionalDevices", 1);
-	bootloaderStartBootloaderWidgetList.append(bootloaderChecksumCombobox_);
-	bootloaderInquiryWidgetList.append(bootloaderChecksumCombobox_);
-    bootloaderChecksumCombobox_->addItem("xor");
-    bootloaderChecksumCombobox_->addItem("crc8_icode");
-    bootloaderChecksumCombobox_->selectStandardItem();
-    bootloaderChecksumCombobox_->setToolTip("Stellt ein, mit welcher Checksumme nach Geräten gesucht wird.");
-    QFormLayout* bootloaderLayoutAboveSetupLayoutFormLayout = new QFormLayout;
-	QLabel* bootloaderChecksumLabel = new QLabel("Checksumme:");
-	bootloaderStartBootloaderWidgetList.append(bootloaderChecksumLabel);
-	bootloaderInquiryWidgetList.append(bootloaderChecksumLabel);
-	bootloaderLayoutAboveSetupLayoutFormLayout->addRow(bootloaderChecksumLabel, bootloaderChecksumCombobox_);
-    bootloaderLayoutAboveSetupLayout->addLayout(bootloaderLayoutAboveSetupLayoutFormLayout);
-    */
     startBootloader_ = new QPushButton("Send Start-Bootloader packets");
     bootloaderInquiryWidgetList.append(startBootloader_);
     bootloaderLayoutAboveSetupLayout->addStretch();
@@ -198,21 +167,12 @@ FeldbusFrontend::FeldbusFrontend(QWidget *parent) :
     QHBoxLayout* bootloaderLayoutEnumerate = new QHBoxLayout;
     QLabel* bootloaderEnumerateLabel = new QLabel("Enumerate devices:");
     bootloaderLayoutEnumerate->addWidget(bootloaderEnumerateLabel);
-    bootloaderEnumerateSequentialButton = new QPushButton("Sequential");
-    bootloaderLayoutEnumerate->addWidget(bootloaderEnumerateSequentialButton);
-    connect(bootloaderEnumerateSequentialButton, SIGNAL(clicked()), this, SLOT(onBootloaderReenumerateDevicesSequential()));
-    bootloaderInquiryWidgetList.append(bootloaderEnumerateSequentialButton);
     bootloaderEnumerateBinaryButton = new QPushButton("Binary");
     bootloaderLayoutEnumerate->addWidget(bootloaderEnumerateBinaryButton);
     connect(bootloaderEnumerateBinaryButton, SIGNAL(clicked()), this, SLOT(onBootloaderReenumerateDevicesBinary()));
     bootloaderInquiryWidgetList.append(bootloaderEnumerateBinaryButton);
-    bootloaderEnumerateBothButton = new QPushButton("Both");
-    bootloaderLayoutEnumerate->addWidget(bootloaderEnumerateBothButton);
-    connect(bootloaderEnumerateBothButton, SIGNAL(clicked()), this, SLOT(onBootloaderReenumerateDevicesBoth()));
-    bootloaderInquiryWidgetList.append(bootloaderEnumerateBothButton);
     bootloaderStopEnumerateButton = new QPushButton("Cancel");
     bootloaderLayoutEnumerate->addWidget(bootloaderStopEnumerateButton);
-    //bootloaderStopEnumerateButton->setVisible(false);
     bootloaderStopEnumerateButton->setEnabled(false);
     connect(bootloaderStopEnumerateButton, SIGNAL(clicked()), this, SLOT(onStopEnumerate()));
     bootloaderInquiryWidgetList.append(bootloaderStopEnumerateButton);
@@ -752,18 +712,9 @@ void FeldbusFrontend::onReenumerateDevicesBoth()
     enumerate(true, true, false);
 }
 
-void FeldbusFrontend::onBootloaderReenumerateDevicesSequential() {
-    enumerate(true, false, true);
-}
-
 void FeldbusFrontend::onBootloaderReenumerateDevicesBinary()
 {
     enumerate(false, true, true);
-}
-
-void FeldbusFrontend::onBootloaderReenumerateDevicesBoth()
-{
-    enumerate(true, true, true);
 }
 
 void FeldbusFrontend::onDeviceSelected(int row) {
