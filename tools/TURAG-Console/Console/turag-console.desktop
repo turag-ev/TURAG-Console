@@ -1,14 +1,8 @@
 [Desktop Entry]
-Encoding=UTF-8
-Name=TURAG Console
-GenericName[en]=TURAG robot communication util
-GenericName[de]=TURAG-Roboter-Kommunikationswerkzeug
-Categories=Utility;Robotics;Monitor;Qt
-Comment[en]=Util to communicate with TURAG robot components
-Comment[de]=Werkzeug zum Kommunizieren mit TURAG-Robotern und deren Bestandteilen
-Exec=turag-console %f
-Icon=turag-55.png
-Terminal=false
 Type=Application
+Name=TURAG Console
+Categories=Utility;Electronics;DataVisualization;Monitor;
+Exec=turag-console %f
+Icon=turag-48
+Terminal=false
 StartupNotify=true
-MimeType=application/x-turag-console-log

@@ -1,0 +1,168 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - '**'
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+    - 'main'
+
+env:
+  SOURCE_DIR:   ${{ github.workspace }}
+  EXECUTABLE:   turag-console
+  WIN_QT_VERSION:   5.15.2
+
+jobs:
+  linux-appimage-build:
+    runs-on:  ubuntu-20.04
+
+    steps:
+      - name: (1) Checkout repo
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: (2) Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt install desktop-file-utils qtbase5-dev-tools qt5-qmake libqt5serialport5-dev libqwt-qt5-dev libqwt-headers libqt5svg5-dev
+
+      - name: (3) Create directories
+        run: |
+          mkdir ${{ runner.temp }}/build
+          mkdir ${{ runner.temp }}/deploy
+
+      - name: (4) Build
+        working-directory: ${{ runner.temp }}/build
+        run:  |
+              qmake -r ${{ env.SOURCE_DIR }}/tools/TURAG-Console/Console/Console.pro
+              make -j2
+
+      - name: (5) Create AppImage
+        working-directory: ${{ runner.temp }}/deploy
+        run:  |
+              # get linuxdeployqt
+              wget -nv -O linuxdeployqt https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
+              chmod a+x linuxdeployqt
+
+              # create app directory structure
+              mkdir -p appdir/usr/share/icons/hicolor/48x48/apps
+              mkdir -p appdir/usr/bin
+              mkdir -p appdir/usr/lib
+              mkdir -p appdir/usr/share/applications
+
+              # copy files
+              cp ${{ runner.temp }}/build/turag-console appdir/usr/bin
+              cp ${{ env.SOURCE_DIR }}/tools/TURAG-Console/Console/turag-console.desktop appdir/usr/share/applications
+              cp ${{ env.SOURCE_DIR }}/tools/TURAG-Console/Console/images/turag-48.png appdir/usr/share/icons/hicolor/48x48/apps
+
+              # create app image
+              ./linuxdeployqt appdir/usr/share/applications/*.desktop -appimage -no-translations
+              mv *.AppImage ${{env.EXECUTABLE}}-x86_64.AppImage
+
+      - name: (6) Save build artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: linux-appimage-build
+          path: ${{ runner.temp }}/deploy/${{env.EXECUTABLE}}-x86_64.AppImage
+
+  windows-build:
+    runs-on:  windows-2019
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
+    defaults:
+      run:
+        shell: cmd
+
+    steps:
+      - name: (1) Checkout repo
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: (2) Install Qt
+        uses: jurplel/install-qt-action@v3.3.0
+        with:
+          version:      ${{ env.WIN_QT_VERSION }}
+          host:         windows
+          target:       desktop
+          arch:         win64_mingw81
+          dir:          ${{ runner.temp }}
+          setup-python: false
+
+      - name: (3) Download qwt
+        uses: suisei-cn/actions-download-file@v1.4.0
+        with:
+          url:      https://sourceforge.net/projects/qwt/files/qwt/6.2.0/qwt-6.2.0.zip
+          target:   ${{ runner.temp }}\
+          filename: qwt.zip
+
+      - name: (4) Unzip qwt
+        working-directory: ${{ runner.temp }}
+        run:  |
+              7z x qwt.zip -oqwt
+
+      - name: (5) Create build directory for qwt
+        run:  mkdir ${{ runner.temp }}\build-qwt
+
+      - name: (6) Build and install qwt
+        working-directory: ${{ runner.temp }}\build-qwt
+        run:  |
+              qmake -r ${{ runner.temp }}\qwt\qwt-6.2.0\qwt.pro
+              make -j2
+              make install
+              qmake -set QMAKEFEATURES C:\\Qwt-6.2.0\\features
+
+      - name: (7) Create build directory
+        run:  |
+              mkdir ${{ runner.temp }}\build
+              mkdir ${{ runner.temp }}\deploy
+
+      - name: (8) Build
+        working-directory: ${{ runner.temp }}\build
+        run:  |
+              qmake ${{ env.SOURCE_DIR }}\tools\TURAG-Console\Console\Console.pro
+              make -j2
+              cd ..\deploy
+              copy ..\build\release\turag-console.exe .
+              windeployqt turag-console.exe --compiler-runtime --verbose 2
+              copy C:\Qwt-6.2.0\lib\qwt.dll .
+              windeployqt qwt.dll --compiler-runtime --verbose 2
+              FOR /F "tokens=*" %%g IN ('where gcc') do (SET COMPILER_DIR=%%~dpg)
+              copy "%COMPILER_DIR%libwinpthread-1.dll .
+              copy "%COMPILER_DIR%libgcc_s_seh-1.dll .
+              copy "%COMPILER_DIR%libstdc++-6.dll .
+
+      - name: (9) Save build artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: windows-build
+          path: ${{ runner.temp }}\deploy
+
+  release:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [linux-appimage-build, windows-build]
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: ./artifacts/
+      - name: Prepare release files
+        run: |
+             ls -R
+             echo "TARGET_NAME=${{env.EXECUTABLE}}-${{github.ref_name}}" >> $GITHUB_ENV
+      - name: Prepare release files (2)
+        run: |
+             mv "./artifacts/linux-appimage-build/${{env.EXECUTABLE}}-x86_64.AppImage" "${{env.TARGET_NAME}}-linux-x86_64.AppImage"
+             cd ./artifacts/windows-build && zip -r "${{env.TARGET_NAME}}-windows-x86_64.zip" . && cd ../..
+             mv "./artifacts/windows-build/${{env.TARGET_NAME}}-windows-x86_64.zip" .
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ${{env.TARGET_NAME}}-linux-x86_64.AppImage
+            ${{env.TARGET_NAME}}-windows-x86_64.zip
+
